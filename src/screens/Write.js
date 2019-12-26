@@ -12,7 +12,7 @@ import { Actions } from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import SView from 'react-native-simple-shadow-view'
+import SView from 'react-native-simple-shadow-view';
 // import console = require('console');
 
 
@@ -154,14 +154,15 @@ class Write extends Component {
         />
         {changeNavigationBarColor((this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT, (this.props.theme==='light'))}
         
-        <View style={{elevation:7, borderRadius:10, margin:8, height:70, justifyContent:'space-between',
-          alignItems:'center', flexDirection:'row', 
+        <SView style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
+          alignItems:'center', flexDirection:'row', shadowColor:'#202020',shadowOpacity:0.3,
+          shadowOffset:{width:0,height:10},shadowRadius:8,
           backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, paddingHorizontal:25}}>
             <Text style={{...styles.TextStyle, 
               color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>
               my articles
             </Text>
-        </View>
+        </SView>
         {
           (Object.keys(this.props.myArticles).length!==0)?
           (<ScrollView showsVerticalScrollIndicator={false}>

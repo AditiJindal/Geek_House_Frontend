@@ -181,7 +181,7 @@ export default connect(mapStateToProps, {
 
 const styles = StyleSheet.create({
     GoogleButtonStyle:{
-      borderRadius:5,
+      borderRadius:12,
       width:250,
       height:50,
       backgroundColor:'white',
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     },
 
     FacebookButtonStyle:{
-      borderRadius:5,
+      borderRadius:12,
       width:250,
       height:50,
       backgroundColor:'rgb(24, 119, 242)',

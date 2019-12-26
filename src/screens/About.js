@@ -7,6 +7,7 @@ import { Actions } from 'react-native-router-flux';
 import {FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME } from '../Constants';
 import { Icon } from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import SView from 'react-native-simple-shadow-view';
 
 class Settings extends Component {
 
@@ -39,8 +40,9 @@ class Settings extends Component {
 
   renderCard(item){
     return (
-      <View style={{
-        borderRadius:10, padding:5, elevation: 5, marginVertical:5, marginHorizontal:15,
+      <SView style={{
+        borderRadius:10, padding:5, marginVertical:5, marginHorizontal:15,
+        shadowColor:'#202020',shadowOpacity:0.25,shadowOffset:{width:0,height:8},shadowRadius:6,
         backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
         paddingHorizontal:10, marginBottom:10}}>
         <View>
@@ -51,7 +53,7 @@ class Settings extends Component {
         <Text style={{...styles.TextStyling, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}}>
           {item.text}
         </Text>
-      </View>
+      </SView>
     )
   }
 
@@ -61,6 +63,7 @@ class Settings extends Component {
         data={this.props.settingsData.about}
         keyExtractor={(item, i)=>{return i.toString()}}
         renderItem={({item})=>{return this.renderCard(item)}}
+        contentContainerStyle={{paddingBottom:20}}
       />
     )
   }

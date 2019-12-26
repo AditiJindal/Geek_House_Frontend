@@ -8,6 +8,7 @@ import {setAuthToken, setUserData} from '../actions/ChatAction';
 import {Actions} from 'react-native-router-flux'
 import ChatPeople from '../components/ChatPeople';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import SView from 'react-native-simple-shadow-view'
 
 class Chat extends Component {
 
@@ -26,17 +27,7 @@ class Chat extends Component {
     // console.log("unmounting chat")
     logEvent(LOG_EVENT.TIME_IN_CHAT, Date.now()-this.state.showStartTime)
   }
-
-  Item({ title }) {
-    return (
-      <View style={{height:100}}>
-        <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.LESSER_DARK}}>
-          {title}
-        </Text>
-      </View>
-    );
-  }
-
+  
   renderSection(title){
     return(
       <View style={{alignItems:'center'}}>
@@ -97,14 +88,15 @@ class Chat extends Component {
           backgroundColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}
           barStyle={(this.props.theme==='light')?'dark-content':'light-content'}/>
         {changeNavigationBarColor((this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT, (this.props.theme==='light'))}
-        <View style={{elevation:7, borderRadius:10, margin:8, height:70, justifyContent:'space-between',
-          alignItems:'center', flexDirection:'row', 
+        <SView style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
+          alignItems:'center', flexDirection:'row', shadowColor:'#202020',
+          shadowOpacity:0.3, shadowOffset:{width:0,height:10},shadowRadius:8,
           backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, 
           paddingHorizontal:25}}>
             <Text style={{...styles.TextStyle, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK }}>
               chat
             </Text>
-        </View>
+        </SView>
         {
           (this.props.loading)?
           this.renderNoChatAvailable():

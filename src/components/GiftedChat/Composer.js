@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform, StyleSheet, TextInput } from 'react-native';
-import {FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../../Constants'
+import {FONTS} from '../../Constants'
 const styles = StyleSheet.create({
     textInput: {
         flex: 1,

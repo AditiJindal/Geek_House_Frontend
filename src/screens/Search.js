@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     borderWidth:0,
     borderTopWidth:0,
     borderBottomWidth:0,
-    elevation:3,
+    elevation:3.5,
     borderRadius:12,
     flex:1,
     margin:10,

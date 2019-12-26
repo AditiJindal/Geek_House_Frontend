@@ -15,6 +15,7 @@ import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from "@react-native-community/image-editor";
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import SView from 'react-native-simple-shadow-view'
 
 
 ImageManipulator = View;
@@ -168,19 +169,24 @@ class ImageUpload extends Component {
     return (
       <View style={{margin:8, height:70, justifyContent:'space-between',
         alignItems:'center', flexDirection:'row'}}>
-          <TouchableOpacity onPress={()=>{Actions.replace("writearticle");logEvent(LOG_EVENT.SCREEN_CHANGE, 'writearticle');}} activeOpacity={1}
-            style={{elevation:7, borderRadius:30, padding:10, 
+          <TouchableOpacity onPress={()=>{Actions.replace("writearticle");logEvent(LOG_EVENT.SCREEN_CHANGE, 'writearticle');}}
+            activeOpacity={0.75}>
+            <SView
+              style={{shadowColor:'#202020',shadowOpacity:0.2, shadowOffset:{width:0,height:7.5},shadowRadius:7, 
+              borderRadius:30, padding:10, 
               backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
-            marginRight:15, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
-            <Icon name="arrow-left" type="material-community" size={26}
-              containerStyle={{height:26, width:26, justifyContent:'center', alignItems:'center'}} 
-              color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}/>
-            <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK, 
-              fontFamily:FONTS.RALEWAY,marginHorizontal:3, 
-              fontSize:16, textAlignVertical:'center'}}>
-              edit <Text style={{fontSize:14}}>article</Text>
-            </Text>
+              marginRight:15, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
+              <Icon name="arrow-left" type="material-community" size={26}
+                containerStyle={{height:26, width:26, justifyContent:'center', alignItems:'center'}} 
+                color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}/>
+              <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK, 
+                fontFamily:FONTS.RALEWAY,marginHorizontal:3, 
+                fontSize:16, textAlignVertical:'center'}}>
+                edit <Text style={{fontSize:14}}>article</Text>
+              </Text>
+            </SView>
           </TouchableOpacity>
+          
           <Text style={{...styles.TextStyle, 
             color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>
             upload image

@@ -14,6 +14,7 @@ import StarRating from 'react-native-star-rating';
 import {Dropdown} from '../components/Dropdown';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import {Switch} from 'react-native-switch';
+import SView from 'react-native-simple-shadow-view'
 
 
 const getId = (id) => {
@@ -91,7 +92,7 @@ class Settings extends Component {
 
   renderLogoutButton(){
     return (
-      <View style={{flex:1}}>
+      <SView style={{flex:1}}>
         <TouchableOpacity
           activeOpacity={1} style={{alignSelf:'flex-start', marginTop:15}}
           onPress={()=>{this.props.logout()}}>
@@ -108,15 +109,16 @@ class Settings extends Component {
           </LinearGradient>
           
         </TouchableOpacity>
-      </View>
+      </SView>
     )
   }
 
   renderThemeButton(){
     const oppositeTheme = (this.props.theme==='light')?'dark':'light'
     return (
-      <View style={{flexDirection:'row',justifyContent:'space-between', alignItems:'center',borderColor:(this.props.theme==='light')?"#f953c6":"#6DD5FA",
-        marginTop:10, borderRadius:15, padding:10, elevation:3,borderWidth:1,
+      <SView style={{flexDirection:'row',justifyContent:'space-between', alignItems:'center',
+        marginTop:10, borderRadius:15, padding:10,
+        shadowColor:'#202020',shadowOpacity:0.20,shadowOffset:{width:0,height:8},shadowRadius:6,
         backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
         <Text style={{marginRight:20, fontSize:26, fontFamily:FONTS.PRODUCT_SANS_BOLD,
           color:(this.props.theme==='light')?"#ff5ccd":"#8ce1ff"}}>
@@ -126,7 +128,7 @@ class Settings extends Component {
           style={{alignSelf:'flex-start'}}
           activeOpacity={1}
           onPress={()=>{this.props.changeTheme((oppositeTheme)); logEvent(LOG_EVENT.CURRENT_VIEW_MODE, oppositeTheme)}}>
-          <View style={{paddingVertical:8, borderRadius:8, elevation:2, borderWidth:1,
+          <View style={{paddingVertical:8, borderRadius:8, borderWidth:1,
             backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
             borderColor:(this.props.theme==='light')?"#f953c6":"#6DD5FA", width:80, justifyContent:'center', alignItems:'center'}}>
             <Text style={{fontFamily:FONTS.RALEWAY_BOLD, fontSize:16,
@@ -135,14 +137,14 @@ class Settings extends Component {
             </Text>
           </View>
         </TouchableOpacity>
-      </View>
+      </SView>
     )
   }
 
   renderUserInfo(){
     return (
-      <View style={{
-        borderRadius:10, padding:5, elevation: 5, 
+      <SView style={{
+        borderRadius:12, padding:5, shadowColor:'#202020',shadowOpacity:0.20,shadowOffset:{width:0,height:7},shadowRadius:5, 
         backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
         paddingHorizontal:10,marginBottom:10}}>
         <View>
@@ -160,14 +162,15 @@ class Settings extends Component {
 
         <Text style={{...styles.TextStyling, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY}}>
         <Text style={{fontSize:16, textDecorationLine:'underline'}}>Favourite Category</Text>: {this.props.fav_category}</Text>
-      </View>
+      </SView>
     )
   }
 
   renderArticlesYouViewedStats(){
     return (
-      <View style={{
-        borderRadius:10, padding:5, elevation: 5, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
+      <SView style={{
+        borderRadius:10, padding:5, shadowColor:'#202020',shadowOpacity:0.20,shadowOffset:{width:0,height:7},shadowRadius:5, 
+        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
         paddingHorizontal:10, marginVertical:10}}>
         <View>
           <Text style={{...styles.SubheadingTextStyle,
@@ -181,14 +184,15 @@ class Settings extends Component {
           <Text style={{fontSize:14}}>Average Rating Given by You</Text>{' :  '}</Text>
           {this.renderRating(this.props.settingsData.average_rating_given)}
         </View>
-      </View>
+      </SView>
     );
   }
 
   renderYourArticlesStats(){
     return (
-      <View style={{
-        borderRadius:10, padding:5, elevation: 5, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
+      <SView style={{
+        borderRadius:10, padding:5, shadowColor:'#202020',shadowOpacity:0.20,shadowOffset:{width:0,height:7},shadowRadius:5, 
+        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
         paddingHorizontal:10, marginVertical:10}}>
         <View>
           <Text style={{...styles.SubheadingTextStyle,
@@ -206,7 +210,7 @@ class Settings extends Component {
           <Text style={{fontSize:14}}>Average Rating</Text>{' :  '}</Text>
           { this.renderRating(this.props.settingsData.average_rating_received)}
         </View>
-      </View>
+      </SView>
     );
   }
 

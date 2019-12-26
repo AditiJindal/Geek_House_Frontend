@@ -25,7 +25,8 @@ import RaisedText from '../components/RaisedText';
 import BottomTab from '../components/BottomTab';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder'
 import { Actions } from 'react-native-router-flux';
-import changeNavigationBarColor from 'react-native-navigation-bar-color'
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import ShadowView from 'react-native-simple-shadow-view';
 import APP_INFO from '../../package.json';
 
 const OVERLAY_WIDTH_PERCENT=75
@@ -377,19 +378,19 @@ class Home extends PureComponent {
   render() {
     if (this.props.showRealAppValue || !this.props.first_login){
       return(
-        <View style={{flex:1, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}>
+      <View style={{flex:1, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}>
         <StatusBar 
           barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
           backgroundColor={this.getStatusBarColor()}/>
         {changeNavigationBarColor(this.getStatusBarColor(), (this.props.theme==='light'))}
-        <View style={{...styles.GeekHouseView,
+        <ShadowView style={{...styles.GeekHouseView,
           backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
           <Text style={{...styles.TextStyle, 
             color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>
             home {APP_INFO.version}
           </Text>
           {this.renderAvatar()}
-        </View>
+        </ShadowView>
         {this.renderOverlay()}
         {this.renderHome()}
         <View style={{bottom:50, height:0}}>
@@ -460,8 +461,11 @@ const styles = StyleSheet.create({
     textAlign:'center'
   },
   GeekHouseView:{
-    elevation:7, 
-    borderRadius:10, 
+    shadowColor:'#202020',
+    shadowOpacity:0.3, 
+    shadowOffset:{width:0,height:10},
+    shadowRadius:8,
+    borderRadius:10,
     margin:8, 
     height:70, 
     justifyContent:'space-between',

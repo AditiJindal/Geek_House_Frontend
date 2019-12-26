@@ -104,7 +104,7 @@ class BottomTab extends Component {
 
   render() {
     return(
-      <SView style={{...styles.BottomTabStyle, shadowColor:COLOR_PALETE[this.state.selectedIcon][1],
+      <SView style={{...styles.BottomTabStyle, shadowColor:'#202020',
         backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
         {this.renderIcon('home','octicon',0)}
         {this.renderIcon('search','feather',1)}
@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
   BottomTabStyle:{
     height:40,
     shadowOpacity: 0.25,
-    shadowRadius: 4,
-    shadowOffset: { height:5},
+    shadowRadius: 2,
+    shadowOffset: { height:2.5},
     justifyContent:'space-around',
     flexDirection:'row',
     alignItems:'center',

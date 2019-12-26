@@ -3,6 +3,7 @@ import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
 import {FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import Typing from '../components/Typing';
 import Image from 'react-native-fast-image';
+import SView from 'react-native-simple-shadow-view'
 
 getInitials = (name) => {
   if (!name){return null}
@@ -41,45 +42,44 @@ const getBadge = (props) => {
 export default ChatPeople = (props) => {
   
   return(
-    <TouchableOpacity style={{...styles.ViewStyling, 
-      backgroundColor:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}} 
-      activeOpacity={1}
-      onPress={() => {props.onPress()}}>
-      <View>
-        <Image
-          source={(props.data.image_url)?{uri:props.data.image_url}:require('../../assets/icons/user.png')}
-          style={{height:36, width:36, borderRadius:18}}
-        />
-        {getBadge(props)}
-      </View>
-      
-      <View style={{marginHorizontal:10, justifyContent:'center', alignItems:'center'}}>
-        <Text style={{...styles.TextStyle, 
-          color:(props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.DARK}}>
-          {props.data.name}
-        </Text>
-        {(props.data.fav_category)?
-        (<Text style={{...styles.IntrestStyle, 
-          color:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LESS_DARK}}>
-          {props.data.fav_category}
-        </Text>):
-        <View/>}
-      </View>
+    <TouchableOpacity activeOpacity={1} onPress={() => {props.onPress()}}>
+      <SView style={{...styles.ViewStyling, 
+        backgroundColor:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
+        <View>
+          <Image
+            source={(props.data.image_url)?{uri:props.data.image_url}:require('../../assets/icons/user.png')}
+            style={{height:36, width:36, borderRadius:18}}
+          />
+          {getBadge(props)}
+        </View>
+        
+        <View style={{marginHorizontal:10, justifyContent:'center', alignItems:'center'}}>
+          <Text style={{...styles.TextStyle, 
+            color:(props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.DARK}}>
+            {props.data.name}
+          </Text>
+          {(props.data.fav_category)?
+          (<Text style={{...styles.IntrestStyle, 
+            color:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LESS_DARK}}>
+            {props.data.fav_category}
+          </Text>):
+          <View/>}
+        </View>
 
-      {
-        (props.unread_messages)?
-        (
-          <View style={{...styles.BadgeViewStyle, right: -10 - (props.unread_messages.toString().length*5), 
-            borderColor:(props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.GREEN,
-            backgroundColor:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
-            <Text style={{...styles.BadgeTextStyle, 
-              color:(props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.GREEN}}>
-              {props.unread_messages}
-            </Text>
-          </View>
-        ):<View/>
-      }
-      
+        {
+          (props.unread_messages)?
+          (
+            <View style={{...styles.BadgeViewStyle, right: -10 - (props.unread_messages.toString().length*5), 
+              borderColor:(props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.GREEN,
+              backgroundColor:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
+              <Text style={{...styles.BadgeTextStyle, 
+                color:(props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.GREEN}}>
+                {props.unread_messages}
+              </Text>
+            </View>
+          ):<View/>
+        }
+      </SView>
     </TouchableOpacity>
   );
 }
@@ -91,9 +91,12 @@ const styles = StyleSheet.create({
     alignSelf:'flex-start',
     paddingHorizontal:10,
     paddingVertical:7,
+    shadowColor:'#101010',
+    shadowOpacity:0.25, 
+    shadowOffset:{width:0,height:4},
+    shadowRadius:5,
     margin:10,
     marginRight:80,
-    elevation:4,
     borderRadius:10
   },
   TextStyle:{

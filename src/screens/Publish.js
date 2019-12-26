@@ -10,7 +10,7 @@ import {Icon} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import ArticleTile from '../components/ArticleTile';
 import Loading from '../components/Loading';
-import SView from 'react-native-simple-shadow-view'
+import SView from 'react-native-simple-shadow-view';
 
 class Publish extends Component {
 
@@ -31,20 +31,22 @@ class Publish extends Component {
     return (
       <View style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
         alignItems:'center', flexDirection:'row'}}>
-          <TouchableOpacity onPress={()=>{
-            Actions.replace("imageupload");logEvent(LOG_EVENT.SCREEN_CHANGE, 'imageupload');
-            }} activeOpacity={1}
-            style={{elevation:7, borderRadius:30, padding:10, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
-            marginRight:15, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
-
-            <Icon name="arrow-left" type="material-community" size={26}
-              containerStyle={{height:26, width:26, justifyContent:'center', alignItems:'center'}} 
-              color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}/>
-            <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK, fontFamily:FONTS.RALEWAY,marginHorizontal:3, 
-              fontSize:16, textAlignVertical:'center'}}>
-              upload <Text style={{fontSize:14}}>image</Text>
-            </Text>
-
+          <TouchableOpacity onPress={()=>{Actions.replace("imageupload");logEvent(LOG_EVENT.SCREEN_CHANGE, 'imageupload');}}
+            activeOpacity={0.75}>
+            <SView
+              style={{shadowColor:'#202020',shadowOpacity:0.2, shadowOffset:{width:0,height:7.5},shadowRadius:7, 
+              borderRadius:30, padding:10, 
+              backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
+              marginRight:15, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
+              <Icon name="arrow-left" type="material-community" size={26}
+                containerStyle={{height:26, width:26, justifyContent:'center', alignItems:'center'}} 
+                color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}/>
+              <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK, 
+                fontFamily:FONTS.RALEWAY,marginHorizontal:3, 
+                fontSize:16, textAlignVertical:'center'}}>
+                image <Text style={{fontSize:14}}>upload</Text>
+              </Text>
+            </SView>
           </TouchableOpacity>
           <Text style={{...styles.TextStyle, 
             color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>

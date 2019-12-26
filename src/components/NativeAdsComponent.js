@@ -10,15 +10,15 @@ import {
   TriggerableView, 
   withNativeAd
 } from 'react-native-fbads';
+import SView from 'react-native-simple-shadow-view'
 
 
 
 class NativeAdsComponent extends Component {
   render() {
     return (
-      <View style={{borderWidth:1,
-        borderColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK, 
-        elevation:7,
+      <SView style={{
+        shadowColor:'#202020',shadowOpacity:0.25,shadowOffset:{width:0,height:8},shadowRadius:6,
         backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
         borderRadius:20, margin:15, padding:10}}>
         <View style={{flexDirection:'row', justifyContent:'space-between', paddingHorizontal:5, paddingVertical:3}}>
@@ -55,7 +55,7 @@ class NativeAdsComponent extends Component {
             </Text>
           </TriggerableView>
         </View>
-      </View>
+      </SView>
     );
   }
 }

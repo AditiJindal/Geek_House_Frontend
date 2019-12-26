@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet,  }from 'react-native';
-import {FONTS,COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants'
+import {FONTS,COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
+import SView from 'react-native-simple-shadow-view'
 // import console = require('console');
 
 export default CardView = (props) => {
   return(
-    <View style={{...styles.CardViewStyle, 
+    <SView style={{...styles.CardViewStyle, 
       backgroundColor:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
       <Text style={{...styles.SubHeadingStyle,
         borderColor:(props.theme==='light')?COLORS_LIGHT_THEME.LESS_LIGHT:COLORS_DARK_THEME.GRAY,
@@ -16,13 +17,14 @@ export default CardView = (props) => {
         color:(props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>
         {props.cardData.content}
       </Text>
-    </View>
+    </SView>
   );
 }
 
 const styles = StyleSheet.create({
   CardViewStyle:{
-    elevation:3,
+    shadowColor:'#202020',shadowOpacity:0.25,
+    shadowOffset:{width:0,height:8},shadowRadius:6,
     margin:15,
     marginVertical:10,
     borderRadius:20,

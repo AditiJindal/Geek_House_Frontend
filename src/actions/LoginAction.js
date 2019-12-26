@@ -33,7 +33,7 @@ OneSignal.init("79514e5e-4676-44b7-822e-8941eacb88d0");
 OneSignal.addEventListener('received', (x)=>{console.log("Got this in notif rec: ", x)});
 OneSignal.addEventListener('opened', (x)=>{console.log("Got this in notif open: ", x)});
 OneSignal.getPermissionSubscriptionState((obj)=>
-{console.log(obj);deviceNotificationId = obj.userId;}
+{deviceNotificationId = obj.userId;}
 );
 
 

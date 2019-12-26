@@ -8,6 +8,7 @@ import { Actions } from 'react-native-router-flux';
 import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData} from '../actions/ChatAction';
 import Image from 'react-native-fast-image';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import SView from 'react-native-simple-shadow-view';
 
 class ChatScreen extends Component {
 
@@ -54,10 +55,11 @@ class ChatScreen extends Component {
 
   renderHeader(){
     return (
-      <View style={{elevation:7, borderRadius:10, margin:8, paddingVertical:10,
+      <SView style={{borderRadius:10, margin:8, paddingVertical:10,
         alignItems:'center', flexDirection:'row', 
         backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, 
-        paddingHorizontal:5}}>
+        paddingHorizontal:5, shadowColor:'#202020',
+        shadowOpacity:0.25, shadowOffset:{width:0,height:10},shadowRadius:8,}}>
         <View style={{flexDirection:'row', alignItems:'center'}}>
           <View style={{marginLeft:10}}>
             <Image
@@ -102,7 +104,7 @@ class ChatScreen extends Component {
             <Icon name="close" size={18} color={(this.props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.RED} />
           </TouchableOpacity>
         </View>
-      </View>
+      </SView>
     )
   }
 

@@ -13,6 +13,7 @@ import CustomAlert from '../components/CustomAlert';
 import LinearGradient from 'react-native-linear-gradient';
 import ArticleTile from '../components/ArticleTile';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import SView from 'react-native-simple-shadow-view'
 // import console = require('console');
 
 
@@ -282,7 +283,8 @@ class WriteArticle extends Component {
 
   renderHeader(){
     return (
-      <View style={{elevation:7, borderRadius:10, margin:8, height:70, justifyContent:'space-between',
+      <SView style={{shadowColor:'#202020',shadowOpacity:0.3, shadowOffset:{width:0,height:10},shadowRadius:8, 
+        borderRadius:10, margin:8, height:70, justifyContent:'space-between',
         alignItems:'center', flexDirection:'row', 
         backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, 
         paddingHorizontal:10}}>
@@ -305,7 +307,7 @@ class WriteArticle extends Component {
             placeholderTextColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}
             style={{...styles.TextStyle,color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}
           />
-      </View>
+      </SView>
     )
   }
   
