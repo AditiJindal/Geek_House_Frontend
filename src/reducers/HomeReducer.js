@@ -1,0 +1,39 @@
+import {ACTIONS} from '../actions/types'
+
+const INITIAL_STATE={
+  overlayVisible:false,
+  welcomeData:{},
+  loading:true,
+  error: '',
+  selected_category: '',
+  showRealApp: false
+}
+
+export default (state=INITIAL_STATE, action) => {
+  switch (action.type){
+
+    case ACTIONS.LOGOUT:
+      return {...INITIAL_STATE};
+
+    case ACTIONS.TOGGLE_OVERLAY:
+      return {...state, ...action.payload, error:''};
+
+    case ACTIONS.WELCOME:
+      return {...state, welcomeData:action.payload, loading:false, error:''}
+    
+    case ACTIONS.HOME_ERROR:
+      return {...state, error:action.payload, loading:false}
+
+    case ACTIONS.HOME_LOADING:
+      return {...state, loading:true, error:''}
+
+    case ACTIONS.HOME_CHANGE_CATEGORY:
+      return {...state, selected_category:action.payload}
+
+    case ACTIONS.HOME_SHOW_REAL_APP:
+      return {...state, showRealApp:true}
+
+    default:
+      return state;
+  }
+}
