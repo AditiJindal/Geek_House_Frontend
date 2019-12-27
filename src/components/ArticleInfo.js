@@ -173,7 +173,8 @@ class ArticleInfo extends PureComponent {
           marginLeft:15}}>Comments</Text>
 
         <View style={{
-              backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, elevation:3,
+              backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, 
+              borderColor:COLORS_DARK_THEME.GRAY, borderWidth:2,elevation:3,
               borderRadius:20, padding:10, margin:10}}>
           {
             (this.props.selectedArticleInfo.my_article)?

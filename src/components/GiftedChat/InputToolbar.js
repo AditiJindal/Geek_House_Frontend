@@ -1,13 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, View, Keyboard, ViewPropTypes, Text, StatusBar} from 'react-native';
+import { StyleSheet, View, Keyboard, ViewPropTypes, Text, StatusBar, TouchableOpacity} from 'react-native';
 import Composer from './Composer';
+import Image from 'react-native-fast-image';
 import Send from './Send';
 import Actions from './Actions';
 import Color from './Color';
 import {COLORS_DARK_THEME, COLORS_LIGHT_THEME, FONTS} from '../../Constants'
 import Icon from 'react-native-vector-icons/Feather';
 import {Overlay} from 'react-native-elements';
+import ImagePicker from 'react-native-image-picker';
+import ImageResizer from 'react-native-image-resizer';
 
 const getStatusBarColor = (theme, i) => {
     if (i){
@@ -39,12 +42,9 @@ const styles = StyleSheet.create({
         right: 0,
     },
     primary: {
-        flexDirection: 'row',
-        alignItems: 'center',
         margin:10,
         marginTop:0,
         padding:5,
-        backgroundColor:'white',
         elevation:5,
         borderRadius:15
     },
@@ -119,14 +119,50 @@ export default class InputToolbar extends React.Component {
         }
         return null;
     }
-    renderCamera(){
+    getImageResize(imageSize){
+        let resize = {...imageSize}
+        const maxWidth = 2160;
+        const maxHeight = 1080;
+        let ratio = imageSize.width/imageSize.height
+        if (resize.width>maxWidth){
+        resize={width:maxWidth, height:Math.floor(maxWidth/ratio)}
+        }
+        if (resize.height>maxHeight){
+        resize={width:Math.floor(maxHeight*ratio), height:maxHeight}
+        }
+        return resize
+    }
+    handleImage(image){
+        const imageSize = {width:image.width, height:image.height};
+        const resize = this.getImageResize(imageSize);
+        ImageResizer.createResizedImage(image.uri, resize.width, resize.height, "JPEG", 100).then((resizedImage)=>{
+            const aspectRatio = resize.width/resize.height;
+            to_send = {url:resizedImage.uri, height:resize.height, width: resize.width, aspectRatio }
+            this.props.onImageSelect(to_send)
+        })
+        
+    }
+    renderPhotoSelector(){
+        const ImageOptions={
+            noData: true,
+            mediaType:'photo',
+            chooseWhichLibraryTitle: "Select an App"
+        }
         return (
             <View style={{paddingHorizontal:10}}>
                 <Overlay isVisible={this.state.imageSelectorOpen}
                     height="auto" width="auto"
                     overlayStyle={{flexDirection:'row',backgroundColor:'rgba(0,0,0,0)', elevation:0}}
                     onBackdropPress={()=>{this.setState({imageSelectorOpen:false})}}>
-                    <View style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
+                    <TouchableOpacity
+                        onPress={()=>{
+                            this.setState({imageSelectorOpen:false});
+                            ImagePicker.launchImageLibrary(ImageOptions, (response)=>{
+                                this.handleImage(response)
+                            })
+                        }}
+                        activeOpacity={0.8} 
+                        style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
                         backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, marginRight:15}}>
                         <View style={{height:50, justifyContent:'center'}}>
                             <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK,
@@ -142,8 +178,16 @@ export default class InputToolbar extends React.Component {
                                 {`Select from\nGallery`}
                             </Text>
                         </View>
-                    </View>
-                    <View style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={()=>{
+                            this.setState({imageSelectorOpen:false});
+                            ImagePicker.launchCamera(ImageOptions, (response)=>{
+                                this.handleImage(response)
+                            })
+                        }}
+                        activeOpacity={0.8}
+                        style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
                         backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_LIGHT:COLORS_DARK_THEME.LESSER_LIGHT}}>
                         <View style={{height:50, justifyContent:'center'}}>
                             <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK,
@@ -159,7 +203,7 @@ export default class InputToolbar extends React.Component {
                                 {`Click from\nCamera`}
                             </Text>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 </Overlay>
                 <Icon size={22} name="image"
                     onPress={()=>{this.setState({imageSelectorOpen:true})}}
@@ -168,20 +212,39 @@ export default class InputToolbar extends React.Component {
             </View>
         )
     }
+    renderSelectedImage(){
+        const image = this.props.selectedImage;
+        if (image){
+            return (
+                <View style={{flex:1, borderRadius:10, overflow:'hidden', height:100, marginBottom:5}}>
+                    <Image source={{uri:image.url}} style={{flex:1, alignItems:'flex-end'}}>
+                        <Icon size={24} name="x" onPress={()=>{this.props.onImageCross()}}
+                        style={{backgroundColor:this.props.primaryStyle.backgroundColor, position:'relative',
+                        right:-3, top:-3, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LIGHT_GRAY,
+                        borderBottomLeftRadius:15, paddingLeft:2.5, paddingBottom:2.5}}/>
+                    </Image>
+                </View>
+            )
+        }
+    }
     render() {
         return (<View style={[
             styles.container,
             this.props.containerStyle,
             { position: this.state.position },
         ]}>
-        <View style={[styles.primary, this.props.primaryStyle]}>
         <StatusBar 
             barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
             backgroundColor={getStatusBarColor(this.props.theme, this.state.imageSelectorOpen)}/>
-          {this.renderActions()}
-          {this.renderComposer()}
-          {this.renderSend()}
-          {this.renderCamera()}
+            
+        <View style={[styles.primary, this.props.primaryStyle]}>
+            {this.renderSelectedImage()}
+            <View style={{flexDirection:'row', alignItems:'center'}}>
+                {this.renderActions()}
+                {this.renderComposer()}
+                {this.renderSend()}
+                {this.renderPhotoSelector()}
+            </View>
         </View>
         {this.renderAccessory()}
       </View>);

@@ -1,18 +1,23 @@
 import React, {Component} from 'react';
-import { View, Text, StyleSheet, StatusBar, Keyboard, BackHandler, Dimensions, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, StatusBar, Keyboard, BackHandler, TouchableOpacity} from 'react-native';
 import {connect} from 'react-redux';
 import {Icon, Badge} from 'react-native-elements';
 import {FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import {GiftedChat} from '../components/GiftedChat/index';
 import { Actions } from 'react-native-router-flux';
-import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData} from '../actions/ChatAction';
+import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData, setAuthToken} from '../actions/ChatAction';
 import Image from 'react-native-fast-image';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 
 class ChatScreen extends Component {
 
+  state={
+    selectedImage: null
+  }
+
   componentDidMount(){
+    this.props.setAuthToken()
     this.props.checkMessagesObject(this.props.other_user_data._id, this.props.messages);
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>this.keyboardDidShow());
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', ()=>this.keyboardDidHide());
@@ -132,11 +137,16 @@ class ChatScreen extends Component {
                       }}
                     messages={this.props.messages[this.props.other_user_data._id]}
                     onSend={(message) => {
-                      this.props.sendMessage(this.props.socket, message, this.props.other_user_data._id)
+                      this.setState({selectedImage:null});
+                      this.props.sendMessage(this.props.socket, message, 
+                      this.props.other_user_data._id, this.state.selectedImage)
                     }}
                     placeholder="Type to chat..."
                     renderAvatar={null}
                     user={{_id:this.props.authtoken}}
+                    selectedImage = {this.state.selectedImage}
+                    onImageSelect = {(image)=>{this.setState({selectedImage:image})}}
+                    onImageCross = {()=>{this.setState({selectedImage:null})}}
                   />
                 </View>)
             }
@@ -159,7 +169,7 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps, {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData})(ChatScreen);
+export default connect(mapStateToProps, {setAuthToken, sendMessage, checkMessagesObject, sendTyping, clearOtherUserData})(ChatScreen);
 
 const styles = StyleSheet.create({
   TextStyle:{

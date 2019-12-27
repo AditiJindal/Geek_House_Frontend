@@ -45,7 +45,7 @@ export const setImage = (image) => {
   return {type:ACTIONS.SET_IMAGE, payload:image}
 }
 
-const uploadImage = async (resourceData, file) => {
+export const uploadImage = async (resourceData, file) => {
   return new Promise((resolver, rejecter) => {
     const xhr = new XMLHttpRequest();
 

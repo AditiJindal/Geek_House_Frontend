@@ -1,7 +1,8 @@
 import {ACTIONS} from './types';
 import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
 import axios from 'axios';
-import _ from 'lodash'
+import _ from 'lodash';
+import {uploadImage} from './WriteAction';
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
@@ -37,13 +38,32 @@ export const setUserData = (data) => {
   return {type:ACTIONS.SET_CHAT_USER_DATA, payload:data}
 }
 
-export const sendMessage = (socket, message, other_user_id) => {
+export const sendMessage = (socket, message, other_user_id, image) => {
   return (dispatch) => {
-    let message_to_send = {text:"", to:""}
-    message_to_send.text = message[0].text;
-    message_to_send.to = other_user_id;
-    socket.emit('message', message_to_send)
-    dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id}})
+    let message_to_send = {text:"", to:"", image}
+    console.log("auth ", httpClient.defaults.headers.common['Authorization']);
+    if (image){
+      httpClient.get(URLS.imageupload).then((response)=>{
+        console.log("response from sever: ", response)
+        const psu = response.data.url;
+        const pathToImage = image.url;
+        const options = {contentType: "image/jpeg", uploadUrl: psu}
+        uploadImage(options, pathToImage)
+        .then(()=>{
+          image.url = response.data.key;
+          message_to_send.text = message[0].text;
+          message_to_send.to = other_user_id;
+          socket.emit('message', message_to_send)
+          dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id}})
+        })
+      })
+    }
+    else{
+      message_to_send.text = message[0].text;
+      message_to_send.to = other_user_id;
+      socket.emit('message', message_to_send)
+      dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id}})
+    }
   }
 }
 
