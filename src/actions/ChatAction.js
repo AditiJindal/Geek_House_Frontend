@@ -41,10 +41,8 @@ export const setUserData = (data) => {
 export const sendMessage = (socket, message, other_user_id, image) => {
   return (dispatch) => {
     let message_to_send = {text:"", to:"", image}
-    console.log("auth ", httpClient.defaults.headers.common['Authorization']);
     if (image){
       httpClient.get(URLS.imageupload).then((response)=>{
-        console.log("response from sever: ", response)
         const psu = response.data.url;
         const pathToImage = image.url;
         const options = {contentType: "image/jpeg", uploadUrl: psu}

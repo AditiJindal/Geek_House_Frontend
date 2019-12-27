@@ -25,6 +25,7 @@
     "moment": "^2.24.0",
     "patch-package": "^6.2.0",
     "postinstall-postinstall": "^2.0.0",
+    "prettysize": "^2.0.0",
     "react": "16.9.0",
     "react-native": "0.61.5",
     "react-native-card-flip": "^1.0.6",

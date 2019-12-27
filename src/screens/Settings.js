@@ -248,7 +248,7 @@ class Settings extends Component {
     return(
       <View style={{marginVertical:5}}>
         <View style={{flexDirection:'row', alignItems:'center'}}>
-          <Text style={{marginRight:30, fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
+          <Text style={{marginRight:30,marginTop:20, fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
             color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}}>
             Random Animations
           </Text>
@@ -286,8 +286,8 @@ class Settings extends Component {
         {this.renderDropdown()}
         {this.renderArticlesYouViewedStats()}
         {this.renderYourArticlesStats()}
-        {this.renderAnimationSwitch()}
         {this.renderThemeButton()}
+        {this.renderAnimationSwitch()}
         {this.renderLogoutButton()}
       </ScrollView>
     );
@@ -345,7 +345,6 @@ const styles = StyleSheet.create({
   SubheadingTextStyle: {
     fontFamily:FONTS.PRODUCT_SANS_BOLD,
     fontSize:22,
-    marginBottom:10
   },
   TextStyling: {
     fontFamily: FONTS.PRODUCT_SANS,

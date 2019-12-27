@@ -174,9 +174,9 @@ export default class MessageContainer extends React.PureComponent {
     render() {
         if (!this.props.messages ||
             (this.props.messages && this.props.messages.length === 0)) {
-            return <View style={styles.container}/>;
+            return <View style={{flex:1, marginBottom:(this.props.selectedImage)?130:25}}/>;
         }
-        return (<View style={this.props.alignTop ? styles.containerAlignTop : styles.container}>
+        return (<View style={this.props.alignTop ? styles.containerAlignTop : {flex:1, marginBottom:(this.props.selectedImage)?125:25}}>
         {this.state.showScrollBottom && this.props.scrollToBottom
             ? this.renderScrollToBottomWrapper()
             : null}

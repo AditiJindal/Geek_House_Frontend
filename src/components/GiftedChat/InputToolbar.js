@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, View, Keyboard, ViewPropTypes, Text, StatusBar, TouchableOpacity} from 'react-native';
+import { StyleSheet, View, Keyboard, ViewPropTypes, Text, 
+    StatusBar, TouchableOpacity,ImageBackground, Image} from 'react-native';
 import Composer from './Composer';
-import Image from 'react-native-fast-image';
+// import Image from 'react-native-fast-image';
 import Send from './Send';
 import Actions from './Actions';
 import Color from './Color';
@@ -11,6 +12,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import {Overlay} from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
+import prettysize from 'prettysize';
 
 const getStatusBarColor = (theme, i) => {
     if (i){
@@ -57,7 +59,8 @@ export default class InputToolbar extends React.Component {
         super(...arguments);
         this.state = {
             position: 'absolute',
-            imageSelectorOpen: false
+            imageSelectorOpen: false,
+            imageMetaData: {name:"IMG_1776474823.jpg", oldSize:278734, newSize:172637}
         };
         this.keyboardWillShowListener = undefined;
         this.keyboardWillHideListener = undefined;
@@ -80,7 +83,7 @@ export default class InputToolbar extends React.Component {
         this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
         this.keyboardWillHideListener = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
     }
-    componentDidUnmount() {
+    componentWillUnmount() {
         if (this.keyboardWillShowListener) {
             this.keyboardWillShowListener.remove();
         }
@@ -133,14 +136,16 @@ export default class InputToolbar extends React.Component {
         return resize
     }
     handleImage(image){
-        const imageSize = {width:image.width, height:image.height};
-        const resize = this.getImageResize(imageSize);
-        ImageResizer.createResizedImage(image.uri, resize.width, resize.height, "JPEG", 100).then((resizedImage)=>{
-            const aspectRatio = resize.width/resize.height;
-            to_send = {url:resizedImage.uri, height:resize.height, width: resize.width, aspectRatio }
-            this.props.onImageSelect(to_send)
-        })
-        
+        if (image.uri){
+            const imageSize = {width:image.width, height:image.height};
+            const resize = this.getImageResize(imageSize);
+            ImageResizer.createResizedImage(image.uri, resize.width, resize.height, "JPEG", 90).then((resizedImage)=>{
+                const aspectRatio = resize.width/resize.height;
+                const to_send = {url:resizedImage.uri, height:resize.height, width: resize.width, aspectRatio }
+                this.setState({imageMetaData:{newSize:resizedImage.size, name: image.fileName}})
+                this.props.onImageSelect(to_send)
+            })
+        }
     }
     renderPhotoSelector(){
         const ImageOptions={
@@ -205,10 +210,12 @@ export default class InputToolbar extends React.Component {
                         </View>
                     </TouchableOpacity>
                 </Overlay>
-                <Icon size={22} name="image"
+                {(!this.state.imageSelectorOpen)?(
+                    <Icon size={22} name="image"
                     onPress={()=>{this.setState({imageSelectorOpen:true})}}
                     color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}
-                />
+                    />
+                ):<View/>}
             </View>
         )
     }
@@ -217,12 +224,23 @@ export default class InputToolbar extends React.Component {
         if (image){
             return (
                 <View style={{flex:1, borderRadius:10, overflow:'hidden', height:100, marginBottom:5}}>
-                    <Image source={{uri:image.url}} style={{flex:1, alignItems:'flex-end'}}>
+                    <ImageBackground blurRadius = {2} 
+                        source={{uri:image.url}} style={{flex:1, alignItems:'flex-end'}}>
                         <Icon size={24} name="x" onPress={()=>{this.props.onImageCross()}}
-                        style={{backgroundColor:this.props.primaryStyle.backgroundColor, position:'relative',
-                        right:-3, top:-3, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LIGHT_GRAY,
-                        borderBottomLeftRadius:15, paddingLeft:2.5, paddingBottom:2.5}}/>
-                    </Image>
+                            style={{backgroundColor:this.props.primaryStyle.backgroundColor, position:'relative',
+                            right:-3, top:-3, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LIGHT_GRAY,
+                            borderBottomLeftRadius:15, paddingLeft:2.5, paddingBottom:2.5}}/>
+                        <View style={{alignSelf:'flex-start', justifyContent:'flex-end', flex:1, padding:5}}>
+                            <Text style={{color:COLORS_DARK_THEME.LESSER_DARK,
+                                fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:8}}>
+                                {this.state.imageMetaData.name}
+                            </Text>
+                            <Text style={{color:COLORS_DARK_THEME.GRAY,
+                                fontFamily:FONTS.PRODUCT_SANS, fontSize:8}}>
+                                After compression size: {prettysize(this.state.imageMetaData.newSize)}
+                            </Text>
+                        </View>
+                    </ImageBackground>
                 </View>
             )
         }
@@ -242,8 +260,8 @@ export default class InputToolbar extends React.Component {
             <View style={{flexDirection:'row', alignItems:'center'}}>
                 {this.renderActions()}
                 {this.renderComposer()}
-                {this.renderSend()}
                 {this.renderPhotoSelector()}
+                {this.renderSend()}
             </View>
         </View>
         {this.renderAccessory()}

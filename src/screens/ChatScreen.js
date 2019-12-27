@@ -127,6 +127,7 @@ class ChatScreen extends Component {
               (this.props.loading)?
                 <Text>LOADING</Text>:
                 (<View style={{flex:1}}>
+                  {console.log(this.props.messages[this.props.other_user_data._id])}
                   <GiftedChat
                     theme={this.props.theme}
                     containerStyle={{backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}
@@ -143,10 +144,12 @@ class ChatScreen extends Component {
                     }}
                     placeholder="Type to chat..."
                     renderAvatar={null}
+                    alwaysShowSend
                     user={{_id:this.props.authtoken}}
                     selectedImage = {this.state.selectedImage}
                     onImageSelect = {(image)=>{this.setState({selectedImage:image})}}
                     onImageCross = {()=>{this.setState({selectedImage:null})}}
+                    image_adder={this.props.image_adder}
                   />
                 </View>)
             }
@@ -159,6 +162,7 @@ class ChatScreen extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    image_adder:state.home.image_adder,
     loading: state.chat.loading,
     authtoken: state.login.authtoken,
     other_user_data: state.chat.other_user_data,

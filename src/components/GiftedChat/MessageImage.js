@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { StyleSheet, View, ViewPropTypes, Dimensions, } from 'react-native';
-import Image from 'react-native-fast-image';
+import { StyleSheet, View, ViewPropTypes, Dimensions, Image} from 'react-native';
+// import Image from 'react-native-fast-image';
 
 // @ts-ignore
 import Lightbox from 'react-native-lightbox';
@@ -23,16 +23,22 @@ export default class MessageImage extends Component {
     render() {
         let screenWidth = Dimensions.get('window').width;
         const { containerStyle, lightboxProps, imageProps, imageStyle, currentMessage, } = this.props;
-        if (!!currentMessage) {
+        let image_url = currentMessage.image.url
+        if (image_url.substring(0,4) !== 'http'){
+            image_url = this.props.image_adder + currentMessage.image.url
+        }
+
+        if (currentMessage.hasOwnProperty('image') && currentMessage.image) {
             return (<View style={[styles.container, containerStyle]}>
-          <Lightbox activeProps={{
+          <Lightbox 
+            springConfig = {{tension:500,friction:500}} 
+            activeProps={{
                 style: styles.imageActive,
                 height: screenWidth/currentMessage.image.aspectRatio,
                 width: screenWidth,
-
             }} {...lightboxProps}>
             <Image {...imageProps} style={{...styles.image, ...imageStyle, height:150/currentMessage.image.aspectRatio}} 
-                source={{ uri: currentMessage.image.url }}/>
+                source={{ uri: image_url }}/>
           </Lightbox>
         </View>);
         }
