@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Text, Clipboard, StyleSheet, TouchableWithoutFeedback, View, ViewPropTypes, } from 'react-native';
+import { Text, Clipboard, StyleSheet, TouchableWithoutFeedback, View, ViewPropTypes } from 'react-native';
 import QuickReplies from './QuickReplies';
 import MessageText from './MessageText';
 import MessageImage from './MessageImage';
@@ -100,19 +100,8 @@ export default class Bubble extends React.Component {
                 const options = optionTitles && optionTitles.length > 0
                     ? optionTitles.slice(0, 2)
                     : DEFAULT_OPTION_TITLES;
-                const cancelButtonIndex = options.length - 1;
-                this.context.actionSheet().showActionSheetWithOptions({
-                    options,
-                    cancelButtonIndex,
-                }, (buttonIndex) => {
-                    switch (buttonIndex) {
-                        case 0:
-                            Clipboard.setString(currentMessage.text);
-                            break;
-                        default:
-                            break;
-                    }
-                });
+                Clipboard.setString(currentMessage.text);
+                this.props.showTimedAlert(2000, 'Text copied to clipboard');
             }
         };
     }

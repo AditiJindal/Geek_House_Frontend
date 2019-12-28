@@ -1,10 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { StyleSheet, View, ViewPropTypes, Dimensions, Image} from 'react-native';
+import { StyleSheet, View, ViewPropTypes, Dimensions, TouchableOpacity,StatusBar, Image} from 'react-native';
+import Icon from 'react-native-vector-icons/Feather'
 // import Image from 'react-native-fast-image';
+import RNFileSystem from 'react-native-fs';
 
 // @ts-ignore
-import Lightbox from 'react-native-lightbox';
+ 
+import { Overlay,} from 'react-native-elements';
+import ImageZoom from 'react-native-image-pan-zoom';
+import { COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../../Constants';
+
 const styles = StyleSheet.create({
     container: {},
     image: {
@@ -20,27 +26,98 @@ const styles = StyleSheet.create({
 });
 export default class MessageImage extends Component {
     // aspect ratio is width/height
+    state={
+        imageViewerActive: false
+    }
+
+    getImageShowDimenstions(imageWidth, aspectRatio){
+        let {height, width} = Dimensions.get('screen');
+        height=height-30; width=width-30;
+        let showWidth = width;
+        if (width<width){
+            showWidth = imageWidth;
+        }
+        let showHeight = showWidth/aspectRatio;
+        if (showHeight>height){
+            showHeight = height;
+            showWidth = showHeight*aspectRatio;
+        }
+        return {showHeight, showWidth}
+    }
+
+    async saveFileToGallery(image_url, name){
+        const folder = RNFileSystem.ExternalStorageDirectoryPath+"/GeekHouse/";
+        const file_path = `${folder}${name}.jpg`
+        const exists = await RNFileSystem.exists(file_path)
+        this.props.showTimedAlert(2000, 'Saving image...');
+
+        if (!exists){
+
+            await RNFileSystem.mkdir(folder);
+            await RNFileSystem.downloadFile({
+                fromUrl:image_url,
+                toFile: file_path,
+                background:true,discretionary:true, cacheable:true,
+            }).promise
+            this.props.showTimedAlert(3000, 'Image Saved');
+            
+        }
+        else{
+            this.props.showTimedAlert(3000, 'Image already saved');
+        }
+        
+    }
+
     render() {
-        let screenWidth = Dimensions.get('window').width;
-        const { containerStyle, lightboxProps, imageProps, imageStyle, currentMessage, } = this.props;
+        const { containerStyle, imageProps, imageStyle, currentMessage, } = this.props;
         let image_url = currentMessage.image.url
+        const {width, aspectRatio} = currentMessage.image;
         if (image_url.substring(0,4) !== 'http'){
             image_url = this.props.image_adder + currentMessage.image.url
         }
+        
+        const {showHeight,showWidth} = this.getImageShowDimenstions(width, aspectRatio);
 
         if (currentMessage.hasOwnProperty('image') && currentMessage.image) {
-            return (<View style={[styles.container, containerStyle]}>
-          <Lightbox 
-            springConfig = {{tension:500,friction:500}} 
-            activeProps={{
-                style: styles.imageActive,
-                height: screenWidth/currentMessage.image.aspectRatio,
-                width: screenWidth,
-            }} {...lightboxProps}>
-            <Image {...imageProps} style={{...styles.image, ...imageStyle, height:150/currentMessage.image.aspectRatio}} 
-                source={{ uri: image_url }}/>
-          </Lightbox>
-        </View>);
+            return (
+        <View style={[styles.container, containerStyle]}>
+            <TouchableOpacity
+                onLongPress={()=>{this.saveFileToGallery(image_url, currentMessage.image.name)}}
+                delayLongPress={1200}
+                onPress={()=>{this.props.onViewerSelect(true);this.setState({imageViewerActive:true})}}>
+                <Image {...imageProps} style={{...styles.image, ...imageStyle, height:150/currentMessage.image.aspectRatio}} 
+                    source={{ uri: image_url, cache:'cacheOnly' }}/>
+            </TouchableOpacity>
+            <Overlay isVisible={this.state.imageViewerActive} height="100%" width="100%"
+                onRequestClose={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
+                overlayBackgroundColor={"rgba(0,0,0,0)"}
+                containerStyle={{padding:0, margin:0, elevation:0}}>
+                <StatusBar 
+                    barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
+                    backgroundColor={(this.props.theme==='light')?
+                    COLORS_LIGHT_THEME.OVERLAY_COLOR:COLORS_DARK_THEME.OVERLAY_COLOR}
+                />
+                <TouchableOpacity style={{flex:1, justifyContent:'center', alignItems:'center'}}
+                    onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}} activeOpacity={1}>
+                    
+                    <TouchableOpacity activeOpacity={1}>
+                        <Icon name="x-circle" size={22} 
+                            color={(this.props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.RED} 
+                            onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
+                            style={{padding:10, zIndex:10, top:5, right:5, position:'absolute'}}
+                        />
+                        <ImageZoom  imageHeight={showHeight} imageWidth={showWidth}
+                            cropHeight={showHeight} cropWidth={showWidth}  
+                            style={{backgroundColor:'rgba(0,0,0,0.75)', borderRadius:15, overflow:'hidden'}}
+                            enableSwipeDown={true}
+                            onSwipeDown ={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}>
+                            <Image source={{uri:image_url}} style={{height:showHeight, width:showWidth}}/>
+                        </ImageZoom>
+                    </TouchableOpacity>
+                </TouchableOpacity>
+            </Overlay>
+        </View>
+            );
         }
         return null;
     }

@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet, StatusBar, Keyboard, BackHandler, TouchableOpacity} from 'react-native';
 import {connect} from 'react-redux';
-import {Icon, Badge} from 'react-native-elements';
+import {Badge} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather'
 import {FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import {GiftedChat} from '../components/GiftedChat/index';
 import { Actions } from 'react-native-router-flux';
@@ -9,11 +10,13 @@ import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData, setAut
 import Image from 'react-native-fast-image';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
+import TimedAlert from '../components/TimedAlert';
 
 class ChatScreen extends Component {
 
   state={
-    selectedImage: null
+    selectedImage: null,
+    imageViewerSelected: false
   }
 
   componentDidMount(){
@@ -99,15 +102,14 @@ class ChatScreen extends Component {
               {this.props.other_user_data.fav_category}
             </Text>):<View/>}
           </View>
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => {this.props.clearOtherUserData();Actions.pop()}}
-            style={{justifyContent:'center', alignItems:'center', elevation:4,borderWidth:2,
-            backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
-            borderColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.RED,
-            borderRadius:100, marginRight:10}}>
-            <Icon name="close" size={18} color={(this.props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.RED} />
-          </TouchableOpacity>
+          {(!this.state.imageViewerSelected)?(
+            <View style={{height:32, width:48, justifyContent:'center', alignItems:'center'}}>
+              <Icon name="x-circle" size={22} 
+                color={(this.props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.RED} 
+                onPress={() => {this.props.clearOtherUserData();Actions.pop()}}
+              />
+            </View>
+          ):<View style={{height:32, width:48}}/>}
         </View>
       </SView>
     )
@@ -123,11 +125,11 @@ class ChatScreen extends Component {
           />
           {changeNavigationBarColor((this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT, (this.props.theme==='light'))}
           {this.renderHeader()}
+          <TimedAlert onRef={ref=>this.timedAlert = ref} theme={this.props.theme}/>
             {
               (this.props.loading)?
                 <Text>LOADING</Text>:
                 (<View style={{flex:1}}>
-                  {console.log(this.props.messages[this.props.other_user_data._id])}
                   <GiftedChat
                     theme={this.props.theme}
                     containerStyle={{backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}
@@ -145,11 +147,15 @@ class ChatScreen extends Component {
                     placeholder="Type to chat..."
                     renderAvatar={null}
                     alwaysShowSend
+                    showTimedAlert = {(duration, message)=>{
+                      this.timedAlert.showAlert(duration, message)
+                    }}
                     user={{_id:this.props.authtoken}}
                     selectedImage = {this.state.selectedImage}
                     onImageSelect = {(image)=>{this.setState({selectedImage:image})}}
                     onImageCross = {()=>{this.setState({selectedImage:null})}}
                     image_adder={this.props.image_adder}
+                    onViewerSelect = {(value)=>{this.setState({imageViewerSelected:value})}}
                   />
                 </View>)
             }

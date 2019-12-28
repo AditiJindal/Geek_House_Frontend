@@ -17,23 +17,13 @@ import OneSignal from 'react-native-onesignal';
 // import { Notifications } from 'expo';
 
 
-const id = "Chat"
-const channel = {
-  name: "Chat",
-  description: "Chat notifications in Geek House",
-  sound: true,
-  priority: "high",
-  vibrate: "[ 0, 5000 ]",
-  badge: true
-}
-
 var deviceNotificationId = null; 
 
 OneSignal.init("79514e5e-4676-44b7-822e-8941eacb88d0");
-OneSignal.addEventListener('received', (x)=>{console.log("Got this in notif rec: ", x)});
-OneSignal.addEventListener('opened', (x)=>{console.log("Got this in notif open: ", x)});
+OneSignal.addEventListener('received', ()=>{});
+OneSignal.addEventListener('opened', ()=>{});
 OneSignal.getPermissionSubscriptionState((obj)=>
-{deviceNotificationId = obj.userId;}
+  {deviceNotificationId = obj.userId;}
 );
 
 
@@ -284,6 +274,7 @@ export const loginFacebook = () => {
                     image_url:data.picture.data.url,
                     pushToken:deviceNotificationId
                   }
+                  
                   httpClient.post(URLS.login, new_data).then(
                     (response) => {
                       authtoken = response.data.token

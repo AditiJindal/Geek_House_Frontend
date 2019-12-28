@@ -53,10 +53,7 @@ export default class MessageText extends React.Component {
             }
             else {
                 Linking.canOpenURL(url).then(supported => {
-                    if (!supported) {
-                        console.error('No handler for URL:', url);
-                    }
-                    else {
+                    if (supported) {
                         Linking.openURL(url);
                     }
                 });

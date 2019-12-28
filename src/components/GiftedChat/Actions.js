@@ -30,7 +30,8 @@ export default class Actions extends React.Component {
       </View>);
     }
     render() {
-        return (<TouchableOpacity style={[styles.container, this.props.containerStyle]} onPress={this.props.onPressActionButton || this.onActionsPress}>
+        return (<TouchableOpacity style={[styles.container, this.props.containerStyle]} 
+            onPress={this.props.onPressActionButton || this.onActionsPress}>
         {this.renderIcon()}
       </TouchableOpacity>);
     }

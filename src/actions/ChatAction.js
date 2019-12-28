@@ -49,6 +49,7 @@ export const sendMessage = (socket, message, other_user_id, image) => {
         uploadImage(options, pathToImage)
         .then(()=>{
           image.url = response.data.key;
+          image.name = response.data.file_name
           message_to_send.text = message[0].text;
           message_to_send.to = other_user_id;
           socket.emit('message', message_to_send)

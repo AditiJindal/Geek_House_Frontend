@@ -38,6 +38,10 @@ target 'Geek_House' do
 
   pod 'react-native-onesignal', :path => '../node_modules/react-native-onesignal'
 
+  pod 'RNFS', :path => '../node_modules/react-native-fs'
+
+  pod 'react-native-document-picker', :path => '../node_modules/react-native-document-picker'
+
   target 'Geek_HouseTests' do
     inherit! :search_paths
     # Pods for testing
