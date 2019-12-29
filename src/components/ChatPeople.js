@@ -40,15 +40,19 @@ const getBadge = (props) => {
 }
 
 export default ChatPeople = (props) => {
+  let IMAGE_SIZE = 36;
+  if (props.chatPeopleSearch){
+    IMAGE_SIZE = 48
+  }
   
   return(
     <TouchableOpacity activeOpacity={1} onPress={() => {props.onPress()}}>
-      <SView style={{...styles.ViewStyling, 
+      <SView style={{...styles.ViewStyling, borderRadius:IMAGE_SIZE/4,
         backgroundColor:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
         <View>
           <Image
             source={(props.data.image_url)?{uri:props.data.image_url}:require('../../assets/icons/user.png')}
-            style={{height:36, width:36, borderRadius:18}}
+            style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE/2}}
           />
           {getBadge(props)}
         </View>
@@ -64,6 +68,12 @@ export default ChatPeople = (props) => {
             {props.data.fav_category}
           </Text>):
           <View/>}
+          {(props.data.email)?(
+            <Text style={{...styles.IntrestStyle, 
+            color:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LESS_DARK}}>
+              {props.data.email}
+            </Text>
+          ):<View/>}
         </View>
 
         {
@@ -97,7 +107,6 @@ const styles = StyleSheet.create({
     shadowRadius:5,
     margin:10,
     marginRight:80,
-    borderRadius:10
   },
   TextStyle:{
     fontSize:18,

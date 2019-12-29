@@ -18,7 +18,8 @@ import {Dropdown} from '../components/Dropdown';
 import LottieView from 'lottie-react-native'
 import AppIntroSlider from '../components/AppIntroSlider/AppIntroSlider';
 import ArticleTile from '../components/ArticleTile';
-import {Overlay,Icon} from 'react-native-elements';
+import {Overlay} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import {FONTS,COLORS_LIGHT_THEME, COLORS_DARK_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
@@ -146,25 +147,50 @@ class Home extends PureComponent {
               {this.props.data.name}
             </Text>
           </View>
-          <View style={{justifyContent:'space-around', flexDirection:'row'}}>
-            <TouchableOpacity
-              onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('settings'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'settings');}}
-              style={{marginTop:15, elevation:3, justifyContent:'space-between',
-              justifyContent:'center', alignItems:'center', flexDirection:'row', 
-              backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, alignSelf:'flex-end', padding:8, borderRadius:10}}
-            >
-              <Icon name="settings" type="feather" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={28}/>
-              <Text style={{...styles.LogoutButtonTextStyle, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>settings</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('about'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'about');}}
-              style={{marginTop:15, elevation:3, justifyContent:'space-between',
-              justifyContent:'center', alignItems:'center', flexDirection:'row', 
-              backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, alignSelf:'flex-end', padding:8, borderRadius:10}}
-            >
-              <Icon name="user" type="feather" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={28}/>
-              <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>about us</Text>
-            </TouchableOpacity>
+          <View>
+            <View style={{justifyContent:'space-around', flexDirection:'row'}}>
+              <TouchableOpacity
+                onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('settings'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'settings');}}
+                style={{marginTop:15, elevation:3, justifyContent:'space-between',
+                justifyContent:'center', alignItems:'center', flexDirection:'row', 
+                backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, alignSelf:'flex-end', padding:8, borderRadius:10}}
+              >
+                <Icon name="settings" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={28}/>
+                <Text style={{...styles.LogoutButtonTextStyle, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>settings</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('about'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'about');}}
+                style={{marginTop:15, elevation:3, justifyContent:'space-between',
+                justifyContent:'center', alignItems:'center', flexDirection:'row', 
+                backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, alignSelf:'flex-end', padding:8, borderRadius:10}}
+              >
+                <Icon name="user" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={28}/>
+                <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>about us</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{justifyContent:'space-around', flexDirection:'row'}}>
+              <TouchableOpacity
+                onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('feedback'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');}}
+                style={{marginTop:15, elevation:3, justifyContent:'space-between',flex:1,margin:10,
+                justifyContent:'center', alignItems:'center', flexDirection:'row', 
+                backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, padding:8, borderRadius:10}}
+              >
+                <Icon name="message-square" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={22}/>
+                <Text style={{...styles.LogoutButtonTextStyle, fontSize:14,
+                  color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>feedback</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('about'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'about');}}
+                style={{marginTop:15, elevation:3, justifyContent:'space-between',flex:1, margin:10,marginLeft:12,
+                justifyContent:'center', alignItems:'center', flexDirection:'row', 
+                backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, padding:8, borderRadius:10}}
+              >
+                <Icon name="share-2" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={24}/>
+                <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>
+                  about us
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Overlay>

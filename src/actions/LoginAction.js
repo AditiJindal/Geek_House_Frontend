@@ -124,7 +124,6 @@ const makeConnection = async (json_data, dispatch) => {
   });
 
   socket.on('chat_people', (data)=> {
-    // console.log('Got data: ', data)
     dispatch({type:ACTIONS.GET_CHAT_PEOPLE, payload:data});
   });
 

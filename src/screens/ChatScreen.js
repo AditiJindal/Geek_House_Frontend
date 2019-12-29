@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
-import { View, Text, StyleSheet, StatusBar, Keyboard, BackHandler, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, StatusBar, Keyboard, BackHandler} from 'react-native';
 import {connect} from 'react-redux';
 import {Badge} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Feather'
 import {FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import {GiftedChat} from '../components/GiftedChat/index';
 import { Actions } from 'react-native-router-flux';
-import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData, setAuthToken} from '../actions/ChatAction';
+import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData, setAuthToken,
+  getChatPeopleExplicitly} from '../actions/ChatAction';
 import Image from 'react-native-fast-image';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
@@ -20,12 +21,15 @@ class ChatScreen extends Component {
   }
 
   componentDidMount(){
-    this.props.setAuthToken()
+    this.props.setAuthToken();
     this.props.checkMessagesObject(this.props.other_user_data._id, this.props.messages);
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>this.keyboardDidShow());
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', ()=>this.keyboardDidHide());
     BackHandler.addEventListener('hardwareBackPress', ()=>{
       if (Actions.currentScene==="chatscreen"){
+        if (this.props.other_user_data.newEntry){
+          this.props.getChatPeopleExplicitly()
+        }
         this.props.clearOtherUserData();
       };
     });
@@ -41,6 +45,11 @@ class ChatScreen extends Component {
 
   renderStatus(status){
     let jsx = <View/>
+
+    if (this.props.other_user_data.newEntry){
+      return <Text/>
+    }
+
     if (status.typing){
       jsx = 
       (<Text style={{color: (this.props.theme==='light')?COLORS_LIGHT_THEME.YELLOW:COLORS_DARK_THEME.YELLOW}}>
@@ -79,7 +88,7 @@ class ChatScreen extends Component {
               style={{height:48, width:48, borderRadius:24}}
             />
             {
-              (this.props.status[this.props.other_user_data._id].online)?
+              (!this.props.other_user_data.newEntry && this.props.status[this.props.other_user_data._id].online)?
               (
                 <Badge
                   status="success"
@@ -106,7 +115,13 @@ class ChatScreen extends Component {
             <View style={{height:32, width:48, justifyContent:'center', alignItems:'center'}}>
               <Icon name="x-circle" size={22} 
                 color={(this.props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.RED} 
-                onPress={() => {this.props.clearOtherUserData();Actions.pop()}}
+                onPress={() => {
+                  if (this.props.other_user_data.newEntry){
+                    this.props.getChatPeopleExplicitly()
+                  }
+                  this.props.clearOtherUserData();
+                  Actions.pop()
+                }}
               />
             </View>
           ):<View style={{height:32, width:48}}/>}
@@ -179,7 +194,8 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps, {setAuthToken, sendMessage, checkMessagesObject, sendTyping, clearOtherUserData})(ChatScreen);
+export default connect(mapStateToProps, {setAuthToken, sendMessage, getChatPeopleExplicitly,
+  checkMessagesObject, sendTyping, clearOtherUserData})(ChatScreen);
 
 const styles = StyleSheet.create({
   TextStyle:{

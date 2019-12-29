@@ -85,7 +85,8 @@ export const URLS = {
   imageupload: '/api/article/image_upload/',
   comment: '/api/comment/',
   setcategory: '/api/setcategory/',
-  logevent: '/api/logevent/'
+  logevent: '/api/logevent/',
+  chatpeoplesearch: '/api/chatpeoplesearch/'
 }
 
 export const FONTS = {

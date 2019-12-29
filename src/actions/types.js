@@ -55,6 +55,8 @@ export const ACTIONS={
     CHAT_CLEAR_OTHER_USER: 'chat.clear_other_user',
     CHAT_SAVE_DATA: 'chat.save_data',
     CHAT_LOAD_DATA: 'chat.load_data',
+    CHAT_AUTH_TOKEN_SET:'chat.auth_token.set',
+    CHAT_PEOPLE_SEARCH: 'chat.people_search',
 
     // SETTINGS
     SETTINGS_LOADING: 'settings.loading',

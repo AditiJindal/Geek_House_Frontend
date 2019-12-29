@@ -236,9 +236,9 @@ class Search extends Component {
       <ScrollView style={{flex:1}}
       refreshControl={
         <RefreshControl onRefresh={()=>{this.props.getPopularSearches()}}
-          refreshing={this.props.loading}
           colors={["rgb(0,181, 213)"]}
-      />
+          refreshing={false}
+        />
       }
       >
         {this.renderSearchSettings()}

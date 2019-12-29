@@ -15,7 +15,7 @@ export const setAuthToken = () => {
   return (dispatch, getState) => {
     const state = getState();
     httpClient.defaults.headers.common['Authorization'] = state.login.authtoken;
-    dispatch({type:null})
+    dispatch({type:ACTIONS.CHAT_AUTH_TOKEN_SET})
   }
 }
 
@@ -66,6 +66,20 @@ export const sendMessage = (socket, message, other_user_id, image) => {
   }
 }
 
+export const chatPeopleSearchAction = (value) => {
+  return (dispatch)=>{
+    if (!value){
+      dispatch({type:ACTIONS.CHAT_PEOPLE_SEARCH, payload:null})
+    }
+    else{
+      dispatch({type:ACTIONS.CHAT_LOADING})
+      httpClient.get(URLS.chatpeoplesearch, {params:{value}}).then((response)=>{
+        dispatch({type:ACTIONS.CHAT_PEOPLE_SEARCH, payload: response.data.chatPeopleSearch});
+      })
+    }
+  }
+}
+
 export const logEvent = (eventType, data) => {
   socket.emit('log_event', {eventType,data});
 }
@@ -73,6 +87,12 @@ export const logEvent = (eventType, data) => {
 export const sendTyping = (socket, value,other_user_id) => {
   socket.emit('typing', {to:other_user_id, value} );
   return {type:null}
+}
+
+export const getChatPeopleExplicitly = () => {
+  console.log("Explocitly called")
+  socket.emit('chat_people_explicitly');
+  return {type:ACTIONS.CHAT_LOADING}
 }
 
 export const checkMessagesObject = (other_user_id, messages) => {

@@ -15,7 +15,10 @@ const INITIAL_STATE={
   loaded_from_storage: false,
   user_id: "",
   theme: "light",
-  animationOn:true
+  animationOn:true,
+  chatPeopleSearchLoading:false,
+  authTokenSet: false,
+  chatPeopleSearch:null
 }
 
 const incomingMessageConverter = (data) => {
@@ -80,6 +83,9 @@ export default (state=INITIAL_STATE, action) => {
     case ACTIONS.GOT_CHAT_MESSAGE:
       return {...state}
 
+    case ACTIONS.CHAT_AUTH_TOKEN_SET:
+      return {...state, authTokenSet:true}
+
     case ACTIONS.CHAT_TYPING:
       new_status = {...state.status};
       if (action.payload.value){
@@ -104,12 +110,18 @@ export default (state=INITIAL_STATE, action) => {
       return {...state, loading:true}
 
     case ACTIONS.SET_CHAT_USER_DATA:
-      new_status = {...state.status};
-      total_unread_messages = state.total_unread_messages - new_status[action.payload._id].unread_messages;
-      new_status[action.payload._id].unread_messages = 0
+      let other_user_data = action.payload;
+      if (new_status.hasOwnProperty(action.payload._id)){
+        total_unread_messages = state.total_unread_messages - new_status[action.payload._id].unread_messages;
+        new_status[action.payload._id].unread_messages = 0
+        other_user_data = {...other_user_data, newEntry: false}
+      }
+      else{
+        total_unread_messages = state.total_unread_messages;
+        other_user_data = {...other_user_data, newEntry: true}
+      }
       new_state = {...state, 
-        other_user_data:action.payload, 
-        status:new_status, total_unread_messages, 
+        other_user_data, total_unread_messages, 
         chatScreenOpen:true,
       };
       saveData(new_state)
@@ -183,6 +195,9 @@ export default (state=INITIAL_STATE, action) => {
       saveData(new_state)
       // console.log("Saving this: ", new_state)
       return new_state
+
+    case ACTIONS.CHAT_PEOPLE_SEARCH:
+      return {...state, chatPeopleSearch:action.payload, loading:false}
 
     default:
       return state;
