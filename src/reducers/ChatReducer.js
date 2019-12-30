@@ -95,6 +95,7 @@ export default (state=INITIAL_STATE, action) => {
       }
       else{
         new_total_typing = state.total_typing - 1
+        if (new_total_typing<0){new_total_typing = 0}
       }
       new_status[action.payload.from].typing = action.payload.value
       return {...state, status: new_status, total_typing: new_total_typing}
@@ -114,6 +115,7 @@ export default (state=INITIAL_STATE, action) => {
     case ACTIONS.SET_CHAT_USER_DATA:
       let other_user_data = action.payload;
       new_status = {...state.status};
+      
 
       if (new_status.hasOwnProperty(action.payload._id)){
         total_unread_messages = state.total_unread_messages - new_status[action.payload._id].unread_messages;
@@ -126,6 +128,7 @@ export default (state=INITIAL_STATE, action) => {
       }
 
       if (total_unread_messages<0){total_unread_messages=0}
+      
       new_state = {...state, status:new_status,
         other_user_data, total_unread_messages, 
         chatScreenOpen:true,
@@ -137,13 +140,18 @@ export default (state=INITIAL_STATE, action) => {
       return new_state
 
     case ACTIONS.GET_CHAT_PEOPLE:
+      // needs to return chats, chatPeople, status and messages
+      // status: {'<other_user_id>': {online:bool, typing:bool, unread_messages:Array}}
+      // messages: {'<other_user_id>': [message_objects]}
+      
       const all_users = action.payload.chats
       new_messages={...state.messages}
+      duplicate_status = {...state.status};
       total_unread_messages = state.total_unread_messages;
       if (state.loaded_from_storage && (Object.keys(state.status).length!==0)){
         status = {...state.status};
         all_users.forEach((item)=>{
-          if (!status[item._id]){
+          if (!status.hasOwnProperty(item._id)){
             status[item._id] = {online:false, typing:false, unread_messages:0}
           }
           (action.payload.allOnline.includes(item._id))?online=true:online=false
@@ -159,7 +167,7 @@ export default (state=INITIAL_STATE, action) => {
       }
 
       action.payload.unread_messages.forEach((item)=>{
-        if (new_messages[item.from]){
+        if (new_messages.hasOwnProperty(item.from)){
           new_messages[item.from] = incomingMessageConverter(item).concat(new_messages[item.from]);
         }
         else{
@@ -170,6 +178,8 @@ export default (state=INITIAL_STATE, action) => {
       });
 
       if (total_unread_messages<0){total_unread_messages=0}
+      if (action.payload.explicitly){status=duplicate_status}
+
       let new_state = {...state, chatPeople:action.payload, chats:action.payload.chats,
         loading:false, status, total_unread_messages, messages:new_messages}
 
@@ -195,6 +205,14 @@ export default (state=INITIAL_STATE, action) => {
       else{
         console.log("HERE 2")
         new_messages[action.payload.other_user_id] = action.payload.message;
+        // state.socket.emit("get_new_entry_data",{id:action.payload.other_user_id});
+
+        new_status[action.payload.other_user_id] = {online: true, typing: false, 
+          unread_messages: 0};
+        // add this users in the chatPeople.chats
+        // new_chats.push(response.entry)
+
+        state.socket.emit("chat_people_explicitly");
       }
 
       if ((action.payload.other_user_id !== state.other_user_data._id) || (!state.chatScreenOpen)){
@@ -202,17 +220,6 @@ export default (state=INITIAL_STATE, action) => {
           console.log("HERE 3")
           new_status[action.payload.other_user_id].unread_messages += 1;
           total_unread_messages+=1;
-        }
-        else{
-          console.log("HERE 4")
-          state.socket.emit("get_new_entry_data",action.payload.other_user_id)
-          .on("get_new_entry_data", (response)=>{
-            new_status[response._id] = {online: false, typing: false, unread_messages: (action.payload.isIncomming)?1:0};
-            total_unread_messages+= ((action.payload.isIncomming)?1:0);
-  
-            // add this users in the chatPeople.chats
-            new_chats.push(response)
-          })
         }
       }
 

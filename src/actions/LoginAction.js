@@ -51,8 +51,11 @@ httpClient.defaults.baseURL = BASE_URL;
 //   }
 // )
 
-// AsyncStorage.removeItem('data')
-// AsyncStorage.removeItem('authtoken')
+
+// COMMENT-OUT THERE 3 LINES
+AsyncStorage.removeItem('data')
+AsyncStorage.removeItem('authtoken')
+AsyncStorage.removeItem('5e08f8fe7554cf1c7c9f17bc')
 
 
 const incomingMessageConverter = (data) => {
@@ -108,18 +111,15 @@ const makeConnection = async (json_data, dispatch) => {
     countryCode: RNLocalize.getCountry(),
     connectionType: 'null'
   }
-  // to_emit={}
-  // console.log("To emit: ", to_emit)
+
   socket.emit('join', to_emit)
 
   socket.on('incoming_message', (data)=>{
-    // dispatch({type:ACTIONS.GOT_CHAT_MESSAGE, payload: data})
     dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:
       {message:incomingMessageConverter(data),other_user_id: data.from, isIncomming:true}})
   });
 
   socket.on('incoming_typing', (data)=>{
-    // // console.log("Incmming typing: ", data)
     dispatch({type:ACTIONS.CHAT_TYPING, payload: data})
   });
 
@@ -128,7 +128,6 @@ const makeConnection = async (json_data, dispatch) => {
   });
 
   socket.on('online', (data)=> {4
-    // console.log("got online: ", data)
     if (data.user_id!==json_data.authtoken){
       dispatch({type:ACTIONS.CHAT_USER_ONLINE, payload: data})
     }
