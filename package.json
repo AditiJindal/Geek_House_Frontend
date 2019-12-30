@@ -1,6 +1,7 @@
 {
   "name": "Geek_House",
-  "version": "0.28",
+  "version": "0.32",
+  "package": "com.tjprodutions.geekhousern",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -47,6 +48,7 @@
     "react-native-material-textfield": "^0.16.1",
     "react-native-navigation-bar-color": "^1.0.0",
     "react-native-onesignal": "^3.6.1",
+    "react-native-permissions": "^2.0.8",
     "react-native-router-flux": "^4.0.6",
     "react-native-shimmer-placeholder": "^1.0.35",
     "react-native-simple-shadow-view": "^1.6.3",

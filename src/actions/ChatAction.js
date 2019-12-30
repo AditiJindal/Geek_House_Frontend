@@ -53,7 +53,7 @@ export const sendMessage = (socket, message, other_user_id, image) => {
           message_to_send.text = message[0].text;
           message_to_send.to = other_user_id;
           socket.emit('message', message_to_send)
-          dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id}})
+          dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id, isIncomming:false}})
         })
       })
     }

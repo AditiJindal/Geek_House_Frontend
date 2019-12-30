@@ -11,6 +11,7 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import ChatPeopleSearch from '../components/ChatPeopleSearch';
 import Loading from '../components/Loading';
+import TimedAlert from '../components/TimedAlert';
 
 class Chat extends Component {
 
@@ -45,8 +46,28 @@ class Chat extends Component {
     );
   };
 
+  showTimedAlert(){
+    if (!this.state.chatPeopleSearchText){
+      this.timedAlert.showAlert(3000, "Please enter some text");
+    }
+  }
+
+  renderHeader(){
+    return (
+      <SView style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
+        alignItems:'center', flexDirection:'row', shadowColor:'#202020',
+        shadowOpacity:0.3, shadowOffset:{width:0,height:10},shadowRadius:8,
+        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, 
+        paddingHorizontal:25}}>
+          <Text style={{...styles.TextStyle, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK }}>
+            chat
+          </Text>
+      </SView>
+    )
+  }
+
   renderChatPeopleDefault(){
-    const DATA = this.props.chatPeople.recents
+    const DATA = this.props.chats
     return (
       <FlatList
         refreshControl = {
@@ -64,13 +85,23 @@ class Chat extends Component {
             theme={this.props.theme} 
             value={this.state.chatPeopleSearchText}
             onTextChange={(value)=>{this.setState({chatPeopleSearchText:value})}}
-            onSearch={()=>{this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
+            onSearch={()=>{this.showTimedAlert()
+            ;this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
           />}
         ListFooterComponent = {
           <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:10, margin:20,
             color:(this.props.theme)?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY}}>
             {`* Long press on an image to save it in gallery\n* Long press on text to copy it to clipboard`}
           </Text>
+        }
+        ListEmptyComponent = {
+          <View style={{flex:1, justifyContent:'center', alignItems:'center', marginBottom:50,
+            padding:40,}}>
+            <Text style={{textAlign:'center',fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:18,
+            color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}}>
+              No one for chat, search people with their email to start chatting
+            </Text>
+          </View>
         }
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => {
@@ -101,7 +132,8 @@ class Chat extends Component {
             theme={this.props.theme} 
             value={this.state.chatPeopleSearchText}
             onTextChange={(value)=>{this.setState({chatPeopleSearchText:value})}}
-            onSearch={()=>{this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
+            onSearch={()=>{this.showTimedAlert();
+            this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
             showSearchResults
             onCancel={()=>{this.setState({chatPeopleSearchText:""}); this.props.chatPeopleSearchAction(null) }}
           />}
@@ -163,15 +195,8 @@ class Chat extends Component {
           backgroundColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}
           barStyle={(this.props.theme==='light')?'dark-content':'light-content'}/>
         {changeNavigationBarColor((this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT, (this.props.theme==='light'))}
-        <SView style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
-          alignItems:'center', flexDirection:'row', shadowColor:'#202020',
-          shadowOpacity:0.3, shadowOffset:{width:0,height:10},shadowRadius:8,
-          backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, 
-          paddingHorizontal:25}}>
-            <Text style={{...styles.TextStyle, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK }}>
-              chat
-            </Text>
-        </SView>
+        <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} />
+        {this.renderHeader()}
         {/* {
           (this.props.loading)?
           this.renderNoChatAvailable():
@@ -196,6 +221,7 @@ const mapStateToProps = (state) => {
   return {
     loading: state.chat.loading,
     chatPeople: state.chat.chatPeople,
+    chats: state.chat.chats,
     status: state.chat.status,
     chatPeopleSearchLoading: state.chat.chatPeopleSearchLoading,
     theme:state.chat.theme,

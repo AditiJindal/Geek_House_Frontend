@@ -6,6 +6,7 @@ const INITIAL_STATE={
   socket: null,
   loading:true,
   chatPeople:{},
+  chats: [],
   messages: {},
   other_user_data: {},
   status: {}, // {"user_id":{online: true, typing: false, unread_messages: 2}}
@@ -60,6 +61,7 @@ export default (state=INITIAL_STATE, action) => {
           // // console.log("setting theme here manually!")
         }        
         
+        if (total_unread_messages<0){total_unread_messages=0}
         new_state = {...state,
           theme: action.payload.theme,
           animationOn: action.payload.animationOn,
@@ -111,6 +113,8 @@ export default (state=INITIAL_STATE, action) => {
 
     case ACTIONS.SET_CHAT_USER_DATA:
       let other_user_data = action.payload;
+      new_status = {...state.status};
+
       if (new_status.hasOwnProperty(action.payload._id)){
         total_unread_messages = state.total_unread_messages - new_status[action.payload._id].unread_messages;
         new_status[action.payload._id].unread_messages = 0
@@ -120,15 +124,20 @@ export default (state=INITIAL_STATE, action) => {
         total_unread_messages = state.total_unread_messages;
         other_user_data = {...other_user_data, newEntry: true}
       }
-      new_state = {...state, 
+
+      if (total_unread_messages<0){total_unread_messages=0}
+      new_state = {...state, status:new_status,
         other_user_data, total_unread_messages, 
         chatScreenOpen:true,
       };
+
+      console.log("SET_CHAT_USER_DATA: ", new_state)
+
       saveData(new_state)
       return new_state
 
     case ACTIONS.GET_CHAT_PEOPLE:
-      const all_users = action.payload.chats.concat(action.payload.recents);
+      const all_users = action.payload.chats
       new_messages={...state.messages}
       total_unread_messages = state.total_unread_messages;
       if (state.loaded_from_storage && (Object.keys(state.status).length!==0)){
@@ -160,26 +169,58 @@ export default (state=INITIAL_STATE, action) => {
         total_unread_messages+=1;        
       });
 
-      saveData(state)
-      return {...state, chatPeople:action.payload, loading:false, status, total_unread_messages, messages:new_messages}
+      if (total_unread_messages<0){total_unread_messages=0}
+      let new_state = {...state, chatPeople:action.payload, chats:action.payload.chats,
+        loading:false, status, total_unread_messages, messages:new_messages}
+
+      console.log("GET_CHAT_PEPOPLE: ", new_state)
+
+      delete action.payload.chats
+
+      saveData(new_state)
+      return new_state
+
 
     case ACTIONS.CHAT_MESSAGE_HANDLER:
       new_messages = {...state.messages};
       new_status = {...state.status};
+      new_chats = [...state.chats]
       total_unread_messages = state.total_unread_messages
-      if (state.messages[action.payload.other_user_id]){
+      
+      if (state.messages.hasOwnProperty(action.payload.other_user_id)){
+        console.log("HERE 1")
         new_messages[action.payload.other_user_id] = action.payload.message
         .concat(state.messages[action.payload.other_user_id]);
       }
       else{
+        console.log("HERE 2")
         new_messages[action.payload.other_user_id] = action.payload.message;
       }
+
       if ((action.payload.other_user_id !== state.other_user_data._id) || (!state.chatScreenOpen)){
-        new_status[action.payload.other_user_id].unread_messages += 1;
-        total_unread_messages+=1;
+        if (new_status.hasOwnProperty(action.payload.other_user_id)){
+          console.log("HERE 3")
+          new_status[action.payload.other_user_id].unread_messages += 1;
+          total_unread_messages+=1;
+        }
+        else{
+          console.log("HERE 4")
+          state.socket.emit("get_new_entry_data",action.payload.other_user_id)
+          .on("get_new_entry_data", (response)=>{
+            new_status[response._id] = {online: false, typing: false, unread_messages: (action.payload.isIncomming)?1:0};
+            total_unread_messages+= ((action.payload.isIncomming)?1:0);
+  
+            // add this users in the chatPeople.chats
+            new_chats.push(response)
+          })
+        }
       }
 
-      new_state = {...state, loading:false, messages:new_messages, status: new_status, total_unread_messages};
+      if (total_unread_messages<0){total_unread_messages=0}
+      new_state = {...state, loading:false, messages:new_messages, chats:new_chats,
+        status: new_status, total_unread_messages};
+      console.log('CHAT_MESSAGE_HANDLER: ', new_state);
+
       saveData(new_state)
       return new_state
 

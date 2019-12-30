@@ -211,7 +211,7 @@ class GiftedChat extends React.Component {
         this.setMessages(messages || []);
         this.setTextFromProp(text);
     }
-    componentDidUnmount() {
+    componentWillUnmount() {
         this.setIsMounted(false);
     }
     componentWillReceiveProps(nextProps = {}) {

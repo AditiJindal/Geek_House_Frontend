@@ -8,6 +8,7 @@ export const COLORS_LIGHT_THEME = {
 
   LIGHT:'#ffffff',
   LESS_LIGHT:'#d2d2d2',
+  MID_LIGHT: "#f3f3f3",
   LESSER_LIGHT:'#fafafa',
 
   GRAY: '#787878',
@@ -37,6 +38,7 @@ export const COLORS_DARK_THEME = {
 
   LIGHT:'#2d2d2d',
   LESS_LIGHT:'#323232',
+  MID_LIGHT: "#3C3C3C",
   LESSER_LIGHT:'#414141',
 
   GRAY: '#b4b4b4',
@@ -86,7 +88,8 @@ export const URLS = {
   comment: '/api/comment/',
   setcategory: '/api/setcategory/',
   logevent: '/api/logevent/',
-  chatpeoplesearch: '/api/chatpeoplesearch/'
+  chatpeoplesearch: '/api/chatpeoplesearch/',
+  feedback: '/api/feedback/'
 }
 
 export const FONTS = {

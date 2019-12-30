@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { StyleSheet, View, ViewPropTypes, Dimensions, TouchableOpacity,StatusBar, Image} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather'
-// import Image from 'react-native-fast-image';
+import { StyleSheet, View, ViewPropTypes, Dimensions,
+    TouchableOpacity,StatusBar, Image} from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
+import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import RNFileSystem from 'react-native-fs';
 
 // @ts-ignore
@@ -49,7 +50,18 @@ export default class MessageImage extends Component {
         const folder = RNFileSystem.ExternalStorageDirectoryPath+"/GeekHouse/";
         const file_path = `${folder}${name}.jpg`
         const exists = await RNFileSystem.exists(file_path)
+        
         this.props.showTimedAlert(2000, 'Saving image...');
+
+
+        const permission = await check(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+        if (permission!==RESULTS.GRANTED){
+            const granted = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+            if (granted!==RESULTS.GRANTED){
+                this.props.showTimedAlert(2000, 'Permission not granted');
+                return null
+            }
+        }
 
         if (!exists){
 

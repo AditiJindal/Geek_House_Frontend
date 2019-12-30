@@ -115,7 +115,7 @@ const makeConnection = async (json_data, dispatch) => {
   socket.on('incoming_message', (data)=>{
     // dispatch({type:ACTIONS.GOT_CHAT_MESSAGE, payload: data})
     dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:
-      {message:incomingMessageConverter(data),other_user_id: data.from}})
+      {message:incomingMessageConverter(data),other_user_id: data.from, isIncomming:true}})
   });
 
   socket.on('incoming_typing', (data)=>{

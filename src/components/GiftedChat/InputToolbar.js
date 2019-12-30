@@ -60,7 +60,7 @@ export default class InputToolbar extends React.Component {
         this.state = {
             position: 'absolute',
             imageSelectorOpen: false,
-            imageMetaData: {name:"IMG_1776474823.jpg", oldSize:278734, newSize:172637}
+            imageMetaData: {name:"", oldSize:null, newSize:null}
         };
         this.keyboardWillShowListener = undefined;
         this.keyboardWillHideListener = undefined;

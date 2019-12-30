@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import { View, StyleSheet, Text, StatusBar,
-  FlatList, ScrollView, TouchableNativeFeedback,
+  FlatList, ScrollView, TouchableNativeFeedback,Linking,
   TouchableOpacity}from 'react-native';
 import {connect} from 'react-redux';
 import {
@@ -10,7 +10,7 @@ import {
   setAuthToken,
   changeSelectedCategory,
   sendFavouriteCategory,
-  showRealApp,
+  showRealApp
 } from '../actions';
 import Image from 'react-native-fast-image';
 import {logEvent} from '../actions/ChatAction';
@@ -31,6 +31,7 @@ import ShadowView from 'react-native-simple-shadow-view';
 import APP_INFO from '../../package.json';
 
 const OVERLAY_WIDTH_PERCENT=75
+const GOOGLE_PLAY_URL = `https://play.google.com/store/apps/details?id=${APP_INFO.package}`
 class Home extends PureComponent {
   constructor() {
     super();
@@ -155,7 +156,7 @@ class Home extends PureComponent {
                 justifyContent:'center', alignItems:'center', flexDirection:'row', 
                 backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, alignSelf:'flex-end', padding:8, borderRadius:10}}
               >
-                <Icon name="settings" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={28}/>
+                <Icon name="settings" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={24}/>
                 <Text style={{...styles.LogoutButtonTextStyle, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>settings</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -164,7 +165,7 @@ class Home extends PureComponent {
                 justifyContent:'center', alignItems:'center', flexDirection:'row', 
                 backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, alignSelf:'flex-end', padding:8, borderRadius:10}}
               >
-                <Icon name="user" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={28}/>
+                <Icon name="user" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={24}/>
                 <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>about us</Text>
               </TouchableOpacity>
             </View>
@@ -176,18 +177,18 @@ class Home extends PureComponent {
                 backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, padding:8, borderRadius:10}}
               >
                 <Icon name="message-square" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={22}/>
-                <Text style={{...styles.LogoutButtonTextStyle, fontSize:14,
+                <Text style={{...styles.LogoutButtonTextStyle, fontSize:13,
                   color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>feedback</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('about'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'about');}}
+                onPress={() => {Linking.openURL(GOOGLE_PLAY_URL)}}
                 style={{marginTop:15, elevation:3, justifyContent:'space-between',flex:1, margin:10,marginLeft:12,
                 justifyContent:'center', alignItems:'center', flexDirection:'row', 
                 backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, padding:8, borderRadius:10}}
               >
                 <Icon name="share-2" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={24}/>
                 <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>
-                  about us
+                  share
                 </Text>
               </TouchableOpacity>
             </View>

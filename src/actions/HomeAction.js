@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import {ACTIONS} from './types';
 import {logEvent} from './ChatAction';
+import {uploadImage} from './WriteAction';
 import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import axios from 'axios';
 import {Actions} from 'react-native-router-flux';
@@ -72,4 +73,25 @@ export const sendFavouriteCategory = (selected_category) => {
 
 export const showRealApp = () => {
   return {type:ACTIONS.HOME_SHOW_REAL_APP}
+}
+
+export const submitFeedback = (feedback_obj) => {
+  // this function is responsible for uploading data, 
+  //nothing will be passed to the reducer
+  return (dispatch) => {
+    const local_image_url = feedback_obj.image_url
+    if (local_image_url){
+      httpClient.get(URLS.imageupload).then((response)=>{
+        const preSignedURL = response.data.url;
+        uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, local_image_url)
+        .then(()=>{
+          feedback_obj.image_url = response.data.key;
+          httpClient.post(URLS.feedback, feedback_obj)
+        })
+      })
+    }
+    else{
+      httpClient.post(URLS.feedback, feedback_obj)
+    }
+  }
 }
