@@ -1,4 +1,4 @@
-package com.tjprodutions.geekhousern;
+package com.tjproductions.geekhousern;
 
 import com.facebook.react.ReactActivity;
 

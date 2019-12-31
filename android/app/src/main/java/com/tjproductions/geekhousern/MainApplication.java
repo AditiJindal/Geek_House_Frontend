@@ -1,4 +1,4 @@
-package com.tjprodutions.geekhousern;
+package com.tjproductions.geekhousern;
 
 import android.app.Application;
 import android.content.Context;

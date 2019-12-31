@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:315957273790:android:5237e270eebf04ed34eaef",
         "android_client_info": {
-          "package_name": "com.tjproductions.geekhousern"
+          "package_name": "com.tjprodutions.geekhousern"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "315957273790-ahj65vevte3rv4grq47tjib710otfp8l.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.tjproductions.geekhousern",
+            "package_name": "com.tjprodutions.geekhousern",
             "certificate_hash": "526e1866bbff38179d9a4bc6c3cebe8956558ff9"
           }
         },
