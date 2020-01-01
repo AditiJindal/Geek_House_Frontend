@@ -90,7 +90,6 @@ export const sendTyping = (socket, value,other_user_id) => {
 }
 
 export const getChatPeopleExplicitly = () => {
-  console.log("Explocitly called")
   socket.emit('chat_people_explicitly');
   return {type:ACTIONS.CHAT_LOADING}
 }

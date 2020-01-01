@@ -53,9 +53,9 @@ httpClient.defaults.baseURL = BASE_URL;
 
 
 // COMMENT-OUT THERE 3 LINES
-AsyncStorage.removeItem('data')
-AsyncStorage.removeItem('authtoken')
-AsyncStorage.removeItem('5e08f8fe7554cf1c7c9f17bc')
+// AsyncStorage.removeItem('data')
+// AsyncStorage.removeItem('authtoken')
+// AsyncStorage.removeItem('5e08f8fe7554cf1c7c9f17bc')
 
 
 const incomingMessageConverter = (data) => {
