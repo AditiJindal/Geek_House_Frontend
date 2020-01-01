@@ -7,7 +7,7 @@ import {Icon} from "react-native-elements";
 import BottomTab from '../components/BottomTab';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import {logEvent} from '../actions/ChatAction'
-import {FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME, LOG_EVENT} from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import { Actions } from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -31,15 +31,15 @@ class Write extends Component {
   renderTopics(articles){
     return(
       <FlatList data={articles}
-
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(x) => x.article_id.toString()}
-
         renderItem = {({item}) => {
           return (
             <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5}}>
-              <ArticleTile data={item} theme={this.props.theme}/>
+              <ArticleTile data={item} theme={this.props.theme}
+                COLORS = {this.props.COLORS}
+              />
             </View>
           )
         }}
@@ -49,36 +49,37 @@ class Write extends Component {
 
   renderCategory(){
     const data= this.props.myArticles;
+    const {COLORS} = this.props;
 
     if (this.props.loading){
       return(
         <View style={{width:"100%"}}>
           <ScrollView style={{flex:1}} nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
-            <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} autoRun={true} duration={600} delay={100}
+            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} autoRun={true} duration={600} delay={100}
               style={{height:35, borderRadius:5, marginTop:30, marginLeft:15, alignItems:'center', elevation:6}}
             />
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
-              <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
-              <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
+              <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
+              <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
+              <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
             </ScrollView>
 
-            <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} autoRun={true} duration={650} delay={30}
+            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} autoRun={true} duration={650} delay={30}
               style={{height:35, borderRadius:5, marginTop:30, marginLeft:15, alignItems:'center', elevation:6}}
             />
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
-              <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
-              <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
+              <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
+              <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
+              <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
             </ScrollView>
 
-            <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} autoRun={true} duration={700} delay={0}
+            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} autoRun={true} duration={700} delay={0}
               style={{height:35, borderRadius:5, marginTop:30, marginLeft:15, alignItems:'center', elevation:6}}
             />
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
-              <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
-              <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
+              <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
+              <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
+              <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
             </ScrollView>
           </ScrollView>
         </View>
@@ -98,9 +99,9 @@ class Write extends Component {
                 <View style={{marginTop:25, alignItems:'flex-start', justifyContent:'flex-start'}}>
                   <View style={{flex:1, marginLeft:15 }}>
                     <View style={{borderRadius:5, padding:5, paddingHorizontal:10, borderWidth:2, 
-                      borderColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.GRAY}}>
+                      borderColor:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.GRAY}}>
                       <Text style={{...styles.CategoryTextStyle, 
-                        color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.GRAY}}>{item}</Text>
+                        color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.GRAY}}>{item}</Text>
                     </View>
                   </View>
                   {this.renderTopics(data[item])}
@@ -146,20 +147,21 @@ class Write extends Component {
   }
 
   render() {
+    const {COLORS} = this.props;
     return(
-      <View style={{flex:1,justifyContent:'space-between',backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}>
+      <View style={{flex:1,justifyContent:'space-between',backgroundColor:COLORS.LIGHT}}>
         <StatusBar 
           barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
-          backgroundColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}
+          backgroundColor={COLORS.LIGHT}
         />
-        {changeNavigationBarColor((this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT, (this.props.theme==='light'))}
+        {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
         
         <SView style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
           alignItems:'center', flexDirection:'row', shadowColor:'#202020',shadowOpacity:0.3,
           shadowOffset:{width:0,height:10},shadowRadius:8,
-          backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, paddingHorizontal:25}}>
+          backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, paddingHorizontal:25}}>
             <Text style={{...styles.TextStyle, 
-              color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>
+              color:COLORS.DARK}}>
               my articles
             </Text>
         </SView>
@@ -172,7 +174,7 @@ class Write extends Component {
           (
           <View style={{flex:1, justifyContent:'center', alignItems:'center', marginHorizontal:30, marginBottom:50}}>
             <Text style={{textAlign:'center', fontFamily: FONTS.PRODUCT_SANS_BOLD, fontSize:18, 
-              color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}}>
+              color:COLORS.LESS_DARK}}>
               You have not written any articles, you can start writing one by tapping on the NEW button
             </Text>
           </View>
@@ -197,7 +199,8 @@ const mapStateToProps = (state) =>{
     isDraft: state.write.isDraft,
     reload: state.write.reload,
 
-    theme: state.chat.theme
+    theme: state.chat.theme,
+    COLORS: state.chat.COLORS,
   })
 }
 

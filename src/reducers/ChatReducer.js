@@ -1,6 +1,7 @@
 import {ACTIONS} from '../actions/types';
 import uuid from 'uuid/v4';
 import AsyncStorage from '@react-native-community/async-storage';
+import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants'
 
 const INITIAL_STATE={
   socket: null,
@@ -19,7 +20,8 @@ const INITIAL_STATE={
   animationOn:true,
   chatPeopleSearchLoading:false,
   authTokenSet: false,
-  chatPeopleSearch:null
+  chatPeopleSearch:null,
+  COLORS: COLORS_LIGHT_THEME
 }
 
 const incomingMessageConverter = (data) => {
@@ -50,9 +52,10 @@ export default (state=INITIAL_STATE, action) => {
       return {...state, socket: action.payload}
 
     case ACTIONS.CHAT_LOAD_DATA:
-      // console.log('hello actio payload: ', action.payload)
+
       user_id = action.payload.user_id
-      // // console.log("action.payload: ", action.payload)
+      COLORS = COLORS_DARK_THEME
+
       if (Object.keys(action.payload).length!==1){
         new_messages = {...action.payload.messages};
         total_unread_messages = action.payload.total_unread_messages;
@@ -60,14 +63,19 @@ export default (state=INITIAL_STATE, action) => {
 
         if (!action.payload.theme){
           action.payload.theme=INITIAL_STATE.theme
-          // // console.log("setting theme here manually!")
-        }        
+          COLORS = COLORS_LIGHT_THEME
+        }
+        else{
+          if (action.payload.theme==='light'){
+            COLORS = COLORS_LIGHT_THEME
+          }
+        }
         
         if (total_unread_messages<0){total_unread_messages=0}
         new_state = {...state,
           theme: action.payload.theme,
           animationOn: action.payload.animationOn,
-          user_id, messages:new_messages, 
+          user_id, messages:new_messages, COLORS, 
           total_unread_messages, status:new_status, loaded_from_storage:true}
         saveData(new_state)
         return new_state
@@ -80,7 +88,11 @@ export default (state=INITIAL_STATE, action) => {
       return {...state, messages: action.payload}
 
     case ACTIONS.CHANGE_THEME:
-      new_state = {...state, theme: action.payload}
+      COLORS = COLORS_DARK_THEME;
+      if (action.payload==='light'){
+        COLORS = COLORS_LIGHT_THEME;
+      }
+      new_state = {...state, theme: action.payload, COLORS}
       saveData(new_state) 
       return new_state
 

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import { View, StyleSheet,TouchableOpacity,Text}from 'react-native';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import {logEvent} from '../actions/ChatAction';
 import LinearGradient from 'react-native-linear-gradient';
 import {ICON_SIZE, SELECTED_ICON_SIZE, FONTS,LOG_EVENT, COLORS_DARK_THEME, COLORS_LIGHT_THEME} from '../Constants';
@@ -36,14 +36,15 @@ class BottomTab extends Component {
   }
 
   renderChatBadge(){
+    const {COLORS} = this.props;
     if (this.props.total_typing){
       return (
-        <View style={{...styles.UnreadMessagesBadgeStyle, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.YELLOW:COLORS_DARK_THEME.YELLOW}}/>
+        <View style={{...styles.UnreadMessagesBadgeStyle, backgroundColor:COLORS.YELLOW}}/>
       )
     }
     else if (this.props.total_unread_messages!==0){
       return (
-        <View style={{...styles.UnreadMessagesBadgeStyle, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.GREEN}}>
+        <View style={{...styles.UnreadMessagesBadgeStyle, backgroundColor:COLORS.URM_COLOR}}>
           <Text style={{...styles.UnreadMessagesTextStyle, color:COLORS_LIGHT_THEME.LIGHT}}>{this.props.total_unread_messages}</Text>
         </View>
       )
@@ -53,11 +54,13 @@ class BottomTab extends Component {
     }
   }
 
-  renderChatButton(iconName, iconType){
+  renderChatButton(iconName){
+    const {COLORS} = this.props;
+    
     return (
       <View>
-        <Icon name={iconName} type={iconType} size={ICON_SIZE+4}
-          color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.DARK}/>
+        <Icon name={iconName} size={ICON_SIZE+4}
+          color={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.DARK}/>
         <View style={{position:'absolute', bottom:6, right:4.5}}>
           {(this.props.total_typing!==0)?<Typing size={12} speed={1} theme={this.props.theme}/>:<Typing size={12} speed={0} theme={this.props.theme}/>}
         </View>
@@ -66,7 +69,8 @@ class BottomTab extends Component {
     )
   }
 
-  renderIcon(iconName, iconType, index){
+  renderIcon(iconName, index){
+    const {COLORS} = this.props; 
     if (index !== this.state.selectedIcon){
       return (
         <TouchableOpacity onPress={()=>{
@@ -81,10 +85,10 @@ class BottomTab extends Component {
         style={{height:40, width:SELECTED_ICON_SIZE+22, justifyContent:'center', alignItems:'center'}}>
           {
             (index!==3)?
-            <Icon name={iconName} type={iconType} 
+            <Icon name={iconName}
               size={ICON_SIZE}
-              color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.DARK}/>:
-            this.renderChatButton(iconName, iconType)
+              color={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.DARK}/>:
+            this.renderChatButton(iconName)
           }
         </TouchableOpacity>
       )
@@ -94,7 +98,7 @@ class BottomTab extends Component {
         <LinearGradient style={styles.SelectedIconView}
         colors={COLOR_PALETE[index]}>
         
-          <Icon name={iconName} type={iconType} 
+          <Icon name={iconName}
             size={(index!==3)?SELECTED_ICON_SIZE:SELECTED_ICON_SIZE+4}
             color={COLORS_LIGHT_THEME.LIGHT}/>
         </LinearGradient>
@@ -103,13 +107,14 @@ class BottomTab extends Component {
   }
 
   render() {
+    const {COLORS} = this.props;
     return(
       <SView style={{...styles.BottomTabStyle, shadowColor:'#202020',
-        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
-        {this.renderIcon('home','octicon',0)}
-        {this.renderIcon('search','feather',1)}
-        {this.renderIcon('edit-2','feather',2)}
-        {this.renderIcon('message-circle','feather',3)}
+        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
+        {this.renderIcon('home',0)}
+        {this.renderIcon('search',1)}
+        {this.renderIcon('edit-2',2)}
+        {this.renderIcon('message-circle',3)}
       </SView>
     );
   }
@@ -119,7 +124,8 @@ const mapStateToProps = (state) => {
   return {
     total_typing: state.chat.total_typing,
     total_unread_messages: state.chat.total_unread_messages,
-    theme: state.chat.theme
+    theme: state.chat.theme,
+    COLORS: state.chat.COLORS
   }
 }
 

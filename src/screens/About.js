@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Loading from '../components/Loading';
 import {setAuthToken, getSettingsData} from '../actions/SettingsAction';
 import { Actions } from 'react-native-router-flux';
-import {FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME } from '../Constants';
+import {FONTS} from '../Constants';
 import { Icon } from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
@@ -18,6 +18,7 @@ class Settings extends Component {
 
 
   renderHeader(){
+    const {COLORS} = this.props;
     return (
       <View style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
         marginHorizontal:15,
@@ -29,28 +30,31 @@ class Settings extends Component {
           style={{justifyContent:'center', alignItems:'center',padding:3}}>
           <Icon name="arrow-left" type="material-community" size={26}
             containerStyle={{marginVertical:5, marginRight:15}} 
-            color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}/>
+            color={COLORS.LESS_DARK}/>
         </TouchableOpacity>
 
         <Text style={{...styles.HeadingTextStyling, 
-          color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}}>about</Text>
+        color:COLORS.LESS_DARK}}>
+          about
+        </Text>
       </View>
     )
   }
 
   renderCard(item){
+    const {COLORS} = this.props;
     return (
       <SView style={{
         borderRadius:10, padding:5, marginVertical:5, marginHorizontal:15,
         shadowColor:'#202020',shadowOpacity:0.25,shadowOffset:{width:0,height:8},shadowRadius:6,
-        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
+        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
         paddingHorizontal:10, marginBottom:10}}>
         <View>
-          <Text style={{...styles.SubheadingTextStyle, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}}>{
+          <Text style={{...styles.SubheadingTextStyle, color:COLORS.LESSER_DARK}}>{
             item.heading}
           </Text>
         </View>
-        <Text style={{...styles.TextStyling, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}}>
+        <Text style={{...styles.TextStyling, color:COLORS.LESSER_DARK}}>
           {item.text}
         </Text>
       </SView>
@@ -80,12 +84,12 @@ class Settings extends Component {
   render(){
     return (
       <View style={{flex:1, 
-        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}>
+        backgroundColor:COLORS.LIGHT}}>
         <StatusBar 
           barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
-          backgroundColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}
+          backgroundColor={COLORS.LIGHT}
         />
-        {changeNavigationBarColor((this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT, (this.props.theme==='light'))}
+        {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
         {
           (this.props.loading)?
           (<View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
@@ -105,7 +109,8 @@ const mapStateToProps = (state) => {
     settingsData: state.settings.settingsData,
     loading: state.settings.loading,
 
-    theme: state.chat.theme
+    theme: state.chat.theme,
+    COLORS: state.chat.COLORS
   }
 }
 

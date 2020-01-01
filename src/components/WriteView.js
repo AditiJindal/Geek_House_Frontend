@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { View, StyleSheet, TextInput, TouchableOpacity, Text}from 'react-native';
 import {Icon} from 'react-native-elements';
 import CustomAlert from '../components/CustomAlert';
-import {FONTS, ERROR_MESSAGES, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
+import {FONTS, ERROR_MESSAGES} from '../Constants';
 import SView from 'react-native-simple-shadow-view';
 // import console = require('console');
 
@@ -17,11 +17,13 @@ export default class WriteView extends Component {
   }
 
   render() {
+    const {COLORS} = this.props;
     return(
       <SView style={{...styles.CardViewStyle, 
-        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
+        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
         <CustomAlert
           theme={this.props.theme}
+          COLORS = {COLORS}
           isVisible={this.state.isVisible}
           onFirstButtonPress={() => {this.setState({isVisible:false});this.props.onClose(this.props.index); this.props.onBackdropPress()}}
           onSecondButtonPress={()=>{this.setState({isVisible:false});this.props.onBackdropPress()}}
@@ -30,11 +32,11 @@ export default class WriteView extends Component {
           message = {ERROR_MESSAGES.CONFIRM_WRITE_VIEW_DELETE}
         />
         <View style={{justifyContent:'space-between', flexDirection:'row', alignItems:'center',
-          borderColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_LIGHT:COLORS_DARK_THEME.LIGHT_GRAY,
+          borderColor:(this.props.theme==='light')?COLORS.LESS_LIGHT:COLORS.LIGHT_GRAY,
           borderBottomWidth:0.6, marginHorizontal:10}}>
           <TextInput style={{...styles.SubHeadingStyle, flex:1,
-            color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK,}}
-            placeholderTextColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}
+            color:COLORS.DARK,}}
+            placeholderTextColor={COLORS.LESSER_DARK}
             value={this.props.obj.sub_heading}
             maxLength={128}
             
@@ -47,7 +49,7 @@ export default class WriteView extends Component {
             <TouchableOpacity 
               onPress={() => {this.setState({isVisible:true}); this.props.onClosePressed()}}>
               <Icon size={24} name='close-circle' type='material-community'
-                color={(this.props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.RED}/>          
+                color={COLORS.RED}/>          
             </TouchableOpacity>
         </View>
         
@@ -59,11 +61,11 @@ export default class WriteView extends Component {
           value={this.props.obj.content}
           onChangeText={(value)=>{this.props.onContentChange(value, this.props.index)}}
           textBreakStrategy="highQuality"
-          placeholderTextColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}
-          style={{...styles.ContentStyle, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}} 
+          placeholderTextColor={COLORS.LESSER_DARK}
+          style={{...styles.ContentStyle, color:COLORS.DARK}} 
           placeholder={"Enter something..."}/>
         <Text style={{bottom:10, right:10, position:'absolute', fontFamily:FONTS.PRODUCT_SANS, fontSize:10,
-          color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_LIGHT:COLORS_DARK_THEME.LIGHT_GRAY}}>
+          color:(this.props.theme==='light')?COLORS.LESS_LIGHT:COLORS.LIGHT_GRAY}}>
           Card {this.props.index}
         </Text>
       </SView>

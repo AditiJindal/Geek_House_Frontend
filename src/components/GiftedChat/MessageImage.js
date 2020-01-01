@@ -81,7 +81,7 @@ export default class MessageImage extends Component {
     }
 
     render() {
-        const { containerStyle, imageProps, imageStyle, currentMessage, } = this.props;
+        const { containerStyle, imageProps, imageStyle, currentMessage,COLORS } = this.props;
         let image_url = currentMessage.image.url
         const {width, aspectRatio} = currentMessage.image;
         if (image_url.substring(0,4) !== 'http'){
@@ -106,15 +106,14 @@ export default class MessageImage extends Component {
                 containerStyle={{padding:0, margin:0, elevation:0}}>
                 <StatusBar 
                     barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
-                    backgroundColor={(this.props.theme==='light')?
-                    COLORS_LIGHT_THEME.OVERLAY_COLOR:COLORS_DARK_THEME.OVERLAY_COLOR}
+                    backgroundColor={COLORS.OVERLAY_COLOR}
                 />
                 <TouchableOpacity style={{flex:1, justifyContent:'center', alignItems:'center'}}
                     onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}} activeOpacity={1}>
                     
                     <TouchableOpacity activeOpacity={1}>
                         <Icon name="x-circle" size={22} 
-                            color={(this.props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.RED} 
+                            color={COLORS.RED} 
                             onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
                             style={{padding:10, zIndex:10, top:5, right:5, position:'absolute'}}
                         />

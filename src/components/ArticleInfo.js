@@ -10,7 +10,7 @@ import {Overlay,Icon} from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
 import LinearGradient from 'react-native-linear-gradient';
 import {getArticleInfo, setAuthToken, submitComment} from '../actions/ArticleInfoAction';
-import {FONTS, COLOR_COMBOS,COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
+import {FONTS, COLOR_COMBOS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import CardView from './CardView';
 import Loading from '../components/Loading';
 import {NativeAdsManager, AdSettings} from 'react-native-fbads';
@@ -45,7 +45,7 @@ class ArticleInfo extends PureComponent {
     AdSettings.addTestDevice(AdSettings.currentDeviceHash);
     this.adsManager = new NativeAdsManager('2329203993862500_2500411190075112', 1);
     this.adsManager.setMediaCachePolicy('all');
-    this.adsManager.onAdsLoaded(()=>{console.log("Ad loaded!")})
+    this.adsManager.onAdsLoaded(()=>{})
     if (this.props.article_id!==-1){
       this.props.setAuthToken()
     }
@@ -66,7 +66,9 @@ class ArticleInfo extends PureComponent {
               return (
               <View>
                 {(i===this.state.adIndex)?
-                  <NativeAdsComponent adsManager={this.adsManager} theme={this.props.theme}/>:
+                  <NativeAdsComponent adsManager={this.adsManager} theme={this.props.theme}
+                    COLORS = {this.props.COLORS}
+                  />:
                   <View/>
                 }
                 <CardView 
@@ -93,6 +95,7 @@ class ArticleInfo extends PureComponent {
     if (this.props.selectedArticleInfo.cannotComment){
       return <View/>
     }
+    const {COLORS} = this.props
 
     return (
       <StarRating
@@ -101,9 +104,9 @@ class ArticleInfo extends PureComponent {
         maxStars={5}
         rating={this.state.userCommentRating}
         halfStarEnabled={true}
-        emptyStarColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_LIGHT:COLORS_DARK_THEME.GRAY}
-        halfStarColor={(this.props.theme==='light')?'#f5af19':"rgb(243, 201, 33)"}
-        fullStarColor={(this.props.theme==='light')?'#f5af19':"rgb(243, 201, 33)"}
+        emptyStarColor={(this.props.theme==='light')?COLORS.LESS_LIGHT:COLORS.GRAY}
+        halfStarColor={COLORS.STAR_YELLOW}
+        fullStarColor={COLORS.STAR_YELLOW}
         starSize={28}
         containerStyle={{marginLeft:10, marginTop:5}}
         emptyStar={'star-o'}
@@ -114,17 +117,19 @@ class ArticleInfo extends PureComponent {
   }
 
   renderCommentBox(){
+    const {COLORS} = this.props
+
     return (
       <View>
         <View style={{
-          backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, 
+          backgroundColor:COLORS.LESSER_LIGHT, 
           padding:10, borderRadius:15, marginBottom:15}}>
           <TextInput
             value={this.state.commentText}
             onChangeText={(text)=>{this.setState({commentText:text})}}
             textAlignVertical='top'
             keyboardAppearance="light"
-            placeholderTextColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY}
+            placeholderTextColor={COLORS.GRAY}
             numberOfLines={6}
             maxLength={2048}
             spellCheck={true}
@@ -133,13 +138,14 @@ class ArticleInfo extends PureComponent {
             multiline={true}
             placeholder={"What are your thoughts on this article..."}
             returnKeyType={"done"}
-            style={{fontFamily:FONTS.LATO, fontSize:16, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}
+            style={{fontFamily:FONTS.LATO, fontSize:16, 
+            color:COLORS.DARK}}
           />
           {this.showStarRating()}
           
         </View>
           <TouchableOpacity
-            style={{backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.GREEN:COLORS_DARK_THEME.GREEN, 
+            style={{backgroundColor:COLORS.GREEN, 
               alignSelf:'flex-end', padding:10, borderRadius:30,elevation:7, margin:15}}
             onPress={()=>{this.setState({scrollY: new Animated.Value(0)});this.props.submitComment({
               rating:this.state.userCommentRating,
@@ -160,6 +166,7 @@ class ArticleInfo extends PureComponent {
   }
 
   renderComments(comments){
+    const {COLORS} = this.props;
     if (this.props.selectedArticleInfo.cannotComment){
       // // console.log("here not comment")
       return <View/>
@@ -169,11 +176,11 @@ class ArticleInfo extends PureComponent {
       <View style={{margin:5, marginTop:20}}>
         <Text style={{fontSize:32, 
           fontFamily:FONTS.GOTHAM_BLACK, 
-          color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK, 
+          color:COLORS.LESS_DARK, 
           marginLeft:15}}>Comments</Text>
 
         <View style={{
-              backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, 
+              backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
               borderColor:COLORS_DARK_THEME.GRAY, borderWidth:2,elevation:3,
               borderRadius:20, padding:10, margin:10}}>
           {
@@ -199,20 +206,20 @@ class ArticleInfo extends PureComponent {
                           style={{height:48, width:48, borderRadius:25, marginRight:20}}
                         />
                         <Text style={{fontFamily:FONTS.HELVETICA_NEUE, fontSize:20, textDecorationLine:'underline',
-                          color: (this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}}>
+                          color: COLORS.LESSER_DARK}}>
                           {item.author}
                         </Text>
                       </View>
                       <Text style={{fontFamily:FONTS.HELVETICA_NEUE, textAlign:'justify',
                         fontSize:14, marginTop:10, marginHorizontal:10,
-                        color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}}>
+                        color:COLORS.LESSER_DARK}}>
                         {item.comment}
                       </Text>
                       {
                         (index===comments.length-1)?
                         <View/>:
                         <View style={{width:"100%", height:0.5, marginTop:6, marginBottom:10,
-                          backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_LIGHT:COLORS_DARK_THEME.LESS_LIGHT, borderRadius:1}}/>
+                          backgroundColor:COLORS.LESS_LIGHT, borderRadius:1}}/>
                       }
                     </View>
                   )
@@ -222,9 +229,9 @@ class ArticleInfo extends PureComponent {
             (
               <View style={{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
                 <Icon type='material-community' name="comment-outline" size={18} 
-                  color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}/>
+                  color={COLORS.LESS_DARK}/>
                 <Text style={{fontFamily:FONTS.LATO, fontSize:16, margin:10,
-                  color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}}>
+                  color:COLORS.LESS_DARK}}>
                   {
                     (!this.props.selectedArticleInfo.my_article)?
                     'Be the first to comment':
@@ -258,6 +265,7 @@ class ArticleInfo extends PureComponent {
 
 
   renderArticle(){
+    const {COLORS} = this.props;
     const {author, author_image, cards, 
       category, comments, rating, topic, viewed} = this.props.selectedArticleInfo;
 
@@ -353,7 +361,7 @@ class ArticleInfo extends PureComponent {
               style={{ position: 'absolute', bottom: headerTitleBottom, padding:10 }}
             >
               <Text style={{ 
-                color: (this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT, 
+                color: COLORS.LIGHT, 
                 fontSize:TOPIC_SMALL_SIZE, textAlign:'center',
                 fontFamily:FONTS.HELVETICA_NEUE}}>
                 {this.convertTopic(topic)}
@@ -396,7 +404,7 @@ class ArticleInfo extends PureComponent {
               height: profileImageHeight,
               width: profileImageHeight,
               borderRadius: BORDER_RADIUS,
-              backgroundColor: (this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT,
+              backgroundColor: COLORS.LIGHT,
               overflow: 'hidden',
               marginTop: profileImageMarginTop,
               marginLeft: 10, flexDirection:'row',
@@ -410,7 +418,7 @@ class ArticleInfo extends PureComponent {
                 require('../../assets/icons/user.png')
               }
               style={{ flex: 1, width: profileImageHeight, height:profileImageHeight, 
-              backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT,
+              backgroundColor:COLORS.LIGHT,
               borderRadius:BORDER_RADIUS}}
             />
           </Animated.View>
@@ -450,7 +458,7 @@ class ArticleInfo extends PureComponent {
                   />
                   <Text style={{marginLeft:10, fontSize:14, 
                     fontFamily:FONTS.HELVETICA_NEUE, 
-                      color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LIGHT_GRAY}}>
+                      color:COLORS.LIGHT_GRAY}}>
                     {rating}/5
                   </Text>
                 </View>:
@@ -460,7 +468,7 @@ class ArticleInfo extends PureComponent {
                   (
                     <Text style={{marginLeft:10, fontSize:10, 
                       fontFamily:FONTS.HELVETICA_NEUE, 
-                        color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LIGHT_GRAY}}>
+                        color:COLORS.LIGHT_GRAY}}>
                       {(this.props.article_id!==-1)?"*Not yet rated":"*In preview mode"}
                     </Text>
                   )
@@ -476,7 +484,7 @@ class ArticleInfo extends PureComponent {
             <View style={{width:"100%", margin:10}}>
               <Text style={{marginLeft:10, fontSize:14, 
                 fontFamily:FONTS.HELVETICA_NEUE,  
-                color:(this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY}}>
+                color:COLORS.GRAY}}>
                 *Comments not available in preview
               </Text>
             </View>
@@ -488,8 +496,9 @@ class ArticleInfo extends PureComponent {
   }
 
   render() {
+    const {COLORS} = this.props;
+    // console.log("COLORS: ", COLORS)
     if (!this.props.isVisible){
-      
       return <View/>;
     }
     else{
@@ -515,7 +524,7 @@ class ArticleInfo extends PureComponent {
       return(
         <Overlay
           isVisible={this.props.isVisible}
-          overlayStyle={{...styles.OverlayStyle, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}
+          overlayStyle={{...styles.OverlayStyle, backgroundColor:COLORS.LIGHT}}
           onBackdropPress={()=>{this.props.getArticleInfo(this.props.article_id, false);
             this.setState({scrollY: new Animated.Value(0), adIndex:_.random});this.props.onBackdropPress()}}
           width={`${OVERLAY_WIDTH_PERCENT}%`}
@@ -524,8 +533,8 @@ class ArticleInfo extends PureComponent {
           <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
             <StatusBar 
               barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
-              backgroundColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.OVERLAY_COLOR:COLORS_DARK_THEME.OVERLAY_COLOR}/>
-            {changeNavigationBarColor((this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT, (this.props.theme==='light'))}
+              backgroundColor={COLORS.OVERLAY_COLOR}/>
+            {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
             {
               (this.props.loading)?
               <Loading size={128} white={(this.props.theme!=='light')}/>:
@@ -544,6 +553,9 @@ const mapStateToProps =(state) => {
     userData: state.login.data,
     selectedArticleInfo: state.articleInfo.selectedArticleInfo,
     loading: state.articleInfo.loading,
+
+    theme: state.chat.theme,
+    COLORS: state.chat.COLORS
   }
 }
 

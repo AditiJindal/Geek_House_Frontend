@@ -3,7 +3,7 @@ import {Text, StyleSheet,Animated,View,
   PanResponder,
   UIManager,
   Dimensions} from 'react-native';
-import {COLORS_DARK_THEME, COLORS_LIGHT_THEME,FONTS} from '../Constants';
+import {FONTS} from '../Constants';
 import CardFlip from 'react-native-card-flip';
 import _ from 'lodash';
 
@@ -83,11 +83,12 @@ export default class RaisedText extends Component {
   }
 
   render() {
+    const {COLORS} = this.props;
     return(
       <Animated.View 
         style={[this.getCardStyle(), {...styles.AnimatedViewStyle,
-        borderColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK,
-        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}]}
+        borderColor:COLORS.LESS_DARK,
+        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}]}
         {...this.state.panResponder.panHandlers}>
         <CardFlip duration={1000} 
           ref={(card) => {
@@ -98,8 +99,7 @@ export default class RaisedText extends Component {
           <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
             <Text 
               style={{...styles.AnimatedWelcomeHeading,
-              color: (this.props.theme==='light')?
-              COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}}
+              color: COLORS.LESSER_DARK}}
             >
               {this.props.text}
             </Text>
@@ -108,8 +108,7 @@ export default class RaisedText extends Component {
           <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
             <Text 
               style={{...styles.AnimatedWelcomeHeading,
-              color: (this.props.theme==='light')?
-              COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}}
+              color: COLORS.LESSER_DARK}}
             >
               {this.props.secondaryText}
             </Text>

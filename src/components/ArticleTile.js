@@ -4,7 +4,7 @@ import Loading from './Loading'
 import ArticleInfo from './ArticleInfo';
 import {logEvent} from '../actions/ChatAction';
 import Image from 'react-native-fast-image';
-import {FONTS,COLOR_COMBOS, COLORS_LIGHT_THEME, COLORS_DARK_THEME, LOG_EVENT} from '../Constants';
+import {FONTS,COLOR_COMBOS, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 
 
@@ -48,10 +48,11 @@ export default class ArticleTile extends Component {
   }
 
   renderLinearGradient(){
+    const {COLORS} = this.props;
     if (!this.state.imageLoaded){
       return (
         <View style={{flex:1, justifyContent:'center', alignItems:'center', borderRadius:10, 
-          backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, 
+          backgroundColor:COLORS.LIGHT, 
           zIndex:100, height:this.state.size, width:this.state.size}}>
           <Loading size={64} white={(this.props.theme!=='light')}/>
         </View>
@@ -79,7 +80,6 @@ export default class ArticleTile extends Component {
               <View/>
             }
             <ArticleInfo 
-              theme={this.props.theme}
               onBackdropPress={() => {
                 this.setState({infoVisible:false});
                 logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, Date.now() - this.state.showStartTime)
@@ -112,6 +112,7 @@ export default class ArticleTile extends Component {
   }
 
   render() {
+    const {COLORS} = this.props; 
     return(
       <TouchableOpacity onPress={() => {
         this.setState({infoVisible:true, showStartTime:Date.now()});
@@ -119,7 +120,7 @@ export default class ArticleTile extends Component {
         }} 
         activeOpacity={1}>
         <View style={{...styles.TileViewStyle, height:this.state.size, width:this.state.size, 
-          backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}} 
+          backgroundColor:COLORS.LIGHT}} 
           renderToHardwareTextureAndroid>
           {(this.props.data.image)?
           (
