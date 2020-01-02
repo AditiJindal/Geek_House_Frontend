@@ -11,7 +11,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import ArticleTile from '../components/ArticleTile';
 import Loading from '../components/Loading';
 import SView from 'react-native-simple-shadow-view';
-
+import analytics from '@react-native-firebase/analytics'
 class Publish extends Component {
 
   constructor() {
@@ -19,6 +19,10 @@ class Publish extends Component {
     this.state={
       value:180
     }
+  }
+
+  componentDidMount(){
+    analytics().setCurrentScreen('Publish', 'Publish')
   }
 
   componentWillReceiveProps(nextProps){

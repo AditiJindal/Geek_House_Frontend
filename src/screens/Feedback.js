@@ -12,6 +12,7 @@ import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import TimedAlert from '../components/TimedAlert';
 import {Switch} from 'react-native-switch';
+import analytics from '@react-native-firebase/analytics';
 import prettysize from 'prettysize';
 
 const INITIAL_STATE = {
@@ -180,6 +181,7 @@ class Feedback extends Component {
         isAnonymous: this.state.isAnonymous
       })
       this.setState({...INITIAL_STATE, feedback_submitted:true});
+      analytics().logEvent('given_feedback')
     }
     else{
       this.timedAlert.showAlert(3000, "Please provide something more useful");

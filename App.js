@@ -4,6 +4,7 @@ import {createStore, applyMiddleware} from 'redux';
 import ReduxThunk from 'redux-thunk';
 import reducers from './src/reducers';
 import RouterComponent from './src/Router';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 // import * as Sentry from "@sentry/react-native";
 // import Constants from 'expo-constants';
@@ -15,6 +16,8 @@ import RouterComponent from './src/Router';
 // });
 // Sentry.setRelease(Constants.manifest.revisionId);
 console.disableYellowBox=true
+crashlytics();
+
 export default class App extends Component{
 
   constructor(){

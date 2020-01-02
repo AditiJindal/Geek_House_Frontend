@@ -13,6 +13,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
+import analytics from '@react-native-firebase/analytics'
 // import console = require('console');
 
 
@@ -25,6 +26,7 @@ class Write extends Component {
 
   componentDidMount(){
     this.props.setAuthToken();
+    analytics().setCurrentScreen('MyArticles', 'MyArticles')
     this.props.getMyArticles(Object.keys(this.props.myArticles).length, this.props.reload);
   }
 
@@ -118,7 +120,9 @@ class Write extends Component {
     return (
       <TouchableOpacity style={{justifyContent:'center', alignItems:"center",bottom:70, 
         left:15, position:"absolute"}} activeOpacity={0.5} 
-        onPress={()=>{(this.props.isDraft)?()=>{}:this.props.clearPublish(); Actions.jump('writearticle');logEvent(LOG_EVENT.SCREEN_CHANGE, 'writearticle');}}>
+        onPress={()=>{(this.props.isDraft)?()=>{}:this.props.clearPublish();
+        Actions.jump('writearticle'); analytics().setCurrentScreen('Write', 'Write');
+        logEvent(LOG_EVENT.SCREEN_CHANGE, 'writearticle');}}>
         <SView style={{borderRadius:10, shadowOpacity:0.4,shadowRadius:6,
           shadowOffset: { height:7}, shadowColor:'#f12711', 
           backgroundColor:COLORS_LIGHT_THEME.LIGHT}}>

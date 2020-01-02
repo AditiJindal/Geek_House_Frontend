@@ -12,6 +12,7 @@ import SView from 'react-native-simple-shadow-view';
 import ChatPeopleSearch from '../components/ChatPeopleSearch';
 import Loading from '../components/Loading';
 import TimedAlert from '../components/TimedAlert';
+import analytics from '@react-native-firebase/analytics'
 
 class Chat extends Component {
 
@@ -21,6 +22,7 @@ class Chat extends Component {
   }
 
   componentDidMount(){
+    analytics().setCurrentScreen('Chat', 'Chat')
     if (!this.props.authTokenSet){
       this.props.setAuthToken()
     }
@@ -118,7 +120,9 @@ class Chat extends Component {
           unread_messages= {this.props.status[item._id].unread_messages}
           onPress={()=>{
           this.props.setUserData(item);
-          Actions.chatscreen();logEvent(LOG_EVENT.SCREEN_CHANGE, 'chatscreen');}}
+          Actions.chatscreen();
+          analytics().setCurrentScreen("ChatScreen", "ChatScreen")
+          logEvent(LOG_EVENT.SCREEN_CHANGE, 'chatscreen');}}
         />)
         }}
       />
@@ -161,6 +165,7 @@ class Chat extends Component {
             onPress={()=>{
             this.props.setUserData(item);
             Actions.chatscreen();
+            analytics().setCurrentScreen("ChatScreen", "ChatScreen")
             logEvent(LOG_EVENT.SCREEN_CHANGE, 'chatscreen');}}
           />)
         }}

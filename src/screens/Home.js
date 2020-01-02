@@ -20,7 +20,7 @@ import AppIntroSlider from '../components/AppIntroSlider/AppIntroSlider';
 import ArticleTile from '../components/ArticleTile';
 import {Overlay} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Feather';
-import {FONTS,COLORS_LIGHT_THEME, COLORS_DARK_THEME, LOG_EVENT} from '../Constants';
+import {FONTS,COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
 import BottomTab from '../components/BottomTab';
@@ -29,6 +29,7 @@ import { Actions } from 'react-native-router-flux';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
 import APP_INFO from '../../package.json';
+import analytics from '@react-native-firebase/analytics';
 
 const OVERLAY_WIDTH_PERCENT=75
 const GOOGLE_PLAY_URL = `https://play.google.com/store/apps/details?id=${APP_INFO.package}`
@@ -39,10 +40,11 @@ class Home extends PureComponent {
   }
 
   componentDidMount(){
-    const {COLORS} = this.props;
     this.props.setAuthToken();
+    analytics().setCurrentScreen('Home', 'Home')
     if (this.props.loading){
       this.props.getWelcome();
+      analytics().logTutorialBegin();
     }
     let new_data=[];
     this.props.categories.forEach((item) => {new_data.push({value:item})})
@@ -82,6 +84,7 @@ class Home extends PureComponent {
             <View style={{width:"100%", height:80, justifyContent:'center'}}>
               <Dropdown
                 theme={this.props.theme}
+                COLORS = {COLORS_LIGHT_THEME}
                 data = {new_data}
                 label = "Category Selection"
                 itemColor={COLORS_LIGHT_THEME.LESS_DARK}
@@ -159,7 +162,9 @@ class Home extends PureComponent {
           <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-around', height:120}}>
               <View style={{flex:1,}}>
                 <TouchableOpacity
-                  onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('settings'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'settings');}}
+                  onPress={() => {this.props.toggleOverlay({overlayVisible:false});
+                  Actions.jump('settings'); analytics().setCurrentScreen('Settings', 'Settings')
+                  logEvent(LOG_EVENT.SCREEN_CHANGE, 'settings');}}
                   style={{elevation:3, marginBottom:5,
                   justifyContent:'center', alignItems:'center', flexDirection:'row', 
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
@@ -169,7 +174,9 @@ class Home extends PureComponent {
                   <Text style={{...styles.LogoutButtonTextStyle, color:COLORS.DARK}}>settings</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('feedback'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');}}
+                  onPress={() => {this.props.toggleOverlay({overlayVisible:false});
+                  Actions.jump('feedback'); analytics().setCurrentScreen('Feedback', 'Feedback');
+                  logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');}}
                   style={{elevation:3,
                   justifyContent:'center', alignItems:'center', flexDirection:'row', 
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
@@ -182,7 +189,9 @@ class Home extends PureComponent {
               </View>
               <View style={{flex:1}}>
                 <TouchableOpacity
-                  onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('about'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'about');}}
+                  onPress={() => {this.props.toggleOverlay({overlayVisible:false});
+                  Actions.jump('about'); analytics().setCurrentScreen('About', 'About');
+                  logEvent(LOG_EVENT.SCREEN_CHANGE, 'about');}}
                   style={{elevation:3, marginBottom:5,
                   justifyContent:'center', alignItems:'center', flexDirection:'row', 
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
@@ -192,7 +201,10 @@ class Home extends PureComponent {
                   <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>about us</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => {Linking.openURL(GOOGLE_PLAY_URL)}}
+                  onPress={() => {
+                    analytics().logEvent('app_rating')
+                    Linking.openURL(GOOGLE_PLAY_URL)
+                  }}
                   style={{elevation:3,
                   justifyContent:'center', alignItems:'center', flexDirection:'row', 
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
@@ -404,7 +416,7 @@ class Home extends PureComponent {
           activeDotStyle={{backgroundColor:COLORS_LIGHT_THEME.LIGHT_BLUE}}
           renderNextButton={this._renderNextButton}
           renderDoneButton={this._renderDoneButton}
-          onDone={()=>this._onDone()}/>
+          onDone={()=>{analytics().logTutorialComplete();this._onDone()}}/>
       </View>
       )
   }

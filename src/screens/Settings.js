@@ -129,7 +129,10 @@ class Settings extends Component {
         <TouchableOpacity
           style={{alignSelf:'flex-start'}}
           activeOpacity={1}
-          onPress={()=>{this.props.changeTheme((oppositeTheme)); logEvent(LOG_EVENT.CURRENT_VIEW_MODE, oppositeTheme)}}>
+          onPress={()=>{
+            analytics().setUserProperties({Theme: action.payload.theme});
+            this.props.changeTheme((oppositeTheme));
+            logEvent(LOG_EVENT.CURRENT_VIEW_MODE, oppositeTheme)}}>
           <View style={{paddingVertical:8, borderRadius:8, borderWidth:1,
             backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
             borderColor:(this.props.theme==='light')?"#f953c6":"#6DD5FA", width:80, justifyContent:'center', alignItems:'center'}}>
@@ -228,6 +231,7 @@ class Settings extends Component {
         <Text style={{...styles.TextStyling, color:(this.props.theme==='light')?COLORS.GRAY:COLORSE.LESSER_DARK}}>Change Your Favourite Category</Text>
         <Dropdown
           theme={this.props.theme}
+          COLORS = {COLORS}
           data = {new_data}
           label = "Select a Category"
           value={this.props.fav_category}

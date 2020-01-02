@@ -2,10 +2,8 @@ import {ACTIONS} from './types';
 import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
 import {AppState,Alert} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-// import * as Facebook from 'expo-facebook';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {setSocket} from './ChatAction'
-// import * as GoogleSignIn from 'expo-google-sign-in';
 import axios from 'axios';
 import {Actions} from 'react-native-router-flux';
 import io from 'socket.io-client';
@@ -14,7 +12,8 @@ import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
 import * as RNLocalize from "react-native-localize";
 import OneSignal from 'react-native-onesignal';
-// import { Notifications } from 'expo';
+import analytics from '@react-native-firebase/analytics';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 
 var deviceNotificationId = null; 
@@ -26,31 +25,9 @@ OneSignal.getPermissionSubscriptionState((obj)=>
   {deviceNotificationId = obj.userId;}
 );
 
-
-
-// Notifications.createCategoryAsync('Chats and Messages', 
-//   [{actionId:'Tap_To_See', buttonTitle:'Tap to reply'}])
-// Notifications.createChannelAndroidAsync(id, channel);
-
-
 const httpClient = axios.create();
 httpClient.defaults.timeout = HTTP_TIMEOUT;
 httpClient.defaults.baseURL = BASE_URL;
-
-// new_data = {
-// 	"name":"Tushar Jain",
-// 	"email":"tusharlock10@gmail.com",
-// 	"id":132132312,
-// 	"image_url":""
-// }
-// httpClient.post(URLS.login, new_data).then(
-//   (response) => {
-//     authtoken = response.data.token
-//     to_save = JSON.stringify({data:new_data, authtoken:authtoken})
-//     AsyncStorage.setItem('data', to_save)
-//   }
-// )
-
 
 // COMMENT-OUT THERE 3 LINES
 // AsyncStorage.removeItem('data')
@@ -59,8 +36,6 @@ httpClient.defaults.baseURL = BASE_URL;
 
 
 const incomingMessageConverter = (data) => {
-  // data = {text: "jdhd", from: "76763273yhbdhgv67", createdAt}
-  // new_message = [{_id:"message id", createdAt:"date", text:"text here", user:{_id:"data.from"}}]
   new_message = [{_id:uuid(), createdAt: data.createdAt, text:data.text, user:{_id:data.from}, image:data.image}]
   return new_message
 }
@@ -86,10 +61,12 @@ const makeConnection = async (json_data, dispatch) => {
 
   AppState.addEventListener('change', (appState)=>{
     if ((appState==='background') || (appState==='inactive')){
-      socket.emit('send-me-offline', {id: json_data.authtoken})
+      socket.emit('send-me-offline', {id: json_data.authtoken});
+      analytics().logEvent("app_went_background")
     }
     else{
-      socket.emit('not-disconnected', {id: json_data.authtoken})
+      socket.emit('not-disconnected', {id: json_data.authtoken});
+      analytics().logEvent("app_came_foreground")
     }
   })
   
@@ -163,6 +140,11 @@ export const checkLogin = () => {
           // Image.prefetch(json_data.data.image_url)
           makeConnection(json_data, dispatch)
           Actions.replace("main");
+          analytics().setUserId(json_data.data.authtoken);
+          crashlytics().setUserId(json_data.data.authtoken);
+          crashlytics().setUserEmail(json_data.data.email);
+          crashlytics().setUserName(json_data.data.name);
+          console.log("json: ", json_data)
         }
         else{
           dispatch({type:ACTIONS.LOGOUT})
@@ -170,47 +152,6 @@ export const checkLogin = () => {
       }
   )}
 }
-
-
-// export const loginGoogle = () => {
-//   return (dispatch)=> {
-//     dispatch({type:ACTIONS.LOADING_GOOGLE});
-//     GoogleSignIn.initAsync({}).then(()=>{
-//       GoogleSignIn.askForPlayServicesAsync().then(()=>{
-//         GoogleSignIn.signInAsync().then((response)=>{
-//           GoogleSignIn.getPhotoAsync(200).then(
-//             (image_response) => {
-//             if (response.type==='success'){
-
-//               Notifications.getExpoPushTokenAsync().then((pushToken) => {
-//                 let new_data = {
-//                   id: response.user.uid+'google',
-//                   name: response.user.displayName, 
-//                   email: response.user.email,
-//                   image_url: image_response,//response.user.photoURL,
-//                   pushToken
-//                 };
-//                 httpClient.post(URLS.login, new_data).then(
-//                   (response) => {
-//                     authtoken = response.data.token
-//                     final_data = {data:new_data, authtoken:authtoken, categories:response.data.categories}
-//                     to_save = JSON.stringify(final_data)
-//                     AsyncStorage.setItem('data', to_save)
-//                     dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, payload: response.data.first_login})
-//                     dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
-//                     // Image.prefetch(final_data.data.image_url)
-//                     makeConnection(final_data, dispatch);
-//                     Actions.replace("main");
-//                   }
-//                 );
-//               })  
-//             }}
-//           )
-//         });
-//       })
-//     })
-//   }
-// }
 
 
 export const loginGoogle = () => {
@@ -232,8 +173,16 @@ export const loginGoogle = () => {
         (response) => {
           authtoken = response.data.token
           final_data = {data:new_data, authtoken:authtoken, categories:response.data.categories}
+          analytics().setUserId(authtoken);
+          crashlytics().setUserId(authtoken);
+          crashlytics().setUserEmail(data.email);
+          crashlytics().setUserName(data.name);
+          analytics().logLogin()
           to_save = JSON.stringify(final_data)
           AsyncStorage.setItem('data', to_save)
+          if (response.data.first_login){
+            analytics().logLogin({method:'google'})
+          }
           dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, payload: response.data.first_login})
           dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
           // Image.prefetch(final_data.data.image_url)
@@ -277,8 +226,17 @@ export const loginFacebook = () => {
                     (response) => {
                       authtoken = response.data.token
                       final_data = {data:new_data, authtoken:authtoken, categories:response.data.categories}
+                      analytics().setUserId(authtoken);
+                      crashlytics().setUserId(authtoken);
+                      crashlytics().setUserEmail(data.email);
+                      crashlytics().setUserName(data.name);
+                      
+                      analytics().logLogin();
                       to_save = JSON.stringify(final_data)
                       AsyncStorage.setItem('data', to_save)
+                      if (response.data.first_login){
+                        analytics().logLogin({method:'facebook'})
+                      }
                       dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, payload: response.data.first_login})
                       dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
                       // Image.prefetch(final_data.data.image_url);

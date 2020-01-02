@@ -1,7 +1,8 @@
 import {ACTIONS} from '../actions/types';
 import uuid from 'uuid/v4';
 import AsyncStorage from '@react-native-community/async-storage';
-import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants'
+import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
+import analytics from '@react-native-firebase/analytics'
 
 const INITIAL_STATE={
   socket: null,
@@ -70,6 +71,9 @@ export default (state=INITIAL_STATE, action) => {
             COLORS = COLORS_LIGHT_THEME
           }
         }
+        analytics().setUserProperties({
+          Theme: action.payload.theme
+        })
         
         if (total_unread_messages<0){total_unread_messages=0}
         new_state = {...state,
@@ -206,6 +210,13 @@ export default (state=INITIAL_STATE, action) => {
       new_status = {...state.status};
       new_chats = [...state.chats]
       total_unread_messages = state.total_unread_messages
+
+      if (action.payload.isIncomming){
+        analytics().logEvent("received_message")
+      }
+      else{
+        analytics().logEvent("sent_message")
+      }
       
       if (state.messages.hasOwnProperty(action.payload.other_user_id)){
         new_messages[action.payload.other_user_id] = action.payload.message

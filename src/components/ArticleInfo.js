@@ -73,6 +73,7 @@ class ArticleInfo extends PureComponent {
                 }
                 <CardView 
                   theme={this.props.theme}
+                  COLORS = {COLORS}
                   key={item.sub_heading}
                   cardData={item}/>
               </View>

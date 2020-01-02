@@ -8,11 +8,13 @@ import {FONTS} from '../Constants';
 import { Icon } from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
+import analytics from '@react-native-firebase/analytics'
 
 class Settings extends Component {
 
   componentDidMount(){
     this.props.setAuthToken();
+    analytics().setCurrentScreen('About', 'About')
     this.props.getSettingsData();
   }
 

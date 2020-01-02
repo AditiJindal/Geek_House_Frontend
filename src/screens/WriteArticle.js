@@ -264,6 +264,7 @@ class WriteArticle extends Component {
       <View style={{marginHorizontal:25}}>
         <Dropdown
           theme={this.props.theme}
+          COLORS = {COLORS}
           data = {new_data}
           label = "Category Selection"
           itemColor={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.LESSER_DARK}

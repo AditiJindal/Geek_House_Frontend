@@ -22,13 +22,14 @@ import {Dropdown} from '../components/Dropdown';
 import CustomAlert from '../components/CustomAlert';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-
+import analytics from '@react-native-firebase/analytics';
 
 class Search extends Component {
 
   componentDidMount(){
     if (!this.props.popularSearchesData.response){
       this.props.setAuthToken();
+      analytics().setCurrentScreen('Search', 'Search')
       this.props.getPopularSearches();
     }
   }
@@ -78,6 +79,7 @@ class Search extends Component {
             }
 
             else if(this.props.searchValue.length>1){
+              analytics().logSearch({search_term:this.props.searchValue});
               this.props.doSearch(this.props.searchValue, this.props.categorySelected)                            
             }
             else if(this.props.searchValue){
@@ -207,6 +209,7 @@ class Search extends Component {
           <View style={{marginHorizontal:25}}>
             <Dropdown
               theme={this.props.theme}
+              COLORS = {COLORS}
               data = {new_data}
               label = "Category Selection"
               itemColor={COLORS.LESS_DARK}

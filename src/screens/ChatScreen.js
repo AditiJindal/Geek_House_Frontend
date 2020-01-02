@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, StatusBar, Keyboard, BackHandler} from 'react-n
 import {connect} from 'react-redux';
 import {Badge} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Feather'
-import {FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
+import {FONTS} from '../Constants';
 import {GiftedChat} from '../components/GiftedChat/index';
 import { Actions } from 'react-native-router-flux';
 import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData, setAuthToken,
@@ -152,6 +152,7 @@ class ChatScreen extends Component {
                 (<View style={{flex:1}}>
                   <GiftedChat
                     theme={this.props.theme}
+                    COLORS = {COLORS}
                     containerStyle={{backgroundColor:COLORS.LIGHT}}
                     primaryStyle={{backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT}}
                     textInputStyle={{

@@ -6,6 +6,7 @@ import {logEvent} from '../actions/ChatAction';
 import Image from 'react-native-fast-image';
 import {FONTS,COLOR_COMBOS, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
+import analytics from '@react-native-firebase/analytics';
 
 
 const LG_SUCCESS = [
@@ -61,6 +62,11 @@ export default class ArticleTile extends Component {
     if ((this.state.imageLoaded && !this.state.loadSuccessful) || !this.props.data.image){
       return (
         <TouchableOpacity onPress={() => {
+          analytics().logViewItem({
+            item_id:this.props.data.article_id,
+            item_category:this.props.data.category,
+            item_name:this.props.data.topic
+          })
           this.setState({infoVisible:true, showStartTime:Date.now()});
           logEvent(LOG_EVENT.SCREEN_CHANGE, 'articleinfo');
           }} 
