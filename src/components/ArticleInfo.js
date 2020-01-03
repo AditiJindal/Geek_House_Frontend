@@ -394,8 +394,6 @@ class ArticleInfo extends PureComponent {
           contentContainerStyle={{borderRadius:BORDER_RADIUS, overflow:'hidden'}}
           
           style={{ flex: 1 }}
-          scrollEventThrottle={16}
-          scrollToOverflowEnabled={true}
           onScroll={Animated.event([
             { nativeEvent: { contentOffset: { y: this.state.scrollY } } }
           ])}

@@ -175,12 +175,14 @@ export const loginGoogle = () => {
           final_data = {data:new_data, authtoken:authtoken, categories:response.data.categories}
           analytics().setUserId(authtoken);
           crashlytics().setUserId(authtoken);
-          crashlytics().setUserEmail(data.email);
-          crashlytics().setUserName(data.name);
-          analytics().logLogin()
+          crashlytics().setUserEmail(new_data.email);
+          crashlytics().setUserName(new_data.name);
           to_save = JSON.stringify(final_data)
           AsyncStorage.setItem('data', to_save)
           if (response.data.first_login){
+            analytics().logSignUp({method:'google'})
+          }
+          else{
             analytics().logLogin({method:'google'})
           }
           dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, payload: response.data.first_login})
@@ -189,9 +191,10 @@ export const loginGoogle = () => {
           makeConnection(final_data, dispatch);
           Actions.replace("main");
         }
-      );
+      ).catch((e)=>{console.log("Error: ", e)})
       // })
-    })
+    }).catch(e=>{crashlytics().log("LoginAction:loginGoogle:signIn")
+    ;crashlytics().recordError(e)})
   }
 }
 
@@ -200,7 +203,6 @@ export const loginFacebook = () => {
     dispatch({type:ACTIONS.LOADING_FB});
     LoginManager.logInWithPermissions(["public_profile", "email"]).then((response)=>{
       if (response.isCancelled){
-        Alert.alert("Login Cancelled");
         dispatch({type:ACTIONS.LOGIN_ERROR, payload:response.type});
       }
       else{
@@ -231,10 +233,12 @@ export const loginFacebook = () => {
                       crashlytics().setUserEmail(data.email);
                       crashlytics().setUserName(data.name);
                       
-                      analytics().logLogin();
                       to_save = JSON.stringify(final_data)
                       AsyncStorage.setItem('data', to_save)
                       if (response.data.first_login){
+                        analytics().logSignUp({method:'facebook'})
+                      }
+                      else{
                         analytics().logLogin({method:'facebook'})
                       }
                       dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, payload: response.data.first_login})
@@ -251,6 +255,7 @@ export const loginFacebook = () => {
           )
         })
       }
-    })
+    }).catch(e=>{crashlytics().log("LoginAction:loginFacebook:logInWithPermissions")
+    ;crashlytics().recordError(e)})
   };
 }

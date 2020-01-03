@@ -61,8 +61,10 @@ export const COLORS_DARK_THEME = {
   SHIMMER_COLOR: ["#323232", "#3c3c3c", "#464646"],
   URM_COLOR: "#63d6a0"
 };
-// export const BASE_URL = "https://stark-beach-17150.herokuapp.com"
-export const BASE_URL = "http://192.168.0.103:8000"
+export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
+export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
+export const BASE_URL = (__DEV__)?BASE_URL_DEBUG:BASE_URL_PROD
+console.log("Base usrl is this: ", BASE_URL)
 
 export const OVERLAY_COLOR = "rgb(153, 153, 153)"
 

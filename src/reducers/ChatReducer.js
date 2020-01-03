@@ -2,7 +2,8 @@ import {ACTIONS} from '../actions/types';
 import uuid from 'uuid/v4';
 import AsyncStorage from '@react-native-community/async-storage';
 import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
-import analytics from '@react-native-firebase/analytics'
+import analytics from '@react-native-firebase/analytics';
+import perf from '@react-native-firebase/perf';
 
 const INITIAL_STATE={
   socket: null,
@@ -25,6 +26,8 @@ const INITIAL_STATE={
   COLORS: COLORS_LIGHT_THEME
 }
 
+const trace = perf().newTrace("save_data")
+
 const incomingMessageConverter = (data) => {
   new_message = [
     {_id:uuid(), createdAt: data.createdAt, text:data.text,image:data.image, user:{_id:data.from}}
@@ -32,7 +35,7 @@ const incomingMessageConverter = (data) => {
   return new_message
 }
 
-const saveData = (state) => {
+const saveData = async (state) => {
   to_save = {
     messages:state.messages,
     status: state.status,
@@ -40,8 +43,12 @@ const saveData = (state) => {
     theme: state.theme,
     animationOn: state.animationOn
   };
+  t = Date.now()
+  trace.start()
   to_save = JSON.stringify(to_save)
-  AsyncStorage.setItem(state.user_id.toString(), to_save);
+  await AsyncStorage.setItem(state.user_id.toString(), to_save)
+  trace.stop()
+  trace.putMetric('save_data_time', Date.now()-t)
 }
 
 export default (state=INITIAL_STATE, action) => {

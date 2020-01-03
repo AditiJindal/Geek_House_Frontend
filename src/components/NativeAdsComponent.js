@@ -10,7 +10,8 @@ import {
   TriggerableView, 
   withNativeAd
 } from 'react-native-fbads';
-import SView from 'react-native-simple-shadow-view'
+import SView from 'react-native-simple-shadow-view';
+import analytics from '@react-native-firebase/analytics'
 
 
 
@@ -48,7 +49,10 @@ class NativeAdsComponent extends Component {
               {`${this.props.nativeAd.bodyText}`}
             </Text>
           </View>
-          <TriggerableView onPress={()=>{logEvent(LOG_EVENT.AD_CLICKED)}}
+          <TriggerableView onPress={()=>{
+            analytics().logEvent('ad_clicked')
+            logEvent(LOG_EVENT.AD_CLICKED)
+          }}
             style={{paddingHorizontal:15, paddingVertical:10, borderRadius:8,elevation:5,
             backgroundColor:'rgb(66,134,244)',alignSelf:'flex-start'}}>
             <Text style={{fontSize:16,color:COLORS_LIGHT_THEME.LIGHT}}>

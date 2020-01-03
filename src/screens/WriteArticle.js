@@ -13,7 +13,8 @@ import CustomAlert from '../components/CustomAlert';
 import LinearGradient from 'react-native-linear-gradient';
 import ArticleTile from '../components/ArticleTile';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import SView from 'react-native-simple-shadow-view'
+import SView from 'react-native-simple-shadow-view';
+import TimedAlert from '../components/TimedAlert'
 // import console = require('console');
 
 
@@ -195,7 +196,9 @@ class WriteArticle extends Component {
           return (
           <WriteView key={i}
             theme={this.props.theme}
-            obj={obj} index={i} 
+            COLORS = {this.props.COLORS}
+            obj={obj} index={i}
+            timedAlert = {this.timedAlert}
             onClose={(i)=>{this.onClosePressed(i);}}
             onClosePressed = {()=>{this.setState({childAlertVisible:true})}}
             onContentChange={(value, i)=>{this.onContentChange(value, i)}}
@@ -344,6 +347,9 @@ class WriteArticle extends Component {
         <StatusBar
           backgroundColor={this.getStatusBarColor()}
           barStyle={(this.props.theme==='light')?'dark-content':'light-content'}/>
+        <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} 
+          COLORS = {COLORS}
+        />
         {changeNavigationBarColor(this.getStatusBarColor(), (this.props.theme==='light'))}
         {this.renderAlert()}
         {this.renderAlertForBack()}

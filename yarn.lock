@@ -1002,6 +1002,16 @@
   dependencies:
     stacktrace-js "^2.0.0"
 
+"@react-native-firebase/ml-vision@^6.2.0":
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/ml-vision/-/ml-vision-6.2.0.tgz#6f830f258fa456e5dfecd7f13fd14fbd1b13c843"
+  integrity sha512-Ty7q/yd+8g2bXA/El+5Tn5RaClhqCulAkkIWmTLp4u+dRuTcdAWUlJeQqFVKLh0TkJG7tKY2PDeFo+TxO6TJYw==
+
+"@react-native-firebase/perf@^6.2.0":
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/perf/-/perf-6.2.0.tgz#276a79c9fcb9b0e7307d16fb97ed7df76092dd83"
+  integrity sha512-uZGobaJney+FQbiX56tFl+iTOXC2+ytI0T+ESl+YxCqizmKp8qr7LJXvgTZtRBGp9kOlQcDbiuVtqurVu+xFIA==
+
 "@sentry/browser@^5.10.0":
   version "5.10.2"
   resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-5.10.2.tgz#0bbb05505c58ea998c833cffec3f922fe4b4fa58"

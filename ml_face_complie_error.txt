@@ -1,0 +1,2 @@
+got to ml-vision firebase module in nde modules
+in ml-models.gradle, remove the ml_face... line

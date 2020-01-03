@@ -14,7 +14,8 @@ import StarRating from 'react-native-star-rating';
 import {Dropdown} from '../components/Dropdown';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import {Switch} from 'react-native-switch';
-import SView from 'react-native-simple-shadow-view'
+import SView from 'react-native-simple-shadow-view';
+import analytics from '@react-native-firebase/analytics'
 
 
 const getId = (id) => {
@@ -130,7 +131,7 @@ class Settings extends Component {
           style={{alignSelf:'flex-start'}}
           activeOpacity={1}
           onPress={()=>{
-            analytics().setUserProperties({Theme: action.payload.theme});
+            analytics().setUserProperties({Theme: oppositeTheme});
             this.props.changeTheme((oppositeTheme));
             logEvent(LOG_EVENT.CURRENT_VIEW_MODE, oppositeTheme)}}>
           <View style={{paddingVertical:8, borderRadius:8, borderWidth:1,
@@ -228,7 +229,7 @@ class Settings extends Component {
 
     return (
       <View>
-        <Text style={{...styles.TextStyling, color:(this.props.theme==='light')?COLORS.GRAY:COLORSE.LESSER_DARK}}>Change Your Favourite Category</Text>
+        <Text style={{...styles.TextStyling, color:(this.props.theme==='light')?COLORS.GRAY:COLORS.LESSER_DARK}}>Change Your Favourite Category</Text>
         <Dropdown
           theme={this.props.theme}
           COLORS = {COLORS}

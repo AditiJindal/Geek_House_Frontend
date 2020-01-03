@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, StatusBar}from 'react-native';
 import {connect} from 'react-redux';
+import _ from 'lodash'
 import {setImage} from '../actions/WriteAction';
 import {Icon} from 'react-native-elements';
 import {Actions} from 'react-native-router-flux';
@@ -13,7 +14,8 @@ import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from "@react-native-community/image-editor";
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import SView from 'react-native-simple-shadow-view'
+import SView from 'react-native-simple-shadow-view';
+import vision from '@react-native-firebase/ml-vision'
 
 class ImageUpload extends Component {
 
@@ -23,6 +25,7 @@ class ImageUpload extends Component {
       image:{},
       imageSize:{},
       alertVisible:false,
+      relatedImageWords:""
     }
   }
 
@@ -101,6 +104,32 @@ class ImageUpload extends Component {
     return crop 
   }
 
+  async ImageLabelDetection(image_path){
+    let response = await vision().imageLabelerProcessImage(image_path)
+    let filterList = [];
+    let relatedImageWords= "";
+    response.map((item)=>{
+      if (item.confidence>0.5){
+        filterList.push(item)
+      }
+    })
+
+    if (filterList.length>5){
+      filterList = _.sortBy(filterList, ['confidence']).reverse();
+      filterList = filterList.splice(0,5)
+    }
+    if (filterList.length!==0){
+      filterList.map((item, index)=>{
+        if (index===filterList.length-1) { relatedImageWords += item.text}
+        else { relatedImageWords += item.text+", "}
+      });
+    }
+    else{
+      relatedImageWords = "Sorry, I couldn't find anything useful here"
+    }
+    this.setState({relatedImageWords})
+  }
+
   pickImage(){
     const ImageOptions={
       noData: true,
@@ -110,6 +139,7 @@ class ImageUpload extends Component {
     // // console.log("in image")
     
     ImagePicker.launchImageLibrary(ImageOptions, (image)=>{
+      this.ImageLabelDetection(image.path)
       if (!image.didCancel){
         delete image.data;
         const imageSize = {width:image.width, height:image.height};
@@ -130,8 +160,7 @@ class ImageUpload extends Component {
   renderImagePicker(){
     const {COLORS} = this.props; 
     return (
-      <TouchableOpacity style={{backgroundColor:COLORS.LIGHT, 
-        borderRadius:10, elevation:3,
+      <TouchableOpacity style={{backgroundColor:COLORS.LESS_LIGHT, borderRadius:10,
         alignSelf:'center', height:180, width:180, borderWidth:3, 
         borderColor:(this.props.theme==='light')?COLORS.GRAY:COLORS.LESSER_DARK,}} 
         onPress={()=>{this.pickImage()}}>
@@ -149,11 +178,28 @@ class ImageUpload extends Component {
 
   renderChoosenImage(){
     const {image} = this.state;
+    const {COLORS} = this.props;
     if (image.uri){
       data = {image: image.uri, article_id: -1, topic: this.props.topic,
         preview_contents:this.props.contents, category:this.props.category}
       return(
-        <ArticleTile size={180} data={data} theme={this.props.theme} COLORS={this.props.COLORS}/>
+        <View style={{alignItems:'center', justifyContent:'center'}}>
+          <ArticleTile size={180} data={data} theme={this.props.theme} COLORS={this.props.COLORS}/>
+          {
+            (this.state.relatedImageWords)?(
+              <View style={{alignItems:'flex-start', flexDirection:'row',
+                marginTop:20, marginHorizontal:50}}>
+                <Icon name="comment" type="octicon" size={15}
+                  color={COLORS.GRAY} containerStyle={{marginTop:2}}/>
+                <Text style={{fontFamily:FONTS.PRODUCT_SANS, color:COLORS.GRAY,
+                  fontSize:12, marginLeft:10}}>
+                  {`This is what I see in this image : `} 
+                  <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD}}>{this.state.relatedImageWords}</Text>
+                </Text>
+              </View>
+            ):(null)
+          }
+        </View>
       )
     }
     else{
@@ -166,7 +212,8 @@ class ImageUpload extends Component {
     return (
       <View style={{margin:8, height:70, justifyContent:'space-between',
         alignItems:'center', flexDirection:'row'}}>
-          <TouchableOpacity onPress={()=>{Actions.replace("writearticle");logEvent(LOG_EVENT.SCREEN_CHANGE, 'writearticle');}}
+          <TouchableOpacity onPress={()=>{Actions.replace("writearticle");
+            logEvent(LOG_EVENT.SCREEN_CHANGE, 'writearticle');}}
             activeOpacity={0.75}>
             <SView
               style={{shadowColor:'#202020',shadowOpacity:0.2, shadowOffset:{width:0,height:7.5},shadowRadius:7, 
@@ -236,7 +283,7 @@ class ImageUpload extends Component {
         {this.renderBack()}
         <View style={{alignSelf:'center', justifyContent:'center', flex:1, margin:20}}>
           {this.renderAlert()}
-          <View style={{justifyContent:'center', alignItems:'center', width:"100%"}}>
+          <View style={{justifyContent:'center', alignItems:'center', width:"100%",marginBottom:50,}}>
             {this.renderChoosenImage()}
           </View>
         </View>
