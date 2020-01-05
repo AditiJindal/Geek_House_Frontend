@@ -6,7 +6,6 @@ export const ACTIONS={
     LOADING_GOOGLE: 'login.loading_google',
     LOGIN_ERROR: 'login.login_error',
     LOGIN_SUCCESS: 'login.login_success',
-    LOGIN_FIRST_LOGIN: 'login.first_login',
 
     // HOME
     LOGOUT: 'home.logout',
@@ -15,7 +14,6 @@ export const ACTIONS={
     HOME_ERROR: 'home.error',
     HOME_LOADING: 'home.loading',
     HOME_CHANGE_CATEGORY: 'home.change_category',
-    HOME_SHOW_REAL_APP: 'home.show_real_app',
 
     // SEARCH
     SEARCH_LOADING: 'search.loading',
@@ -58,6 +56,8 @@ export const ACTIONS={
     CHAT_AUTH_TOKEN_SET:'chat.auth_token.set',
     CHAT_PEOPLE_SEARCH: 'chat.people_search',
     CHAT_SOCKET_CHANGE_CATEGORY: 'chat_socket_change_category',
+    CHAT_FIRST_LOGIN: 'CHAT.first_login',
+    CHAT_SETUP_COMPLETE: 'chat.setup_complete',
 
     // SETTINGS
     SETTINGS_LOADING: 'settings.loading',

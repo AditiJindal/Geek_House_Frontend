@@ -8,11 +8,10 @@ import {
   toggleOverlay,
   getWelcome,
   setAuthToken,
-  showRealApp
 } from '../actions';
 import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
 import Image from 'react-native-fast-image';
-import {logEvent} from '../actions/ChatAction';
+import {logEvent, setupComplete} from '../actions/ChatAction';
 import {Dropdown} from '../components/Dropdown';
 import LottieView from 'lottie-react-native'
 import AppIntroSlider from '../components/AppIntroSlider/AppIntroSlider';
@@ -394,7 +393,7 @@ class Home extends PureComponent {
 
   _onDone(){    
     if (this.props.selected_category){
-      this.props.showRealApp()
+      this.props.setupComplete()
     }
     else{
       this.appIntroSlider.goToSlide(2)
@@ -431,7 +430,7 @@ class Home extends PureComponent {
 
   render() {
     const {COLORS} = this.props;
-    if (this.props.showRealAppValue || !this.props.first_login){
+    if (!this.props.first_login){
       return(
       <View style={{flex:1, backgroundColor:COLORS.LIGHT}}>
         <StatusBar 
@@ -465,14 +464,13 @@ const mapStateToProps = (state) => {
     data: state.login.data,
     authtoken: state.login.authtoken,
     categories: state.login.categories,
-    first_login: state.login.first_login,
+    first_login: state.chat.first_login,
 
     overlayVisible: state.home.overlayVisible,
     welcomeData: state.home.welcomeData,
     loading: state.home.loading,
     error: state.home.error,
     selected_category: state.home.selected_category,
-    showRealAppValue: state.home.showRealApp,
 
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,
@@ -487,7 +485,7 @@ export default connect(mapStateToProps, {
   getWelcome, 
   setAuthToken, 
   settingsChangeFavouriteCategory,
-  showRealApp
+  setupComplete
 })(Home);
 
 const styles = StyleSheet.create({

@@ -284,15 +284,20 @@ export default (state=INITIAL_STATE, action) => {
       state.socket.emit('change_favourite_category', action.payload)
       return state
 
-    case ACTIONS.HOME_SHOW_REAL_APP:
+    case ACTIONS.CHAT_SETUP_COMPLETE:
       state.socket.emit('user_setup_done');
       new_state = {...state, first_login:false}
       saveData(new_state)
       return new_state
 
-    case ACTIONS.LOGIN_FIRST_LOGIN:
-      new_state = {...state, first_login:action.payload.first_login, 
-        user_id:action.payload.authtoken}
+    case ACTIONS.CHAT_FIRST_LOGIN:
+      console.log("First login here is: ", action.payload.first_login)
+      COLORS = COLORS_DARK_THEME;
+      if (action.payload.theme==='light'){
+        COLORS = COLORS_LIGHT_THEME;
+      }
+      new_state = {...state, first_login:action.payload.first_login, COLORS,
+        user_id:action.payload.authtoken, theme:action.payload.theme}
       saveData(new_state)
       return new_state
 

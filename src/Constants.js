@@ -64,11 +64,8 @@ export const COLORS_DARK_THEME = {
 export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
 export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
 export const BASE_URL = (__DEV__)?BASE_URL_DEBUG:BASE_URL_PROD
-console.log("Base usrl is this: ", BASE_URL)
 
-export const OVERLAY_COLOR = "rgb(153, 153, 153)"
-
-export const HTTP_TIMEOUT = 20000
+export const HTTP_TIMEOUT = 12000
 
 export const LOG_EVENT = {
   SCREEN_CHANGE: 'screen_change',

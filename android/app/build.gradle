@@ -202,6 +202,8 @@ android {
 }
 
 dependencies {
+    implementation project(':@react-native-firebase_messaging')
+    implementation project(':@react-native-firebase_in-app-messaging')
     implementation project(':@react-native-firebase_perf')
     implementation project(':@react-native-firebase_ml-vision')
     implementation project(':react-native-document-picker')

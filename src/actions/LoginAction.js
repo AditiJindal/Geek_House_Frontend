@@ -44,18 +44,17 @@ const incomingMessageConverter = (data) => {
 
 const makeConnection = async (json_data, dispatch) => {
   // console.log("in make connectino")
-  console.log("json token is: ", json_data.authtoken)
   AsyncStorage.getItem(json_data.authtoken.toString()).then((response)=>{
     response = JSON.parse(response)
-    console.log("First login is: ", response)
-    if (response.first_login){
-      dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, 
-      payload: {first_login:false, authtoken:json_data.authtoken}})
-    }
+    console.log("This the respose in checkLogin: ", response)
+
+    dispatch({type:ACTIONS.CHAT_FIRST_LOGIN, 
+    payload: {first_login:response.first_login, authtoken:json_data.authtoken, theme: response.theme,}})
+    
     dispatch({type:ACTIONS.CHAT_LOAD_DATA, 
       payload: {...response, user_id: json_data.authtoken.toString()}})
   });
-  dispatch({type:ACTIONS.LOGIN_DATA, payload:{data:json_data.data, 
+  dispatch({type:ACTIONS.LOGIN_DATA, payload:{data:json_data.data,
     authtoken:json_data.authtoken, categories:json_data.categories}})
   const socket = io(BASE_URL);
   setSocket(socket)
@@ -173,7 +172,8 @@ export const loginGoogle = () => {
       httpClient.post(URLS.login, new_data).then(
         (response) => {
           authtoken = response.data.token
-          final_data = {data:new_data, authtoken:authtoken, categories:response.data.categories}
+          final_data = {data:new_data, authtoken:authtoken, 
+            categories:response.data.categories, theme:response.data.theme}
           analytics().setUserId(authtoken);
           crashlytics().setUserId(authtoken);
           crashlytics().setUserEmail(new_data.email);
@@ -186,9 +186,10 @@ export const loginGoogle = () => {
           else{
             analytics().logLogin({method:'google'})
           }
-          console.log("In google login first login is: ",response.data.first_login)
-          dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, 
-            payload: {first_login:response.data.first_login, authtoken:final_data.authtoken}})
+          console.log("In google login first login is: ",response.data)
+          dispatch({type:ACTIONS.CHAT_FIRST_LOGIN, 
+            payload: {first_login:response.data.first_login, theme:response.data.theme,
+              authtoken:final_data.authtoken}})
           dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
           // Image.prefetch(final_data.data.image_url)
           makeConnection(final_data, dispatch);
@@ -230,7 +231,8 @@ export const loginFacebook = () => {
                   httpClient.post(URLS.login, new_data).then(
                     (response) => {
                       authtoken = response.data.token
-                      final_data = {data:new_data, authtoken:authtoken, categories:response.data.categories}
+                      final_data = {data:new_data, authtoken:authtoken, 
+                        categories:response.data.categories}
                       analytics().setUserId(authtoken);
                       crashlytics().setUserId(authtoken);
                       crashlytics().setUserEmail(data.email);
@@ -244,10 +246,11 @@ export const loginFacebook = () => {
                       else{
                         analytics().logLogin({method:'facebook'})
                       }
-                      console.log("In fb login first login is: ",response.data.first_login)
+                      console.log("In fb login first login is: ",response.data)
                       // console.log("To save date is: loginFB: ", final_data)
-                      dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, 
-                        payload: {first_login:response.data.first_login, authtoken:final_data.authtoken}})
+                      dispatch({type:ACTIONS.CHAT_FIRST_LOGIN, 
+                        payload: {first_login:response.data.first_login, theme:response.data.theme,
+                          authtoken:final_data.authtoken}})
                       dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
                       // Image.prefetch(final_data.data.image_url);
                       makeConnection(final_data, dispatch)

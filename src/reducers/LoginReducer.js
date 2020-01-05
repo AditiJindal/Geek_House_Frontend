@@ -8,7 +8,6 @@ const INITIAL_STATE={
   error:'',
   authtoken:'',
   categories:[],
-  first_login: false
 }
 
 export default (state=INITIAL_STATE, action) => {
@@ -38,9 +37,6 @@ export default (state=INITIAL_STATE, action) => {
         loading:false, 
         categories:action.payload.categories
       };
-
-    case ACTIONS.LOGIN_FIRST_LOGIN:
-      return {...state, first_login: action.payload}
     
     case ACTIONS.LOGIN_ERROR:
       return {data:{}, facebookLoading:false, googleLoading:false, error:action.payload, authtoken:'', loading:false};

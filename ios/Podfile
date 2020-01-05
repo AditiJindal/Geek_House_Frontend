@@ -47,6 +47,10 @@ target 'Geek_House' do
 
   pod 'RNFBPerf', :path => '../node_modules/@react-native-firebase/perf'
 
+  pod 'RNFBInAppMessaging', :path => '../node_modules/@react-native-firebase/in-app-messaging'
+
+  pod 'RNFBMessaging', :path => '../node_modules/@react-native-firebase/messaging'
+
   target 'Geek_HouseTests' do
     inherit! :search_paths
     # Pods for testing

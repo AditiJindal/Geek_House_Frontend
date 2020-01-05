@@ -87,6 +87,10 @@ export const logEvent = (eventType, data) => {
   socket.emit('log_event', {eventType,data});
 }
 
+export const setupComplete = () => {
+  return {type:ACTIONS.CHAT_SETUP_COMPLETE}
+}
+
 export const sendTyping = (socket, value,other_user_id) => {
   socket.emit('typing', {to:other_user_id, value} );
   return {type:null}

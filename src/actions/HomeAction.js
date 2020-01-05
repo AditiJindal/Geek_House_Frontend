@@ -64,10 +64,6 @@ export const getWelcome = () => {
 };
 
 
-export const showRealApp = () => {
-  return {type:ACTIONS.HOME_SHOW_REAL_APP}
-}
-
 export const submitFeedback = (feedback_obj) => {
   // this function is responsible for uploading data, 
   //nothing will be passed to the reducer
