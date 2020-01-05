@@ -271,7 +271,7 @@ class WriteArticle extends Component {
           data = {new_data}
           label = "Category Selection"
           itemColor={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.LESSER_DARK}
-          value="All Categories"
+          value={this.props.category}
           fontSize={20}
           labelFontSize={14}
           itemCount={6}

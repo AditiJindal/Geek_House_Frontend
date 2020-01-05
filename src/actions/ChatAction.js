@@ -72,9 +72,9 @@ export const chatPeopleSearchAction = (value) => {
       dispatch({type:ACTIONS.CHAT_PEOPLE_SEARCH, payload:null})
     }
     else{
-      dispatch({type:ACTIONS.CHAT_LOADING})
-      httpClient.get(URLS.chatpeoplesearch, {params:{value}}).then((response)=>{
-        dispatch({type:ACTIONS.CHAT_PEOPLE_SEARCH, payload: response.data.chatPeopleSearch});
+      dispatch({type:ACTIONS.CHAT_LOADING});
+      socket.emit('chat_people_search', value).on('chat_people_search', (response)=>{
+        dispatch({type:ACTIONS.CHAT_PEOPLE_SEARCH, payload: response.chatPeopleSearch});
       })
     }
   }

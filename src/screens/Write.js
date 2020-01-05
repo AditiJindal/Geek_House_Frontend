@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux'
-import { View, Text, StyleSheet, StatusBar, FlatList, TouchableOpacity, Image} from 'react-native';
+import { View, Text, StyleSheet, StatusBar, FlatList, Dimensions,
+  TouchableOpacity, RefreshControl} from 'react-native';
 import ArticleTile from '../components/ArticleTile';
 import {setAuthToken, getMyArticles, clearPublish} from '../actions/WriteAction';
 import {Icon} from "react-native-elements"; 
@@ -169,21 +170,33 @@ class Write extends Component {
               my articles
             </Text>
         </SView>
-        {
-          (Object.keys(this.props.myArticles).length!==0)?
-          (<ScrollView showsVerticalScrollIndicator={false}>
-            {this.renderCategory()}
-            <View style={{height:150}}/>
-          </ScrollView> ):
-          (
-          <View style={{flex:1, justifyContent:'center', alignItems:'center', marginHorizontal:30, marginBottom:50}}>
-            <Text style={{textAlign:'center', fontFamily: FONTS.PRODUCT_SANS_BOLD, fontSize:18, 
-              color:COLORS.LESS_DARK}}>
-              You have not written any articles, you can start writing one by tapping on the NEW button
-            </Text>
-          </View>
-          )
-        }
+        
+          
+        <ScrollView showsVerticalScrollIndicator={false}
+          contentContainerStyle={{height:Dimensions.get('window').height}}
+          scrollEnabled={Object.keys(this.props.myArticles).length!==0}
+          refreshControl = {
+              <RefreshControl
+                refreshing={false}
+                colors={["rgb(0,181, 213)"]}
+                onRefresh={()=>
+                {this.props.getMyArticles(Object.keys(this.props.myArticles).length, this.props.reload);}}
+              />
+            }>
+          {
+            (Object.keys(this.props.myArticles).length!==0)?
+            this.renderCategory():(
+            <View style={{flex:1, justifyContent:'center', alignItems:'center', 
+              height:"100%", width:"100%",padding:30}}>
+              <Text style={{textAlign:'center', fontFamily: FONTS.PRODUCT_SANS_BOLD, fontSize:18, 
+                color:COLORS.LESS_DARK}}>
+                You have not written any articles, you can start writing one by tapping on the NEW button
+              </Text>
+            </View>
+            )
+          }
+          <View style={{height:150}}/>
+        </ScrollView>
         {this.renderFloatingButton()}
 
         <View style={{bottom:50, height:0}}>

@@ -160,14 +160,14 @@ class ImageUpload extends Component {
   renderImagePicker(){
     const {COLORS} = this.props; 
     return (
-      <TouchableOpacity style={{backgroundColor:COLORS.LESS_LIGHT, borderRadius:10,
+      <TouchableOpacity style={{backgroundColor:COLORS.LESSER_LIGHT, borderRadius:10,
         alignSelf:'center', height:180, width:180, borderWidth:3, 
-        borderColor:(this.props.theme==='light')?COLORS.GRAY:COLORS.LESSER_DARK,}} 
+        borderColor:COLORS.LESSER_DARK,}} 
         onPress={()=>{this.pickImage()}}>
         <View style={{flex:1,justifyContent:'center', alignItems:'center'}}>
           <Icon name="image" type="material-community" size={128} 
-            color={(this.props.theme==='light')?COLORS.GRAY:COLORS.LESSER_DARK}/>
-          <Text style={{color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESSER_DARK, 
+            color={COLORS.LESSER_DARK}/>
+          <Text style={{color:COLORS.LESSER_DARK, 
             fontFamily:FONTS.RALEWAY, fontSize:16}}>
             Select an Image
           </Text>

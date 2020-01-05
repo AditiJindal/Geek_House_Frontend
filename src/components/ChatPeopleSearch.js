@@ -26,7 +26,8 @@ const ChatPeopleSearch = (props) => {
         <TouchableOpacity 
           style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,elevation:7,
           backgroundColor:COLORS.LESSER_DARK}}
-          activeOpacity={0.75} onPress={()=>{Keyboard.dismiss();props.onSearch(); searchValue = props.value}}>
+          activeOpacity={0.75} onPress={()=>{Keyboard.dismiss();
+          props.onSearch(); searchValue = props.value}}>
           <Text style={{fontFamily:FONTS.RALEWAY_BOLD, fontSize:18,
           color:COLORS.LESSER_LIGHT}}>
             search
