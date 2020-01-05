@@ -87,7 +87,7 @@ class Publish extends Component {
     
     return(
       <View style={{flex:3, justifyContent:'center', alignItems:'center'}}>
-        <View style={{position:"absolute", zIndex:100}}>
+        <View style={{position:"absolute",zIndex:10, paddingBottom:50}}>
           <ArticleTile size={this.state.value} data={data} animate theme={this.props.theme} 
             COLORS = {this.props.COLORS}
           />

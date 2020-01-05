@@ -83,7 +83,7 @@ export default ChatPeople = (props) => {
           (
             <View style={{...styles.BadgeViewStyle, right: -10 - (props.unread_messages.toString().length*5), 
               borderColor:(props.theme==='light')?COLORS.RED:COLORS.GREEN,
-              backgroundColor:COLORS.LESS_LIGHT}}>
+              backgroundColor:(props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
               <Text style={{...styles.BadgeTextStyle, 
                 color:(props.theme==='light')?COLORS.RED:COLORS.GREEN}}>
                 {props.unread_messages}

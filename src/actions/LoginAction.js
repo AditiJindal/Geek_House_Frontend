@@ -56,7 +56,13 @@ const makeConnection = async (json_data, dispatch) => {
   });
   dispatch({type:ACTIONS.LOGIN_DATA, payload:{data:json_data.data,
     authtoken:json_data.authtoken, categories:json_data.categories}})
-  const socket = io(BASE_URL);
+  const socket = io.connect(BASE_URL, {
+    timeout: 8000,
+    forceNew:true,
+    reconnectionDelay:700,
+    transports: ['websocket'],
+    autoConnect: true,
+  });
   setSocket(socket)
 
   AppState.addEventListener('change', (appState)=>{
@@ -70,7 +76,6 @@ const makeConnection = async (json_data, dispatch) => {
     }
   })
   
-
   // console.log('Device: ', Device);
   manufacturer = await Device.getManufacturer();
   designName = await Device.getDevice(),
@@ -119,10 +124,13 @@ const makeConnection = async (json_data, dispatch) => {
   })
 
   socket.on('reconnect', (data)=>{
-    socket.emit('not-disconnected', {id: json_data.authtoken})
+    analytics().logEvent("app_reconnected")
+    socket.emit('not-disconnected', {id: json_data.authtoken,
+      name:json_data.data.name})
   })
 
   socket.on('disconnect', (e)=> {
+    analytics().logEvent("app_disconnected")
     dispatch({type:ACTIONS.CHAT_SAVE_DATA})
   });
   
