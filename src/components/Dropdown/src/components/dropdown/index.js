@@ -426,6 +426,7 @@ export default class Dropdown extends PureComponent {
   }
 
   renderBase(props) {
+    const {COLORS} = this.props;
     let { value } = this.state;
     let {
       data,
@@ -454,8 +455,8 @@ export default class Dropdown extends PureComponent {
       title:
       String(title);
 
-    props.baseColor = (this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY
-    props.tintColor = (this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY
+    props.baseColor = COLORS.GRAY
+    props.tintColor = COLORS.GRAY
     props.animationDuration = 0
     return (
       <View style={{flex:1, borderBottomWidth:0.5, padding:5, borderBottomColor:this.props.textSubColor}}>
@@ -473,7 +474,7 @@ export default class Dropdown extends PureComponent {
   }
 
   renderAccessory() {
-    let triangleStyle = { backgroundColor: (this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK };
+    let triangleStyle = { backgroundColor: this.props.COLORS.DARK };
 
     return (
       <View style={styles.accessory}>

@@ -3,45 +3,25 @@ import { View, StyleSheet, Text, StatusBar, Alert}from 'react-native';
 import {connect} from 'react-redux'
 import {FONTS, COLORS_LIGHT_THEME} from '../Constants'
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  gotLoginData, loginGoogle,loginFacebook, checkLogin
-} from '../actions';
+import {loginGoogle,loginFacebook, checkLogin} from '../actions';
 import Loading from '../components/Loading';
 import { Button } from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color'
 import Image from 'react-native-fast-image';
-// import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
-
-
-// import firebase from 'firebase';
-
-// const firebaseConfig = {
-//   apiKey: "AIzaSyB-b5_w7LqCjEVrVd_FvbIw3ZMHuF8mrWs",
-//   authDomain: "bookings-d8824.firebaseapp.com",
-//   databaseURL: "https://bookings-d8824.firebaseio.com",
-//   projectId: "bookings-d8824",
-//   storageBucket: "bookings-d8824.appspot.com",
-//   messagingSenderId: "247553799156",
-//   appId: "1:247553799156:web:7bc0128a8769b422",
-//   measurementId: "G-9BVT126H1Z"
-// };
-
-// firebase.initializeApp(firebaseConfig)
-
-
+import SplashScreen from 'react-native-splash-screen'
+import analytics from '@react-native-firebase/analytics'
 
 class Login extends Component {
-  constructor() {
-    super();
-    this.state={
-      googleLoading:false,
-      facebookLoading:false,
-      // loading:true,
-    }
+
+  state={
+    googleLoading:false,
+    facebookLoading:false,
   }
 
-  async componentDidMount(){
+  componentDidMount(){
     this.props.checkLogin();
+    SplashScreen.hide();
+    analytics().logAppOpen();
     }
 
   renderGoogleButton(){
@@ -174,8 +154,7 @@ const mapStateToProps = (state) => {
   };
 }
 
-export default connect(mapStateToProps, {
-  gotLoginData, loginGoogle,loginFacebook, checkLogin
+export default connect(mapStateToProps, {loginGoogle,loginFacebook, checkLogin
 })(Login);
 
 

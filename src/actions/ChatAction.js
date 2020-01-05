@@ -1,5 +1,5 @@
 import {ACTIONS} from './types';
-import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import axios from 'axios';
 import _ from 'lodash';
 import {uploadImage} from './WriteAction';
@@ -81,7 +81,14 @@ export const chatPeopleSearchAction = (value) => {
 }
 
 export const logEvent = (eventType, data) => {
+  if (eventType===LOG_EVENT.SCREEN_CHANGE){
+    data = {screen:data, time:Date.now()}
+  }
   socket.emit('log_event', {eventType,data});
+}
+
+export const setupComplete = () => {
+  return {type:ACTIONS.CHAT_SETUP_COMPLETE}
 }
 
 export const sendTyping = (socket, value,other_user_id) => {
@@ -90,7 +97,6 @@ export const sendTyping = (socket, value,other_user_id) => {
 }
 
 export const getChatPeopleExplicitly = () => {
-  console.log("Explocitly called")
   socket.emit('chat_people_explicitly');
   return {type:ACTIONS.CHAT_LOADING}
 }

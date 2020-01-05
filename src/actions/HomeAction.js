@@ -29,7 +29,8 @@ export const logout = () => {
     Actions.replace("login_main"); logEvent(LOG_EVENT.SCREEN_CHANGE, 'login_main');
     AsyncStorage.removeItem('data').then(
       () => {
-        dispatch({type:ACTIONS.LOGOUT});
+        console.log("ACTION.LOGOUT HERE 1")
+        dispatch({type:ACTIONS.LOGOUT, payload:true});
       }
     )
   }
@@ -62,18 +63,6 @@ export const getWelcome = () => {
   }      
 };
 
-export const changeSelectedCategory = (selected_category) => {
-  return {type:ACTIONS.HOME_CHANGE_CATEGORY, payload: selected_category}
-}
-
-export const sendFavouriteCategory = (selected_category) => {
-  httpClient.post(URLS.setcategory, {fav_category: selected_category})
-  return {type:null}
-}
-
-export const showRealApp = () => {
-  return {type:ACTIONS.HOME_SHOW_REAL_APP}
-}
 
 export const submitFeedback = (feedback_obj) => {
   // this function is responsible for uploading data, 

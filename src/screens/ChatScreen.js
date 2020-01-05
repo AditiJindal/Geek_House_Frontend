@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, StatusBar, Keyboard, BackHandler} from 'react-n
 import {connect} from 'react-redux';
 import {Badge} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Feather'
-import {FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
+import {FONTS} from '../Constants';
 import {GiftedChat} from '../components/GiftedChat/index';
 import { Actions } from 'react-native-router-flux';
 import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData, setAuthToken,
@@ -44,37 +44,39 @@ class ChatScreen extends Component {
   }
 
   renderStatus(status){
+    const {COLORS} = this.props;
     let jsx = <View/>
 
-    if (this.props.other_user_data.newEntry){
+    if (this.props.other_user_data.newEntry || !status){
       return <Text/>
     }
 
     if (status.typing){
       jsx = 
-      (<Text style={{color: (this.props.theme==='light')?COLORS_LIGHT_THEME.YELLOW:COLORS_DARK_THEME.YELLOW}}>
+      (<Text style={{color:COLORS.YELLOW}}>
         typing
       </Text>)
     }
     else if (status.online){
-      jsx = <Text style={{color: (this.props.theme==='light')?COLORS_LIGHT_THEME.GREEN:COLORS_DARK_THEME.GREEN}}>online</Text>
+      jsx = <Text style={{color:COLORS.GREEN}}>online</Text>
     }
     else{
-      jsx = <Text style={{color: (this.props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.RED}}>offline</Text>
+      jsx = <Text style={{color:COLORS.RED}}>offline</Text>
     }
 
     return (
-      <Text style={{fontSize: 16, color: (this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}}>
+      <Text style={{fontSize: 16, color:COLORS.LESS_DARK}}>
         {' is '}{jsx}
       </Text>
     )
   }
 
   renderHeader(){
+    const {COLORS} = this.props;
     return (
       <SView style={{borderRadius:10, margin:8, paddingVertical:10,
         alignItems:'center', flexDirection:'row', 
-        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, 
+        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
         paddingHorizontal:5, shadowColor:'#202020',
         shadowOpacity:0.25, shadowOffset:{width:0,height:10},shadowRadius:8,}}>
         <View style={{flexDirection:'row', alignItems:'center'}}>
@@ -101,20 +103,20 @@ class ChatScreen extends Component {
           </View>
           <View style={{justifyContent:'center', marginLeft:10, flex:6, alignItems:'center'}}>
             <Text style={{...styles.TextStyle, 
-              color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}}>
+              color:COLORS.LESS_DARK}}>
               {this.props.other_user_data.name}
               {this.renderStatus(this.props.status[this.props.other_user_data._id])}
             </Text>
             {(this.props.other_user_data.fav_category)?
             (<Text style={{...styles.IntrestStyle, 
-              color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LESS_DARK}}>
+              color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
               {this.props.other_user_data.fav_category}
             </Text>):<View/>}
           </View>
           {(!this.state.imageViewerSelected)?(
             <View style={{height:32, width:48, justifyContent:'center', alignItems:'center'}}>
               <Icon name="x-circle" size={22} 
-                color={(this.props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.RED} 
+                color={COLORS.RED} 
                 onPress={() => {
                   if (this.props.other_user_data.newEntry){
                     this.props.getChatPeopleExplicitly()
@@ -131,27 +133,31 @@ class ChatScreen extends Component {
   }
 
   render() {
+    const {COLORS} = this.props;
     return(
-      <View style={{backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}>
+      <View style={{backgroundColor:COLORS.LIGHT}}>
         <View style={{height:"100%"}}>
           <StatusBar 
             barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
-            backgroundColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}
+            backgroundColor={COLORS.LIGHT}
           />
-          {changeNavigationBarColor((this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT, (this.props.theme==='light'))}
+          {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
           {this.renderHeader()}
-          <TimedAlert onRef={ref=>this.timedAlert = ref} theme={this.props.theme}/>
+          <TimedAlert onRef={ref=>this.timedAlert = ref} theme={this.props.theme}
+            COLORS = {COLORS}
+          />
             {
               (this.props.loading)?
                 <Text>LOADING</Text>:
                 (<View style={{flex:1}}>
                   <GiftedChat
                     theme={this.props.theme}
-                    containerStyle={{backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}
-                    primaryStyle={{backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT}}
+                    COLORS = {COLORS}
+                    containerStyle={{backgroundColor:COLORS.LIGHT}}
+                    primaryStyle={{backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT}}
                     textInputStyle={{
-                        color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK,
-                        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT
+                        color:COLORS.LESS_DARK,
+                        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT
                       }}
                     messages={this.props.messages[this.props.other_user_data._id]}
                     onSend={(message) => {
@@ -190,7 +196,9 @@ const mapStateToProps = (state) => {
     messages: state.chat.messages,
     socket: state.chat.socket,
     status: state.chat.status,
-    theme: state.chat.theme
+
+    theme: state.chat.theme,
+    COLORS: state.chat.COLORS
   }
 }
 

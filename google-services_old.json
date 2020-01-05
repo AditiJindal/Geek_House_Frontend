@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "315957273790",
+    "firebase_url": "https://geek-house-rn.firebaseio.com",
+    "project_id": "geek-house-rn",
+    "storage_bucket": "geek-house-rn.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315957273790:android:5237e270eebf04ed34eaef",
+        "android_client_info": {
+          "package_name": "com.tjprodutions.geekhousern"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "315957273790-ahj65vevte3rv4grq47tjib710otfp8l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tjprodutions.geekhousern",
+            "certificate_hash": "526e1866bbff38179d9a4bc6c3cebe8956558ff9"
+          }
+        },
+        {
+          "client_id": "315957273790-o4p20t2j3brt7c8bqc68814pj63j1lum.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmfOyBEWIOH5CAffvcpQTPYD2GHepfkmw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "315957273790-o4p20t2j3brt7c8bqc68814pj63j1lum.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

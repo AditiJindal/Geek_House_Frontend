@@ -8,12 +8,65 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:315957273790:android:fe992995a5a9912734eaef",
+        "android_client_info": {
+          "package_name": "com.tjproductions.geekhousern"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "315957273790-8dclksmoll6uf74kr6cd6ogn5qtfavgs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tjproductions.geekhousern",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "315957273790-o4p20t2j3brt7c8bqc68814pj63j1lum.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmfOyBEWIOH5CAffvcpQTPYD2GHepfkmw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "315957273790-o4p20t2j3brt7c8bqc68814pj63j1lum.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:315957273790:android:5237e270eebf04ed34eaef",
         "android_client_info": {
           "package_name": "com.tjprodutions.geekhousern"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "315957273790-tb2dggkh235d0fk2k509grubg57ffon3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tjprodutions.geekhousern",
+            "certificate_hash": "3ddcfe4c3f1195650d147b3872337da50a7d7f43"
+          }
+        },
+        {
+          "client_id": "315957273790-l39qn5bp73tj2ug8r46ejdcj5t2gb433.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tjprodutions.geekhousern",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
         {
           "client_id": "315957273790-ahj65vevte3rv4grq47tjib710otfp8l.apps.googleusercontent.com",
           "client_type": 1,

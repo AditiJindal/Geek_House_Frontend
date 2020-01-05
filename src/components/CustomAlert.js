@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { View, Text, StyleSheet,TouchableOpacity}from 'react-native';
 import {FONTS, ERROR_BUTTONS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants'
 import {Overlay} from "react-native-elements";
-import Image from 'react-native-fast-image'
+import Image from 'react-native-fast-image';
 // import console = require('console');
 
 
@@ -12,13 +12,14 @@ export default class CustomAlert extends Component {
   }
 
   renderButton(obj){  
+    const {COLORS} = this.props;
     if (obj.label === ERROR_BUTTONS.TICK){
       return (
         <TouchableOpacity onPress={this.props.onFirstButtonPress.bind(this)}
         activeOpacity={1}>
           <View style={{height:54, width:54, borderRadius:27, borderWidth:2,elevation:2,
-            backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
-            justifyContent:'center', alignItems:'center', borderColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.GREEN:COLORS_DARK_THEME.GREEN}}>
+            backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
+            justifyContent:'center', alignItems:'center', borderColor:COLORS.GREEN}}>
             <Image source={require('../../assets/icons/tick.png')} style={{height:22, width:22}}/>          
           </View>
         </TouchableOpacity>
@@ -29,8 +30,8 @@ export default class CustomAlert extends Component {
         <TouchableOpacity onPress={this.props.onSecondButtonPress.bind(this)}
         activeOpacity={1}>
           <View style={{height:54, width:54, borderRadius:27, borderWidth:2,elevation:2,
-            backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
-            justifyContent:'center', alignItems:'center', borderColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.RED}}>
+            backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
+            justifyContent:'center', alignItems:'center', borderColor:COLORS.RED}}>
             <Image source={require('../../assets/icons/cross.png')} style={{height:20, width:20}}/>          
           </View>
         </TouchableOpacity>
@@ -41,7 +42,7 @@ export default class CustomAlert extends Component {
         <TouchableOpacity onPress={this.props.onThirdButtonPress.bind(this)}
         activeOpacity={1}>
           <View style={{justifyContent:'center', borderColor:obj.color, borderWidth:2, elevation:2,
-          backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
+          backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
           alignItems:'center', borderRadius:8, paddingVertical:12, paddingHorizontal:10}}>
             <Text style={[styles.ButtonLabelStyle, {color:obj.color}]}>{obj.label}</Text>          
           </View>
@@ -51,7 +52,6 @@ export default class CustomAlert extends Component {
   }
 
   renderButtonsFromList(){
-    
     return(
       <View style={{justifyContent:'space-between', flexDirection:'row'}}>
         {this.props.message.type.map(
@@ -66,6 +66,7 @@ export default class CustomAlert extends Component {
   }
 
   render() {
+    const {COLORS} = this.props;
     return(
       <View>
         <Overlay isVisible={this.props.isVisible}
@@ -73,17 +74,17 @@ export default class CustomAlert extends Component {
           onBackdropPress={this.props.onBackdropPress.bind(this)}
           overlayStyle={{margin:25, elevation:10}}
           animationType='none'
-          overlayBackgroundColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}
+          overlayBackgroundColor={(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}
           width="auto"
           height="auto">
-          <View style={{padding:10, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
+          <View style={{padding:10, backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
 
             <Text style={{...styles.TitleStyle,
-              color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>
+              color:COLORS.DARK}}>
               {this.props.message.title}
             </Text>
             <Text style={{...styles.ContentStyle, 
-              color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LESSER_DARK}}>
+              color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESSER_DARK}}>
               {this.props.message.content}
             </Text>
             <View style={{padding:10}}>

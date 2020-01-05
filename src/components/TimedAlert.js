@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {View, Text, UIManager, Platform, LayoutAnimation} from 'react-native';
-import { FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME } from '../Constants';
+import {FONTS} from '../Constants';
 
 
 const ANIMATION_CONFIG = LayoutAnimation.create(
@@ -37,13 +37,14 @@ export default class TimedAlert extends Component {
     if (!this.state.show){
       return null
     }
+    const {COLORS} = this.props;
 
     return (
       <View style={{paddingHorizontal:25, paddingVertical:15, 
-        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK, zIndex:10,
+        backgroundColor:COLORS.LESSER_DARK, zIndex:10,
         borderRadius:15, alignSelf:'center', top:80, position:'absolute', elevation:10}}>
-        <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, color:COLORS_LIGHT_THEME.LESSER_DARK,
-          fontSize:14, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_LIGHT:COLORS_DARK_THEME.LESSER_LIGHT}}>
+        <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD,
+          fontSize:14, color:COLORS.LESSER_LIGHT}}>
           {this.state.message}
         </Text>
       </View>

@@ -1,4 +1,7 @@
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 apply plugin: "com.android.application"
+apply plugin: "com.google.firebase.firebase-perf"
+apply plugin: 'io.fabric'
 
 import com.android.build.OutputFile
 
@@ -127,8 +130,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    dexOptions {
+       javaMaxHeapSize "3g"
+    }
+
     defaultConfig {
-        applicationId "com.tjprodutions.geekhousern"
+        applicationId "com.tjproductions.geekhousern"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -195,6 +202,10 @@ android {
 }
 
 dependencies {
+    implementation project(':@react-native-firebase_messaging')
+    implementation project(':@react-native-firebase_in-app-messaging')
+    implementation project(':@react-native-firebase_perf')
+    implementation project(':@react-native-firebase_ml-vision')
     implementation project(':react-native-document-picker')
     implementation project(':react-native-fs')
     implementation project(':react-native-onesignal')
@@ -220,4 +231,10 @@ task copyDownloadableDepsToLibs(type: Copy) {
     into 'libs'
 }
 
+
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+crashlytics {
+  enableNdk true
+}
+apply plugin: 'com.google.gms.google-services'

@@ -148,6 +148,7 @@ export default class InputToolbar extends React.Component {
         }
     }
     renderPhotoSelector(){
+        const {COLORS} = this.props;
         const ImageOptions={
             noData: true,
             mediaType:'photo',
@@ -168,17 +169,17 @@ export default class InputToolbar extends React.Component {
                         }}
                         activeOpacity={0.8} 
                         style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
-                        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, marginRight:15}}>
+                        backgroundColor:COLORS.LESSER_LIGHT, marginRight:15}}>
                         <View style={{height:50, justifyContent:'center'}}>
-                            <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK,
+                            <Text style={{color:COLORS.LESSER_DARK,
                                 fontFamily:FONTS.RALEWAY_BOLD, textAlign:'center', fontSize:16}}>
                                 Gallery
                             </Text>
                         </View>
                         <Icon size={72} name="image"
-                        color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}/>
+                        color={COLORS.LESSER_DARK}/>
                         <View style={{height:50, justifyContent:'center'}}>
-                            <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK,
+                            <Text style={{color:COLORS.LESSER_DARK,
                                 fontFamily:FONTS.PRODUCT_SANS, textAlign:'center', fontSize:12}}>
                                 {`Select from\nGallery`}
                             </Text>
@@ -193,17 +194,17 @@ export default class InputToolbar extends React.Component {
                         }}
                         activeOpacity={0.8}
                         style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
-                        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_LIGHT:COLORS_DARK_THEME.LESSER_LIGHT}}>
+                        backgroundColor:COLORS.LESSER_LIGHT}}>
                         <View style={{height:50, justifyContent:'center'}}>
-                            <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK,
+                            <Text style={{color:COLORS.LESSER_DARK,
                                 fontFamily:FONTS.RALEWAY_BOLD, textAlign:'center', fontSize:16}}>
                                 Camera
                             </Text>
                         </View>
                         <Icon size={72} name="camera"
-                        color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}/>
+                        color={COLORS.LESSER_DARK}/>
                         <View style={{height:50, justifyContent:'center'}}>
-                            <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK,
+                            <Text style={{color:COLORS.LESSER_DARK,
                                 fontFamily:FONTS.PRODUCT_SANS, textAlign:'center', fontSize:12}}>
                                 {`Click from\nCamera`}
                             </Text>
@@ -213,13 +214,14 @@ export default class InputToolbar extends React.Component {
                 {(!this.state.imageSelectorOpen)?(
                     <Icon size={22} name="image"
                     onPress={()=>{this.setState({imageSelectorOpen:true})}}
-                    color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}
+                    color={COLORS.LESSER_DARK}
                     />
                 ):<View/>}
             </View>
         )
     }
     renderSelectedImage(){
+        const {COLORS} = this.props;
         const image = this.props.selectedImage;
         if (image){
             return (
@@ -228,7 +230,7 @@ export default class InputToolbar extends React.Component {
                         source={{uri:image.url}} style={{flex:1, alignItems:'flex-end'}}>
                         <Icon size={24} name="x" onPress={()=>{this.props.onImageCross()}}
                             style={{backgroundColor:this.props.primaryStyle.backgroundColor, position:'relative',
-                            right:-3, top:-3, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LIGHT_GRAY,
+                            right:-3, top:-3, color:COLORS.LIGHT_GRAY,
                             borderBottomLeftRadius:15, paddingLeft:2.5, paddingBottom:2.5}}/>
                         <View style={{alignSelf:'flex-start', justifyContent:'flex-end', flex:1, padding:5}}>
                             <Text style={{color:COLORS_DARK_THEME.LESSER_DARK,

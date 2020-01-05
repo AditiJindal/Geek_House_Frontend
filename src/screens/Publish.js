@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity }from 'react-native';
-import {FONTS, COLORS_DARK_THEME, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import {connect} from 'react-redux';
 import {Actions} from 'react-native-router-flux';
 import {publishArticle, getMyArticles} from '../actions/WriteAction';
@@ -11,7 +11,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import ArticleTile from '../components/ArticleTile';
 import Loading from '../components/Loading';
 import SView from 'react-native-simple-shadow-view';
-
+import analytics from '@react-native-firebase/analytics'
 class Publish extends Component {
 
   constructor() {
@@ -21,6 +21,10 @@ class Publish extends Component {
     }
   }
 
+  componentDidMount(){
+    analytics().setCurrentScreen('Publish', 'Publish')
+  }
+
   componentWillReceiveProps(nextProps){
     if (nextProps.published && !nextProps.loading){
       this.animation.play()
@@ -28,6 +32,7 @@ class Publish extends Component {
   }
 
   renderBack(){
+    const {COLORS} = this.props;
     return (
       <View style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
         alignItems:'center', flexDirection:'row'}}>
@@ -36,12 +41,12 @@ class Publish extends Component {
             <SView
               style={{shadowColor:'#202020',shadowOpacity:0.2, shadowOffset:{width:0,height:7.5},shadowRadius:7, 
               borderRadius:30, padding:10, 
-              backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT,
+              backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
               marginRight:15, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
               <Icon name="arrow-left" type="material-community" size={26}
                 containerStyle={{height:26, width:26, justifyContent:'center', alignItems:'center'}} 
-                color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}/>
-              <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK, 
+                color={COLORS.LESS_DARK}/>
+              <Text style={{color:COLORS.LESS_DARK, 
                 fontFamily:FONTS.RALEWAY,marginHorizontal:3, 
                 fontSize:16, textAlignVertical:'center'}}>
                 image <Text style={{fontSize:14}}>upload</Text>
@@ -49,7 +54,7 @@ class Publish extends Component {
             </SView>
           </TouchableOpacity>
           <Text style={{...styles.TextStyle, 
-            color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>
+            color:COLORS.DARK}}>
             preview
           </Text>
       </View>
@@ -57,6 +62,7 @@ class Publish extends Component {
   }
 
   renderClose(){
+    const {COLORS} = this.props;
     return (
       <View style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
         alignItems:'center', flexDirection:'row'}}>
@@ -65,10 +71,12 @@ class Publish extends Component {
             marginRight:15, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
             <Icon name="close" type="material-community" size={26}
               containerStyle={{height:26, width:26, justifyContent:'center', alignItems:'center'}} 
-              color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}/>
+              color={COLORS.LESS_DARK}/>
 
           </TouchableOpacity>
-          <Text style={{...styles.TextStyle, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>published</Text>
+          <Text style={{...styles.TextStyle, color:COLORS.DARK}}>
+            published
+          </Text>
       </View>
     )
   }
@@ -80,7 +88,9 @@ class Publish extends Component {
     return(
       <View style={{flex:3, justifyContent:'center', alignItems:'center'}}>
         <View style={{position:"absolute", zIndex:100}}>
-          <ArticleTile size={this.state.value} data={data} animate theme={this.props.theme}/>
+          <ArticleTile size={this.state.value} data={data} animate theme={this.props.theme} 
+            COLORS = {this.props.COLORS}
+          />
         </View>
         {this.renderSuccess()}
       </View>
@@ -88,6 +98,7 @@ class Publish extends Component {
   }
 
   renderPublishButton(){
+    const {COLORS} = this.props;
     data_to_send = {image: this.props.image.uri, topic: this.props.topic, 
       contents:this.props.contents, category:this.props.category}
     return (
@@ -99,10 +110,14 @@ class Publish extends Component {
           <SView style={{borderRadius:10, shadowOpacity:0.3,shadowRadius:6,height:58,width:170,
           shadowOffset: { height:7}, shadowColor:'#11998E', backgroundColor:COLORS_LIGHT_THEME.LIGHT}}>
             <LinearGradient style={{borderRadius:10,flex:1,justifyContent:'center', alignItems:"center",
-              backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.GREEN:COLORS_DARK_THEME.GREEN}} 
+              backgroundColor:COLORS.GREEN}} 
               colors={["#11998e", "#38ef7d"]} start={{x:0, y:1}} end={{x:1, y:1}}>
-              <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:26, color:COLORS_LIGHT_THEME.LIGHT}}>PUBLISH</Text>
-              <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:12, color:COLORS_LIGHT_THEME.LIGHT}}>(3/3)</Text>
+              <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:26, color:COLORS_LIGHT_THEME.LIGHT}}>
+                PUBLISH
+              </Text>
+              <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:12, color:COLORS_LIGHT_THEME.LIGHT}}>
+                (3/3)
+              </Text>
             </LinearGradient>
           </SView>         
         }
@@ -111,6 +126,7 @@ class Publish extends Component {
   }
 
   renderContinueButton(){
+    const {COLORS} = this.props;
     data_to_send = {image: this.props.image.uri, topic: this.props.topic, 
       contents:this.props.contents, category:this.props.category}
     return (
@@ -119,9 +135,11 @@ class Publish extends Component {
         <SView style={{borderRadius:10, shadowOpacity:0.4,shadowRadius:6,height:58,width:160,
           shadowOffset: { height:7}, shadowColor:'#FC6767', backgroundColor:COLORS_LIGHT_THEME.LIGHT}}>
           <LinearGradient style={{borderRadius:10,flex:1,justifyContent:'center', alignItems:"center",
-            backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.GREEN:COLORS_DARK_THEME.GREEN,}} 
+            backgroundColor:COLORS.GREEN,}} 
             colors={["#ec008c", "#fc6767"]} start={{x:0, y:1}} end={{x:1, y:1}}>
-            <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:26, color:COLORS_LIGHT_THEME.LIGHT}}>CONTINUE</Text>
+            <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:26, color:COLORS_LIGHT_THEME.LIGHT}}>
+              CONTINUE
+            </Text>
           </LinearGradient>
         </SView>
       </TouchableOpacity>
@@ -143,8 +161,9 @@ class Publish extends Component {
   }
 
   render() {
+    const {COLORS} = this.props;
     return(
-      <View style={{flex:1, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}>
+      <View style={{flex:1, backgroundColor:COLORS.LIGHT}}>
         {
           (this.props.published)?
           this.renderClose():
@@ -169,7 +188,9 @@ const mapStateToProps = (state) => {
     image: state.write.image,
     loading: state.write.loading,
     published: state.write.published,
-    theme: state.chat.theme
+
+    theme: state.chat.theme,
+    COLORS: state.chat.COLORS
   });
 }
 

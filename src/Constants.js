@@ -24,8 +24,10 @@ export const COLORS_LIGHT_THEME = {
   RED: '#cb2d3e',
   GREEN: "#63d6a0",
   YELLOW: "#f9a602",
+  STAR_YELLOW: "#f5af19",
   OVERLAY_COLOR: "#999999",
-  SHIMMER_COLOR: ['#ebebeb', '#c5c5c5', '#ebebeb']
+  SHIMMER_COLOR: ['#ebebeb', '#c5c5c5', '#ebebeb'],
+  URM_COLOR: "#cb2d3e"
 }
 
 export const COLORS_DARK_THEME = {
@@ -54,15 +56,16 @@ export const COLORS_DARK_THEME = {
   RED: '#ed2939',
   GREEN: "#63d6a0",
   YELLOW: "#f9a602",
+  STAR_YELLOW: "#f3c921",
   OVERLAY_COLOR: "#181818",
-  SHIMMER_COLOR: ["#323232", "#3c3c3c", "#464646"]
+  SHIMMER_COLOR: ["#323232", "#3c3c3c", "#464646"],
+  URM_COLOR: "#63d6a0"
 };
-// export const BASE_URL = "https://stark-beach-17150.herokuapp.com"
-export const BASE_URL = "http://192.168.0.103:8000"
+export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
+export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
+export const BASE_URL = (__DEV__)?BASE_URL_DEBUG:BASE_URL_PROD
 
-export const OVERLAY_COLOR = "rgb(153, 153, 153)"
-
-export const HTTP_TIMEOUT = 20000
+export const HTTP_TIMEOUT = 12000
 
 export const LOG_EVENT = {
   SCREEN_CHANGE: 'screen_change',
@@ -86,7 +89,6 @@ export const URLS = {
   chatpeople: '/api/chatpeople/',
   imageupload: '/api/article/image_upload/',
   comment: '/api/comment/',
-  setcategory: '/api/setcategory/',
   logevent: '/api/logevent/',
   chatpeoplesearch: '/api/chatpeoplesearch/',
   feedback: '/api/feedback/'

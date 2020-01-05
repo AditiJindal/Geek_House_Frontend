@@ -8,19 +8,17 @@ import {
   toggleOverlay,
   getWelcome,
   setAuthToken,
-  changeSelectedCategory,
-  sendFavouriteCategory,
-  showRealApp
 } from '../actions';
+import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
 import Image from 'react-native-fast-image';
-import {logEvent} from '../actions/ChatAction';
+import {logEvent, setupComplete} from '../actions/ChatAction';
 import {Dropdown} from '../components/Dropdown';
 import LottieView from 'lottie-react-native'
 import AppIntroSlider from '../components/AppIntroSlider/AppIntroSlider';
 import ArticleTile from '../components/ArticleTile';
 import {Overlay} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Feather';
-import {FONTS,COLORS_LIGHT_THEME, COLORS_DARK_THEME, LOG_EVENT} from '../Constants';
+import {FONTS,COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
 import BottomTab from '../components/BottomTab';
@@ -29,6 +27,7 @@ import { Actions } from 'react-native-router-flux';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
 import APP_INFO from '../../package.json';
+import analytics from '@react-native-firebase/analytics';
 
 const OVERLAY_WIDTH_PERCENT=75
 const GOOGLE_PLAY_URL = `https://play.google.com/store/apps/details?id=${APP_INFO.package}`
@@ -40,8 +39,10 @@ class Home extends PureComponent {
 
   componentDidMount(){
     this.props.setAuthToken();
+    analytics().setCurrentScreen('Home', 'Home')
     if (this.props.loading){
       this.props.getWelcome();
+      analytics().logTutorialBegin();
     }
     let new_data=[];
     this.props.categories.forEach((item) => {new_data.push({value:item})})
@@ -81,6 +82,7 @@ class Home extends PureComponent {
             <View style={{width:"100%", height:80, justifyContent:'center'}}>
               <Dropdown
                 theme={this.props.theme}
+                COLORS = {COLORS_LIGHT_THEME}
                 data = {new_data}
                 label = "Category Selection"
                 itemColor={COLORS_LIGHT_THEME.LESS_DARK}
@@ -95,7 +97,8 @@ class Home extends PureComponent {
                 itemPadding={6}
                 pickerStyle={{elevation:20, borderRadius:25, flex:1, paddingHorizontal:10,
                   backgroundColor:COLORS_LIGHT_THEME.LIGHT}}
-                onChangeText={(selected_category) => {this.props.changeSelectedCategory(selected_category)}}
+                onChangeText={(selected_category) => {
+                  this.props.settingsChangeFavouriteCategory(selected_category)}}
               />
             </View>
           </View>
@@ -130,10 +133,11 @@ class Home extends PureComponent {
   }
 
   renderOverlay(){
+    const {COLORS} = this.props;
     return (
       <Overlay isVisible={this.props.overlayVisible}
         borderRadius={20}
-        overlayBackgroundColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}              
+        overlayBackgroundColor={COLORS.LIGHT}              
         onBackdropPress={()=>{this.props.toggleOverlay({overlayVisible:false})}}
         width={`${OVERLAY_WIDTH_PERCENT}%`}
         height="auto">
@@ -141,57 +145,76 @@ class Home extends PureComponent {
           <View style={{justifyContent:'space-around', alignItems:'center', flexDirection:'row', }}>
             <Image
               source={{uri:this.props.data.image_url}}
-              style={{marginRight:10, marginBottom:15, height:64, width:64, borderRadius:32}}
+              style={{marginRight:10, marginBottom:15, height:64, width:64, borderRadius:32,elevation:7}}
             />
-            <Text style={{...styles.AvatarTextStyle, 
-              color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>
-              {this.props.data.name}
-            </Text>
+            <View style={{alignItems:'flex-end'}}>
+              <Text style={{...styles.AvatarTextStyle, 
+                color:COLORS.DARK}}>
+                {this.props.data.name}
+              </Text>
+              <Text style={{...styles.AvatarTextStyle, fontSize:12,
+                color:COLORS.GRAY}}>
+                {this.props.data.email}
+              </Text>
+            </View>
           </View>
-          <View>
-            <View style={{justifyContent:'space-around', flexDirection:'row'}}>
-              <TouchableOpacity
-                onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('settings'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'settings');}}
-                style={{marginTop:15, elevation:3, justifyContent:'space-between',
-                justifyContent:'center', alignItems:'center', flexDirection:'row', 
-                backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, alignSelf:'flex-end', padding:8, borderRadius:10}}
-              >
-                <Icon name="settings" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={24}/>
-                <Text style={{...styles.LogoutButtonTextStyle, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>settings</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('about'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'about');}}
-                style={{marginTop:15, elevation:3, justifyContent:'space-between',
-                justifyContent:'center', alignItems:'center', flexDirection:'row', 
-                backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, alignSelf:'flex-end', padding:8, borderRadius:10}}
-              >
-                <Icon name="user" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={24}/>
-                <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>about us</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{justifyContent:'space-around', flexDirection:'row'}}>
-              <TouchableOpacity
-                onPress={() => {this.props.toggleOverlay({overlayVisible:false});Actions.jump('feedback'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');}}
-                style={{marginTop:15, elevation:3, justifyContent:'space-between',flex:1,margin:10,
-                justifyContent:'center', alignItems:'center', flexDirection:'row', 
-                backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, padding:8, borderRadius:10}}
-              >
-                <Icon name="message-square" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={22}/>
-                <Text style={{...styles.LogoutButtonTextStyle, fontSize:13,
-                  color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>feedback</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {Linking.openURL(GOOGLE_PLAY_URL)}}
-                style={{marginTop:15, elevation:3, justifyContent:'space-between',flex:1, margin:10,marginLeft:12,
-                justifyContent:'center', alignItems:'center', flexDirection:'row', 
-                backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, padding:8, borderRadius:10}}
-              >
-                <Icon name="share-2" color={(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK} size={24}/>
-                <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>
-                  share
-                </Text>
-              </TouchableOpacity>
-            </View>
+          <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-around', height:120}}>
+              <View style={{flex:1,}}>
+                <TouchableOpacity
+                  onPress={() => {this.props.toggleOverlay({overlayVisible:false});
+                  Actions.jump('settings'); analytics().setCurrentScreen('Settings', 'Settings')
+                  logEvent(LOG_EVENT.SCREEN_CHANGE, 'settings');}}
+                  style={{elevation:3, marginBottom:5,
+                  justifyContent:'center', alignItems:'center', flexDirection:'row', 
+                  backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
+                  borderRadius:10, flex:1, margin:5}}
+                >
+                  <Icon name="settings" color={COLORS.DARK} size={24}/>
+                  <Text style={{...styles.LogoutButtonTextStyle, color:COLORS.DARK}}>settings</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {this.props.toggleOverlay({overlayVisible:false});
+                  Actions.jump('feedback'); analytics().setCurrentScreen('Feedback', 'Feedback');
+                  logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');}}
+                  style={{elevation:3,
+                  justifyContent:'center', alignItems:'center', flexDirection:'row', 
+                  backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
+                  borderRadius:10, flex:1, margin:5}}
+                >
+                  <Icon name="message-square" color={COLORS.DARK} size={22}/>
+                  <Text style={{...styles.LogoutButtonTextStyle, fontSize:14,
+                    color:COLORS.DARK}}>feedback</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{flex:1}}>
+                <TouchableOpacity
+                  onPress={() => {this.props.toggleOverlay({overlayVisible:false});
+                  Actions.jump('about'); analytics().setCurrentScreen('About', 'About');
+                  logEvent(LOG_EVENT.SCREEN_CHANGE, 'about');}}
+                  style={{elevation:3, marginBottom:5,
+                  justifyContent:'center', alignItems:'center', flexDirection:'row', 
+                  backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
+                  borderRadius:10, flex:1, margin:5}}
+                >
+                  <Icon name="user" color={COLORS.DARK} size={24}/>
+                  <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>about us</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    analytics().logEvent('app_rating')
+                    Linking.openURL(GOOGLE_PLAY_URL)
+                  }}
+                  style={{elevation:3,
+                  justifyContent:'center', alignItems:'center', flexDirection:'row', 
+                  backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
+                  borderRadius:10, flex:1, margin:5}}
+                >
+                  <Icon name="thumbs-up" color={COLORS.DARK} size={24}/>
+                  <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>
+                    rate
+                  </Text>
+                </TouchableOpacity>
+              </View>
           </View>
         </View>
       </Overlay>
@@ -199,14 +222,14 @@ class Home extends PureComponent {
   }
 
   renderAvatar(){
-    // console.log("Url: ", this.props.data.image_url)
+    const {COLORS} = this.props;
     if (this.props.overlayVisible){
       return <View/>
     }
     else{
       return(
         <View style={{borderRadius:30, padding:2, 
-          backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT, elevation:4}}>
+          backgroundColor:COLORS.LIGHT, elevation:4}}>
           <TouchableOpacity onPress={this.props.toggleOverlay.bind(this, {overlayVisible:true})}>
             <Image
               source={{uri:this.props.data.image_url}}
@@ -221,28 +244,29 @@ class Home extends PureComponent {
     const {
       welcome_header,
       welcome_body
-    } = this.props.welcomeData
+    } = this.props.welcomeData;
+    const {COLORS} = this.props;
     return (
       <View style={{justifyContent:'flex-start', alignItems:'flex-end', zIndex:100}}>
         <View style={{zIndex:120}}>
-          <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} autoRun={true} visible={!this.props.loading} 
+          <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} autoRun={true} visible={!this.props.loading} 
             style={{height:50, borderRadius:6, marginRight:25, marginTop:15, elevation:6}} duration={650}>
               <RaisedText text = {welcome_header} animationEnabled = {this.props.animationOn} 
-              theme={this.props.theme} secondaryText={'स्वागत'}/>
+              theme={this.props.theme} secondaryText={'स्वागत'} COLORS = {COLORS} />
           </ShimmerPlaceHolder>
         </View>
         {
           (this.props.loading)?
           <View style={{justifyContent:'flex-end', alignItems:'flex-end', padding:10, marginRight:15}}>
-            <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} style={{marginBottom:5, width:230, borderRadius:4, height:18, elevation:5}} autoRun={true} duration={700}/>
-            <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} style={{marginBottom:5, width:190, borderRadius:4, height:18, elevation:5}} autoRun={true} duration={900}/>
-            <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} style={{marginBottom:5, width:180, borderRadius:4, height:18, elevation:5}} autoRun={true} duration={1100}/>
-            <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} style={{marginBottom:5, width:250, borderRadius:4, height:18, elevation:5}} autoRun={true} duration={1300}/>
+            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} style={{marginBottom:5, width:230, borderRadius:4, height:18, elevation:5}} autoRun={true} duration={700}/>
+            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} style={{marginBottom:5, width:190, borderRadius:4, height:18, elevation:5}} autoRun={true} duration={900}/>
+            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} style={{marginBottom:5, width:180, borderRadius:4, height:18, elevation:5}} autoRun={true} duration={1100}/>
+            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} style={{marginBottom:5, width:250, borderRadius:4, height:18, elevation:5}} autoRun={true} duration={1300}/>
           </View>:
           <View style={{flex:1, padding:15}}>
-            <View style={{borderColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LIGHT_GRAY,borderBottomWidth:0.5, padding:15, zIndex:0}}>
+            <View style={{borderColor:COLORS.LIGHT_GRAY,borderBottomWidth:0.5, padding:15, zIndex:0}}>
               <Text style={{...styles.WelcomeBody, 
-              color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}}>
+              color:COLORS.LESS_DARK}}>
               {welcome_body}
             </Text>
             </View>
@@ -262,7 +286,7 @@ class Home extends PureComponent {
         renderItem = {({item}) => {
           return (
             <View style={{marginVertical:15, marginHorizontal:5}}>
-              <ArticleTile data={item} size={180} theme={this.props.theme}/>
+              <ArticleTile data={item} size={180} theme={this.props.theme} COLORS={this.props.COLORS}/>
             </View>
           )
         }}
@@ -271,20 +295,21 @@ class Home extends PureComponent {
   }
 
   renderPopularArticles(){
+    const {COLORS} = this.props;
     return(
       <View style={{justifyContent:'flex-start', alignItems:'flex-end',paddingTop:0, flex:1}}>
-        <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} autoRun={true} visible={!this.props.loading}
+        <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} autoRun={true} visible={!this.props.loading}
           style={{height:50, borderRadius:6, elevation:6,
           marginRight:25, marginTop:5}} duration={750}>
           <RaisedText text={"Popular Articles"} animationEnabled = {this.props.animationOn} 
-          theme={this.props.theme} secondaryText={'लोकप्रिय लेख'}/>
+            theme={this.props.theme} secondaryText={'लोकप्रिय लेख'} COLORS = {COLORS} />
         </ShimmerPlaceHolder>
         {
           (this.props.loading)?
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} style={{width:175, height:175, borderRadius:8,margin:15, marginHorizontal:5, elevation:3}}/>
-            <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} style={{width:175, height:175, borderRadius:8,margin:15, marginHorizontal:5, elevation:3}}/>
-            <ShimmerPlaceHolder colorShimmer={(this.props.theme==='light')?COLORS_LIGHT_THEME.SHIMMER_COLOR:COLORS_DARK_THEME.SHIMMER_COLOR} visible={false} style={{width:175, height:175, borderRadius:8,margin:15, marginHorizontal:5, elevation:3}}/>
+            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:175, height:175, borderRadius:8,margin:15, marginHorizontal:5, elevation:3}}/>
+            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:175, height:175, borderRadius:8,margin:15, marginHorizontal:5, elevation:3}}/>
+            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:175, height:175, borderRadius:8,margin:15, marginHorizontal:5, elevation:3}}/>
           </ScrollView>:
           this.renderArticleTiles()
         }
@@ -308,15 +333,16 @@ class Home extends PureComponent {
   }
 
   renderError(){
+    const {COLORS} = this.props;
     return (
       <View style={{flex:1, justifyContent:'center', alignItems:'center', padding:40}}>
         <Text style={{...styles.ErrorTextStyle,
-        color:(this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY}}>
+        color:COLORS.GRAY}}>
           {this.props.error}
         </Text>
         <TouchableNativeFeedback onPress={() => {this.props.getWelcome();}}>
           <LinearGradient style={{justifyContent:'center', alignItems:'center', 
-            padding:10, elevation:7, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_BLUE:COLORS_DARK_THEME.LIGHT_BLUE, borderRadius:8, margin:15}}
+            padding:10, elevation:7, backgroundColor:COLORS.LIGHT_BLUE, borderRadius:8, margin:15}}
             colors={[COLORS_LIGHT_THEME.LIGHT_BLUE, COLORS_LIGHT_THEME.DARK_BLUE]}>
             <Text style={{fontFamily:FONTS.HELVETICA_NEUE, fontSize:24, color:COLORS_LIGHT_THEME.LIGHT}}>{'Retry'}</Text>
           </LinearGradient>
@@ -367,8 +393,7 @@ class Home extends PureComponent {
 
   _onDone(){    
     if (this.props.selected_category){
-      this.props.showRealApp()
-      this.props.sendFavouriteCategory(this.props.selected_category)
+      this.props.setupComplete()
     }
     else{
       this.appIntroSlider.goToSlide(2)
@@ -389,31 +414,33 @@ class Home extends PureComponent {
           activeDotStyle={{backgroundColor:COLORS_LIGHT_THEME.LIGHT_BLUE}}
           renderNextButton={this._renderNextButton}
           renderDoneButton={this._renderDoneButton}
-          onDone={()=>this._onDone()}/>
+          onDone={()=>{analytics().logTutorialComplete();this._onDone()}}/>
       </View>
       )
   }
 
   getStatusBarColor(){
-    let statusBarColor = (this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT
+    const {COLORS} = this.props;
+    let statusBarColor = COLORS.LIGHT
     if (this.props.overlayVisible){
-      statusBarColor = (this.props.theme==='light')?COLORS_LIGHT_THEME.OVERLAY_COLOR:COLORS_DARK_THEME.OVERLAY_COLOR
+      statusBarColor = COLORS.OVERLAY_COLOR
     }
     return statusBarColor
   }
 
   render() {
-    if (this.props.showRealAppValue || !this.props.first_login){
+    const {COLORS} = this.props;
+    if (!this.props.first_login){
       return(
-      <View style={{flex:1, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}>
+      <View style={{flex:1, backgroundColor:COLORS.LIGHT}}>
         <StatusBar 
           barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
           backgroundColor={this.getStatusBarColor()}/>
         {changeNavigationBarColor(this.getStatusBarColor(), (this.props.theme==='light'))}
         <ShadowView style={{...styles.GeekHouseView,
-          backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
+          backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
           <Text style={{...styles.TextStyle, 
-            color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}>
+            color:COLORS.DARK}}>
             home {APP_INFO.version}
           </Text>
           {this.renderAvatar()}
@@ -437,16 +464,16 @@ const mapStateToProps = (state) => {
     data: state.login.data,
     authtoken: state.login.authtoken,
     categories: state.login.categories,
-    first_login: state.login.first_login,
+    first_login: state.chat.first_login,
 
     overlayVisible: state.home.overlayVisible,
     welcomeData: state.home.welcomeData,
     loading: state.home.loading,
     error: state.home.error,
     selected_category: state.home.selected_category,
-    showRealAppValue: state.home.showRealApp,
 
     theme: state.chat.theme,
+    COLORS: state.chat.COLORS,
 
     animationOn: state.chat.animationOn
   }
@@ -457,9 +484,8 @@ export default connect(mapStateToProps, {
   toggleOverlay, 
   getWelcome, 
   setAuthToken, 
-  changeSelectedCategory,
-  sendFavouriteCategory,
-  showRealApp
+  settingsChangeFavouriteCategory,
+  setupComplete
 })(Home);
 
 const styles = StyleSheet.create({

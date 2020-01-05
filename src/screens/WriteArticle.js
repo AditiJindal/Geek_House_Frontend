@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, StatusBar,
   TouchableOpacity, TextInput, ScrollView, BackHandler} from 'react-native';
 import {connect} from 'react-redux'
 import {setContents, showAlert, clearPublish, setDraft} from '../actions/WriteAction'
-import {FONTS, ERROR_BUTTONS, COLORS_LIGHT_THEME, COLORS_DARK_THEME, LOG_EVENT} from '../Constants';
+import {FONTS, ERROR_BUTTONS, COLORS_LIGHT_THEME,LOG_EVENT} from '../Constants';
 import {Icon} from 'react-native-elements';
 import {Dropdown} from '../components/Dropdown';
 import {logEvent} from '../actions/ChatAction';
@@ -13,7 +13,8 @@ import CustomAlert from '../components/CustomAlert';
 import LinearGradient from 'react-native-linear-gradient';
 import ArticleTile from '../components/ArticleTile';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import SView from 'react-native-simple-shadow-view'
+import SView from 'react-native-simple-shadow-view';
+import TimedAlert from '../components/TimedAlert'
 // import console = require('console');
 
 
@@ -64,28 +65,29 @@ class WriteArticle extends Component {
   }
 
   renderNextButton(){
+    const {COLORS} = this.props;
     let nextEnabled = true;
-    let color = (this.props.theme==='light')?COLORS_LIGHT_THEME.GREEN:COLORS_DARK_THEME.GREEN
+    let color = COLORS.GREEN
     let error = {title:"", content:"", type:[{label:ERROR_BUTTONS.TICK},]}
     
 
     if (this.state.topic.length===0){
       nextEnabled=false;
-      color = (this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY
+      color = COLORS.GRAY
       error.title = "No title given";
       error.content = "Please give a title to your article...";
     }
 
     else if (this.state.category.length===0){
       nextEnabled=false;
-      color = (this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY
+      color = COLORS.GRAY
       error.title = "No category provided";
       error.content = "Please provide a category for your article...";
     }
 
     else if (this.state.contents.length<2) {
       nextEnabled=false;
-      color = (this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY
+      color = COLORS.GRAY
       error.title = "Very less content";
       error.content = "You need to have atleast 2 cards in your article for publishing it";
     }
@@ -95,25 +97,25 @@ class WriteArticle extends Component {
         i=i+1;
         if (item.sub_heading.length===0){
           nextEnabled=false;
-          color = (this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY
+          color = COLORS.GRAY
           error.title = "No heading of card";
           error.content = "You have not provided the heading for card "+i+", please provide it.";
         }
         else if (item.sub_heading.length<2){
           nextEnabled=false;
-          color = (this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY
+          color = COLORS.GRAY
           error.title = "Very short heading";
           error.content = "Please elaborate the heading for card "+i;
         }
         else if (item.content.length===0){
           nextEnabled=false;
-          color = (this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY
+          color = COLORS.GRAY
           error.title = "No text in card";
           error.content = "Please add some text in card "+i;
         }
         else if (item.content.length<5){
           nextEnabled=false;
-          color = (this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY
+          color = COLORS.GRAY
           error.title = "Little text in card";
           error.content = "Please add some more text in card "+i;
         }
@@ -122,7 +124,7 @@ class WriteArticle extends Component {
     
     return (
       <TouchableOpacity style={{borderRadius:10, height:58, paddingHorizontal:15,
-        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT, 
+        backgroundColor:COLORS.LIGHT, 
         elevation:7, justifyContent:'center', alignItems:"center",
         bottom:15, right:15, position:"absolute", borderColor:color, borderWidth:2}} 
         activeOpacity={1} 
@@ -172,7 +174,7 @@ class WriteArticle extends Component {
           data = {{image:"https://geek-house.s3.ap-south-1.amazonaws.com/guidlines.jpg",
           "topic":"Article Guidelines", "article_id":'guidelines'
           }}
-
+          COLORS = {this.props.COLORS}
         />
       </View>
     )
@@ -194,7 +196,9 @@ class WriteArticle extends Component {
           return (
           <WriteView key={i}
             theme={this.props.theme}
-            obj={obj} index={i} 
+            COLORS = {this.props.COLORS}
+            obj={obj} index={i}
+            timedAlert = {this.timedAlert}
             onClose={(i)=>{this.onClosePressed(i);}}
             onClosePressed = {()=>{this.setState({childAlertVisible:true})}}
             onContentChange={(value, i)=>{this.onContentChange(value, i)}}
@@ -218,18 +222,21 @@ class WriteArticle extends Component {
   }
 
   getStatusBarColor(){
-    let statusBarColor = (this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT
+    const {COLORS} = this.props;
+    let statusBarColor = COLORS.LIGHT
     if (this.props.alertVisible || this.state.backAlertVisible || this.state.childAlertVisible){
-      statusBarColor = (this.props.theme==='light')?COLORS_LIGHT_THEME.OVERLAY_COLOR:COLORS_DARK_THEME.OVERLAY_COLOR
+      statusBarColor = COLORS.OVERLAY_COLOR
     }
     return statusBarColor
   }
 
   renderAlertForBack(){
+    const {COLORS} = this.props;
     return (
       <View>
         <CustomAlert
           theme={this.props.theme}
+          COLORS = {COLORS}
           isVisible = {this.state.backAlertVisible}
           onFirstButtonPress = {() => {this.setState({backAlertVisible:false});
               this.props.setContents(this.state.contents, this.state.topic, 
@@ -252,6 +259,7 @@ class WriteArticle extends Component {
   }
 
   renderCategoryDropdown(){
+    const {COLORS} = this.props;
     let new_data=[];
     this.props.all_categories.forEach((item) => {new_data.push({value:item})})
 
@@ -259,22 +267,23 @@ class WriteArticle extends Component {
       <View style={{marginHorizontal:25}}>
         <Dropdown
           theme={this.props.theme}
+          COLORS = {COLORS}
           data = {new_data}
           label = "Category Selection"
-          itemColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESSER_DARK}
+          itemColor={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.LESSER_DARK}
           value="All Categories"
           fontSize={20}
           labelFontSize={14}
           itemCount={6}
           containerStyle={{marginVertical:15}}
           itemTextStyle={{fontFamily:FONTS.PRODUCT_SANS}}
-          textColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESSER_DARK}
-          textSubColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LIGHT_GRAY}
+          textColor={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.LESSER_DARK}
+          textSubColor={COLORS.LIGHT_GRAY}
           itemPadding={6}
           pickerStyle={{elevation:20, borderRadius:25, flex:1, paddingHorizontal:10,
-            backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT,
+            backgroundColor:COLORS.LIGHT,
             borderWidth:2,
-            borderColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.GRAY}}
+            borderColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.GRAY}}
           onChangeText={(category)=>{this.setState({category})}}
         />
       </View>
@@ -282,16 +291,17 @@ class WriteArticle extends Component {
   }
 
   renderHeader(){
+    const {COLORS} = this.props;
     return (
       <SView style={{shadowColor:'#202020',shadowOpacity:0.3, shadowOffset:{width:0,height:10},shadowRadius:8, 
         borderRadius:10, margin:8, height:70, justifyContent:'space-between',
         alignItems:'center', flexDirection:'row', 
-        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, 
+        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
         paddingHorizontal:10}}>
           <TouchableOpacity onPress={()=>{this.onBackPress()}}>
             <Icon name="arrow-left" type="material-community" size={26}
               containerStyle={{marginVertical:5, marginRight:15}} 
-              color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}/>
+              color={COLORS.LESS_DARK}/>
           </TouchableOpacity>
           <TextInput
             textAlignVertical='top'
@@ -304,8 +314,8 @@ class WriteArticle extends Component {
             placeholder={"Enter a title..."}
             value={this.state.topic}
             returnKeyType={"done"}
-            placeholderTextColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}
-            style={{...styles.TextStyle,color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK}}
+            placeholderTextColor={COLORS.LESSER_DARK}
+            style={{...styles.TextStyle,color:COLORS.DARK}}
           />
       </SView>
     )
@@ -313,10 +323,12 @@ class WriteArticle extends Component {
   
 
   renderAlert(){
+    const {COLORS} = this.props;
     if (this.props.alertVisible){
       return (
         <CustomAlert
           theme={this.props.theme}
+          COLORS = {COLORS}
           isVisible = {this.props.alertVisible}
           onFirstButtonPress = {() => {this.props.showAlert(false, {})}}
           onSecondButtonPress= {() => {this.props.showAlert(false, {})}}
@@ -331,10 +343,13 @@ class WriteArticle extends Component {
 
   render() {
     return(
-      <View style={{flex:1, backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}>
+      <View style={{flex:1, backgroundColor:this.props.COLORS.LIGHT}}>
         <StatusBar
           backgroundColor={this.getStatusBarColor()}
           barStyle={(this.props.theme==='light')?'dark-content':'light-content'}/>
+        <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} 
+          COLORS = {COLORS}
+        />
         {changeNavigationBarColor(this.getStatusBarColor(), (this.props.theme==='light'))}
         {this.renderAlert()}
         {this.renderAlertForBack()}
@@ -362,7 +377,8 @@ const mapStateToProps = (state) => {
     alertMessage: state.write.alertMessage,
     all_categories: state.write.all_categories,
 
-    theme: state.chat.theme
+    theme: state.chat.theme,
+    COLORS: state.chat.COLORS,
   }
 }
 

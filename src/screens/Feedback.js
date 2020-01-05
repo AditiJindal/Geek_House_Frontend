@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, StatusBar,TouchableOpacity, StyleSheet, TextInput, Image} from 'react-native';
+import {View, Text, StatusBar,TouchableOpacity, StyleSheet, TextInput, Image, ScrollView} from 'react-native';
 import {connect} from 'react-redux';
 import { COLORS_LIGHT_THEME, COLORS_DARK_THEME, FONTS } from '../Constants';
 import {submitFeedback} from '../actions/HomeAction';
@@ -11,6 +11,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import TimedAlert from '../components/TimedAlert';
+import {Switch} from 'react-native-switch';
+import analytics from '@react-native-firebase/analytics';
 import prettysize from 'prettysize';
 
 const INITIAL_STATE = {
@@ -19,13 +21,15 @@ const INITIAL_STATE = {
   image_url: null,
   image_name:null,
   image_size:null,
-  feedback_submitted: false
+  feedback_submitted: false,
+  isAnonymous:false
 }
 class Feedback extends Component {
 
   state=INITIAL_STATE
 
   renderHeader(){
+    const {COLORS} = this.props;
     return (
       <View style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
         marginHorizontal:15,
@@ -37,11 +41,11 @@ class Feedback extends Component {
           style={{justifyContent:'center', alignItems:'center',padding:3}}>
           <Icon name="arrow-left" type="material-community" size={26}
             containerStyle={{marginVertical:5, marginRight:15}} 
-            color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}/>
+            color={COLORS.LESS_DARK}/>
         </TouchableOpacity>
 
         <Text style={{...styles.HeadingTextStyling, 
-          color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}}>feedback</Text>
+          color:COLORS.LESS_DARK}}>feedback</Text>
       </View>
     )
   }
@@ -86,19 +90,20 @@ class Feedback extends Component {
   }
 
   renderFeedbackForm(){
+    const {COLORS} = this.props;
     return (
       <SView style={{width:'85%', height:(this.state.image_url)?"55%":"40%", borderRadius:25, 
-        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_LIGHT:COLORS_DARK_THEME.LESSER_LIGHT,
+        backgroundColor:COLORS.LESSER_LIGHT,
         shadowOpacity:0.2, shadowColor:"rgba(20,20,20)", shadowRadius:8, marginTop:30,
         alignSelf:'center', shadowOffset:{width:0, height:10}}}>
         {
           (this.state.feedback_submitted)?(
             <View style={{flex:1, justifyContent:'center', alignItems:'center', flexWrap:'wrap'}}>
               <Icon name="check" size={72} style={{margin:20, padding:10, borderRadius:50,
-                backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.GREEN:COLORS_DARK_THEME.GREEN}} 
-                color={(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_LIGHT:COLORS_DARK_THEME.LESSER_LIGHT} />
-              <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LIGHT_GRAY,
-                fontFamily:FONTS.RALEWAY_LIGHT, fontSize:36, marginHorizontal:20, textAlign:'center'}}>
+                backgroundColor:COLORS.GREEN}} 
+                color={COLORS.LESSER_LIGHT} />
+              <Text style={{color:COLORS.LIGHT_GRAY,
+                fontFamily:FONTS.RALEWAY_LIGHT, fontSize:36, marginHorizontal:20, textAlign:'center', marginBottom:15}}>
                 Thank You for Feedback
               </Text>
             </View>
@@ -108,21 +113,21 @@ class Feedback extends Component {
               placeholder={"Subject of request"}
               value={this.state.subject}
               onChangeText={(subject)=>{this.setState({subject})}}
-              placeholderTextColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY}
+              placeholderTextColor={COLORS.GRAY}
               style={{fontFamily:FONTS.RALEWAY, fontSize:18,marginHorizontal:10, marginTop:10,paddingHorizontal:10,
-              borderRadius:15,color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK,
-              backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.MID_LIGHT:COLORS_DARK_THEME.MID_LIGHT}}
+              borderRadius:15,color:COLORS.LESS_DARK,
+              backgroundColor:COLORS.MID_LIGHT}}
             />
             <TextInput
               placeholder={"Enter a detailed description"}
               multiline={true}
               value={this.state.description}
               onChangeText={(description)=>{this.setState({description})}}
-              placeholderTextColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY}
+              placeholderTextColor={COLORS.GRAY}
               style={{fontFamily:FONTS.RALEWAY, fontSize:14,marginHorizontal:10, marginVertical:10,
               borderRadius:15, flex:1, textAlignVertical:'top', padding:10,
-              color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK,
-              backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.MID_LIGHT:COLORS_DARK_THEME.MID_LIGHT}}
+              color:COLORS.LESS_DARK,
+              backgroundColor:COLORS.MID_LIGHT}}
             />
             {
               (this.state.image_url)?(
@@ -145,13 +150,13 @@ class Feedback extends Component {
             <TouchableOpacity activeOpacity={1}
               multiline={true} onPress={()=>{this.selectImage()}}
               style={{flexDirection:'row', alignItems:'center', position:'absolute', bottom:0, right:0,
-              backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_LIGHT:COLORS_DARK_THEME.LESSER_LIGHT,
+              backgroundColor:COLORS.LESSER_LIGHT,
               padding:10,borderBottomRightRadius:25,borderTopLeftRadius:25}}>
               <Icon name={(this.state.image_url)?"x":"plus"} size={22}
-              color={(this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY}/>
+              color={COLORS.GRAY}/>
               {
                 (!this.state.image_url)?(
-                  <Text style={{color:(this.props.theme==='light')?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY,
+                  <Text style={{color:COLORS.GRAY,
                     fontFamily:FONTS.PRODUCT_SANS, fontSize:14, marginRight:5, marginLeft:10}}>
                     Add an Image
                   </Text>
@@ -172,13 +177,51 @@ class Feedback extends Component {
         description: this.state.description,
         image_url: this.state.image_url,
         author: this.props.data.name,
-        email: this.props.data.email
+        email: this.props.data.email,
+        isAnonymous: this.state.isAnonymous
       })
       this.setState({...INITIAL_STATE, feedback_submitted:true});
+      analytics().logEvent('given_feedback')
     }
     else{
       this.timedAlert.showAlert(3000, "Please provide something more useful");
     }
+  }
+
+  renderAnonymous(){
+    const {COLORS} = this.props;
+    if (this.state.feedback_submitted){
+      return null
+    }
+    return (
+      <View style={{marginTop:30, marginHorizontal:20, justifyContent:'center'}}>
+        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+          <Text style={{marginRight:15,fontSize:18, fontFamily:FONTS.RALEWAY,paddingVertical:5,
+            color:COLORS.GRAY}}>
+            Submit as anonymous user
+          </Text>
+          <Switch
+            value = {this.state.isAnonymous}
+            onValueChange = {()=>{this.setState({isAnonymous:!this.state.isAnonymous})}}
+            backgroundActive={COLORS_LIGHT_THEME.GREEN}
+            backgroundInactive={COLORS.LESSER_DARK}
+            circleSize={16}
+            barHeight={22}
+            changeValueImmediately={true}
+            innerCircleStyle={{elevation:4}}
+            switchLeftPx={3}
+            switchRightPx={3}
+            circleBorderWidth={0}
+            circleActiveColor={COLORS_LIGHT_THEME.LIGHT}
+            circleInActiveColor={COLORS_LIGHT_THEME.LIGHT}
+          />
+        </View>
+        <Text style={{fontSize:11, fontFamily:FONTS.RALEWAY, paddingHorizontal:30, textAlign:'center',
+          color:COLORS.GRAY}}>
+          * Your name and email will not be submitted with this feedback
+        </Text>
+      </View>
+    )
   }
 
   renderSubmitButton(){
@@ -200,22 +243,29 @@ class Feedback extends Component {
   }
 
   render(){
+    const {COLORS} = this.props;
     return (
       <View style={{flex:1,
-        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}>
+        backgroundColor:COLORS.LIGHT}}>
         <StatusBar
-          backgroundColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}
+          backgroundColor={COLORS.LIGHT}
           barStyle={(this.props.theme==='light')?"dark-content":"light-content"}
         />
-        <TimedAlert onRef={ref=>this.timedAlert = ref} theme={this.props.theme}/>
-        {changeNavigationBarColor((this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT)}
-        {this.renderHeader()}
-        <Text style={{...styles.TextStyling,
-          color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}}>
-          Please provide your feedback, suggestions or information on any bugs you encountered 
-          while you were using this app. Your feedback will be seen and appropriate action will be taken
-        </Text>
-        {this.renderFeedbackForm()}
+        <TimedAlert onRef={ref=>this.timedAlert = ref} theme={this.props.theme}
+          COLORS = {COLORS}
+        />
+        {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
+        <ScrollView keyboardShouldPersistTaps="always">
+          {this.renderHeader()}
+          <Text style={{...styles.TextStyling,
+            color:COLORS.LESSER_DARK}}>
+            Please provide your feedback, suggestions or information on any bugs you encountered 
+            while you were using this app. Your feedback will be seen and appropriate action will be taken
+          </Text>
+          {this.renderFeedbackForm()}
+          {this.renderAnonymous()}
+          <View style={{height:180, width:1}}/>
+        </ScrollView>
         {this.renderSubmitButton()}
       </View>
     )
@@ -227,6 +277,7 @@ const mapStateToProps = (state) => {
     data: state.login.data,
 
     theme: state.chat.theme,
+    COLORS: state.chat.COLORS
   }
 }
 

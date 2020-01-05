@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
-import {FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
+import {FONTS} from '../Constants';
 import Typing from '../components/Typing';
 import Image from 'react-native-fast-image';
 import SView from 'react-native-simple-shadow-view'
@@ -13,14 +13,15 @@ getInitials = (name) => {
 }
 
 const getBadge = (props) => {
+  const {COLORS} = props;
 
   if (props.typing){
     return (
       <View style={{
         position:'absolute', right:-4, top:0, justifyContent:'center', alignItems:'center',
-        borderColor:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, borderWidth:1,
+        borderColor:COLORS.LIGHT, borderWidth:1,
         height:10 , width:14, borderRadius:5, 
-        backgroundColor:(props.theme==='light')?COLORS_LIGHT_THEME.YELLOW:COLORS_DARK_THEME.YELLOW
+        backgroundColor:COLORS.YELLOW
         }}>
         <Typing size={14}/>
       </View>
@@ -29,7 +30,7 @@ const getBadge = (props) => {
   else if (props.online){
     return (
       <View style={{
-        position:'absolute', right:0, top:0, borderColor:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESSER_LIGHT, borderWidth:1,
+        position:'absolute', right:0, top:0, borderColor:COLORS.LESSER_LIGHT, borderWidth:1,
         backgroundColor:'rgb(82, 196, 27)', height:10, width:10, borderRadius:5}}>
       </View>
     );
@@ -44,11 +45,12 @@ export default ChatPeople = (props) => {
   if (props.chatPeopleSearch){
     IMAGE_SIZE = 48
   }
+  const {COLORS} = props;
   
   return(
     <TouchableOpacity activeOpacity={1} onPress={() => {props.onPress()}}>
       <SView style={{...styles.ViewStyling, borderRadius:IMAGE_SIZE/4,
-        backgroundColor:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
+        backgroundColor:(props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
         <View>
           <Image
             source={(props.data.image_url)?{uri:props.data.image_url}:require('../../assets/icons/user.png')}
@@ -59,18 +61,18 @@ export default ChatPeople = (props) => {
         
         <View style={{marginHorizontal:10, justifyContent:'center', alignItems:'center'}}>
           <Text style={{...styles.TextStyle, 
-            color:(props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.DARK}}>
+            color:COLORS.LESS_DARK}}>
             {props.data.name}
           </Text>
           {(props.data.fav_category)?
           (<Text style={{...styles.IntrestStyle, 
-            color:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LESS_DARK}}>
+            color:(props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
             {props.data.fav_category}
           </Text>):
           <View/>}
           {(props.data.email)?(
             <Text style={{...styles.IntrestStyle, 
-            color:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LESS_DARK}}>
+            color:(props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
               {props.data.email}
             </Text>
           ):<View/>}
@@ -80,10 +82,10 @@ export default ChatPeople = (props) => {
           (props.unread_messages)?
           (
             <View style={{...styles.BadgeViewStyle, right: -10 - (props.unread_messages.toString().length*5), 
-              borderColor:(props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.GREEN,
-              backgroundColor:(props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT}}>
+              borderColor:(props.theme==='light')?COLORS.RED:COLORS.GREEN,
+              backgroundColor:COLORS.LESS_LIGHT}}>
               <Text style={{...styles.BadgeTextStyle, 
-                color:(props.theme==='light')?COLORS_LIGHT_THEME.RED:COLORS_DARK_THEME.GREEN}}>
+                color:(props.theme==='light')?COLORS.RED:COLORS.GREEN}}>
                 {props.unread_messages}
               </Text>
             </View>

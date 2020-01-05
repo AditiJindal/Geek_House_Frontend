@@ -1,6 +1,10 @@
 import {ACTIONS} from '../actions/types';
 import uuid from 'uuid/v4';
 import AsyncStorage from '@react-native-community/async-storage';
+import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
+import analytics from '@react-native-firebase/analytics';
+import perf from '@react-native-firebase/perf';
+
 
 const INITIAL_STATE={
   socket: null,
@@ -14,43 +18,61 @@ const INITIAL_STATE={
   total_unread_messages: 0,
   chatScreenOpen: false,
   loaded_from_storage: false,
+  first_login:false,
   user_id: "",
   theme: "light",
   animationOn:true,
   chatPeopleSearchLoading:false,
   authTokenSet: false,
-  chatPeopleSearch:null
+  chatPeopleSearch:null,
+  COLORS: COLORS_LIGHT_THEME
 }
 
+const trace = perf().newTrace("save_data_async_storage")
+
 const incomingMessageConverter = (data) => {
-  new_message = [{_id:uuid(), createdAt: data.createdAt, text:data.text, user:{_id:data.from}}]
+  new_message = [
+    {_id:uuid(), createdAt: data.createdAt, text:data.text,image:data.image, user:{_id:data.from}}
+  ]
   return new_message
 }
 
-const saveData = (state) => {
+const saveData = async (state) => {
   to_save = {
     messages:state.messages,
     status: state.status,
     total_unread_messages:state.total_unread_messages,
     theme: state.theme,
-    animationOn: state.animationOn
+    animationOn: state.animationOn,
+    first_login: state.first_login
   };
+  t = Date.now()
+  trace.start()
+  console.log("saved this: ", to_save)
+  console.log("User id is: ", state.user_id)
   to_save = JSON.stringify(to_save)
-  AsyncStorage.setItem(state.user_id.toString(), to_save);
+  await AsyncStorage.setItem(state.user_id.toString(), to_save)
+  trace.stop()
+  trace.putMetric('save_data_time', Date.now()-t)
 }
 
 export default (state=INITIAL_STATE, action) => {
   switch (action.type){
     case ACTIONS.LOGOUT:
+      // console.log("ACTION.LOGOUT HERE 5")
+      // console.log("state.socket is: ", state.socket)
+      if (action.payload){
+        state.socket.disconnect(true)
+      }
       return {...INITIAL_STATE}
 
     case ACTIONS.SET_SOCKET:
       return {...state, socket: action.payload}
 
     case ACTIONS.CHAT_LOAD_DATA:
-      // console.log('hello actio payload: ', action.payload)
       user_id = action.payload.user_id
-      // // console.log("action.payload: ", action.payload)
+      COLORS = COLORS_DARK_THEME
+
       if (Object.keys(action.payload).length!==1){
         new_messages = {...action.payload.messages};
         total_unread_messages = action.payload.total_unread_messages;
@@ -58,14 +80,22 @@ export default (state=INITIAL_STATE, action) => {
 
         if (!action.payload.theme){
           action.payload.theme=INITIAL_STATE.theme
-          // // console.log("setting theme here manually!")
-        }        
+          COLORS = COLORS_LIGHT_THEME
+        }
+        else{
+          if (action.payload.theme==='light'){
+            COLORS = COLORS_LIGHT_THEME
+          }
+        }
+        analytics().setUserProperties({
+          Theme: action.payload.theme
+        })
         
         if (total_unread_messages<0){total_unread_messages=0}
         new_state = {...state,
           theme: action.payload.theme,
           animationOn: action.payload.animationOn,
-          user_id, messages:new_messages, 
+          user_id, messages:new_messages, COLORS, 
           total_unread_messages, status:new_status, loaded_from_storage:true}
         saveData(new_state)
         return new_state
@@ -78,7 +108,11 @@ export default (state=INITIAL_STATE, action) => {
       return {...state, messages: action.payload}
 
     case ACTIONS.CHANGE_THEME:
-      new_state = {...state, theme: action.payload}
+      COLORS = COLORS_DARK_THEME;
+      if (action.payload==='light'){
+        COLORS = COLORS_LIGHT_THEME;
+      }
+      new_state = {...state, theme: action.payload, COLORS}
       saveData(new_state) 
       return new_state
 
@@ -95,6 +129,7 @@ export default (state=INITIAL_STATE, action) => {
       }
       else{
         new_total_typing = state.total_typing - 1
+        if (new_total_typing<0){new_total_typing = 0}
       }
       new_status[action.payload.from].typing = action.payload.value
       return {...state, status: new_status, total_typing: new_total_typing}
@@ -114,6 +149,7 @@ export default (state=INITIAL_STATE, action) => {
     case ACTIONS.SET_CHAT_USER_DATA:
       let other_user_data = action.payload;
       new_status = {...state.status};
+      
 
       if (new_status.hasOwnProperty(action.payload._id)){
         total_unread_messages = state.total_unread_messages - new_status[action.payload._id].unread_messages;
@@ -126,24 +162,28 @@ export default (state=INITIAL_STATE, action) => {
       }
 
       if (total_unread_messages<0){total_unread_messages=0}
+      
       new_state = {...state, status:new_status,
         other_user_data, total_unread_messages, 
         chatScreenOpen:true,
       };
 
-      console.log("SET_CHAT_USER_DATA: ", new_state)
-
       saveData(new_state)
       return new_state
 
     case ACTIONS.GET_CHAT_PEOPLE:
+      // needs to return chats, chatPeople, status and messages
+      // status: {'<other_user_id>': {online:bool, typing:bool, unread_messages:Array}}
+      // messages: {'<other_user_id>': [message_objects]}
+      
       const all_users = action.payload.chats
       new_messages={...state.messages}
+      duplicate_status = {...state.status};
       total_unread_messages = state.total_unread_messages;
       if (state.loaded_from_storage && (Object.keys(state.status).length!==0)){
         status = {...state.status};
         all_users.forEach((item)=>{
-          if (!status[item._id]){
+          if (!status.hasOwnProperty(item._id)){
             status[item._id] = {online:false, typing:false, unread_messages:0}
           }
           (action.payload.allOnline.includes(item._id))?online=true:online=false
@@ -159,7 +199,7 @@ export default (state=INITIAL_STATE, action) => {
       }
 
       action.payload.unread_messages.forEach((item)=>{
-        if (new_messages[item.from]){
+        if (new_messages.hasOwnProperty(item.from)){
           new_messages[item.from] = incomingMessageConverter(item).concat(new_messages[item.from]);
         }
         else{
@@ -170,10 +210,10 @@ export default (state=INITIAL_STATE, action) => {
       });
 
       if (total_unread_messages<0){total_unread_messages=0}
+      if (action.payload.explicitly){status=duplicate_status}
+
       let new_state = {...state, chatPeople:action.payload, chats:action.payload.chats,
         loading:false, status, total_unread_messages, messages:new_messages}
-
-      console.log("GET_CHAT_PEPOPLE: ", new_state)
 
       delete action.payload.chats
 
@@ -186,40 +226,40 @@ export default (state=INITIAL_STATE, action) => {
       new_status = {...state.status};
       new_chats = [...state.chats]
       total_unread_messages = state.total_unread_messages
+
+      if (action.payload.isIncomming){
+        analytics().logEvent("received_message")
+      }
+      else{
+        analytics().logEvent("sent_message")
+      }
       
       if (state.messages.hasOwnProperty(action.payload.other_user_id)){
-        console.log("HERE 1")
         new_messages[action.payload.other_user_id] = action.payload.message
         .concat(state.messages[action.payload.other_user_id]);
       }
       else{
-        console.log("HERE 2")
         new_messages[action.payload.other_user_id] = action.payload.message;
+        // state.socket.emit("get_new_entry_data",{id:action.payload.other_user_id});
+
+        new_status[action.payload.other_user_id] = {online: true, typing: false, 
+          unread_messages: 0};
+        // add this users in the chatPeople.chats
+        // new_chats.push(response.entry)
+
+        state.socket.emit("chat_people_explicitly");
       }
 
       if ((action.payload.other_user_id !== state.other_user_data._id) || (!state.chatScreenOpen)){
         if (new_status.hasOwnProperty(action.payload.other_user_id)){
-          console.log("HERE 3")
           new_status[action.payload.other_user_id].unread_messages += 1;
           total_unread_messages+=1;
-        }
-        else{
-          console.log("HERE 4")
-          state.socket.emit("get_new_entry_data",action.payload.other_user_id)
-          .on("get_new_entry_data", (response)=>{
-            new_status[response._id] = {online: false, typing: false, unread_messages: (action.payload.isIncomming)?1:0};
-            total_unread_messages+= ((action.payload.isIncomming)?1:0);
-  
-            // add this users in the chatPeople.chats
-            new_chats.push(response)
-          })
         }
       }
 
       if (total_unread_messages<0){total_unread_messages=0}
       new_state = {...state, loading:false, messages:new_messages, chats:new_chats,
         status: new_status, total_unread_messages};
-      console.log('CHAT_MESSAGE_HANDLER: ', new_state);
 
       saveData(new_state)
       return new_state
@@ -239,6 +279,27 @@ export default (state=INITIAL_STATE, action) => {
 
     case ACTIONS.CHAT_PEOPLE_SEARCH:
       return {...state, chatPeopleSearch:action.payload, loading:false}
+
+    case ACTIONS.CHAT_SOCKET_CHANGE_CATEGORY:
+      state.socket.emit('change_favourite_category', action.payload)
+      return state
+
+    case ACTIONS.CHAT_SETUP_COMPLETE:
+      state.socket.emit('user_setup_done');
+      new_state = {...state, first_login:false}
+      saveData(new_state)
+      return new_state
+
+    case ACTIONS.CHAT_FIRST_LOGIN:
+      console.log("First login here is: ", action.payload.first_login)
+      COLORS = COLORS_DARK_THEME;
+      if (action.payload.theme==='light'){
+        COLORS = COLORS_LIGHT_THEME;
+      }
+      new_state = {...state, first_login:action.payload.first_login, COLORS,
+        user_id:action.payload.authtoken, theme:action.payload.theme}
+      saveData(new_state)
+      return new_state
 
     default:
       return state;

@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import { View, Text, StyleSheet, StatusBar,FlatList, RefreshControl } from 'react-native';
 import BottomTab from '../components/BottomTab';
 import {logEvent} from '../actions/ChatAction';
-import {FONTS, COLORS_LIGHT_THEME, COLORS_DARK_THEME, LOG_EVENT} from '../Constants';
+import {FONTS,LOG_EVENT} from '../Constants';
 import {setAuthToken, setUserData, chatPeopleSearchAction, getChatPeopleExplicitly} from '../actions/ChatAction';
 import {Actions} from 'react-native-router-flux'
 import ChatPeople from '../components/ChatPeople';
@@ -12,6 +12,7 @@ import SView from 'react-native-simple-shadow-view';
 import ChatPeopleSearch from '../components/ChatPeopleSearch';
 import Loading from '../components/Loading';
 import TimedAlert from '../components/TimedAlert';
+import analytics from '@react-native-firebase/analytics'
 
 class Chat extends Component {
 
@@ -21,6 +22,7 @@ class Chat extends Component {
   }
 
   componentDidMount(){
+    analytics().setCurrentScreen('Chat', 'Chat')
     if (!this.props.authTokenSet){
       this.props.setAuthToken()
     }
@@ -28,17 +30,19 @@ class Chat extends Component {
 
   componentWillUnmount(){
     // console.log("unmounting chat")
-    logEvent(LOG_EVENT.TIME_IN_CHAT, Date.now()-this.state.showStartTime)
+    logEvent(LOG_EVENT.TIME_IN_CHAT, {mili_seconds: Date.now()-this.state.showStartTime,
+    endTime:Date.now()})
   }
   
   renderSection(title){
+    const {COLORS} = this.props;
     return(
       <View style={{alignItems:'center'}}>
         {(title==="Chats")?<View style={{height:0.5, width:'94%', 
-          backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.GRAY, 
+          backgroundColor:COLORS.GRAY, 
         margin:10}}/>:<View/>}
         <View style={styles.SectionViewStyling}>
-          <Text style={{...styles.SectionHeadingStyle, color:(this.props.theme)?COLORS_LIGHT_THEME.LIGHT_GRAY:COLORS_DARK_THEME.LIGHT_GRAY}}>
+          <Text style={{...styles.SectionHeadingStyle, color:COLORS.LIGHT_GRAY}}>
             {title}
           </Text>
         </View>
@@ -53,13 +57,14 @@ class Chat extends Component {
   }
 
   renderHeader(){
+    const {COLORS} = this.props;
     return (
       <SView style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
         alignItems:'center', flexDirection:'row', shadowColor:'#202020',
         shadowOpacity:0.3, shadowOffset:{width:0,height:10},shadowRadius:8,
-        backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LESS_LIGHT, 
+        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
         paddingHorizontal:25}}>
-          <Text style={{...styles.TextStyle, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.DARK:COLORS_DARK_THEME.DARK }}>
+          <Text style={{...styles.TextStyle, color:COLORS.DARK}}>
             chat
           </Text>
       </SView>
@@ -67,7 +72,8 @@ class Chat extends Component {
   }
 
   renderChatPeopleDefault(){
-    const DATA = this.props.chats
+    const DATA = this.props.chats;
+    const {COLORS} = this.props;
     return (
       <FlatList
         refreshControl = {
@@ -82,7 +88,8 @@ class Chat extends Component {
         data={DATA}
         ListHeaderComponent = {
           <ChatPeopleSearch 
-            theme={this.props.theme} 
+            theme={this.props.theme}
+            COLORS = {COLORS}
             value={this.state.chatPeopleSearchText}
             onTextChange={(value)=>{this.setState({chatPeopleSearchText:value})}}
             onSearch={()=>{this.showTimedAlert()
@@ -90,7 +97,7 @@ class Chat extends Component {
           />}
         ListFooterComponent = {
           <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:10, margin:20,
-            color:(this.props.theme)?COLORS_LIGHT_THEME.GRAY:COLORS_DARK_THEME.GRAY}}>
+            color:COLORS.GRAY}}>
             {`* Long press on an image to save it in gallery\n* Long press on text to copy it to clipboard`}
           </Text>
         }
@@ -98,23 +105,28 @@ class Chat extends Component {
           <View style={{flex:1, justifyContent:'center', alignItems:'center', marginBottom:50,
             padding:40,}}>
             <Text style={{textAlign:'center',fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:18,
-            color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}}>
+            color:COLORS.LESSER_DARK}}>
               No one for chat, search people with their email to start chatting
             </Text>
           </View>
         }
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => {
+        if (!this.props.status.hasOwnProperty(item._id)){
+          this.props.status[item._id] = {online: true, typing: false, unread_messages: 0}
+        }
         return (
         <ChatPeople data={item}
+          COLORS = {COLORS}
           theme={this.props.theme}
           typing={this.props.status[item._id].typing} 
           online={this.props.status[item._id].online}
           unread_messages= {this.props.status[item._id].unread_messages}
           onPress={()=>{
-          console.log("Item is: ", item);
           this.props.setUserData(item);
-          Actions.chatscreen();logEvent(LOG_EVENT.SCREEN_CHANGE, 'chatscreen');}}
+          Actions.chatscreen();
+          analytics().setCurrentScreen("ChatScreen", "ChatScreen")
+          logEvent(LOG_EVENT.SCREEN_CHANGE, 'chatscreen');}}
         />)
         }}
       />
@@ -122,6 +134,7 @@ class Chat extends Component {
   }
 
   renderChatSearchPeople(){
+    const {COLORS} = this.props;
     return (
       <FlatList
         data={this.props.chatPeopleSearch}
@@ -129,7 +142,8 @@ class Chat extends Component {
         keyExtractor={(item, index)=>{index.toString()}}
         ListHeaderComponent = {
           <ChatPeopleSearch 
-            theme={this.props.theme} 
+            theme={this.props.theme}
+            COLORS = {COLORS}
             value={this.state.chatPeopleSearchText}
             onTextChange={(value)=>{this.setState({chatPeopleSearchText:value})}}
             onSearch={()=>{this.showTimedAlert();
@@ -140,7 +154,7 @@ class Chat extends Component {
       ListEmptyComponent = {
         <View style={{flex:1, justifyContent:'center', alignItems:'center', marginBottom:50}}>
           <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:18,
-          color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESSER_DARK:COLORS_DARK_THEME.LESSER_DARK}}>
+          color:COLORS.LESSER_DARK}}>
             No results found
           </Text>
         </View>
@@ -151,9 +165,11 @@ class Chat extends Component {
             theme={this.props.theme}
             chatPeopleSearch = {true}
             data = {item}
+            COLORS = {COLORS}
             onPress={()=>{
             this.props.setUserData(item);
             Actions.chatscreen();
+            analytics().setCurrentScreen("ChatScreen", "ChatScreen")
             logEvent(LOG_EVENT.SCREEN_CHANGE, 'chatscreen');}}
           />)
         }}
@@ -171,9 +187,11 @@ class Chat extends Component {
   }
 
   renderNoChatAvailable(){
+    const {COLORS} = this.props;
     return(
       <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-        <Text style={{textAlign:'center', fontFamily: FONTS.PRODUCT_SANS_BOLD, fontSize:18, color:(this.props.theme==='light')?COLORS_LIGHT_THEME.LESS_DARK:COLORS_DARK_THEME.LESS_DARK}}>
+        <Text style={{textAlign:'center', fontFamily: FONTS.PRODUCT_SANS_BOLD, fontSize:18, 
+          color:COLORS.LESS_DARK}}>
           No one available for chat
         </Text>
       </View>
@@ -189,13 +207,17 @@ class Chat extends Component {
   }
 
   render() {
+    const {COLORS} = this.props;
     return(
-      <View style={{flex:1,justifyContent:'space-between', backgroundColor:(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}}>
+      <View style={{flex:1,justifyContent:'space-between', 
+        backgroundColor:COLORS.LIGHT}}>
         <StatusBar
-          backgroundColor={(this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT}
+          backgroundColor={COLORS.LIGHT}
           barStyle={(this.props.theme==='light')?'dark-content':'light-content'}/>
-        {changeNavigationBarColor((this.props.theme==='light')?COLORS_LIGHT_THEME.LIGHT:COLORS_DARK_THEME.LIGHT, (this.props.theme==='light'))}
-        <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} />
+        {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
+        <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} 
+          COLORS = {COLORS}
+        />
         {this.renderHeader()}
         {/* {
           (this.props.loading)?
@@ -224,7 +246,9 @@ const mapStateToProps = (state) => {
     chats: state.chat.chats,
     status: state.chat.status,
     chatPeopleSearchLoading: state.chat.chatPeopleSearchLoading,
+
     theme:state.chat.theme,
+    COLORS: state.chat.COLORS,
     authTokenSet:state.chat.authTokenSet,
     chatPeopleSearch:state.chat.chatPeopleSearch
   }

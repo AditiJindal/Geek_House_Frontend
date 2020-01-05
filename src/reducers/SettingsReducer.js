@@ -18,7 +18,7 @@ export default (state = INITIAL_STATE, action) => {
         gotSettingsData: true,
       };
 
-    case ACTIONS.SETTINGS_CHANGE_CATEGORY:
+    case ACTIONS.CHAT_SOCKET_CHANGE_CATEGORY:
       return {...state, fav_category: action.payload};
 
     case ACTIONS.SETTINGS_LOADING:
