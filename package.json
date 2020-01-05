@@ -12,6 +12,8 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@nozbe/watermelondb": "^0.15.0",
+    "@nozbe/with-observables": "^1.0.5",
     "@react-native-community/async-storage": "^1.7.1",
     "@react-native-community/google-signin": "^3.0.3",
     "@react-native-community/image-editor": "^2.2.0",
@@ -58,6 +60,7 @@
     "react-native-material-textfield": "^0.16.1",
     "react-native-navigation-bar-color": "^1.0.0",
     "react-native-onesignal": "^3.6.1",
+    "react-native-parallax-scroll-view": "^0.21.3",
     "react-native-permissions": "^2.0.8",
     "react-native-router-flux": "^4.0.6",
     "react-native-shimmer-placeholder": "^1.0.35",
@@ -77,6 +80,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.7.5",
+    "@babel/plugin-proposal-decorators": "^7.7.4",
     "@babel/runtime": "^7.7.6",
     "@react-native-community/eslint-config": "^0.0.5",
     "babel-jest": "^24.9.0",

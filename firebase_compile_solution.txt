@@ -1,13 +1,14 @@
+For solving version not matching issue - 
 1) link all firebase modules using 'rn link <firebase-module>'
 
-2) Go to -> node_modules/@react-native-firebase/ml-vision/ml-models.gradle
+2) Go to -> node_modules/@react-native-firebase/ml-vision/android/ml-models.gradle
 3) Delete 'ml_vision_face_model' from line 4
 
-4) Got to -> node_modules/@react-native-firebase/ml-natural-language/build.gradle
+4) Got to -> node_modules/@react-native-firebase/ml-natural-language/android/build.gradle
 5) Delete line 71 and add this in place -> 
 implementation 'com.google.firebase:firebase-ml-natural-language:22.0.0'
 implementation 'com.google.firebase:firebase-ml-natural-language-smart-reply-model:20.0.7'
 
-6) Go to -> node_modules/@react-native-firebase/in-app-messaging/build.gradle
+6) Go to -> node_modules/@react-native-firebase/in-app-messaging/android/build.gradle
 7) Delete line 67 and add this in place ->
 implementation 'com.google.firebase:firebase-inappmessaging-display:19.0.2'

@@ -51,6 +51,7 @@ target 'Geek_House' do
 
   pod 'RNFBMessaging', :path => '../node_modules/@react-native-firebase/messaging'
 
+
   target 'Geek_HouseTests' do
     inherit! :search_paths
     # Pods for testing
