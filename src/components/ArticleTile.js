@@ -88,7 +88,8 @@ export default class ArticleTile extends Component {
             <ArticleInfo 
               onBackdropPress={() => {
                 this.setState({infoVisible:false});
-                logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, Date.now() - this.state.showStartTime)
+                logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, {mili_seconds: Date.now()-this.state.showStartTime,
+                endTime:Date.now()})
               }}
               isVisible = {this.state.infoVisible}
               article_id = {this.props.data.article_id}
@@ -139,7 +140,8 @@ export default class ArticleTile extends Component {
                 theme={this.props.theme}
                 onBackdropPress={() => {
                   this.setState({infoVisible:false});
-                  logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, Date.now() - this.state.showStartTime)
+                  logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, {mili_seconds: Date.now()-this.state.showStartTime,
+                  endTime:Date.now()})
                 }}
                 isVisible = {this.state.infoVisible}
                 article_id = {this.props.data.article_id}

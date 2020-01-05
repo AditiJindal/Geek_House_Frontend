@@ -92,7 +92,6 @@ export const URLS = {
   chatpeople: '/api/chatpeople/',
   imageupload: '/api/article/image_upload/',
   comment: '/api/comment/',
-  setcategory: '/api/setcategory/',
   logevent: '/api/logevent/',
   chatpeoplesearch: '/api/chatpeoplesearch/',
   feedback: '/api/feedback/'

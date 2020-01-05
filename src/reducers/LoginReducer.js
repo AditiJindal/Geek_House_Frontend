@@ -40,7 +40,6 @@ export default (state=INITIAL_STATE, action) => {
       };
 
     case ACTIONS.LOGIN_FIRST_LOGIN:
-
       return {...state, first_login: action.payload}
     
     case ACTIONS.LOGIN_ERROR:

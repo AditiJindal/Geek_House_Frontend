@@ -31,8 +31,7 @@ export const getSettingsData = (reload) => {
 }
 
 export const settingsChangeFavouriteCategory = (selected_category) => {
-  httpClient.post(URLS.setcategory, {fav_category: selected_category});
-  return {type:ACTIONS.SETTINGS_CHANGE_CATEGORY, payload: selected_category}
+  return {type:ACTIONS.CHAT_SOCKET_CHANGE_CATEGORY, payload: selected_category}
 }
 
 export const changeAnimationSettings = () => {

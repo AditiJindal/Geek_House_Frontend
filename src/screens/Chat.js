@@ -30,7 +30,8 @@ class Chat extends Component {
 
   componentWillUnmount(){
     // console.log("unmounting chat")
-    logEvent(LOG_EVENT.TIME_IN_CHAT, Date.now()-this.state.showStartTime)
+    logEvent(LOG_EVENT.TIME_IN_CHAT, {mili_seconds: Date.now()-this.state.showStartTime,
+    endTime:Date.now()})
   }
   
   renderSection(title){
@@ -111,6 +112,9 @@ class Chat extends Component {
         }
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => {
+        if (!this.props.status.hasOwnProperty(item._id)){
+          this.props.status[item._id] = {online: true, typing: false, unread_messages: 0}
+        }
         return (
         <ChatPeople data={item}
           COLORS = {COLORS}

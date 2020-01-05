@@ -3,9 +3,7 @@ import { View, StyleSheet, Text, StatusBar, Alert}from 'react-native';
 import {connect} from 'react-redux'
 import {FONTS, COLORS_LIGHT_THEME} from '../Constants'
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  gotLoginData, loginGoogle,loginFacebook, checkLogin
-} from '../actions';
+import {loginGoogle,loginFacebook, checkLogin} from '../actions';
 import Loading from '../components/Loading';
 import { Button } from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color'
@@ -156,8 +154,7 @@ const mapStateToProps = (state) => {
   };
 }
 
-export default connect(mapStateToProps, {
-  gotLoginData, loginGoogle,loginFacebook, checkLogin
+export default connect(mapStateToProps, {loginGoogle,loginFacebook, checkLogin
 })(Login);
 
 

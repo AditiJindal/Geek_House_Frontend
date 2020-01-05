@@ -36,26 +36,27 @@ httpClient.defaults.baseURL = BASE_URL;
 
 
 const incomingMessageConverter = (data) => {
-  new_message = [{_id:uuid(), createdAt: data.createdAt, text:data.text, user:{_id:data.from}, image:data.image}]
+  new_message = [{_id:uuid(), createdAt: data.createdAt, text:data.text, 
+    user:{_id:data.from}, image:data.image}]
   return new_message
 }
 
-export const gotLoginData = (data) => {
-  return {
-    type:ACTIONS.LOGIN_DATA,
-    payload:data
-  };
-}
 
 const makeConnection = async (json_data, dispatch) => {
   // console.log("in make connectino")
+  console.log("json token is: ", json_data.authtoken)
   AsyncStorage.getItem(json_data.authtoken.toString()).then((response)=>{
     response = JSON.parse(response)
-    dispatch(
-      {type:ACTIONS.CHAT_LOAD_DATA, payload: {...response, user_id: json_data.authtoken.toString()}}
-      )
+    console.log("First login is: ", response)
+    if (response.first_login){
+      dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, 
+      payload: {first_login:false, authtoken:json_data.authtoken}})
+    }
+    dispatch({type:ACTIONS.CHAT_LOAD_DATA, 
+      payload: {...response, user_id: json_data.authtoken.toString()}})
   });
-  dispatch({type:ACTIONS.LOGIN_DATA, payload:{data:json_data.data, authtoken:json_data.authtoken, categories:json_data.categories}})
+  dispatch({type:ACTIONS.LOGIN_DATA, payload:{data:json_data.data, 
+    authtoken:json_data.authtoken, categories:json_data.categories}})
   const socket = io(BASE_URL);
   setSocket(socket)
 
@@ -144,7 +145,7 @@ export const checkLogin = () => {
           crashlytics().setUserId(json_data.data.authtoken);
           crashlytics().setUserEmail(json_data.data.email);
           crashlytics().setUserName(json_data.data.name);
-          console.log("json: ", json_data)
+          // console.log("json: ", json_data)
         }
         else{
           dispatch({type:ACTIONS.LOGOUT})
@@ -185,7 +186,9 @@ export const loginGoogle = () => {
           else{
             analytics().logLogin({method:'google'})
           }
-          dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, payload: response.data.first_login})
+          console.log("In google login first login is: ",response.data.first_login)
+          dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, 
+            payload: {first_login:response.data.first_login, authtoken:final_data.authtoken}})
           dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
           // Image.prefetch(final_data.data.image_url)
           makeConnection(final_data, dispatch);
@@ -241,7 +244,10 @@ export const loginFacebook = () => {
                       else{
                         analytics().logLogin({method:'facebook'})
                       }
-                      dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, payload: response.data.first_login})
+                      console.log("In fb login first login is: ",response.data.first_login)
+                      // console.log("To save date is: loginFB: ", final_data)
+                      dispatch({type:ACTIONS.LOGIN_FIRST_LOGIN, 
+                        payload: {first_login:response.data.first_login, authtoken:final_data.authtoken}})
                       dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
                       // Image.prefetch(final_data.data.image_url);
                       makeConnection(final_data, dispatch)

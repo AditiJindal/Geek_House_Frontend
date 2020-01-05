@@ -28,7 +28,7 @@ export default (state=INITIAL_STATE, action) => {
     case ACTIONS.HOME_LOADING:
       return {...state, loading:true, error:''}
 
-    case ACTIONS.HOME_CHANGE_CATEGORY:
+    case ACTIONS.CHAT_SOCKET_CHANGE_CATEGORY:
       return {...state, selected_category:action.payload}
 
     case ACTIONS.HOME_SHOW_REAL_APP:

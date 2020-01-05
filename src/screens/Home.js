@@ -8,10 +8,9 @@ import {
   toggleOverlay,
   getWelcome,
   setAuthToken,
-  changeSelectedCategory,
-  sendFavouriteCategory,
   showRealApp
 } from '../actions';
+import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
 import Image from 'react-native-fast-image';
 import {logEvent} from '../actions/ChatAction';
 import {Dropdown} from '../components/Dropdown';
@@ -99,7 +98,8 @@ class Home extends PureComponent {
                 itemPadding={6}
                 pickerStyle={{elevation:20, borderRadius:25, flex:1, paddingHorizontal:10,
                   backgroundColor:COLORS_LIGHT_THEME.LIGHT}}
-                onChangeText={(selected_category) => {this.props.changeSelectedCategory(selected_category)}}
+                onChangeText={(selected_category) => {
+                  this.props.settingsChangeFavouriteCategory(selected_category)}}
               />
             </View>
           </View>
@@ -395,7 +395,6 @@ class Home extends PureComponent {
   _onDone(){    
     if (this.props.selected_category){
       this.props.showRealApp()
-      this.props.sendFavouriteCategory(this.props.selected_category)
     }
     else{
       this.appIntroSlider.goToSlide(2)
@@ -487,8 +486,7 @@ export default connect(mapStateToProps, {
   toggleOverlay, 
   getWelcome, 
   setAuthToken, 
-  changeSelectedCategory,
-  sendFavouriteCategory,
+  settingsChangeFavouriteCategory,
   showRealApp
 })(Home);
 

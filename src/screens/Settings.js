@@ -102,7 +102,7 @@ class Settings extends Component {
             colors={["#ef473a","#cb2d3e"]} 
             style={{elevation:5, justifyContent:'space-between',
             justifyContent:'center', alignItems:'center', flexDirection:'row', 
-            backgroundColor:this.props.COLORS.LIGHT,
+            backgroundColor:COLORS_LIGHT_THEME.LIGHT,
             alignSelf:'flex-start', padding:15, borderRadius:15}}
             >
             <Text style={styles.LogoutButtonTextStyle}>Logout</Text>
@@ -148,6 +148,7 @@ class Settings extends Component {
   }
 
   renderUserInfo(){
+    const {COLORS} = this.props;
     return (
       <SView style={{
         borderRadius:12, padding:5, shadowColor:'#202020',shadowOpacity:0.20,shadowOffset:{width:0,height:7},shadowRadius:5, 
@@ -326,6 +327,7 @@ class Settings extends Component {
 };
 
 const mapStateToProps = (state) => {
+  console.log("state.settings: ", state.settings)
   return {
     data: state.login.data,
     categories: state.login.categories,

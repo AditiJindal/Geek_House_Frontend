@@ -5,6 +5,7 @@ import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import analytics from '@react-native-firebase/analytics';
 import perf from '@react-native-firebase/perf';
 
+
 const INITIAL_STATE={
   socket: null,
   loading:true,
@@ -17,6 +18,7 @@ const INITIAL_STATE={
   total_unread_messages: 0,
   chatScreenOpen: false,
   loaded_from_storage: false,
+  first_login:false,
   user_id: "",
   theme: "light",
   animationOn:true,
@@ -26,7 +28,7 @@ const INITIAL_STATE={
   COLORS: COLORS_LIGHT_THEME
 }
 
-const trace = perf().newTrace("save_data")
+const trace = perf().newTrace("save_data_async_storage")
 
 const incomingMessageConverter = (data) => {
   new_message = [
@@ -41,10 +43,13 @@ const saveData = async (state) => {
     status: state.status,
     total_unread_messages:state.total_unread_messages,
     theme: state.theme,
-    animationOn: state.animationOn
+    animationOn: state.animationOn,
+    first_login: state.first_login
   };
   t = Date.now()
   trace.start()
+  console.log("saved this: ", to_save)
+  console.log("User id is: ", state.user_id)
   to_save = JSON.stringify(to_save)
   await AsyncStorage.setItem(state.user_id.toString(), to_save)
   trace.stop()
@@ -54,13 +59,17 @@ const saveData = async (state) => {
 export default (state=INITIAL_STATE, action) => {
   switch (action.type){
     case ACTIONS.LOGOUT:
+      // console.log("ACTION.LOGOUT HERE 5")
+      // console.log("state.socket is: ", state.socket)
+      if (action.payload){
+        state.socket.disconnect(true)
+      }
       return {...INITIAL_STATE}
 
     case ACTIONS.SET_SOCKET:
       return {...state, socket: action.payload}
 
     case ACTIONS.CHAT_LOAD_DATA:
-
       user_id = action.payload.user_id
       COLORS = COLORS_DARK_THEME
 
@@ -270,6 +279,22 @@ export default (state=INITIAL_STATE, action) => {
 
     case ACTIONS.CHAT_PEOPLE_SEARCH:
       return {...state, chatPeopleSearch:action.payload, loading:false}
+
+    case ACTIONS.CHAT_SOCKET_CHANGE_CATEGORY:
+      state.socket.emit('change_favourite_category', action.payload)
+      return state
+
+    case ACTIONS.HOME_SHOW_REAL_APP:
+      state.socket.emit('user_setup_done');
+      new_state = {...state, first_login:false}
+      saveData(new_state)
+      return new_state
+
+    case ACTIONS.LOGIN_FIRST_LOGIN:
+      new_state = {...state, first_login:action.payload.first_login, 
+        user_id:action.payload.authtoken}
+      saveData(new_state)
+      return new_state
 
     default:
       return state;

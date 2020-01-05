@@ -10,6 +10,7 @@ export default (state=INITIAL_STATE, action) => {
 	
 	switch (action.type){
 		case ACTIONS.LOGOUT:
+			console.log("ACTION.LOGOUT HERE 4")
       return {...INITIAL_STATE}
 
     case ACTIONS.ARTICLE_INFO_LOADING:

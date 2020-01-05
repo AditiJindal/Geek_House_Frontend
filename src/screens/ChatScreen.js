@@ -47,7 +47,7 @@ class ChatScreen extends Component {
     const {COLORS} = this.props;
     let jsx = <View/>
 
-    if (this.props.other_user_data.newEntry){
+    if (this.props.other_user_data.newEntry || !status){
       return <Text/>
     }
 

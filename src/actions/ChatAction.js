@@ -1,5 +1,5 @@
 import {ACTIONS} from './types';
-import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import axios from 'axios';
 import _ from 'lodash';
 import {uploadImage} from './WriteAction';
@@ -81,6 +81,9 @@ export const chatPeopleSearchAction = (value) => {
 }
 
 export const logEvent = (eventType, data) => {
+  if (eventType===LOG_EVENT.SCREEN_CHANGE){
+    data = {screen:data, time:Date.now()}
+  }
   socket.emit('log_event', {eventType,data});
 }
 

@@ -57,11 +57,11 @@ export const ACTIONS={
     CHAT_LOAD_DATA: 'chat.load_data',
     CHAT_AUTH_TOKEN_SET:'chat.auth_token.set',
     CHAT_PEOPLE_SEARCH: 'chat.people_search',
+    CHAT_SOCKET_CHANGE_CATEGORY: 'chat_socket_change_category',
 
     // SETTINGS
     SETTINGS_LOADING: 'settings.loading',
     GET_SETTINGS_DATA: 'settings.get_data',
-    SETTINGS_CHANGE_CATEGORY: 'settings.change_category',
     CHANGE_THEME: 'settings.change_theme',
     SETTINGS_CHANGE_ANIMATION:'settings.change_animation'
 
