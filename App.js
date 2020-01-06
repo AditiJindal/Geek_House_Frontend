@@ -14,9 +14,9 @@ import crashlytics from '@react-native-firebase/crashlytics';
 //   debug:true
 // });
 // Sentry.setRelease(Constants.manifest.revisionId);
-// console.disableYellowBox=true
-// crashlytics().setCrashlyticsCollectionEnabled(true)
 
+crashlytics().setCrashlyticsCollectionEnabled(true)
+console.disableYellowBox = true
 export default class App extends Component{
 
   constructor(){

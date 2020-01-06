@@ -32,7 +32,7 @@ export const logout = () => {
         console.log("ACTION.LOGOUT HERE 1")
         dispatch({type:ACTIONS.LOGOUT, payload:true});
       }
-    )
+    ).catch(e=>crashlytics().log("HomeAction LINE 35"+e.toString()))
   }
 }
 
@@ -51,14 +51,15 @@ export const getWelcome = () => {
               dispatch({type:ACTIONS.LOGOUT});
               Actions.replace("login_main");logEvent(LOG_EVENT.SCREEN_CHANGE, 'login_main');
             }
-          )
+          ).catch(e=>crashlytics().log("HomeAction LINE 54"+e.toString()))
         }
         else{
           dispatch({type:ACTIONS.WELCOME, payload: response.data})
         }
       }
     ).catch(
-      (e) => {console.log('error is: ', e);dispatch({type:ACTIONS.HOME_ERROR, payload: "Sorry, could not connect to the server!"})}
+      (e) => {crashlytics().log("HomeAction LINE 61"+e.toString());
+        console.log('error is: ', e);dispatch({type:ACTIONS.HOME_ERROR, payload: "Sorry, could not connect to the server!"})}
     )
   }      
 };
@@ -76,8 +77,8 @@ export const submitFeedback = (feedback_obj) => {
         .then(()=>{
           feedback_obj.image_url = response.data.key;
           httpClient.post(URLS.feedback, feedback_obj)
-        })
-      })
+        }).catch(e=>crashlytics().log("HomeAction LINE 80"+e.toString()))
+      }).catch(e=>crashlytics().log("HomeAction LINE 81"+e.toString()))
     }
     else{
       httpClient.post(URLS.feedback, feedback_obj)

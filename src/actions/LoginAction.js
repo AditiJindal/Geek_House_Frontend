@@ -43,17 +43,15 @@ const incomingMessageConverter = (data) => {
 
 
 const makeConnection = async (json_data, dispatch) => {
-  // console.log("in make connectino")
   AsyncStorage.getItem(json_data.authtoken.toString()).then((response)=>{
     response = JSON.parse(response)
-    console.log("This the respose in checkLogin: ", response)
 
     dispatch({type:ACTIONS.CHAT_FIRST_LOGIN, 
     payload: {first_login:response.first_login, authtoken:json_data.authtoken, theme: response.theme,}})
     
     dispatch({type:ACTIONS.CHAT_LOAD_DATA, 
       payload: {...response, user_id: json_data.authtoken.toString()}})
-  });
+  }).catch(e=>crashlytics().log("LoginAction LINE 56"+e.toString()))
   dispatch({type:ACTIONS.LOGIN_DATA, payload:{data:json_data.data,
     authtoken:json_data.authtoken, categories:json_data.categories}})
   const socket = io.connect(BASE_URL, {
@@ -158,7 +156,8 @@ export const checkLogin = () => {
           dispatch({type:ACTIONS.LOGOUT})
         }
       }
-  )}
+  ).catch(e=>crashlytics().log("LoginAction LINE 161"+e.toString()))
+}
 }
 
 
@@ -203,10 +202,13 @@ export const loginGoogle = () => {
           makeConnection(final_data, dispatch);
           Actions.replace("main");
         }
-      ).catch((e)=>{console.log("Error: ", e)})
+      ).catch(e=>{
+        crashlytics().log("LoginAction LINE 208"+e.toString());
+        Alert.alert("Here 5",e.toString())})
       // })
-    }).catch(e=>{crashlytics().log("LoginAction:loginGoogle:signIn")
-    ;crashlytics().recordError(e)})
+    }).catch(e=>{
+      Alert.alert("Here 4",e.toString());
+      crashlytics().log("LoginAction LINE 211"+e.toString())})
   }
 }
 
@@ -227,7 +229,6 @@ export const loginFacebook = () => {
             (response) => {
               response.json().then(
                 (data) => {
-                  // Notifications.getExpoPushTokenAsync().then((pushToken)=>{
                   let new_data = {
                     id:data.id+'facebook', 
                     name:data.name, 
@@ -264,15 +265,21 @@ export const loginFacebook = () => {
                       makeConnection(final_data, dispatch)
                       Actions.replace("main");
                     }
-                  );
+                  ).catch(e=>{
+                    crashlytics().log("LoginAction LINE 272"+e.toString());
+                    Alert.alert("Here 3",e.toString())})
                   // })
                 }
-              )
+              ).catch(e=>crashlytics().log("LoginAction LINE 276"+e.toString()))
             }
-          )
+          ).catch(e=>{
+            crashlytics().log("LoginAction LINE 277"+e.toString());
+            Alert.alert("Here 2",e.toString())})
         })
       }
-    }).catch(e=>{crashlytics().log("LoginAction:loginFacebook:logInWithPermissions")
+    }).catch(e=>{
+    crashlytics().log("LoginAction LINE 280"+e.toString())
+    Alert.alert("Here 1",e.toString());crashlytics().log("LoginAction:loginFacebook:logInWithPermissions")
     ;crashlytics().recordError(e)})
   };
 }

@@ -4,6 +4,18 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import analytics from '@react-native-firebase/analytics';
 import perf from '@react-native-firebase/perf';
+import VasernDB from '../database';
+
+// {
+//   _id: 1,
+//   text: 'Hello developer',
+//   createdAt: new Date(),
+//   user: {
+//     _id: 2,
+//     name: 'React Native',
+//     avatar: 'https://placeimg.com/140/140/any',
+//   },
+// },
 
 
 const INITIAL_STATE={
@@ -11,7 +23,7 @@ const INITIAL_STATE={
   loading:true,
   chatPeople:{},
   chats: [],
-  messages: {},
+  messages: {}, // {"user_id": [ {_id:Number, text:String, createdAt: Date, user: {_id:String}} ,{}, {} ]}
   other_user_data: {},
   status: {}, // {"user_id":{online: true, typing: false, unread_messages: 2}}
   total_typing: 0,
@@ -25,7 +37,8 @@ const INITIAL_STATE={
   chatPeopleSearchLoading:false,
   authTokenSet: false,
   chatPeopleSearch:null,
-  COLORS: COLORS_LIGHT_THEME
+  COLORS: COLORS_LIGHT_THEME,
+  currentMessages:[] // list of messages of currently loaded person
 }
 
 const trace = perf().newTrace("save_data_async_storage")
@@ -35,6 +48,23 @@ const incomingMessageConverter = (data) => {
     {_id:uuid(), createdAt: data.createdAt, text:data.text,image:data.image, user:{_id:data.from}}
   ]
   return new_message
+}
+
+const saveMessageInDB = (payload, state) => {
+  VasernDB.Messages.insert({
+    other_user_id: payload.other_user_id,
+    message_id: payload._id,
+    createdAt: new Date(payload.createdAt),
+    user_id: payload.hasOwnProperty('_id')?payload._id:state.user_id,
+
+    text: payload.hasOwnProperty('text')?payload.text:null,
+    image_url: payload.hasOwnProperty('image')?payload.image.url:null,
+    image_height: payload.hasOwnProperty('image')?payload.image.height:null,
+    image_width: payload.hasOwnProperty('image')?payload.image.width:null,
+    image_ar: payload.hasOwnProperty('image')?payload.image.aspectRatio:null
+  });
+
+  console.log("DATA IN DATABSE IS NOW: ", VasernDB.Messages.data())
 }
 
 const saveData = async (state) => {
@@ -48,8 +78,6 @@ const saveData = async (state) => {
   };
   t = Date.now()
   trace.start()
-  console.log("saved this: ", to_save)
-  console.log("User id is: ", state.user_id)
   to_save = JSON.stringify(to_save)
   await AsyncStorage.setItem(state.user_id.toString(), to_save)
   trace.stop()
@@ -59,8 +87,6 @@ const saveData = async (state) => {
 export default (state=INITIAL_STATE, action) => {
   switch (action.type){
     case ACTIONS.LOGOUT:
-      // console.log("ACTION.LOGOUT HERE 5")
-      // console.log("state.socket is: ", state.socket)
       if (action.payload){
         state.socket.disconnect(true)
       }
@@ -182,7 +208,7 @@ export default (state=INITIAL_STATE, action) => {
       total_unread_messages = state.total_unread_messages;
       if (state.loaded_from_storage && (Object.keys(state.status).length!==0)){
         status = {...state.status};
-        all_users.forEach((item)=>{
+        all_users.map((item)=>{
           if (!status.hasOwnProperty(item._id)){
             status[item._id] = {online:false, typing:false, unread_messages:0}
           }
@@ -192,13 +218,13 @@ export default (state=INITIAL_STATE, action) => {
       }
       else{
         status = {}
-        all_users.forEach((item)=>{
+        all_users.map((item)=>{
           (action.payload.allOnline.includes(item._id))?online=true:online=false
           status[item._id]={online, typing: false, unread_messages: 0}
         });
       }
 
-      action.payload.unread_messages.forEach((item)=>{
+      action.payload.unread_messages.map((item)=>{
         if (new_messages.hasOwnProperty(item.from)){
           new_messages[item.from] = incomingMessageConverter(item).concat(new_messages[item.from]);
         }
@@ -227,12 +253,16 @@ export default (state=INITIAL_STATE, action) => {
       new_chats = [...state.chats]
       total_unread_messages = state.total_unread_messages
 
+      // action.payload.message is [ { ... } ], is an array containing one object
+
       if (action.payload.isIncomming){
         analytics().logEvent("received_message")
       }
       else{
         analytics().logEvent("sent_message")
       }
+      
+      saveMessageInDB(action.payload, state)
       
       if (state.messages.hasOwnProperty(action.payload.other_user_id)){
         new_messages[action.payload.other_user_id] = action.payload.message
@@ -241,7 +271,6 @@ export default (state=INITIAL_STATE, action) => {
       else{
         new_messages[action.payload.other_user_id] = action.payload.message;
         // state.socket.emit("get_new_entry_data",{id:action.payload.other_user_id});
-
         new_status[action.payload.other_user_id] = {online: true, typing: false, 
           unread_messages: 0};
         // add this users in the chatPeople.chats
@@ -291,7 +320,6 @@ export default (state=INITIAL_STATE, action) => {
       return new_state
 
     case ACTIONS.CHAT_FIRST_LOGIN:
-      console.log("First login here is: ", action.payload.first_login)
       COLORS = COLORS_DARK_THEME;
       if (action.payload.theme==='light'){
         COLORS = COLORS_LIGHT_THEME;
@@ -300,6 +328,12 @@ export default (state=INITIAL_STATE, action) => {
         user_id:action.payload.authtoken, theme:action.payload.theme}
       saveData(new_state)
       return new_state
+
+    case ACTIONS.CHAT_GET_USER_MESSAGES:
+      console.log("Other user id: ", action.payload)
+      console.log("VASERN DB: ", VasernDB.Messages.data())
+      currentMessages = VasernDB.Messages.get({other_user_id:action.payload})
+      return {...state, currentMessages}
 
     default:
       return state;

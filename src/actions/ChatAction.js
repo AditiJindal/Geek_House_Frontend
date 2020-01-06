@@ -3,6 +3,7 @@ import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import axios from 'axios';
 import _ from 'lodash';
 import {uploadImage} from './WriteAction';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
@@ -30,7 +31,7 @@ export const getChatPeople = () => {
     dispatch({type:ACTIONS.CHAT_LOADING})
     httpClient.get(URLS.chatpeople).then(
       (response) => {dispatch({type:ACTIONS.GET_CHAT_PEOPLE, payload:response.data});}
-    );
+    ).catch(e=>crashlytics().log("ChatAction LINE 34"+e.toString()))
   };
 };
 
@@ -54,7 +55,7 @@ export const sendMessage = (socket, message, other_user_id, image) => {
           message_to_send.to = other_user_id;
           socket.emit('message', message_to_send)
           dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id, isIncomming:false}})
-        })
+        }).catch(e=>crashlytics().log("ChatAction LINE 58"+e.toString()))
       })
     }
     else{
@@ -107,6 +108,11 @@ export const checkMessagesObject = (other_user_id, messages) => {
     messages[other_user_id] = [];
   }
   return {type:ACTIONS.CHECK_MESSAGES_OBJECT, payload:messages} 
+}
+
+export const getCurrentUserMessages = (other_user_id) => {
+  console.log("IN ACTIO, OTHER USER ID: ", other_user_id)
+  return {type:ACTIONS.CHAT_GET_USER_MESSAGES, payload:other_user_id}
 }
 
 export const clearOtherUserData = () => {

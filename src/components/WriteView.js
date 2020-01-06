@@ -7,6 +7,7 @@ import SView from 'react-native-simple-shadow-view';
 import vision from '@react-native-firebase/ml-vision';
 import ImagePicker from 'react-native-image-picker';
 import Loading from './Loading';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 
 const MIN_TI_HEIGHT = 120;
@@ -37,7 +38,7 @@ export default class WriteView extends Component {
       }
       this.props.onContentChange(response.text, this.props.index);
       this.setState({visionLoading:false})
-    })
+    }).catch(e=>crashlytics().log("WriteView LINE 40"+e.toString()))
 
   }
 

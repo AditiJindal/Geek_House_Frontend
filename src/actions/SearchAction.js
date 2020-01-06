@@ -2,6 +2,7 @@ import {ACTIONS} from './types';
 import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
 import {OVERLAY_COLOR} from '../Constants';
 import axios from 'axios';
+import crashlytics from '@react-native-firebase/crashlytics'
 // import console = require('console');
 
 // Bullshit to do in evey file ->
@@ -26,9 +27,9 @@ export const getPopularSearches = () => {
     dispatch({type:ACTIONS.SEARCH_LOADING})
     httpClient.get(URLS.popularsearches).then((response) => {
       dispatch({type:ACTIONS.POPULAR_SEARCHES_SUCCESS, payload:response.data})
-    }).catch(
-      () => {showAlert(true, {})}
-    )
+    }).catch(() => {
+      crashlytics().log("SearchAction LINE 30"+e.toString());
+      showAlert(true, {})})
   }
 }
 
@@ -48,7 +49,7 @@ export const doSearch = (search, category) => {
       (response) => {
         dispatch({type:ACTIONS.DO_SEARCH, payload:response.data})
       }
-    )
+    ).catch(e=>crashlytics().log("SearchAction LINE 51"+e.toString()))
   }
 }
 

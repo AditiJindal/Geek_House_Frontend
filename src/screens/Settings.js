@@ -225,7 +225,7 @@ class Settings extends Component {
 
   renderDropdown(){
     let new_data=[];
-    this.props.categories.forEach((item) => {new_data.push({value:item})})
+    this.props.categories.map((item) => {new_data.push({value:item})})
     const {COLORS} = this.props;
 
     return (

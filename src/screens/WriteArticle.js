@@ -93,7 +93,7 @@ class WriteArticle extends Component {
     }
 
     else{
-      this.state.contents.forEach((item, i) => {
+      this.state.contents.map((item, i) => {
         i=i+1;
         if (item.sub_heading.length===0){
           nextEnabled=false;
@@ -157,7 +157,7 @@ class WriteArticle extends Component {
 
   onClosePressed(remove_index){
     new_contents = [];
-    this.state.contents.forEach((obj, i) => {     
+    this.state.contents.map((obj, i) => {     
       if (i!==remove_index){
         new_contents.push(obj)
       }      
@@ -261,7 +261,7 @@ class WriteArticle extends Component {
   renderCategoryDropdown(){
     const {COLORS} = this.props;
     let new_data=[];
-    this.props.all_categories.forEach((item) => {new_data.push({value:item})})
+    this.props.all_categories.map((item) => {new_data.push({value:item})})
 
     return (
       <View style={{marginHorizontal:25}}>

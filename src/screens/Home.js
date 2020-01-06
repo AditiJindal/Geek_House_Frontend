@@ -45,7 +45,7 @@ class Home extends PureComponent {
       analytics().logTutorialBegin();
     }
     let new_data=[];
-    this.props.categories.forEach((item) => {new_data.push({value:item})})
+    this.props.categories.map((item) => {new_data.push({value:item})})
     this.slides = [
       {
         fullyCustom:true,

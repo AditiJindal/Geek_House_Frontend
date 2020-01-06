@@ -58,6 +58,7 @@ export const ACTIONS={
     CHAT_SOCKET_CHANGE_CATEGORY: 'chat_socket_change_category',
     CHAT_FIRST_LOGIN: 'CHAT.first_login',
     CHAT_SETUP_COMPLETE: 'chat.setup_complete',
+    CHAT_GET_USER_MESSAGES: 'chat.get_user_messages',
 
     // SETTINGS
     SETTINGS_LOADING: 'settings.loading',

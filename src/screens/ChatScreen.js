@@ -7,7 +7,7 @@ import {FONTS} from '../Constants';
 import {GiftedChat} from '../components/GiftedChat/index';
 import { Actions } from 'react-native-router-flux';
 import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData, setAuthToken,
-  getChatPeopleExplicitly} from '../actions/ChatAction';
+  getChatPeopleExplicitly, getCurrentUserMessages} from '../actions/ChatAction';
 import Image from 'react-native-fast-image';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
@@ -22,6 +22,8 @@ class ChatScreen extends Component {
 
   componentDidMount(){
     this.props.setAuthToken();
+    console.log("CHAT SCREEN OTHER USER ID: ", this.props.other_user_data._id)
+    this.props.getCurrentUserMessages(this.props.other_user_data._id)
     this.props.checkMessagesObject(this.props.other_user_data._id, this.props.messages);
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>this.keyboardDidShow());
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', ()=>this.keyboardDidHide());
@@ -150,6 +152,7 @@ class ChatScreen extends Component {
               (this.props.loading)?
                 <Text>LOADING</Text>:
                 (<View style={{flex:1}}>
+                  {console.log("CurrentMessages: ", this.props.currentMessages)}
                   <GiftedChat
                     theme={this.props.theme}
                     COLORS = {COLORS}
@@ -192,18 +195,19 @@ const mapStateToProps = (state) => {
     image_adder:state.home.image_adder,
     loading: state.chat.loading,
     authtoken: state.login.authtoken,
+
     other_user_data: state.chat.other_user_data,
     messages: state.chat.messages,
     socket: state.chat.socket,
     status: state.chat.status,
-
     theme: state.chat.theme,
-    COLORS: state.chat.COLORS
+    COLORS: state.chat.COLORS,
+    currentMessages: state.chat.currentMessages
   }
 }
 
 export default connect(mapStateToProps, {setAuthToken, sendMessage, getChatPeopleExplicitly,
-  checkMessagesObject, sendTyping, clearOtherUserData})(ChatScreen);
+  checkMessagesObject, sendTyping, clearOtherUserData, getCurrentUserMessages})(ChatScreen);
 
 const styles = StyleSheet.create({
   TextStyle:{

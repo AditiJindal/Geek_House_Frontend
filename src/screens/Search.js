@@ -202,7 +202,7 @@ class Search extends Component {
     const {all_categories} = this.props.popularSearchesData;
     let new_data = [{value: "All Categories"}];
     if (all_categories){
-      all_categories.forEach((item) => {new_data.push({value:item})})
+      all_categories.map((item) => {new_data.push({value:item})})
       if(this.props.searchValue.length>1){
         
         return (

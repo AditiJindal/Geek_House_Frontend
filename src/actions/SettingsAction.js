@@ -1,6 +1,7 @@
 import {ACTIONS} from './types';
 import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
 import axios from 'axios';
+import crashlytics from '@react-native-firebase/crashlytics';
 // import console = require('console');
 
 // Bullshit to do in evey file ->
@@ -25,7 +26,7 @@ export const getSettingsData = (reload) => {
       // // console.log(" i m reloading data: ")
       httpClient.get(URLS.settings).then((response)=>{
         dispatch({type: ACTIONS.GET_SETTINGS_DATA, payload: response.data})
-      })
+      }).catch(e=>crashlytics().log("SettingAction LINE 28"+e.toString()))
     }
   }
 }
