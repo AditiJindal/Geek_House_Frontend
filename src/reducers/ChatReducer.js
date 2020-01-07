@@ -51,18 +51,31 @@ const incomingMessageConverter = (data) => {
 }
 
 const saveMessageInDB = (payload, state) => {
-  VasernDB.Messages.insert({
-    other_user_id: payload.other_user_id,
-    message_id: payload._id,
-    createdAt: new Date(payload.createdAt),
-    user_id: payload.hasOwnProperty('_id')?payload._id:state.user_id,
+  console.log("Payload in vasernDB: ", payload)
+  const {message, other_user_id} = payload
+  let text_to_save=null
+  let image_to_save={};
+  if (message[0].text){
+    text_to_save=message[0].text
+  }
+  if (!!message[0].image){
+    image_to_save=message[0].image
+  }
+  console.log("IMage to save before error: ", image_to_save.url)
+  let to_save = {
+    other_user_id: other_user_id,
+    message_id: message[0]._id,
+    createdAt: new Date(message[0].createdAt),
+    user_id: message[0].hasOwnProperty('_id')?message[0]._id:state.user_id,
 
-    text: payload.hasOwnProperty('text')?payload.text:null,
-    image_url: payload.hasOwnProperty('image')?payload.image.url:null,
-    image_height: payload.hasOwnProperty('image')?payload.image.height:null,
-    image_width: payload.hasOwnProperty('image')?payload.image.width:null,
-    image_ar: payload.hasOwnProperty('image')?payload.image.aspectRatio:null
-  });
+    text: text_to_save,
+    image_url: image_to_save.url,
+    image_height: image_to_save.height,
+    image_width: image_to_save.width,
+    image_ar: image_to_save.aspectRatio,
+  }
+  console.log("To save is: ", to_save, "message is: ",  message)
+  VasernDB.Messages.insert(to_save);
 
   console.log("DATA IN DATABSE IS NOW: ", VasernDB.Messages.data())
 }

@@ -5,12 +5,8 @@ import { StyleSheet, View, ViewPropTypes, Dimensions,
 import Icon from 'react-native-vector-icons/Feather';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import RNFileSystem from 'react-native-fs';
-
-// @ts-ignore
- 
 import { Overlay,} from 'react-native-elements';
 import ImageZoom from 'react-native-image-pan-zoom';
-import { COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../../Constants';
 
 const styles = StyleSheet.create({
     container: {},
@@ -84,7 +80,9 @@ export default class MessageImage extends Component {
         const { containerStyle, imageProps, imageStyle, currentMessage,COLORS } = this.props;
         let image_url = currentMessage.image.url
         const {width, aspectRatio} = currentMessage.image;
+        console.log("image_url: ", image_url)
         if (image_url.substring(0,4) !== 'http'){
+            console.log("Adding adder")
             image_url = this.props.image_adder + currentMessage.image.url
         }
         
@@ -95,7 +93,7 @@ export default class MessageImage extends Component {
         <View style={[styles.container, containerStyle]}>
             <TouchableOpacity
                 onLongPress={()=>{this.saveFileToGallery(image_url, currentMessage.image.name)}}
-                delayLongPress={1200}
+                delayLongPress={3000}
                 onPress={()=>{this.props.onViewerSelect(true);this.setState({imageViewerActive:true})}}>
                 <Image {...imageProps} style={{...styles.image, ...imageStyle, height:150/currentMessage.image.aspectRatio}} 
                     source={{ uri: image_url, cache:'cacheOnly' }}/>

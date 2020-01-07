@@ -26,11 +26,11 @@ export default class TimedAlert extends Component {
 
   showAlert(duration, message){
     {LayoutAnimation.configureNext(ANIMATION_CONFIG)}
-    this.timer = this.setState({show:true, message})
-    setTimeout(()=>{
+    this.setState({show:true, message})
+    clearTimeout(this.timer);
+    this.timer = setTimeout(()=>{
       {LayoutAnimation.configureNext(ANIMATION_CONFIG)}
-      this.setState({show:false});
-      clearTimeout(this.timer)}, duration)
+      this.setState({show:false, message:""});}, duration+1000)
   }
 
   render(){
@@ -40,11 +40,11 @@ export default class TimedAlert extends Component {
     const {COLORS} = this.props;
 
     return (
-      <View style={{paddingHorizontal:25, paddingVertical:15, 
-        backgroundColor:COLORS.LESSER_DARK, zIndex:10,
+      <View style={{paddingHorizontal:15, paddingVertical:15,maxWidth:"92%", margin:15,
+        backgroundColor:COLORS.LESSER_DARK, zIndex:10,flexDirection:'row',alignItems:'center',
         borderRadius:15, alignSelf:'center', top:80, position:'absolute', elevation:10}}>
         <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD,
-          fontSize:14, color:COLORS.LESSER_LIGHT}}>
+        fontSize:14, color:COLORS.LESSER_LIGHT}}>
           {this.state.message}
         </Text>
       </View>
