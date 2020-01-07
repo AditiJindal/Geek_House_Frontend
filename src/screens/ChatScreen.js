@@ -22,7 +22,6 @@ class ChatScreen extends Component {
 
   componentDidMount(){
     this.props.setAuthToken();
-    console.log("CHAT SCREEN OTHER USER ID: ", this.props.other_user_data._id)
     this.props.getCurrentUserMessages(this.props.other_user_data._id)
     this.props.checkMessagesObject(this.props.other_user_data._id, this.props.messages);
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>this.keyboardDidShow());
@@ -152,7 +151,6 @@ class ChatScreen extends Component {
               (this.props.loading)?
                 <Text>LOADING</Text>:
                 (<View style={{flex:1}}>
-                  {console.log("CurrentMessages: ", this.props.currentMessages)}
                   <GiftedChat
                     theme={this.props.theme}
                     COLORS = {COLORS}
@@ -162,7 +160,7 @@ class ChatScreen extends Component {
                         color:COLORS.LESS_DARK,
                         backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT
                       }}
-                    messages={this.props.messages[this.props.other_user_data._id]}
+                    messages={this.props.currentMessages}
                     onSend={(message) => {
                       this.setState({selectedImage:null});
                       this.props.sendMessage(this.props.socket, message, 
@@ -197,7 +195,6 @@ const mapStateToProps = (state) => {
     authtoken: state.login.authtoken,
 
     other_user_data: state.chat.other_user_data,
-    messages: state.chat.messages,
     socket: state.chat.socket,
     status: state.chat.status,
     theme: state.chat.theme,

@@ -4,6 +4,9 @@ import axios from 'axios';
 import _ from 'lodash';
 import {uploadImage} from './WriteAction';
 import crashlytics from '@react-native-firebase/crashlytics';
+import {database} from '../database';
+import { Q } from '@nozbe/watermelondb';
+const MessagesCollection =  database.collections.get('messages');
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
@@ -111,8 +114,26 @@ export const checkMessagesObject = (other_user_id, messages) => {
 }
 
 export const getCurrentUserMessages = (other_user_id) => {
-  console.log("IN ACTIO, OTHER USER ID: ", other_user_id)
-  return {type:ACTIONS.CHAT_GET_USER_MESSAGES, payload:other_user_id}
+  t = Date.now()
+  return (dispatch)=>{
+    MessagesCollection.query(Q.where('other_user_id', other_user_id)).fetch().then((response)=>{
+      new_response = response.map((item)=>{
+        return {
+          _id:item.message_id,
+          createdAt: item.created_at,
+          user: {_id:item.user_id},
+
+          text:(item.text)?item.text:null,
+          image:(item.image_url)?{
+            url:item.image_url, height:item.image_height,
+            width:item.image_width, aspectRatio:image.image_ar
+          }:null
+        }
+      })
+      console.log("Sending this: ", new_response)
+      dispatch({type:ACTIONS.CHAT_GET_USER_MESSAGES, payload:new_response})
+    })
+  }
 }
 
 export const clearOtherUserData = () => {

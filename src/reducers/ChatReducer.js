@@ -4,7 +4,10 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import analytics from '@react-native-firebase/analytics';
 import perf from '@react-native-firebase/perf';
-import VasernDB from '../database';
+// import VasernDB from '../database';
+import {database} from '../database';
+import { Q } from '@nozbe/watermelondb';
+const MessagesCollection =  database.collections.get('messages');
 
 // {
 //   _id: 1,
@@ -43,15 +46,14 @@ const INITIAL_STATE={
 
 const trace = perf().newTrace("save_data_async_storage")
 
-const incomingMessageConverter = (data) => {
-  new_message = [
-    {_id:uuid(), createdAt: data.createdAt, text:data.text,image:data.image, user:{_id:data.from}}
-  ]
-  return new_message
-}
+// const incomingMessageConverter = (data) => {
+//   new_message = [
+//     {_id:uuid(), createdAt: data.createdAt, text:data.text,image:data.image, user:{_id:data.from}}
+//   ]
+//   return new_message
+// }
 
-const saveMessageInDB = (payload, state) => {
-  console.log("Payload in vasernDB: ", payload)
+const saveMessageInDB = (payload, state_user_id) => {
   const {message, other_user_id} = payload
   let text_to_save=null
   let image_to_save={};
@@ -61,28 +63,28 @@ const saveMessageInDB = (payload, state) => {
   if (!!message[0].image){
     image_to_save=message[0].image
   }
-  console.log("IMage to save before error: ", image_to_save.url)
-  let to_save = {
-    other_user_id: other_user_id,
-    message_id: message[0]._id,
-    createdAt: new Date(message[0].createdAt),
-    user_id: message[0].hasOwnProperty('_id')?message[0]._id:state.user_id,
 
-    text: text_to_save,
-    image_url: image_to_save.url,
-    image_height: image_to_save.height,
-    image_width: image_to_save.width,
-    image_ar: image_to_save.aspectRatio,
-  }
-  console.log("To save is: ", to_save, "message is: ",  message)
-  VasernDB.Messages.insert(to_save);
-
-  console.log("DATA IN DATABSE IS NOW: ", VasernDB.Messages.data())
+  // saving message to database
+  database.action(async () => {
+    console.log("Date.parse here is: ", Date.parse(message[0].createdAt))
+    res = await MessagesCollection.create(new_message => {
+      new_message.other_user_id = other_user_id,
+      new_message.message_id = message[0]._id,
+      new_message.created_at = Date.parse(message[0].createdAt),
+      new_message.user_id = state_user_id,
+  
+      new_message.text = text_to_save,
+      new_message.image_url = image_to_save.url,
+      new_message.image_height = image_to_save.height,
+      new_message.image_width = image_to_save.width,
+      new_message.image_ar = image_to_save.aspectRatio
+      
+    })
+  })
 }
 
 const saveData = async (state) => {
   to_save = {
-    messages:state.messages,
     status: state.status,
     total_unread_messages:state.total_unread_messages,
     theme: state.theme,
@@ -237,13 +239,8 @@ export default (state=INITIAL_STATE, action) => {
         });
       }
 
+      // MessagesCollection.insertUnreadMessages(action.payload.unread_messages)
       action.payload.unread_messages.map((item)=>{
-        if (new_messages.hasOwnProperty(item.from)){
-          new_messages[item.from] = incomingMessageConverter(item).concat(new_messages[item.from]);
-        }
-        else{
-          new_messages[item.from]=incomingMessageConverter(item);
-        }
         status[item.from].unread_messages+=1;
         total_unread_messages+=1;        
       });
@@ -252,7 +249,7 @@ export default (state=INITIAL_STATE, action) => {
       if (action.payload.explicitly){status=duplicate_status}
 
       let new_state = {...state, chatPeople:action.payload, chats:action.payload.chats,
-        loading:false, status, total_unread_messages, messages:new_messages}
+        loading:false, status, total_unread_messages}
 
       delete action.payload.chats
 
@@ -261,7 +258,7 @@ export default (state=INITIAL_STATE, action) => {
 
 
     case ACTIONS.CHAT_MESSAGE_HANDLER:
-      new_messages = {...state.messages};
+      // new_messages = {...state.messages};
       new_status = {...state.status};
       new_chats = [...state.chats]
       total_unread_messages = state.total_unread_messages
@@ -275,22 +272,17 @@ export default (state=INITIAL_STATE, action) => {
         analytics().logEvent("sent_message")
       }
       
-      saveMessageInDB(action.payload, state)
+      saveMessageInDB(action.payload, state.user_id)
       
-      if (state.messages.hasOwnProperty(action.payload.other_user_id)){
-        new_messages[action.payload.other_user_id] = action.payload.message
-        .concat(state.messages[action.payload.other_user_id]);
-      }
-      else{
+      if (state.status.hasOwnProperty(action.payload.other_user_id)){
+        new_currentMessages = [...action.payload.message, ...state.currentMessages]
         new_messages[action.payload.other_user_id] = action.payload.message;
-        // state.socket.emit("get_new_entry_data",{id:action.payload.other_user_id});
         new_status[action.payload.other_user_id] = {online: true, typing: false, 
           unread_messages: 0};
-        // add this users in the chatPeople.chats
-        // new_chats.push(response.entry)
 
         state.socket.emit("chat_people_explicitly");
       }
+      
 
       if ((action.payload.other_user_id !== state.other_user_data._id) || (!state.chatScreenOpen)){
         if (new_status.hasOwnProperty(action.payload.other_user_id)){
@@ -300,7 +292,7 @@ export default (state=INITIAL_STATE, action) => {
       }
 
       if (total_unread_messages<0){total_unread_messages=0}
-      new_state = {...state, loading:false, messages:new_messages, chats:new_chats,
+      new_state = {...state, loading:false, currentMessages:new_currentMessages, chats:new_chats,
         status: new_status, total_unread_messages};
 
       saveData(new_state)
@@ -316,7 +308,6 @@ export default (state=INITIAL_STATE, action) => {
     case ACTIONS.SETTINGS_CHANGE_ANIMATION:
       new_state = {...state, animationOn:!state.animationOn}
       saveData(new_state)
-      // console.log("Saving this: ", new_state)
       return new_state
 
     case ACTIONS.CHAT_PEOPLE_SEARCH:
@@ -343,9 +334,7 @@ export default (state=INITIAL_STATE, action) => {
       return new_state
 
     case ACTIONS.CHAT_GET_USER_MESSAGES:
-      console.log("Other user id: ", action.payload)
-      console.log("VASERN DB: ", VasernDB.Messages.data())
-      currentMessages = VasernDB.Messages.get({other_user_id:action.payload})
+      currentMessages = action.payload
       return {...state, currentMessages}
 
     default:

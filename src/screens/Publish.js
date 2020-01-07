@@ -11,7 +11,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import ArticleTile from '../components/ArticleTile';
 import Loading from '../components/Loading';
 import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics'
+import analytics from '@react-native-firebase/analytics';
+const ConfettiData = require('../../assets/animations/confetti.json');
+
 class Publish extends Component {
 
   constructor() {
@@ -86,8 +88,8 @@ class Publish extends Component {
       preview_contents:this.props.contents, category:this.props.category}
     
     return(
-      <View style={{flex:3, justifyContent:'center', alignItems:'center'}}>
-        <View style={{position:"absolute",zIndex:10, paddingBottom:50}}>
+      <View style={{flex:3, justifyContent:'center', alignItems:'center', marginBottom:50}}>
+        <View style={{position:"absolute",zIndex:10}}>
           <ArticleTile size={this.state.value} data={data} animate theme={this.props.theme} 
             COLORS = {this.props.COLORS}
           />
@@ -154,7 +156,7 @@ class Publish extends Component {
         }}
         autoPlay={false} loop={false}
         style={{width: 400,height: 320}}
-        source = {require('../../assets/animations/confetti.json')}
+        source = {ConfettiData}
         speed={1}       
       />
     )

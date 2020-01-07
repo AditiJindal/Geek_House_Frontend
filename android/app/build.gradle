@@ -1,5 +1,6 @@
 apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 apply plugin: "com.android.application"
+apply plugin: 'kotlin-android'
 apply plugin: "com.google.firebase.firebase-perf"
 apply plugin: 'io.fabric'
 
@@ -214,6 +215,7 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
     implementation project(':react-native-device-info')
+    implementation project(':watermelondb')
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

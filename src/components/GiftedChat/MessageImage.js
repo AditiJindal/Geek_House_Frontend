@@ -80,7 +80,6 @@ export default class MessageImage extends Component {
         const { containerStyle, imageProps, imageStyle, currentMessage,COLORS } = this.props;
         let image_url = currentMessage.image.url
         const {width, aspectRatio} = currentMessage.image;
-        console.log("image_url: ", image_url)
         if (image_url.substring(0,4) !== 'http'){
             console.log("Adding adder")
             image_url = this.props.image_adder + currentMessage.image.url

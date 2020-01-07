@@ -15,7 +15,7 @@ import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from "@react-native-community/image-editor";
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
-import vision from '@react-native-firebase/ml-vision'
+import vision from '@react-native-firebase/ml-vision';
 
 class ImageUpload extends Component {
 

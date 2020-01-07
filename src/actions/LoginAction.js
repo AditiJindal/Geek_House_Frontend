@@ -74,7 +74,6 @@ const makeConnection = async (json_data, dispatch) => {
     }
   })
   
-  // console.log('Device: ', Device);
   manufacturer = await Device.getManufacturer();
   designName = await Device.getDevice(),
   modelName = Device.getModel(),
@@ -121,13 +120,13 @@ const makeConnection = async (json_data, dispatch) => {
     socket.emit('not-disconnected', {id: json_data.authtoken})
   })
 
-  socket.on('reconnect', (data)=>{
+  socket.on('reconnect', ()=>{
     analytics().logEvent("app_reconnected")
     socket.emit('not-disconnected', {id: json_data.authtoken,
       name:json_data.data.name})
   })
 
-  socket.on('disconnect', (e)=> {
+  socket.on('disconnect', ()=> {
     analytics().logEvent("app_disconnected")
     dispatch({type:ACTIONS.CHAT_SAVE_DATA})
   });
@@ -137,20 +136,16 @@ const makeConnection = async (json_data, dispatch) => {
 
 export const checkLogin = () => {
   return (dispatch) => {
-    // dispatch({type:ACTIONS.CHECKING_LOGIN})
     AsyncStorage.getItem('data').then(
       (response) => {
         if(response!==null && Object.keys(response).length!==0){
           json_data = JSON.parse(response)
-          // // console.log("here 0, json_data: ", json_data)
-          // Image.prefetch(json_data.data.image_url)
           makeConnection(json_data, dispatch)
           Actions.replace("main");
           analytics().setUserId(json_data.data.authtoken);
           crashlytics().setUserId(json_data.data.authtoken);
           crashlytics().setUserEmail(json_data.data.email);
           crashlytics().setUserName(json_data.data.name);
-          // console.log("json: ", json_data)
         }
         else{
           dispatch({type:ACTIONS.LOGOUT})
@@ -168,7 +163,6 @@ export const loginGoogle = () => {
       webClientId: "315957273790-o4p20t2j3brt7c8bqc68814pj63j1lum.apps.googleusercontent.com"
     });
     GoogleSignin.signIn().then((response)=>{
-      // Notifications.getExpoPushTokenAsync().then((pushToken) => {
       let new_data = {
         id: response.user.id+'google',
         name: response.user.name, 
@@ -193,7 +187,6 @@ export const loginGoogle = () => {
           else{
             analytics().logLogin({method:'google'})
           }
-          console.log("In google login first login is: ",response.data)
           dispatch({type:ACTIONS.CHAT_FIRST_LOGIN, 
             payload: {first_login:response.data.first_login, theme:response.data.theme,
               authtoken:final_data.authtoken}})
@@ -255,13 +248,10 @@ export const loginFacebook = () => {
                       else{
                         analytics().logLogin({method:'facebook'})
                       }
-                      console.log("In fb login first login is: ",response.data)
-                      // console.log("To save date is: loginFB: ", final_data)
                       dispatch({type:ACTIONS.CHAT_FIRST_LOGIN, 
                         payload: {first_login:response.data.first_login, theme:response.data.theme,
                           authtoken:final_data.authtoken}})
                       dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
-                      // Image.prefetch(final_data.data.image_url);
                       makeConnection(final_data, dispatch)
                       Actions.replace("main");
                     }
