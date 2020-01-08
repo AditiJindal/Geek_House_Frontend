@@ -12,9 +12,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import {getArticleInfo, setAuthToken, submitComment} from '../actions/ArticleInfoAction';
 import {FONTS, COLOR_COMBOS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import CardView from './CardView';
-import Loading from '../components/Loading';
-import {NativeAdsManager, AdSettings} from 'react-native-fbads';
-import NativeAdsComponent from '../components/NativeAdsComponent';
+import Loading from './Loading';
+// import {NativeAdsManager, AdSettings} from 'react-native-fbads';
+import NativeAdsComponent from './NativeAdsComponent';
 import Image from 'react-native-fast-image';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 // import console = require('console');
@@ -42,10 +42,10 @@ class ArticleInfo extends PureComponent {
   }
 
   componentDidMount(){
-    AdSettings.addTestDevice(AdSettings.currentDeviceHash);
-    this.adsManager = new NativeAdsManager('2329203993862500_2500411190075112', 1);
-    this.adsManager.setMediaCachePolicy('all');
-    this.adsManager.onAdsLoaded(()=>{})
+    // AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+    // this.adsManager = new NativeAdsManager('2329203993862500_2500411190075112', 1);
+    // this.adsManager.setMediaCachePolicy('all');
+    // this.adsManager.onAdsLoaded(()=>{})
     if (this.props.article_id!==-1){
       this.props.setAuthToken()
     }
@@ -65,12 +65,12 @@ class ArticleInfo extends PureComponent {
             (item, i) => {
               return (
               <View>
-                {(i===this.state.adIndex)?
+                {/* {(i===this.state.adIndex)?
                   <NativeAdsComponent adsManager={this.adsManager} theme={this.props.theme}
                     COLORS = {this.props.COLORS}
                   />:
                   <View/>
-                }
+                } */}
                 <CardView 
                   theme={this.props.theme}
                   COLORS = {COLORS}
@@ -272,59 +272,51 @@ class ArticleInfo extends PureComponent {
 
     const headerHeight = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
-      outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+      outputRange: [0, -HEADER_MAX_HEIGHT+HEADER_MIN_HEIGHT],
       extrapolate: 'clamp'
     });
-    const profileImageHeight = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_MAX_HEIGHT - BORDER_RADIUS/2],
-      outputRange: [PROFILE_IMAGE_MAX_HEIGHT, PROFILE_IMAGE_MIN_HEIGHT],
-      extrapolate: 'clamp'
-    });
-
-    const profileImageMarginTop = this.state.scrollY.interpolate({
+    const textAnim = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
-      outputRange: [
-        HEADER_MAX_HEIGHT - PROFILE_IMAGE_MAX_HEIGHT / 2,
-        HEADER_MAX_HEIGHT + 5
-      ],
-      extrapolate: 'clamp'
+      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*2],
+      extrapolate:'clamp'
     });
-    const headerZindex = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT, 1000],
-      outputRange: [0, 0, 1000],
-      extrapolate: 'clamp'
+    const textAnim2 = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT +20],
+      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*2],
+      extrapolate:'clamp'
+    });
+    const textAnim3 = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT +60],
+      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*2],
+      extrapolate:'clamp'
+    });
+    const textAnim4 = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT +100],
+      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*2],
+      extrapolate:'clamp'
     });
 
-    const textOpacity = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_MAX_HEIGHT - BORDER_RADIUS/2],
-      outputRange: (this.props.theme==='light')?['rgba(70,70,70,1)','rgba(70,70,70,0)']:['rgba(240,240,240,1)', 'rgba(240,240,240,0)'],
-      extrapolate: 'clamp'
-    });
-    const categoryOpacity = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_MAX_HEIGHT - BORDER_RADIUS],
-      outputRange: (this.props.theme==='light')?['rgba(100,100,100,1)','rgba(100,100,100,0.2)']:['rgba(220,220,220,1)', 'rgba(220,220,220,0.2)'],
-      extrapolate: 'clamp'
+    const scaleToZero = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+      outputRange: [1,0.4],
+      extrapolate:'clamp'
     });
 
     const bigImageOpacity = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
-      outputRange: [1,0.1],
-      extrapolate: 'clamp'
+      outputRange: [1,0.15],
+      extrapolate:'clamp'
     });
 
-    const headerTitleBottom = this.state.scrollY.interpolate({
-      inputRange: [
-        0,
-        HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT,
-        HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT + 5 + PROFILE_IMAGE_MIN_HEIGHT,
-        HEADER_MAX_HEIGHT -
-          HEADER_MIN_HEIGHT +
-          10 +
-          PROFILE_IMAGE_MIN_HEIGHT +
-          30
-      ],
-      outputRange: [-TOPIC_SMALL_SIZE-10, -TOPIC_SMALL_SIZE-10, -TOPIC_SMALL_SIZE-10, HEADER_MIN_HEIGHT/5],
-      extrapolate: 'clamp'
+    const pictureRotate = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+      outputRange: ['360deg','120deg'],
+      extrapolate:'clamp'
+    });
+    const headerTextTranslate = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+      outputRange: [HEADER_MAX_HEIGHT, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT + HEADER_MIN_HEIGHT/2 -18],
+      extrapolate:'clamp'
     });
 
     return (
@@ -334,10 +326,11 @@ class ArticleInfo extends PureComponent {
             position: 'absolute',
             top: 0,
             left: 0,
-            right: 0,  
-            height: headerHeight,
-            zIndex: headerZindex,
+            right: 0,
+            zIndex:10,
+            height: HEADER_MAX_HEIGHT,
             alignItems: 'center',
+            transform:[{translateY:headerHeight}]
           }}
         >
           <LinearGradient style={{width:"100%", height:"100%",
@@ -359,7 +352,9 @@ class ArticleInfo extends PureComponent {
             />
           </LinearGradient>
           <Animated.View
-              style={{ position: 'absolute', bottom: headerTitleBottom, padding:10 }}
+              style={{ position: 'absolute',
+              transform:[{translateY:headerTextTranslate}],
+              padding:10 }}
             >
               <Text style={{ 
                 color: COLORS.LIGHT, 
@@ -368,24 +363,53 @@ class ArticleInfo extends PureComponent {
                 {this.convertTopic(topic)}
               </Text>
             </Animated.View>
+            <Animated.View
+            style={{
+              height: PROFILE_IMAGE_MAX_HEIGHT,
+              width: PROFILE_IMAGE_MAX_HEIGHT,
+              borderRadius: BORDER_RADIUS,
+              backgroundColor: COLORS.LIGHT,
+              overflow: 'hidden',
+              alignSelf:'flex-start',
+              top:-PROFILE_IMAGE_MAX_HEIGHT/2,
+              marginLeft: 16,
+              transform:[{translateX:textAnim},{scaleX:scaleToZero},{scaleY:scaleToZero}],
+            }}
+          >
+            <Animated.Image
+              source={
+                (author_image)?
+                {uri:author_image}:
+                require('../../assets/icons/user.png')
+              }
+              style={{height:PROFILE_IMAGE_MAX_HEIGHT,
+              zIndex:20,
+              transform: [{rotate:pictureRotate}],resizeMode:'contain',
+              width:PROFILE_IMAGE_MAX_HEIGHT,
+              backgroundColor:COLORS.LIGHT,
+              borderRadius:BORDER_RADIUS}}
+            />
+
+          </Animated.View>
           
         </Animated.View>
 
         <Animated.ScrollView
-          refreshControl={
-            (this.props.article_id!==-1)?
-            (
-              <RefreshControl
-                tintColor={'black'}
-                onRefresh={()=>{
-                this.props.getArticleInfo(this.props.article_id, false, true)
-                }}
-                  refreshing={this.props.loading}
-                  colors={["rgb(0,181, 213)"]}
-              />
-            ):
-            null
-          }
+          // refreshControl={
+          //   (this.props.article_id!==-1)?
+          //   (
+          //     <RefreshControl
+          //       tintColor={'black'}
+          //       style={{zIndex:100, position:'absolute'}}
+          //       onRefresh={()=>{
+          //       this.props.getArticleInfo(this.props.article_id, false, true)
+          //       }}
+          //         refreshing={this.props.loading}
+          //         colors={["rgb(0,181, 213)"]}
+          //     />
+          //   ):
+          //   null
+          // }
           nestedScrollEnabled={true}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="always"
@@ -396,50 +420,35 @@ class ArticleInfo extends PureComponent {
           style={{ flex: 1 }}
           onScroll={Animated.event([
             { nativeEvent: { contentOffset: { y: this.state.scrollY } } }
-          ])}
+          ], {useNativeDriver:true})}
         >
-          <Animated.View
-            style={{
-              height: profileImageHeight,
-              width: profileImageHeight,
-              borderRadius: BORDER_RADIUS,
-              backgroundColor: COLORS.LIGHT,
-              overflow: 'hidden',
-              marginTop: profileImageMarginTop,
-              marginLeft: 10, flexDirection:'row',
-              elevation:7, justifyContent:'center', alignItems:'center'
-            }}
-          >
-            <Animated.Image
-              source={
-                (author_image)?
-                {uri:author_image}:
-                require('../../assets/icons/user.png')
-              }
-              style={{ flex: 1, width: profileImageHeight, height:profileImageHeight, 
-              backgroundColor:COLORS.LIGHT,
-              borderRadius:BORDER_RADIUS}}
-            />
-          </Animated.View>
-          <View>
-            <Animated.Text style={{marginLeft:10, marginVertical:2, fontFamily:FONTS.LATO, fontSize:14, color:textOpacity}}>
+          <View style={{height:HEADER_MAX_HEIGHT + PROFILE_IMAGE_MAX_HEIGHT}}/>
+          <View >
+            <Animated.Text style={{marginLeft:16, marginVertical:2, fontFamily:FONTS.LATO,
+            fontSize:14, color:COLORS.GRAY,opacity:bigImageOpacity, 
+            transform:[{translateX:textAnim}]}}>
               by <Text style={{fontFamily:FONTS.LATO_BOLD, fontSize:18}}>{author}</Text>
             </Animated.Text>
-            <Animated.Text style={{ fontSize: 28, paddingLeft: 10, 
-              fontFamily:FONTS.GOTHAM_BLACK, color:textOpacity}}>
+            <Animated.Text style={{ fontSize: 28, marginLeft: 15, 
+              fontFamily:FONTS.GOTHAM_BLACK, color:COLORS.LESS_DARK, opacity:bigImageOpacity,
+              transform:[{translateX:textAnim2} ]}}>
               {topic}
             </Animated.Text>
 
               <Animated.Text 
                 style={{fontFamily:FONTS.HELVETICA_NEUE,
                 fontSize:12,
-                marginLeft:10,
-                color:categoryOpacity}}>
+                marginLeft:16,
+                color:COLORS.GRAY,
+                transform:[{translateX: textAnim3} ],
+                opacity:bigImageOpacity}}>
                   {category}
               </Animated.Text>
               {
                 (rating)?
-                <View style={{flexDirection:'row', alignItems:"center"}}>
+                <Animated.View style={{flexDirection:'row', alignItems:"center",
+                  transform:[{translateX: textAnim4}],opacity:bigImageOpacity
+                }}>
                   <StarRating
                     activeOpacity={0.8}
                     maxStars={rating}
@@ -460,22 +469,22 @@ class ArticleInfo extends PureComponent {
                       color:COLORS.LIGHT_GRAY}}>
                     {rating}/5
                   </Text>
-                </View>:
+                </Animated.View>:
                 (
                   (this.props.selectedArticleInfo.cannotComment)? 
                   <View/>:
                   (
-                    <Text style={{marginLeft:10, fontSize:10, 
-                      fontFamily:FONTS.HELVETICA_NEUE, 
-                        color:COLORS.LIGHT_GRAY}}>
+                    <Animated.Text style={{marginLeft:16, fontSize:10, 
+                      fontFamily:FONTS.HELVETICA_NEUE,
+                      transform:[{translateX: textAnim4}],opacity:bigImageOpacity,
+                      color:COLORS.LIGHT_GRAY}}>
                       {(this.props.article_id!==-1)?"*Not yet rated":"*In preview mode"}
-                    </Text>
+                    </Animated.Text>
                   )
                 )
               }
-
           </View>
-          <View style={{height:50}}/>
+          <View style={{height:20}}/>
           {this.renderCardViews(cards)}
           {
             (this.props.article_id!==-1)?
@@ -488,7 +497,7 @@ class ArticleInfo extends PureComponent {
               </Text>
             </View>
           }
-          <View style={{height:450}}/>
+          <View style={{height:100}}/>
         </Animated.ScrollView>
       </View>
     );

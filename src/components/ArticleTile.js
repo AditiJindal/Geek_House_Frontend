@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Text, StyleSheet, TouchableOpacity, View}from 'react-native';
 import Loading from './Loading'
-import ArticleInfo from './ArticleInfo2';
+import ArticleInfo from './ArticleInfo';
 import {logEvent} from '../actions/ChatAction';
 import Image from 'react-native-fast-image';
 import {FONTS,COLOR_COMBOS, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
