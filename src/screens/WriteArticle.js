@@ -269,7 +269,7 @@ class WriteArticle extends Component {
           theme={this.props.theme}
           COLORS = {COLORS}
           data = {new_data}
-          label = "Category Selection"
+          label = "Select a Category"
           itemColor={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.LESSER_DARK}
           value={this.props.category}
           fontSize={20}
@@ -368,7 +368,7 @@ class WriteArticle extends Component {
 }
 
 const mapStateToProps = (state) => {
-
+  console.log("Here state is: ", state.write)
   return {
     contents: state.write.contents,
     topic: state.write.topic,

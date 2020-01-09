@@ -20,11 +20,13 @@ export const setAuthToken = () => {
 // till here
 
 export const getMyArticles = (myArticlesLength, reload) => {
+  console.log("Condition gets : ", myArticlesLength===0 || reload, myArticlesLength===0 , reload)
   if (myArticlesLength===0 || reload){
     return (dispatch) => {
       dispatch({type:ACTIONS.WRITE_LOADING});
       httpClient.get(URLS.myarticles).then(
         (response)=>{
+          console.log("Response is: ", response)
           dispatch({type:ACTIONS.GET_MY_ARTICLES,
           payload:{response:response.data.response, all_categories:response.data.all_categories}})
         }

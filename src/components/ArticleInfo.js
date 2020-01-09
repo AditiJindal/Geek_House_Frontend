@@ -166,6 +166,34 @@ class ArticleInfo extends PureComponent {
     )
   }
 
+  renderOptions(){
+    const {COLORS} = this.props;
+    if ((this.props.article_id===-1)){
+      return null;
+    }
+    return(
+      <View style={{width:"100%", alignItems:'center', flexDirection:'row',
+        justifyContent:'space-evenly'}}>
+        <View style={{borderColor:COLORS.LESS_DARK,paddingHorizontal:15,borderWidth:1.2,
+          paddingVertical:10, borderRadius:10, alignItems:'center', flexDirection:'row',
+          width:130, justifyContent:'space-evenly'}}>
+          <Icon name="share" size={22} color={COLORS.LESSER_DARK}/>
+          <Text style={{fontFamily:FONTS.RALEWAY, color:COLORS.LESSER_DARK,fontSize:16}}>
+            Share
+          </Text>
+        </View>
+        <View style={{borderColor:COLORS.LESS_DARK,paddingHorizontal:15,borderWidth:1.2,
+          paddingVertical:10, borderRadius:10, alignItems:'center', flexDirection:'row',
+          width:130, justifyContent:'space-evenly'}}>
+          <Icon name="bookmark" size={22} color={COLORS.LESSER_DARK}/>
+          <Text style={{fontFamily:FONTS.RALEWAY, color:COLORS.LESSER_DARK,fontSize:14}}>
+            Bookmark
+          </Text>
+        </View>
+      </View>
+    )
+  }
+
   renderComments(comments){
     const {COLORS} = this.props;
     if (this.props.selectedArticleInfo.cannotComment){
@@ -485,6 +513,7 @@ class ArticleInfo extends PureComponent {
               }
           </View>
           <View style={{height:20}}/>
+          {this.renderOptions()}
           {this.renderCardViews(cards)}
           {
             (this.props.article_id!==-1)?
