@@ -8,11 +8,10 @@ import perf from '@react-native-firebase/perf';
 import {database} from '../database';
 import { Q } from '@nozbe/watermelondb';
 const MessagesCollection =  database.collections.get('messages');
-
 // {
 //   _id: 1,
 //   text: 'Hello developer',
-//   createdAt: new Date(),
+//   created_at: new Date(),
 //   user: {
 //     _id: 2,
 //     name: 'React Native',
@@ -26,7 +25,7 @@ const INITIAL_STATE={
   loading:true,
   chatPeople:{},
   chats: [],
-  messages: {}, // {"user_id": [ {_id:Number, text:String, createdAt: Date, user: {_id:String}} ,{}, {} ]}
+  messages: {}, // {"user_id": [ {_id:Number, text:String, created_at: Date, user: {_id:String}} ,{}, {} ]}
   other_user_data: {},
   status: {}, // {"user_id":{online: true, typing: false, unread_messages: 2}}
   total_typing: 0,
@@ -46,17 +45,19 @@ const INITIAL_STATE={
 
 const trace = perf().newTrace("save_data_async_storage")
 
-// const incomingMessageConverter = (data) => {
-//   new_message = [
-//     {_id:uuid(), createdAt: data.createdAt, text:data.text,image:data.image, user:{_id:data.from}}
-//   ]
-//   return new_message
-// }
+const insertUnreadMessages = (unread_messages) => {
+  console.log("Saving unread messages: ", unread_messages)
+  unread_messages.map(item=>{
+    console.log("UR Message: ", item)
+    saveMessageInDB({message:[item], other_user_id:item.from})
+  });
+}
 
-const saveMessageInDB = (payload, state_user_id) => {
+const saveMessageInDB = (payload) => {
   const {message, other_user_id} = payload
+  console.log("Pessage to save payload is: ", payload)
   let text_to_save=null
-  let image_to_save={};
+  let image_to_save={url:null, height:null, width:null, aspectRatio:null, name:null};
   if (message[0].text){
     text_to_save=message[0].text
   }
@@ -64,22 +65,23 @@ const saveMessageInDB = (payload, state_user_id) => {
     image_to_save=message[0].image
   }
 
+  console.log("Saving message in DB")
+
   // saving message to database
   database.action(async () => {
-    console.log("Date.parse here is: ", Date.parse(message[0].createdAt))
-    res = await MessagesCollection.create(new_message => {
-      new_message.other_user_id = other_user_id,
+    MessagesCollection.create(new_message => {
+      new_message.other_user_id = other_user_id.toString(),
       new_message.message_id = message[0]._id,
       new_message.created_at = Date.parse(message[0].createdAt),
-      new_message.user_id = state_user_id,
+      new_message.user_id = message[0].user._id,
   
       new_message.text = text_to_save,
       new_message.image_url = image_to_save.url,
       new_message.image_height = image_to_save.height,
       new_message.image_width = image_to_save.width,
-      new_message.image_ar = image_to_save.aspectRatio
-      
-    })
+      new_message.image_ar = image_to_save.aspectRatio,
+      new_message.image_name = image_to_save.name
+    }).then(res=>console.log("RES AFTER SAVING IS: ", res._raw))
   })
 }
 
@@ -190,11 +192,10 @@ export default (state=INITIAL_STATE, action) => {
     case ACTIONS.SET_CHAT_USER_DATA:
       let other_user_data = action.payload;
       new_status = {...state.status};
-      
 
-      if (new_status.hasOwnProperty(action.payload._id)){
-        total_unread_messages = state.total_unread_messages - new_status[action.payload._id].unread_messages;
-        new_status[action.payload._id].unread_messages = 0
+      if (state.status.hasOwnProperty(action.payload._id)){
+        total_unread_messages = state.total_unread_messages - state.status[action.payload._id].unread_messages;
+        state.status[action.payload._id].unread_messages = 0
         other_user_data = {...other_user_data, newEntry: false}
       }
       else{
@@ -203,12 +204,10 @@ export default (state=INITIAL_STATE, action) => {
       }
 
       if (total_unread_messages<0){total_unread_messages=0}
-      
-      new_state = {...state, status:new_status,
+      new_state = {...state, status:state.status,
         other_user_data, total_unread_messages, 
         chatScreenOpen:true,
       };
-
       saveData(new_state)
       return new_state
 
@@ -239,7 +238,7 @@ export default (state=INITIAL_STATE, action) => {
         });
       }
 
-      // MessagesCollection.insertUnreadMessages(action.payload.unread_messages)
+      insertUnreadMessages(action.payload.unread_messages)
       action.payload.unread_messages.map((item)=>{
         status[item.from].unread_messages+=1;
         total_unread_messages+=1;        
@@ -252,6 +251,7 @@ export default (state=INITIAL_STATE, action) => {
         loading:false, status, total_unread_messages}
 
       delete action.payload.chats
+      console.log("This is the new_state: ", new_state)
 
       saveData(new_state)
       return new_state
@@ -262,6 +262,7 @@ export default (state=INITIAL_STATE, action) => {
       new_status = {...state.status};
       new_chats = [...state.chats]
       total_unread_messages = state.total_unread_messages
+      new_currentMessages = []
 
       // action.payload.message is [ { ... } ], is an array containing one object
 
@@ -272,7 +273,7 @@ export default (state=INITIAL_STATE, action) => {
         analytics().logEvent("sent_message")
       }
       
-      saveMessageInDB(action.payload, state.user_id)
+      saveMessageInDB(action.payload)
       
       if (state.status.hasOwnProperty(action.payload.other_user_id)){
         new_currentMessages = [...action.payload.message, ...state.currentMessages]

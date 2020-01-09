@@ -23,7 +23,7 @@ class ChatScreen extends Component {
   componentDidMount(){
     this.props.setAuthToken();
     this.props.getCurrentUserMessages(this.props.other_user_data._id)
-    this.props.checkMessagesObject(this.props.other_user_data._id, this.props.messages);
+    // this.props.checkMessagesObject(this.props.other_user_data._id, this.props.messages);
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>this.keyboardDidShow());
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', ()=>this.keyboardDidHide());
     BackHandler.addEventListener('hardwareBackPress', ()=>{
@@ -34,6 +34,11 @@ class ChatScreen extends Component {
         this.props.clearOtherUserData();
       };
     });
+  }
+
+  componentWillUnmount(){
+    this.keyboardDidHideListener.remove();
+    this.keyboardDidShowListener.remove();
   }
 
   keyboardDidShow () {
@@ -91,7 +96,9 @@ class ChatScreen extends Component {
               style={{height:48, width:48, borderRadius:24}}
             />
             {
-              (!this.props.other_user_data.newEntry && this.props.status[this.props.other_user_data._id].online)?
+              (!this.props.other_user_data.newEntry 
+              && this.props.status.hasOwnProperty(this.props.other_user_data._id) 
+              && this.props.status[this.props.other_user_data._id].hasOwnProperty('online'))?
               (
                 <Badge
                   status="success"
@@ -100,7 +107,6 @@ class ChatScreen extends Component {
                 />
               ):<View/>
             }
-            
           </View>
           <View style={{justifyContent:'center', marginLeft:10, flex:6, alignItems:'center'}}>
             <Text style={{...styles.TextStyle, 
@@ -213,7 +219,7 @@ const styles = StyleSheet.create({
     flexWrap:'wrap'
   },
   IntrestStyle:{
-    fontSize:14,
+    fontSize:10,
     fontFamily:FONTS.PRODUCT_SANS,
   },
 })

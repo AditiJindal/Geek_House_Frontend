@@ -8,6 +8,7 @@ import MessagesSchema from './MessagesSchema';
 // First, create the adapter to the underlying database:
 const adapter = new SQLiteAdapter({
   schema:MessagesSchema,
+  dbName:'messages'
 })
 
 // Then, make a Watermelon database from it!

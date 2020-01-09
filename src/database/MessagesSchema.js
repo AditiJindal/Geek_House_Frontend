@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb'
 
 export default appSchema({
-  version: 4,
+  version: 20,
   tables: [
     tableSchema({
       name:'messages',
@@ -14,7 +14,8 @@ export default appSchema({
         {name: "image_url", type:"string",isOptional:true},
         {name: "image_height", type:"number", isOptional:true},
         {name: "image_width", type: "number", isOptional:true},
-        {name: "image_ar", type:"number", isOptional:true}
+        {name: "image_ar", type:"number", isOptional:true},
+        {name: "image_name", type:"string", isOptional:true}
       ]
     })
   ]

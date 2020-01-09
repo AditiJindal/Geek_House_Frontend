@@ -52,6 +52,8 @@ target 'Geek_House' do
   pod 'RNFBMessaging', :path => '../node_modules/@react-native-firebase/messaging'
 
 
+  pod 'react-native-blur', :path => '../node_modules/@react-native-community/blur'
+
   target 'Geek_HouseTests' do
     inherit! :search_paths
     # Pods for testing
