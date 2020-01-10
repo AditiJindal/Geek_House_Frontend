@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Animated, Platform, StyleSheet, View, SafeAreaView, } from 'react-native';
-import {ActionSheetProvider} from '@expo/react-native-action-sheet';
 import moment from 'moment';
 import uuid from 'uuid';
 import { isIphoneX } from 'react-native-iphone-x-helper';
@@ -22,7 +21,6 @@ import Send from './Send';
 import Time from './Time';
 import GiftedAvatar from './GiftedAvatar';
 import { MIN_COMPOSER_HEIGHT, MAX_COMPOSER_HEIGHT, DEFAULT_PLACEHOLDER, TIME_FORMAT, DATE_FORMAT, } from './Constant';
-const GiftedActionSheet = ActionSheetProvider;
 class GiftedChat extends React.Component {
     constructor(props) {
         super(props);
@@ -328,13 +326,7 @@ class GiftedChat extends React.Component {
         }
     }
     renderMessages() {
-        const AnimatedView = this.props.isAnimated === true ? Animated.View : View;
-        return (<AnimatedView style={{
-            height: this.state.messagesContainerHeight,
-        }}>
-        <MessageContainer {...this.props} invertibleScrollViewProps={this.invertibleScrollViewProps} messages={this.getMessages()} ref={this._messageContainerRef}/>
-        {this.renderChatFooter()}
-      </AnimatedView>);
+        return <MessageContainer {...this.props} invertibleScrollViewProps={this.invertibleScrollViewProps} messages={this.getMessages()} ref={this._messageContainerRef}/>
     }
     resetInputToolbar() {
         if (this.textInput) {
@@ -434,7 +426,6 @@ GiftedChat.defaultProps = {
     renderAvatarOnTop: false,
     renderBubble: null,
     renderSystemMessage: null,
-    onLongPress: null,
     renderMessage: null,
     renderMessageText: null,
     renderMessageImage: null,
@@ -492,7 +483,6 @@ GiftedChat.propTypes = {
     renderAvatarOnTop: PropTypes.bool,
     renderBubble: PropTypes.func,
     renderSystemMessage: PropTypes.func,
-    onLongPress: PropTypes.func,
     renderMessage: PropTypes.func,
     renderMessageText: PropTypes.func,
     renderMessageImage: PropTypes.func,

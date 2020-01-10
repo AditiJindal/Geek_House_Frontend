@@ -39,10 +39,12 @@ export const getChatPeople = () => {
 };
 
 export const setUserData = (data) => {
+  console.log('data in setUserData is: ', data)
   return {type:ACTIONS.SET_CHAT_USER_DATA, payload:data}
 }
 
 export const sendMessage = (socket, message, other_user_id, image) => {
+  console.log("message, other_user_id in sendMessage: ", message, other_user_id)
   return (dispatch) => {
     let message_to_send = {text:"", to:"", image}
     if (image){
@@ -141,7 +143,7 @@ const messageConverter = (item) => {
   return to_return
 }
 
-export const getCurrentUserMessages = (other_user_id) => {
+export const getCurrentUserMessages = (other_user_id, this_user_id) => {
   t = Date.now()
   return (dispatch)=>{
     MessagesCollection.query(Q.where('other_user_id', other_user_id)).fetch().then((response)=>{
@@ -149,7 +151,9 @@ export const getCurrentUserMessages = (other_user_id) => {
       let new_response = []
       response.map((x)=>{
         item = x._raw
-        new_response.unshift(messageConverter(item))
+        if (item.this_user_id===this_user_id){    // imp. check, prevents chat leak into other user's chats
+          new_response.unshift(messageConverter(item, this_user_id))  
+        }
       })
       dispatch({type:ACTIONS.CHAT_GET_USER_MESSAGES, payload:new_response})
     })

@@ -16,6 +16,7 @@ export default class Messages extends Model {
   static table = 'messages'
 
   @field('other_user_id') other_user_id
+  @field('this_user_id') this_user_id
   @field('message_id') message_id
   @field('created_at') created_at
   @field('user_id') user_id

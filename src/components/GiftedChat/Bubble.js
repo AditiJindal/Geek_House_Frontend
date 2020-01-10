@@ -56,6 +56,7 @@ const styles = {
         },
         containerToPrevious: {
             borderTopRightRadius: 3,
+            
             // elevation:4
         },
         bottom: {
@@ -117,7 +118,7 @@ export default class Bubble extends React.Component {
                 containerToNextStyle && containerToNextStyle[position],
             ];
         }
-        return null;
+        return {elevation:10};
     }
     handleBubbleToPrevious() {
         const { currentMessage, previousMessage, position, containerToPreviousStyle, } = this.props;
@@ -156,7 +157,7 @@ export default class Bubble extends React.Component {
             if (this.props.renderMessageText) {
                 return this.props.renderMessageText(messageTextProps);
             }
-            return <MessageText {...messageTextProps}/>;
+            return <MessageText {...messageTextProps}  />;
         }
         return null;
     }
@@ -232,18 +233,20 @@ export default class Bubble extends React.Component {
         const { position, containerStyle, wrapperStyle, bottomContainerStyle, } = this.props;
         return (<View style={[
             styles[position].container,
-            containerStyle && containerStyle[position],
+            containerStyle && containerStyle[position]
         ]}>
 
         <LinearGradient style={[
             styles[position].wrapper,
             wrapperStyle && wrapperStyle[position],
             this.handleBubbleToNext(),
-            this.handleBubbleToPrevious(),
+            this.handleBubbleToPrevious()
             ]} 
             colors={(position==="right"?["#00B4DB", "#00ccdb"]:["#F4F4F4", "#F4F4F4"])} 
             start={{x:0, y:1}} end={{x:1, y:1}}>
-          <TouchableWithoutFeedback onLongPress={this.onLongPress} accessibilityTraits='text' {...this.props.touchableProps}>
+          <TouchableWithoutFeedback 
+          delayLongPress={1200}
+          onLongPress={this.onLongPress} accessibilityTraits='text' {...this.props.touchableProps}>
             <View>
               {this.renderCustomView()}
               {this.renderMessageImage()}

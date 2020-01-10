@@ -5,6 +5,8 @@ import moment from 'moment';
 import Color from './Color';
 import { isSameDay } from './utils';
 import { DATE_FORMAT } from './Constant';
+import {FONTS, COLORS_LIGHT_THEME} from '../../Constants';
+
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
@@ -21,12 +23,15 @@ const styles = StyleSheet.create({
 });
 export default class Day extends PureComponent {
     render() {
+        const {COLORS} = this.props;
         const { dateFormat, currentMessage, previousMessage, nextMessage, containerStyle, wrapperStyle, textStyle, inverted, } = this.props;
         if (currentMessage &&
             !isSameDay(currentMessage, inverted ? previousMessage : nextMessage)) {
             return (<View style={[styles.container, containerStyle]}>
-          <View style={wrapperStyle}>
-            <Text style={[styles.text, textStyle]}>
+          <View style={{backgroundColor:COLORS.LIGHT+'86', borderRadius:10,paddingVertical:3,
+            paddingHorizontal:7}}>
+            <Text style={[styles.text, textStyle,{fontFamily:FONTS.HELVETICA_NEUE, 
+            color:COLORS.LESS_DARK, fontSize:16}]}>
               {moment(currentMessage.createdAt)
                 .locale(this.context.getLocale())
                 .format(dateFormat)

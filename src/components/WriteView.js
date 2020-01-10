@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
-import { View, StyleSheet, TextInput, TouchableOpacity, Text, ActivityIndicator}from 'react-native';
-import {Icon, Overlay} from 'react-native-elements'
+import { View, StyleSheet, TextInput, TouchableOpacity, Text}from 'react-native';
+import {Icon} from 'react-native-elements'
 import CustomAlert from '../components/CustomAlert';
 import {FONTS, ERROR_MESSAGES} from '../Constants';
 import SView from 'react-native-simple-shadow-view';
 import vision from '@react-native-firebase/ml-vision';
-import ImagePicker from 'react-native-image-picker';
+import ImageSelector from './ImageSelector';
 import Loading from './Loading';
 import crashlytics from '@react-native-firebase/crashlytics';
 
@@ -42,74 +42,6 @@ export default class WriteView extends Component {
 
   }
 
-  renderPhotoSelector(){
-    const {COLORS} = this.props;
-    const ImageOptions={
-      noData: true,
-      mediaType:'photo',
-      chooseWhichLibraryTitle: "Select an App"
-    }
-    return (
-      <View style={{paddingHorizontal:10}}>
-        <Overlay isVisible={this.state.imageSelectorOpen}
-          height="auto" width="auto"
-          overlayStyle={{flexDirection:'row',backgroundColor:'rgba(0,0,0,0)', elevation:0}}
-          onBackdropPress={()=>{this.setState({imageSelectorOpen:false})}}>
-          <TouchableOpacity
-            onPress={()=>{
-              this.setState({imageSelectorOpen:false});
-              ImagePicker.launchImageLibrary(ImageOptions, (response)=>{
-                this.doTextRecognition(response.path)
-              })
-            }}
-            activeOpacity={0.8} 
-            style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
-            backgroundColor:COLORS.LESSER_LIGHT, marginRight:15}}>
-            <View style={{height:50, justifyContent:'center'}}>
-              <Text style={{color:COLORS.LESSER_DARK,
-                fontFamily:FONTS.RALEWAY_BOLD, textAlign:'center', fontSize:16}}>
-                Gallery
-              </Text>
-              </View>
-              <Icon size={72} name="image" type="feather"
-              color={COLORS.LESSER_DARK}/>
-              <View style={{height:50, justifyContent:'center'}}>
-                <Text style={{color:COLORS.LESSER_DARK,
-                  fontFamily:FONTS.PRODUCT_SANS, textAlign:'center', fontSize:12}}>
-                  {`Select from\nGallery`}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-            onPress={()=>{
-              this.setState({imageSelectorOpen:false});
-              ImagePicker.launchCamera(ImageOptions, (response)=>{
-                this.doTextRecognition(response.path)
-              })
-            }}
-            activeOpacity={0.8}
-            style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
-            backgroundColor:COLORS.LESSER_LIGHT}}>
-            <View style={{height:50, justifyContent:'center'}}>
-              <Text style={{color:COLORS.LESSER_DARK,
-                  fontFamily:FONTS.RALEWAY_BOLD, textAlign:'center', fontSize:16}}>
-                  Camera
-              </Text>
-            </View>
-            <Icon size={72} name="camera" type="feather"
-            color={COLORS.LESSER_DARK}/>
-            <View style={{height:50, justifyContent:'center'}}>
-              <Text style={{color:COLORS.LESSER_DARK,
-                fontFamily:FONTS.PRODUCT_SANS, textAlign:'center', fontSize:12}}>
-                {`Click from\nCamera`}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </Overlay>
-      </View>
-    )
-  }
-
   renderTextInput(){
     return(
       <>  
@@ -125,7 +57,7 @@ export default class WriteView extends Component {
           style={{...styles.ContentStyle, color:COLORS.DARK}} 
           placeholder={"Enter something..."}/>
         <View style={{height:25}}/>
-        <TouchableOpacity activeOpacity={0.6} onPress={()=>{this.setState({imageSelectorOpen:true})}}
+        <TouchableOpacity activeOpacity={0.6} onPress={()=>{this.imageSelector.showImageSelector()}}
           style={{flexDirection:'row', alignItems:'flex-end', position:'absolute', bottom:0,
           paddingVertical:5, paddingHorizontal:12, backgroundColor:COLORS.LESSER_LIGHT,
           borderBottomLeftRadius:15, borderTopRightRadius:15, elevation:2}}>
@@ -144,7 +76,11 @@ export default class WriteView extends Component {
     return(
       <SView style={{...styles.CardViewStyle, 
         backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
-        {this.renderPhotoSelector()}
+        <ImageSelector
+          COLORS = {this.props.COLORS}
+          onRef={ref=>this.imageSelector = ref}
+          onSelect = {(response)=>{this.doTextRecognition(response.path)}}
+        />
         <CustomAlert
           theme={this.props.theme}
           COLORS = {COLORS}

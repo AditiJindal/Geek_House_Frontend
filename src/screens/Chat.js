@@ -95,12 +95,6 @@ class Chat extends Component {
             onSearch={()=>{this.showTimedAlert()
             ;this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
           />}
-        ListFooterComponent = {
-          <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:10, margin:20,
-            color:COLORS.GRAY}}>
-            {`* Long press on an image to save it in gallery\n* Long press on text to copy it to clipboard`}
-          </Text>
-        }
         ListEmptyComponent = {
           <View style={{flex:1, justifyContent:'center', alignItems:'center', marginBottom:50,
             padding:40,}}>

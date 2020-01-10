@@ -1,12 +1,13 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb'
 
 export default appSchema({
-  version: 20,
+  version: 21,
   tables: [
     tableSchema({
       name:'messages',
       columns:[
         {name: "other_user_id", type:"string", isOptional:false, isIndexed:true},
+        {name: "this_user_id", type:"string", isOptional:false},
         {name: "message_id", type: "string", isOptional:false},
         {name: "created_at",type: "number",isOptional:false},
         {name: "user_id", type:"string", isOptional:false},

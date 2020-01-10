@@ -4,10 +4,13 @@ import { FlatList, View, StyleSheet, Keyboard, TouchableOpacity, Text, } from 'r
 import LoadEarlier from './LoadEarlier';
 import Message from './Message';
 import Color from './Color';
+import {FONTS, COLORS_LIGHT_THEME} from '../../Constants';
+import LinearGradient from 'react-native-linear-gradient';
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginBottom:20
+        marginBottom:20,
     },
     containerAlignTop: {
         flexDirection: 'row',
@@ -89,14 +92,6 @@ export default class MessageContainer extends React.PureComponent {
         this.scrollToBottom = () => {
             this.scrollTo({ offset: 0, animated: true });
         };
-        this.handleOnScroll = (event) => {
-            if (event.nativeEvent.contentOffset.y > this.props.scrollToBottomOffset) {
-                this.setState({ showScrollBottom: true });
-            }
-            else {
-                this.setState({ showScrollBottom: false });
-            }
-        };
         this.renderRow = ({ item, index }) => {
             if (!item._id && item._id !== 0) {
                 console.warn('GiftedChat: `_id` is missing for message', JSON.stringify(item));
@@ -172,17 +167,48 @@ export default class MessageContainer extends React.PureComponent {
       </View>);
     }
     render() {
+        const {COLORS} = this.props;
         if (!this.props.messages ||
             (this.props.messages && this.props.messages.length === 0)) {
-            return <View style={{flex:1, marginBottom:(this.props.selectedImage)?130:25}}/>;
+            return <View style={{flex:1}}><this.props.LoadingComponent/></View>;
         }
-        return (<View style={this.props.alignTop ? styles.containerAlignTop : {flex:1, marginBottom:(this.props.selectedImage)?125:25}}>
+        return (<View style={this.props.alignTop ? styles.containerAlignTop : {flex:1}}>
         {this.state.showScrollBottom && this.props.scrollToBottom
             ? this.renderScrollToBottomWrapper()
             : null}
         <FlatList 
             keyboardShouldPersistTaps="always"
-            ref={this.flatListRef} extraData={this.props.extraData} keyExtractor={this.keyExtractor} enableEmptySections automaticallyAdjustContentInsets={false} inverted={this.props.inverted} data={this.props.messages} style={styles.listStyle} contentContainerStyle={styles.contentContainerStyle} renderItem={this.renderRow} {...this.props.invertibleScrollViewProps} ListFooterComponent={this.renderHeaderWrapper} ListHeaderComponent={this.renderFooter} onScroll={this.handleOnScroll} scrollEventThrottle={100} {...this.props.listViewProps}/>
+            ref={this.flatListRef} 
+            extraData={this.props.extraData}
+            keyExtractor={this.keyExtractor} 
+            enableEmptySections 
+            automaticallyAdjustContentInsets={false} 
+            inverted={this.props.inverted}
+            data={this.props.messages} 
+            style={styles.listStyle}
+            onScroll = {this.props.onScroll}
+            contentContainerStyle={styles.contentContainerStyle} 
+            renderItem={this.renderRow} 
+            {...this.props.invertibleScrollViewProps}
+            ListFooterComponent={
+            <View style={{backgroundColor:COLORS.LIGHT+'86', borderRadius:10,paddingVertical:5,
+            paddingHorizontal:10, alignSelf:'center', margin:20}}>
+                <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:12,color:COLORS.DARK,}}>
+                    {`* Long press on an image to save it in gallery\n* Long press on text to copy it to clipboard`}
+                </Text>
+            </View>
+            }
+            ListHeaderComponent={<View style={{height:(this.props.selectedImage)?210:105,
+            justifyContent:'flex-start', alignItems:'center'}}>
+                <LinearGradient style={{paddingVertical:3,paddingHorizontal:8,borderRadius:20}}
+                    colors={["#00B4DB", "#00ccdb"]}>
+                    <Text style={{fontFamily:FONTS.LECKERLIONE, fontSize:18,color:COLORS_LIGHT_THEME.LIGHT}}>
+                        The End
+                    </Text>
+                </LinearGradient>
+            </View>}
+            scrollEventThrottle={100} 
+            {...this.props.listViewProps}/>
       </View>);
     }
 }

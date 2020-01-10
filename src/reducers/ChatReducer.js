@@ -53,7 +53,7 @@ const insertUnreadMessages = (unread_messages) => {
   });
 }
 
-const saveMessageInDB = (payload) => {
+const saveMessageInDB = (payload, this_user_id) => {
   const {message, other_user_id} = payload
   console.log("Pessage to save payload is: ", payload)
   let text_to_save=null
@@ -74,6 +74,7 @@ const saveMessageInDB = (payload) => {
       new_message.message_id = message[0]._id,
       new_message.created_at = Date.parse(message[0].createdAt),
       new_message.user_id = message[0].user._id,
+      new_message.this_user_id = this_user_id
   
       new_message.text = text_to_save,
       new_message.image_url = image_to_save.url,
@@ -175,6 +176,10 @@ export default (state=INITIAL_STATE, action) => {
         if (new_total_typing<0){new_total_typing = 0}
       }
       new_status[action.payload.from].typing = action.payload.value
+      if (action.payload.value){
+        new_status[action.payload.from].online = true
+      }
+
       return {...state, status: new_status, total_typing: new_total_typing}
 
     case ACTIONS.CHAT_USER_ONLINE:
@@ -193,14 +198,18 @@ export default (state=INITIAL_STATE, action) => {
       let other_user_data = action.payload;
       new_status = {...state.status};
 
+
       if (state.status.hasOwnProperty(action.payload._id)){
+        // means if the user is already present/ we know the user
         total_unread_messages = state.total_unread_messages - state.status[action.payload._id].unread_messages;
         state.status[action.payload._id].unread_messages = 0
         other_user_data = {...other_user_data, newEntry: false}
       }
       else{
+        // if we don't know the user beforehand, don't add it in status for now
+        // we assume the person is just looking at the user
         total_unread_messages = state.total_unread_messages;
-        other_user_data = {...other_user_data, newEntry: true}
+        other_user_data = {...other_user_data, newEntry: false}
       }
 
       if (total_unread_messages<0){total_unread_messages=0}
@@ -273,17 +282,15 @@ export default (state=INITIAL_STATE, action) => {
         analytics().logEvent("sent_message")
       }
       
-      saveMessageInDB(action.payload)
-      
+      saveMessageInDB(action.payload, state.user_id)
+      new_currentMessages = [...action.payload.message, ...state.currentMessages]
       if (state.status.hasOwnProperty(action.payload.other_user_id)){
-        new_currentMessages = [...action.payload.message, ...state.currentMessages]
         new_messages[action.payload.other_user_id] = action.payload.message;
         new_status[action.payload.other_user_id] = {online: true, typing: false, 
           unread_messages: 0};
 
         state.socket.emit("chat_people_explicitly");
       }
-      
 
       if ((action.payload.other_user_id !== state.other_user_data._id) || (!state.chatScreenOpen)){
         if (new_status.hasOwnProperty(action.payload.other_user_id)){

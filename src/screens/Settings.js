@@ -15,7 +15,7 @@ import {Dropdown} from '../components/Dropdown';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import {Switch} from 'react-native-switch';
 import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics'
+import analytics from '@react-native-firebase/analytics';
 
 
 const getId = (id) => {
@@ -259,9 +259,9 @@ class Settings extends Component {
     const {COLORS} = this.props;
     return(
       <View style={{marginVertical:5}}>
-        <View style={{flexDirection:'row', alignItems:'center'}}>
-          <Text style={{marginRight:30,marginTop:20, fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
-            color:COLORS.LESSER_DARK}}>
+        <View style={{flexDirection:'row', alignItems:'center', marginTop:20}}>
+          <Text style={{marginRight:30,fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
+            color:COLORS.LESSER_DARK, }}>
             Random Animations
           </Text>
           <Switch
@@ -288,6 +288,20 @@ class Settings extends Component {
     )
   }
 
+  changeChatWallpaper(){
+    return(
+      <View style={{marginVertical:10}}>
+        <Text style={{marginRight:30,fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
+          color:COLORS.LESSER_DARK, }}>
+          Change your chat wallpaper
+        </Text>
+        <View>
+          <Text>Select an Image</Text>
+        </View>
+      </View>
+    )
+  }
+
   renderSettings(){
     return (
       <ScrollView
@@ -300,6 +314,7 @@ class Settings extends Component {
         {this.renderYourArticlesStats()}
         {this.renderThemeButton()}
         {this.renderAnimationSwitch()}
+        {this.changeChatWallpaper()}
         {this.renderLogoutButton()}
       </ScrollView>
     );

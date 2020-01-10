@@ -92,10 +92,11 @@ export default class MessageImage extends Component {
         <View style={[styles.container, containerStyle]}>
             <TouchableOpacity
                 onLongPress={()=>{this.saveFileToGallery(image_url, currentMessage.image.name)}}
-                delayLongPress={3000}
+                delayLongPress={1500} activeOpacity={0.9}
                 onPress={()=>{this.props.onViewerSelect(true);this.setState({imageViewerActive:true})}}>
-                <Image {...imageProps} style={{...styles.image, ...imageStyle, height:150/currentMessage.image.aspectRatio}} 
-                    source={{ uri: image_url, cache:'cacheOnly' }}/>
+                <Image {...imageProps} 
+                style={{...styles.image, ...imageStyle, height:150/currentMessage.image.aspectRatio}} 
+                source={{ uri: image_url, cache:'cacheOnly'}} blurRadius={this.state.imageViewerActive?8:0} />
             </TouchableOpacity>
             <Overlay isVisible={this.state.imageViewerActive} height="100%" width="100%"
                 onRequestClose={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}

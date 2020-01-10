@@ -3,10 +3,8 @@ import React from 'react';
 import { StyleSheet, View, Keyboard, ViewPropTypes, Text, 
     StatusBar, TouchableOpacity,ImageBackground, Image} from 'react-native';
 import Composer from './Composer';
-// import Image from 'react-native-fast-image';
 import Send from './Send';
 import Actions from './Actions';
-import Color from './Color';
 import {COLORS_DARK_THEME, COLORS_LIGHT_THEME, FONTS} from '../../Constants'
 import Icon from 'react-native-vector-icons/Feather';
 import {Overlay} from 'react-native-elements';
@@ -37,8 +35,6 @@ const getStatusBarColor = (theme, i) => {
 const styles = StyleSheet.create({
     container: {
         // borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: Color.defaultColor,
-        backgroundColor: Color.white,
         bottom: 0,
         left: 0,
         right: 0,
