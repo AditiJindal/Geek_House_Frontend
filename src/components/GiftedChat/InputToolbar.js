@@ -43,8 +43,7 @@ const styles = StyleSheet.create({
         margin:10,
         marginTop:0,
         padding:5,
-        elevation:5,
-        borderRadius:15
+        borderRadius:15,
     },
     accessory: {
         height: 44,
@@ -148,8 +147,15 @@ export default class InputToolbar extends React.Component {
         const ImageOptions={
             noData: true,
             mediaType:'photo',
-            chooseWhichLibraryTitle: "Select an App"
-        }
+            chooseWhichLibraryTitle: "Select an App",
+            permissionDenied : {
+              title: "Permission Required",
+              text: "We need your permission to access your camera/photos. To be able to do that, press 'Grant', and\
+ allow the storage and camera permissions",
+              reTryTitle: "Grant",
+              okTitle: "Not Now"
+            }
+          }
         return (
             <View style={{paddingHorizontal:10}}>
                 <Overlay isVisible={this.state.imageSelectorOpen}
@@ -243,16 +249,16 @@ export default class InputToolbar extends React.Component {
             )
         }
     }
+
+
+    
+
     render() {
         return (<View style={[
             styles.container,
             this.props.containerStyle,
             { position: this.state.position },
-        ]}>
-        <StatusBar 
-            barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
-            backgroundColor={getStatusBarColor(this.props.theme, this.state.imageSelectorOpen)}/>
-            
+        ]}> 
         <View style={[styles.primary, this.props.primaryStyle]}>
             {this.renderSelectedImage()}
             <View style={{flexDirection:'row', alignItems:'center'}}>

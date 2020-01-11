@@ -326,7 +326,7 @@ class GiftedChat extends React.Component {
         }
     }
     renderMessages() {
-        return <MessageContainer {...this.props} invertibleScrollViewProps={this.invertibleScrollViewProps} messages={this.getMessages()} ref={this._messageContainerRef}/>
+        return <MessageContainer {...this.props} onSend={this.onSend} invertibleScrollViewProps={this.invertibleScrollViewProps} messages={this.getMessages()} ref={this._messageContainerRef}/>
     }
     resetInputToolbar() {
         if (this.textInput) {

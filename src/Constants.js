@@ -27,7 +27,8 @@ export const COLORS_LIGHT_THEME = {
   STAR_YELLOW: "#f5af19",
   OVERLAY_COLOR: "#999999",
   SHIMMER_COLOR: ['#ebebeb', '#c5c5c5', '#ebebeb'],
-  URM_COLOR: "#cb2d3e"
+  URM_COLOR: "#cb2d3e",
+  THEME: 'light'
 }
 
 export const COLORS_DARK_THEME = {
@@ -59,7 +60,8 @@ export const COLORS_DARK_THEME = {
   STAR_YELLOW: "#f3c921",
   OVERLAY_COLOR: "#181818",
   SHIMMER_COLOR: ["#323232", "#3c3c3c", "#464646"],
-  URM_COLOR: "#63d6a0"
+  URM_COLOR: "#63d6a0",
+  THEME:'dark'
 };
 export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
 export const BASE_URL_DEBUG = "http://192.168.0.103:8000"

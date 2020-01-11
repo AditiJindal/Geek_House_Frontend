@@ -1,23 +1,11 @@
 import {ACTIONS} from '../actions/types';
-import uuid from 'uuid/v4';
 import AsyncStorage from '@react-native-community/async-storage';
 import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import analytics from '@react-native-firebase/analytics';
 import perf from '@react-native-firebase/perf';
-// import VasernDB from '../database';
 import {database} from '../database';
-import { Q } from '@nozbe/watermelondb';
 const MessagesCollection =  database.collections.get('messages');
-// {
-//   _id: 1,
-//   text: 'Hello developer',
-//   created_at: new Date(),
-//   user: {
-//     _id: 2,
-//     name: 'React Native',
-//     avatar: 'https://placeimg.com/140/140/any',
-//   },
-// },
+
 
 
 const INITIAL_STATE={
@@ -36,19 +24,19 @@ const INITIAL_STATE={
   user_id: "",
   theme: "light",
   animationOn:true,
+  chat_background:{image:null, blur:3},
   chatPeopleSearchLoading:false,
   authTokenSet: false,
   chatPeopleSearch:null,
   COLORS: COLORS_LIGHT_THEME,
+  quick_replies: [],
   currentMessages:[] // list of messages of currently loaded person
 }
 
 const trace = perf().newTrace("save_data_async_storage")
 
 const insertUnreadMessages = (unread_messages) => {
-  console.log("Saving unread messages: ", unread_messages)
   unread_messages.map(item=>{
-    console.log("UR Message: ", item)
     saveMessageInDB({message:[item], other_user_id:item.from})
   });
 }
@@ -64,9 +52,6 @@ const saveMessageInDB = (payload, this_user_id) => {
   if (!!message[0].image){
     image_to_save=message[0].image
   }
-
-  console.log("Saving message in DB")
-
   // saving message to database
   database.action(async () => {
     MessagesCollection.create(new_message => {
@@ -92,7 +77,8 @@ const saveData = async (state) => {
     total_unread_messages:state.total_unread_messages,
     theme: state.theme,
     animationOn: state.animationOn,
-    first_login: state.first_login
+    first_login: state.first_login,
+    chat_background: state.chat_background,
   };
   t = Date.now()
   trace.start()
@@ -139,6 +125,7 @@ export default (state=INITIAL_STATE, action) => {
         new_state = {...state,
           theme: action.payload.theme,
           animationOn: action.payload.animationOn,
+          chat_background: action.payload.chat_background,
           user_id, messages:new_messages, COLORS, 
           total_unread_messages, status:new_status, loaded_from_storage:true}
         saveData(new_state)
@@ -301,13 +288,13 @@ export default (state=INITIAL_STATE, action) => {
 
       if (total_unread_messages<0){total_unread_messages=0}
       new_state = {...state, loading:false, currentMessages:new_currentMessages, chats:new_chats,
-        status: new_status, total_unread_messages};
+        status: new_status, total_unread_messages, quick_replies:[]};
 
       saveData(new_state)
       return new_state
 
     case ACTIONS.CHAT_CLEAR_OTHER_USER:
-      return {...state, chatScreenOpen: false}
+      return {...state, chatScreenOpen: false, currentMessages:[], quick_replies:[]}
 
     case ACTIONS.CHAT_SAVE_DATA:
       saveData(state)
@@ -344,6 +331,20 @@ export default (state=INITIAL_STATE, action) => {
     case ACTIONS.CHAT_GET_USER_MESSAGES:
       currentMessages = action.payload
       return {...state, currentMessages}
+
+    case ACTIONS.CHANGE_CHAT_BACKGROUND:
+      new_state = {...state, chat_background:{...state.chat_background, image:action.payload}};
+      saveData(new_state);
+      return new_state;
+
+    case ACTIONS.CHANGE_CHAT_BACKGROUND_BLUR:
+      new_state = {...state, chat_background:{...state.chat_background, blur:action.payload}};
+      saveData(new_state);
+      return new_state;
+
+    case ACTIONS.CHAT_QUICK_REPLIES:
+      new_state = {...state, quick_replies:action.payload};
+      return new_state
 
     default:
       return state;

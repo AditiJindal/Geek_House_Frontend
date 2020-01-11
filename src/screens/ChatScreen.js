@@ -80,7 +80,7 @@ class ChatScreen extends Component {
     return (
       <View style={{paddingBottom:4,elevation:25,
         alignItems:'center', flexDirection:'row', width:"100%",
-        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
+        backgroundColor:COLORS.LIGHT, 
         paddingHorizontal:10}}>
         <View style={{flexDirection:'row', alignItems:'center'}}>
           <View style={{marginLeft:10}}>
@@ -140,8 +140,12 @@ class ChatScreen extends Component {
     const {COLORS} = this.props;
     return(
       <View style={{backgroundColor:COLORS.LIGHT}}>
-        <ImageBackground style={{height:"100%", width:"100%"}} blurRadius={2}
-        source={require('../../assets/dafault_chat_background.jpg')}>
+        <ImageBackground style={{height:"100%", width:"100%"}} blurRadius={this.props.chat_background.blur}
+        source={(this.props.chat_background.image)?(
+          {uri:this.props.chat_background.image, cache:'reload'}
+          ):(
+          require('../../assets/default_chat_background.jpg')
+          )}>
           {this.renderHeader()}
           <TimedAlert onRef={ref=>this.timedAlert = ref} theme={this.props.theme}
             COLORS = {COLORS}
@@ -154,10 +158,11 @@ class ChatScreen extends Component {
                   theme={this.props.theme}
                   COLORS = {COLORS}
       
-                  primaryStyle={{backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT}}
+                  primaryStyle={{backgroundColor:
+                    (this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT, elevation:7}}
                   textInputStyle={{
                       color:COLORS.LESS_DARK,
-                      backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT
+                      backgroundColor:'rgba(0,0,0,0)',marginTop:2
                     }}
                   messages={this.props.currentMessages}
                   onSend={(message) => {
@@ -167,10 +172,10 @@ class ChatScreen extends Component {
                   }}
                   placeholder="Type to chat..."
                   renderAvatar={null}
-                  alwaysShowSend
                   showTimedAlert = {(duration, message)=>{
                     this.timedAlert.showAlert(duration, message)
                   }}
+                  quick_replies = {this.props.quick_replies}
                   user={{_id:this.props.authtoken}}
                   selectedImage = {this.state.selectedImage}
                   onImageSelect = {(image)=>{this.setState({selectedImage:image})}}
@@ -199,7 +204,9 @@ const mapStateToProps = (state) => {
     status: state.chat.status,
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,
-    currentMessages: state.chat.currentMessages
+    currentMessages: state.chat.currentMessages,
+    chat_background: state.chat.chat_background,
+    quick_replies: state.chat.quick_replies
   }
 }
 

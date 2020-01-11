@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, TouchableOpacity, Text} from 'react-native';
+import {View, TouchableOpacity, Text, StatusBar} from 'react-native';
 import {Overlay} from 'react-native-elements';
 import {FONTS} from '../Constants';
 import Icon from 'react-native-vector-icons/Feather'
@@ -13,7 +13,7 @@ import ImagePicker from 'react-native-image-picker';
 //   onSelect = {(response)=>{console.log(response)}}
 // />
 
-// call this.showImageSelector() from anywhere, when user selects an image,
+// call this.imageSelector.showImageSelector() from anywhere, when user selects an image,
 // onSelect will be called, else it won't be called
 
 class ImageSelector extends React.Component{
@@ -35,14 +35,25 @@ class ImageSelector extends React.Component{
     const ImageOptions={
       noData: true,
       mediaType:'photo',
-      chooseWhichLibraryTitle: "Select an App"
+      chooseWhichLibraryTitle: "Select an App",
+      permissionDenied : {
+        title: "Permission Required",
+        text: "We need your permission to access your camera/photos. To be able to do that, press 'Grant', and\
+ allow the storage and camera permissions",
+        reTryTitle: "Grant",
+        okTitle: "Not Now"
+      }
     }
     return (
       <View style={{paddingHorizontal:10}}>
+        
         <Overlay isVisible={this.state.imageSelectorOpen}
           height="auto" width="auto"
           overlayStyle={{flexDirection:'row',backgroundColor:'rgba(0,0,0,0)', elevation:0}}
           onBackdropPress={()=>{this.setState({imageSelectorOpen:false})}}>
+          <StatusBar 
+            barStyle={(COLORS.THEME==='light')?'dark-content':'light-content'}
+            backgroundColor={COLORS.OVERLAY_COLOR}/>
           <TouchableOpacity
             onPress={()=>{
               this.setState({imageSelectorOpen:false});

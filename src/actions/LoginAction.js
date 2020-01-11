@@ -14,9 +14,11 @@ import * as RNLocalize from "react-native-localize";
 import OneSignal from 'react-native-onesignal';
 import analytics from '@react-native-firebase/analytics';
 import crashlytics from '@react-native-firebase/crashlytics';
+import {getQuickReplies} from './ChatAction';
 
 
-var deviceNotificationId = null; 
+var deviceNotificationId = null;
+var timer = null;
 
 OneSignal.init("79514e5e-4676-44b7-822e-8941eacb88d0");
 OneSignal.addEventListener('received', ()=>{});
@@ -42,7 +44,7 @@ const incomingMessageConverter = (data) => {
 }
 
 
-const makeConnection = async (json_data, dispatch) => {
+const makeConnection = async (json_data, dispatch, getState) => {
   AsyncStorage.getItem(json_data.authtoken.toString()).then((response)=>{
     response = JSON.parse(response)
 
@@ -55,9 +57,9 @@ const makeConnection = async (json_data, dispatch) => {
   dispatch({type:ACTIONS.LOGIN_DATA, payload:{data:json_data.data,
     authtoken:json_data.authtoken, categories:json_data.categories}})
   const socket = io.connect(BASE_URL, {
-    timeout: 8000,
+    timeout: HTTP_TIMEOUT,
     forceNew:true,
-    reconnectionDelay:700,
+    reconnectionDelay:500,
     transports: ['websocket'],
     autoConnect: true,
   });
@@ -94,8 +96,15 @@ const makeConnection = async (json_data, dispatch) => {
   socket.emit('join', to_emit)
 
   socket.on('incoming_message', (data)=>{
-    dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:
-      {message:incomingMessageConverter(data),other_user_id: data.from, isIncomming:true}})
+    const message = incomingMessageConverter(data);
+    const {chat} = getState();
+    let temp_currentMessages = chat.currentMessages.slice(0,3);
+    if (temp_currentMessages.length!==0){
+      temp_currentMessages.push(message[0]);
+      clearTimeout(timer);
+      timer = setTimeout(()=>{getQuickReplies(dispatch,temp_currentMessages, chat.user_id);},500)
+    }
+    dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message,other_user_id: data.from, isIncomming:true}});
   });
 
   socket.on('incoming_typing', (data)=>{
@@ -135,12 +144,12 @@ const makeConnection = async (json_data, dispatch) => {
 }
 
 export const checkLogin = () => {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     AsyncStorage.getItem('data').then(
       (response) => {
         if(response!==null && Object.keys(response).length!==0){
           json_data = JSON.parse(response)
-          makeConnection(json_data, dispatch)
+          makeConnection(json_data, dispatch, getState)
           Actions.replace("main");
           analytics().setUserId(json_data.data.authtoken);
           crashlytics().setUserId(json_data.data.authtoken);
@@ -157,7 +166,7 @@ export const checkLogin = () => {
 
 
 export const loginGoogle = () => {
-  return (dispatch)=>{
+  return (dispatch, getState)=>{
     GoogleSignin.configure({
       androidClientId: "315957273790-l39qn5bp73tj2ug8r46ejdcj5t2gb433.apps.googleusercontent.com",
       webClientId: "315957273790-o4p20t2j3brt7c8bqc68814pj63j1lum.apps.googleusercontent.com"
@@ -192,7 +201,7 @@ export const loginGoogle = () => {
               authtoken:final_data.authtoken}})
           dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
           // Image.prefetch(final_data.data.image_url)
-          makeConnection(final_data, dispatch);
+          makeConnection(final_data, dispatch, getState);
           Actions.replace("main");
         }
       ).catch(e=>{
@@ -206,7 +215,7 @@ export const loginGoogle = () => {
 }
 
 export const loginFacebook = () => {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch({type:ACTIONS.LOADING_FB});
     LoginManager.logInWithPermissions(["public_profile", "email"]).then((response)=>{
       if (response.isCancelled){
@@ -252,7 +261,7 @@ export const loginFacebook = () => {
                         payload: {first_login:response.data.first_login, theme:response.data.theme,
                           authtoken:final_data.authtoken}})
                       dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
-                      makeConnection(final_data, dispatch)
+                      makeConnection(final_data, dispatch, getState)
                       Actions.replace("main");
                     }
                   ).catch(e=>{

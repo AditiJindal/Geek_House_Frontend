@@ -54,6 +54,8 @@ target 'Geek_House' do
 
   pod 'react-native-blur', :path => '../node_modules/@react-native-community/blur'
 
+  pod 'RNFBMLNaturalLanguage', :path => '../node_modules/@react-native-firebase/ml-natural-language'
+
   target 'Geek_HouseTests' do
     inherit! :search_paths
     # Pods for testing

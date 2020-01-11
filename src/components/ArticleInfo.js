@@ -310,7 +310,7 @@ class ArticleInfo extends PureComponent {
     });
     const textAnim2 = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT +20],
-      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*2],
+      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*4],
       extrapolate:'clamp'
     });
     const textAnim3 = this.state.scrollY.interpolate({
@@ -333,6 +333,12 @@ class ArticleInfo extends PureComponent {
     const bigImageOpacity = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
       outputRange: [1,0.15],
+      extrapolate:'clamp'
+    });
+
+    const bigImageBlur = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+      outputRange: [1, 1.1],
       extrapolate:'clamp'
     });
 
@@ -363,7 +369,7 @@ class ArticleInfo extends PureComponent {
         >
           <LinearGradient style={{width:"100%", height:"100%",
             borderTopLeftRadius:BORDER_RADIUS,
-              borderTopRightRadius:BORDER_RADIUS,}}
+              borderTopRightRadius:BORDER_RADIUS,overflow:'hidden'}}
             colors={(this.props.theme==='light')?
               ["rgb(20,20,20)", "rgb(50,50,50)"]:
               ["rgb(200,200,200)", "rgb(240,240,240)"]}>
@@ -371,6 +377,7 @@ class ArticleInfo extends PureComponent {
               style={{flex:1,
               borderTopLeftRadius:BORDER_RADIUS,
               borderTopRightRadius:BORDER_RADIUS,
+              transform: [{scale:bigImageBlur}],
               opacity:bigImageOpacity}}
               source={
                 (this.props.loadSuccessful)?

@@ -166,11 +166,37 @@ export default class MessageContainer extends React.PureComponent {
         </TouchableOpacity>
       </View>);
     }
+
+    renderQuickReplies(){
+        if (this.props.quick_replies && this.props.quick_replies.length===0 && (!this.props.selectedImage)){
+            return <View style={{height:30, width:1}}/>;
+        }
+        return (
+            <View style={{flexDirection:'row', alignItems:'flex-end', height:30,alignItems:'center', marginLeft:5 }}>
+                {this.props.quick_replies.map((item)=>{
+                    return (
+                    <TouchableOpacity onPress={()=>{
+                            this.props.onSend({text: item.text}, true)
+                        }}>
+                        <LinearGradient style={{paddingHorizontal:10, paddingVertical:5, borderRadius:20, elevation:4,
+                        marginHorizontal:7, borderColor:COLORS_LIGHT_THEME.YELLOW,}} 
+                        colors = {["#fa163f", "#e32249"]}>
+                            <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:16, color:COLORS_LIGHT_THEME.LIGHT}}>
+                                {item.text}
+                            </Text>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                    )
+                })}
+            </View>
+        )
+    }
+
     render() {
         const {COLORS} = this.props;
         if (!this.props.messages ||
             (this.props.messages && this.props.messages.length === 0)) {
-            return <View style={{flex:1}}><this.props.LoadingComponent/></View>;
+            return null;
         }
         return (<View style={this.props.alignTop ? styles.containerAlignTop : {flex:1}}>
         {this.state.showScrollBottom && this.props.scrollToBottom
@@ -198,14 +224,10 @@ export default class MessageContainer extends React.PureComponent {
                 </Text>
             </View>
             }
-            ListHeaderComponent={<View style={{height:(this.props.selectedImage)?210:105,
-            justifyContent:'flex-start', alignItems:'center'}}>
-                <LinearGradient style={{paddingVertical:3,paddingHorizontal:8,borderRadius:20}}
-                    colors={["#00B4DB", "#00ccdb"]}>
-                    <Text style={{fontFamily:FONTS.LECKERLIONE, fontSize:18,color:COLORS_LIGHT_THEME.LIGHT}}>
-                        The End
-                    </Text>
-                </LinearGradient>
+            ListHeaderComponent={<View>
+                {this.renderQuickReplies()}
+                <View style={{height:(this.props.selectedImage)?195:80,
+                justifyContent:'flex-start', alignItems:'center'}}/>
             </View>}
             scrollEventThrottle={100} 
             {...this.props.listViewProps}/>

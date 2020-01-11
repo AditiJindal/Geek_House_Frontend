@@ -19,14 +19,13 @@ const styles = StyleSheet.create({
 });
 export default class Send extends Component {
     render() {
-        const { text, containerStyle, onSend, children, textStyle, label, alwaysShowSend, disabled, } = this.props;
-        if (alwaysShowSend || (text && text.trim().length > 0) || this.props.selectedImage) {
+        const { text, containerStyle, onSend, children, textStyle,disabled, } = this.props;
             return (
-        <TouchableOpacity testID='send' accessible accessibilityLabel='send' activeOpacity={1} onPress={() => {
-            if ((text || this.props.selectedImage) && onSend) {
+        <TouchableOpacity testID='send' accessible accessibilityLabel='send'  activeOpacity={1} onPress={() => {
+            if (((text && text.trim().length > 0) || this.props.selectedImage) && onSend) {
                 onSend({ text: text.trim(), image:this.props.selectedImage }, true);
             }
-            }} accessibilityTraits='button' disabled={disabled} style={{justifyContent: 'flex-end',alignSelf:'center'}}>
+            }} accessibilityTraits='button' disabled={disabled} style={{opacity:1, justifyContent: 'flex-end',alignSelf:'center'}}>
             <LinearGradient style={[styles.container, containerStyle]} colors={["#97e063", "#a8e063"]}
             start={{x:0.75, y:0.75}} end={{x:0.25, y:0.25}}>
                 <View>
@@ -35,8 +34,6 @@ export default class Send extends Component {
             </LinearGradient>
         </TouchableOpacity>
         );
-        }
-        return <View />;
     }
 }
 Send.defaultProps = {

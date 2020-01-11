@@ -5,7 +5,7 @@ import {logout} from '../actions';
 import {logEvent} from '../actions/ChatAction';
 import Loading from '../components/Loading';
 import {setAuthToken, getSettingsData, settingsChangeFavouriteCategory, 
-  changeTheme, changeAnimationSettings} from '../actions/SettingsAction';
+  changeTheme, changeAnimationSettings, changeChatWallpaper, changeBlurRadius} from '../actions/SettingsAction';
 import { Actions } from 'react-native-router-flux';
 import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
@@ -16,6 +16,8 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import {Switch} from 'react-native-switch';
 import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
+import ImageSelector from '../components/ImageSelector';
+import TimedAlert from '../components/TimedAlert';
 
 
 const getId = (id) => {
@@ -25,6 +27,10 @@ const getId = (id) => {
 }
 
 class Settings extends Component {
+
+  state = {
+    blur:this.props.chat_background.blur
+  }
 
   componentDidMount(){
 
@@ -129,14 +135,15 @@ class Settings extends Component {
         </Text>
         <TouchableOpacity
           style={{alignSelf:'flex-start'}}
-          activeOpacity={1}
+          activeOpacity={0.4}
           onPress={()=>{
             analytics().setUserProperties({Theme: oppositeTheme});
             this.props.changeTheme((oppositeTheme));
             logEvent(LOG_EVENT.CURRENT_VIEW_MODE, oppositeTheme)}}>
           <View style={{paddingVertical:8, borderRadius:8, borderWidth:1,
             backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
-            borderColor:(this.props.theme==='light')?"#f953c6":"#6DD5FA", width:80, justifyContent:'center', alignItems:'center'}}>
+            borderColor:(this.props.theme==='light')?"#f953c6":"#6DD5FA", 
+            width:80, justifyContent:'center', alignItems:'center'}}>
             <Text style={{fontFamily:FONTS.RALEWAY_BOLD, fontSize:16,
               color:(this.props.theme==='light')?"#f953c6":"#6DD5FA"}}>
               {oppositeTheme.toUpperCase()}
@@ -288,15 +295,53 @@ class Settings extends Component {
     )
   }
 
+  handleBlurOption(isIncrease){
+    
+    if(isIncrease && (this.state.blur<15)){
+      clearTimeout(this.timer);
+      this.setState({blur:this.state.blur+0.5})
+      this.timer = setTimeout(()=>{this.props.changeBlurRadius(this.state.blur)},1)
+    }
+    if(!isIncrease && (this.state.blur>0)){
+      clearTimeout(this.timer);
+      this.setState({blur:this.state.blur-0.5})
+      this.timer = setTimeout(()=>{this.props.changeBlurRadius(this.state.blur)},1)
+    }
+  }
+
   changeChatWallpaper(){
+    const {COLORS} = this.props
     return(
-      <View style={{marginVertical:10}}>
+      <View style={{marginBottom:30}}>
         <Text style={{marginRight:30,fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
           color:COLORS.LESSER_DARK, }}>
           Change your chat wallpaper
         </Text>
-        <View>
-          <Text>Select an Image</Text>
+        <TouchableOpacity style={{backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
+          paddingHorizontal:12, paddingVertical:6, elevation:8, borderRadius:30, 
+          alignSelf:'flex-start', marginVertical:10,flexDirection:'row', 
+          justifyContent:'space-between', width:195, alignItems:'center'}}
+          onPress={()=>{this.imageSelector.showImageSelector()}}>
+          <Icon name="plus-circle" type="feather" size={20} color={COLORS.LESSER_DARK} />
+          <Text style={{fontFamily:FONTS.PRODUCT_SANS, color:COLORS.LESSER_DARK, fontSize:18}}>
+            Choose an Image
+          </Text>
+        </TouchableOpacity>
+        <View style={{flexDirection:'row', alignItems:'center',marginTop:10}}>
+          <Text style={{fontSize:16, fontFamily:FONTS.PRODUCT_SANS,color:COLORS.LESSER_DARK,marginRight:20}}>
+            Wallpaper blur effect
+          </Text>
+          <View style={{flexDirection:'row', alignItems:'center', width:120, justifyContent:'space-between'}}>
+            <TouchableOpacity onPress={()=>{this.handleBlurOption(false)}} style={{padding:10,}}>
+              <Icon name="minus" type="feather" size={18} color={COLORS.GRAY}/>
+            </TouchableOpacity>
+            <Text style={{fontSize:16, fontFamily:FONTS.PRODUCT_SANS,color:COLORS.GRAY}}>
+              {this.state.blur}
+            </Text>
+            <TouchableOpacity onPress={()=>{this.handleBlurOption(true)}} style={{padding:10}}>
+              <Icon name="plus" type="feather" size={18} color={COLORS.GRAY}/>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     )
@@ -316,6 +361,7 @@ class Settings extends Component {
         {this.renderAnimationSwitch()}
         {this.changeChatWallpaper()}
         {this.renderLogoutButton()}
+        
       </ScrollView>
     );
   }
@@ -329,6 +375,15 @@ class Settings extends Component {
           backgroundColor={COLORS.LIGHT}
         />
         {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
+        <ImageSelector
+          COLORS = {this.props.COLORS}
+          onRef={ref=>this.imageSelector = ref}
+          onSelect = {(response)=>{this.props.changeChatWallpaper(response,
+          this.props.chat_background.image);
+          this.timedAlert.showAlert(3000,'Image applied', false)}}
+        />
+        <TimedAlert onRef={ref=>this.timedAlert = ref}
+          COLORS={COLORS}/>
         {
           (this.props.loading)?
           (<View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
@@ -342,7 +397,6 @@ class Settings extends Component {
 };
 
 const mapStateToProps = (state) => {
-  console.log("state.settings: ", state.settings)
   return {
     data: state.login.data,
     categories: state.login.categories,
@@ -353,13 +407,14 @@ const mapStateToProps = (state) => {
     settingsData: state.settings.settingsData,
     loading: state.settings.loading,
     fav_category: state.settings.fav_category,
-    animationOn: state.chat.animationOn
+    animationOn: state.chat.animationOn,
+    chat_background: state.chat.chat_background,
   }
 }
 
 export default connect(mapStateToProps, {
   logout, setAuthToken, getSettingsData, settingsChangeFavouriteCategory, 
-  changeTheme, changeAnimationSettings})(Settings);
+  changeTheme, changeAnimationSettings, changeChatWallpaper, changeBlurRadius})(Settings);
 
 const styles = StyleSheet.create({
   HeadingTextStyling:{
