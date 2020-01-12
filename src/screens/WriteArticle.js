@@ -190,7 +190,7 @@ class WriteArticle extends Component {
     return (
       <ScrollView ref={(scrollView)=> this.scrollView = scrollView}
         keyboardShouldPersistTaps="always">
-        <View style={{height:10}}/>
+        <View style={{height:70, width:1}}/>
         {this.renderCategoryDropdown()}
         {this.state.contents.map((obj, i)=>{
           return (
@@ -294,10 +294,10 @@ class WriteArticle extends Component {
     const {COLORS} = this.props;
     return (
       <SView style={{shadowColor:'#202020',shadowOpacity:0.3, shadowOffset:{width:0,height:10},shadowRadius:8, 
-        borderRadius:10, margin:8, height:70, justifyContent:'space-between',
-        alignItems:'center', flexDirection:'row', 
+        borderRadius:10, height:55, justifyContent:'space-between',alignSelf:'center',zIndex:10,
+        alignItems:'center', flexDirection:'row', position:'absolute', width:"92%",top:10,
         backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
-        paddingHorizontal:10}}>
+        paddingHorizontal:10,}}>
           <TouchableOpacity onPress={()=>{this.onBackPress()}}>
             <Icon name="arrow-left" type="material-community" size={26}
               containerStyle={{marginVertical:5, marginRight:15}} 
@@ -315,7 +315,7 @@ class WriteArticle extends Component {
             value={this.state.topic}
             returnKeyType={"done"}
             placeholderTextColor={COLORS.LESSER_DARK}
-            style={{...styles.TextStyle,color:COLORS.DARK}}
+            style={{...styles.TextStyle,color:COLORS.DARK, marginBottom:3}}
           />
       </SView>
     )
@@ -368,7 +368,6 @@ class WriteArticle extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log("Here state is: ", state.write)
   return {
     contents: state.write.contents,
     topic: state.write.topic,

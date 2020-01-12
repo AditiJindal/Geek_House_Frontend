@@ -310,7 +310,7 @@ export default connect(mapStateToProps, {setImage})(ImageUpload)
 
 const styles = StyleSheet.create({
   TextStyle:{
-    fontSize:28,
+    fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
   },
 })

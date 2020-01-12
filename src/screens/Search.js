@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet, StatusBar, RefreshControl,Dimensions,
-  FlatList, ScrollView, TouchableOpacity}from 'react-native';
+  FlatList, ScrollView, TouchableOpacity, TextInput}from 'react-native';
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
 import BottomTab from '../components/BottomTab'
@@ -9,6 +9,7 @@ import {FONTS, ERROR_MESSAGES,COLORS_LIGHT_THEME} from '../Constants';
 import ArticleTile from '../components/ArticleTile';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
+import Icon from 'react-native-vector-icons/Feather';
 import {
   getPopularSearches,
   setAuthToken,
@@ -21,6 +22,7 @@ import {
 import {Dropdown} from '../components/Dropdown';
 import CustomAlert from '../components/CustomAlert';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
+import SView from 'react-native-simple-shadow-view';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import analytics from '@react-native-firebase/analytics';
 
@@ -56,55 +58,68 @@ class Search extends Component {
 
   renderHeader(){
     const {COLORS} = this.props;
-    return(
-      <View
-        style={{justifyContent:'space-around',alignItems:'center', flexDirection:'row'}}>
-        
-        <SearchBar containerStyle={{...styles.SearchContainerStyle, 
-          backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}} 
-          placeholder="Search a Topic"
-          onClear={()=>{this.props.clearSearch()}}
-
-          inputContainerStyle={{backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}
-          inputStyle={{fontSize:16, fontFamily:FONTS.PRODUCT_SANS, color:COLORS.DARK}}
-          selectTextOnFocus
-          onChangeText={(search)=>{this.props.updateSearchValue(search)}}
-          value={this.props.searchValue}
-        />
-        <View/>
-        <TouchableOpacity activeOpacity={1}
-          onPress={()=>{
-            if (this.props.loading){
-              this.props.showAlert(true, ERROR_MESSAGES.LET_PREVIOUS_SEARCH_COMPLETE)
-            }
-
-            else if(this.props.searchValue.length>1){
-              analytics().logSearch({search_term:this.props.searchValue});
-              this.props.doSearch(this.props.searchValue, this.props.categorySelected)                            
-            }
-            else if(this.props.searchValue){
-              this.props.showAlert(true, ERROR_MESSAGES.ONE_SEARCH_CHARACTER)          
-            }
-            else{
-              this.props.showAlert(true, ERROR_MESSAGES.NO_SEARCH_CHARACTER)
-            }
-          }}>
-          <LinearGradient style={[styles.SearchButtonStyle, (this.props.searchValue.length>1)?{elevation:7}:{elevation:0}]}
-            colors={((this.props.searchValue.length>1) && (!this.props.loading))?
-              ['rgb(0,181, 213)','rgb(0,224, 211)']:
-              [COLORS_LIGHT_THEME.GRAY,COLORS_LIGHT_THEME.GRAY]}
-            start={{x:0, y:1}} end={{x:1, y:1}}>
-            <Text style={{...styles.TextStyle, 
-              color:COLORS_LIGHT_THEME.LIGHT}}>
-              search
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+    return (
+      <SView style={{shadowColor:'#202020',shadowOpacity:0.3, shadowOffset:{width:0,height:10},shadowRadius:8, 
+        borderRadius:10, height:55, justifyContent:'space-between',alignSelf:'center',zIndex:10,
+        alignItems:'center', flexDirection:'row', position:'absolute', width:"92%",top:10,
+        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
+        paddingHorizontal:10}}>
+          <Icon name="search" size={20} style={{marginVertical:5, marginHorizontal:5}} 
+            color={COLORS.LESS_DARK}/>
+          <TextInput
+            textAlignVertical='top'
+            keyboardAppearance="light"
+            maxLength={128}
+            onChangeText={(search)=>{this.props.updateSearchValue(search)}}
+            spellCheck={true}
+            autoCapitalize="words"
+            autoCorrect={true}
+            placeholder={"search an article"}
+            value={this.props.searchValue}
+            returnKeyType={"done"}
+            placeholderTextColor={COLORS.LESSER_DARK}
+            style={{fontSize:20,marginTop:6,flex:1,fontFamily:FONTS.RALEWAY,color:COLORS.DARK, marginBottom:3}}
+          />
+          {
+            (this.props.searchValue.length>0)?(
+              <Icon
+                name="x" onPress={()=>{this.props.clearSearch()}} color={COLORS.LESS_DARK}
+                size={20} style={{marginLeft:5, marginRight:10}}
+              />
+            ):null
+          }
+          <TouchableOpacity activeOpacity={1}
+            onPress={()=>{
+              if (this.props.loading){
+                this.props.showAlert(true, ERROR_MESSAGES.LET_PREVIOUS_SEARCH_COMPLETE)
+              }
+              else if(this.props.searchValue.length>1){
+                analytics().logSearch({search_term:this.props.searchValue});
+                this.props.doSearch(this.props.searchValue, this.props.categorySelected)                            
+              }
+              else if(this.props.searchValue){
+                this.props.showAlert(true, ERROR_MESSAGES.ONE_SEARCH_CHARACTER)          
+              }
+              else{
+                this.props.showAlert(true, ERROR_MESSAGES.NO_SEARCH_CHARACTER)
+              }
+            }}>
+            <LinearGradient style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,elevation:7,
+              backgroundColor:COLORS.LESSER_DARK}}
+              colors={((this.props.searchValue.length>1) && (!this.props.loading))?
+                ['rgb(0,181, 213)','rgb(0,224, 211)']:
+                [COLORS_LIGHT_THEME.GRAY,COLORS_LIGHT_THEME.GRAY]}
+              start={{x:1, y:0}} end={{x:1, y:1}}>
+              <Text style={{...styles.TextStyle,color:COLORS_LIGHT_THEME.LIGHT}}>
+                search
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+      </SView>
     )
   }
 
-  renderCategory(){
+  renderPopularSearches(){
     const {COLORS} = this.props; 
     let jsx = (
       <View style={{alignSelf:'flex-end'}}>
@@ -170,29 +185,41 @@ class Search extends Component {
         )
       }
       return (
-        <View style={{width:"100%", flex:1}}>
-          {jsx}
-          <FlatList
-            data={category_list}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(x) => x}
-            renderItem = {({item}) => {
-              return (
-                <View style={{marginTop:25, alignItems:'flex-start', justifyContent:'flex-start'}}>
-                  <View style={{flex:1, marginLeft:15 }}>
-                    <View style={{borderRadius:5, padding:5, paddingHorizontal:10, borderWidth:2, borderColor:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.GRAY}}>
-                      <Text style={{...styles.CategoryTextStyle, 
-                      color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.GRAY}}>
-                        {item}
-                      </Text>
-                    </View>
+        <FlatList
+          data={category_list}
+          contentContainerStyle={{width:"100%",}}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent = {
+            <View>
+              <View style={{height:70, width:1}}/>
+              {jsx}
+              {this.renderSearchSettings()}
+            </View>
+          }
+          ListFooterComponent = {<View style={{height:200, width:1}}/>}
+          refreshControl={
+            <RefreshControl onRefresh={()=>{this.props.getPopularSearches()}}
+              colors={["rgb(0,181, 213)"]}
+              refreshing={false}
+            />
+          }
+          keyExtractor={(x) => x}
+          renderItem = {({item}) => {
+            return (
+              <View style={{marginTop:25, alignItems:'flex-start', justifyContent:'flex-start'}}>
+                <View style={{flex:1, marginLeft:15 }}>
+                  <View style={{borderRadius:5, padding:5, paddingHorizontal:10, borderWidth:2, borderColor:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.GRAY}}>
+                    <Text style={{...styles.CategoryTextStyle, 
+                    color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.GRAY}}>
+                      {item}
+                    </Text>
                   </View>
-                  {this.renderTopics(response[item])}
                 </View>
-              )
-            }}
-          /> 
-        </View>     
+                {this.renderTopics(response[item])}
+              </View>
+            )
+          }}
+        /> 
       )
     }
   }
@@ -238,28 +265,6 @@ class Search extends Component {
     else{
       return <View/>
     }
-  }
-
-  renderPopularSearches(){
-    // LayoutAnimation.configureNext(CustomAnimationConfig)
-    return (
-      <ScrollView style={{flex:1}}
-      refreshControl={
-        <RefreshControl onRefresh={()=>{this.props.getPopularSearches()}}
-          colors={["rgb(0,181, 213)"]}
-          refreshing={false}
-        />
-      }
-      >
-        {this.renderSearchSettings()}
-        <View style={{flex:1, alignItems:'flex-end'}}>
-          {
-            this.renderCategory()
-          }
-        </View>
-        <View style={{height:50}}/>
-      </ScrollView>
-    )
   }
 
   renderAlert(){
@@ -308,9 +313,7 @@ class Search extends Component {
           </View>:this.renderPopularSearches()
         }
         
-        <View style={{bottom:50, height:0}}>
-          <BottomTab icon_index={1}/>
-        </View>
+        <BottomTab icon_index={1}/>
       </View>
     );
   }
@@ -348,8 +351,8 @@ export default connect(mapStateToProps,
 
 const styles = StyleSheet.create({
   TextStyle:{
-    fontSize:20,
-    fontFamily:FONTS.GOTHAM_BLACK,
+    fontSize:18,
+    fontFamily:FONTS.RALEWAY_BOLD,
   },
   SearchContainerStyle:{
     marginRight:0,
@@ -362,10 +365,6 @@ const styles = StyleSheet.create({
     flex:1,
     margin:10,
     height:50,
-  },
-  SearchButtonStyle:{ 
-    paddingVertical:7, margin:10, paddingHorizontal:10,
-    borderRadius:12, justifyContent:'center', alignItems:'center', height:50,
   },
   CategoryTextStyle:{
     fontFamily:FONTS.HELVETICA_NEUE,

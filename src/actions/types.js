@@ -29,6 +29,7 @@ export const ACTIONS={
     GET_ARTICLE_INFO: 'articleInfo.get',
     ARTICLE_INFO_LOADING: 'articleinfo.loading',
     ARTICLE_ADD_COMMENT: 'article.add_comment',
+    ARTICLE_BOOKMARK: 'article.bookmark',
 
     // WRITE
     WRITE_LOADING: 'write.loading',

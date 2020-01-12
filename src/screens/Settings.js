@@ -418,7 +418,7 @@ export default connect(mapStateToProps, {
 
 const styles = StyleSheet.create({
   HeadingTextStyling:{
-    fontSize:28,
+    fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
   },
   LogoutButtonTextStyle:{

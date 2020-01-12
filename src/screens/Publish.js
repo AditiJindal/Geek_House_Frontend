@@ -200,7 +200,7 @@ export default connect(mapStateToProps, {publishArticle, getMyArticles})(Publish
 
 const styles = StyleSheet.create({
   TextStyle:{
-    fontSize:28,
+    fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
     marginRight:10,
   },

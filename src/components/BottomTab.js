@@ -4,7 +4,7 @@ import { View, StyleSheet,TouchableOpacity,Text}from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {logEvent} from '../actions/ChatAction';
 import LinearGradient from 'react-native-linear-gradient';
-import {ICON_SIZE, SELECTED_ICON_SIZE, FONTS,LOG_EVENT, COLORS_DARK_THEME, COLORS_LIGHT_THEME} from '../Constants';
+import {ICON_SIZE, SELECTED_ICON_SIZE, FONTS,LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
 import {Actions} from "react-native-router-flux"
 import Typing from '../components/Typing';
 import SView from 'react-native-simple-shadow-view';
@@ -134,8 +134,12 @@ export default connect(mapStateToProps, {})(BottomTab)
 const styles = StyleSheet.create({
   BottomTabStyle:{
     height:40,
+    bottom:10,
+    position:'absolute',
+    width:"92%",
     shadowOpacity: 0.25,
     shadowRadius: 2,
+    zIndex:99,
     shadowOffset: { height:2.5},
     justifyContent:'space-around',
     flexDirection:'row',

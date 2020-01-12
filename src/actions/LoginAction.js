@@ -36,7 +36,6 @@ httpClient.defaults.baseURL = BASE_URL;
 // AsyncStorage.removeItem('authtoken')
 // AsyncStorage.removeItem('5e08f8fe7554cf1c7c9f17bc')
 
-
 const incomingMessageConverter = (data) => {
   new_message = [{_id:uuid(), createdAt: data.createdAt, text:data.text, 
     user:{_id:data.from}, image:data.image}]
@@ -90,7 +89,6 @@ const makeConnection = async (json_data, dispatch, getState) => {
     deviceInfo: {manufacturer,designName,modelName,osName,totalMemory},
     carrier,
     countryCode: RNLocalize.getCountry(),
-    connectionType: 'null'
   }
 
   socket.emit('join', to_emit)

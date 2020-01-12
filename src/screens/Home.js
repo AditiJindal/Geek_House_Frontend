@@ -233,7 +233,7 @@ class Home extends PureComponent {
           <TouchableOpacity onPress={this.props.toggleOverlay.bind(this, {overlayVisible:true})}>
             <Image
               source={{uri:this.props.data.image_url}}
-              style={{height:48, width:48, borderRadius:24}}/>
+              style={{height:42, width:42, borderRadius:24}}/>
           </TouchableOpacity>
         </View>
       )
@@ -325,6 +325,7 @@ class Home extends PureComponent {
     }
     return (
       <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={{height:70, width:1}}/>
         {this.renderWelcome()}
         {this.renderPopularArticles()}
         <View style={{height:50}}/>
@@ -447,9 +448,7 @@ class Home extends PureComponent {
         </ShadowView>
         {this.renderOverlay()}
         {this.renderHome()}
-        <View style={{bottom:50, height:0}}>
-          <BottomTab icon_index={0}/>
-        </View>
+        <BottomTab icon_index={0}/>
       </View>
       );
     }
@@ -490,7 +489,7 @@ export default connect(mapStateToProps, {
 
 const styles = StyleSheet.create({
   TextStyle:{
-    fontSize:28,
+    fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
   },
   AvatarTextStyle:{
@@ -519,11 +518,15 @@ const styles = StyleSheet.create({
     shadowOffset:{width:0,height:10},
     shadowRadius:8,
     borderRadius:10,
-    margin:8, 
-    height:70, 
-    justifyContent:'space-between',
+    position:'absolute',
+    height:55,
+    width:'92%',
+    alignSelf:'center', 
     alignItems:'center', 
     flexDirection:'row', 
-    paddingHorizontal:25
+    paddingHorizontal:20,
+    top:10,
+    zIndex:10,
+    justifyContent:'space-between'
   }
 })

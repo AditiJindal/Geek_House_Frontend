@@ -120,7 +120,7 @@ export default connect(mapStateToProps, {setAuthToken, getSettingsData})(Setting
 
 const styles = StyleSheet.create({
   HeadingTextStyling:{
-    fontSize:28,
+    fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
   },
   SubheadingTextStyle: {

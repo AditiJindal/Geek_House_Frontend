@@ -28,7 +28,8 @@ export const COLORS_LIGHT_THEME = {
   OVERLAY_COLOR: "#999999",
   SHIMMER_COLOR: ['#ebebeb', '#c5c5c5', '#ebebeb'],
   URM_COLOR: "#cb2d3e",
-  THEME: 'light'
+  THEME: 'light',
+  SHADOW_COLOR: "#202020"
 }
 
 export const COLORS_DARK_THEME = {
@@ -61,7 +62,8 @@ export const COLORS_DARK_THEME = {
   OVERLAY_COLOR: "#181818",
   SHIMMER_COLOR: ["#323232", "#3c3c3c", "#464646"],
   URM_COLOR: "#63d6a0",
-  THEME:'dark'
+  THEME:'dark',
+  SHADOW_COLOR:"#000000"
 };
 export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
 export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
@@ -78,13 +80,13 @@ export const LOG_EVENT = {
 }
 
 export const URLS = {
-  login:'/api/login/',
-  welcome:'/api/welcome/',
+  login: '/api/login/',
+  welcome: '/api/welcome/',
   settings:'/api/settings/',
   logout: '/api/logout/',
-  popularsearches:'/api/popularsearches/',
-  closeaccount:'/api/closeaccount/',
-  search:'/api/search/',
+  popularsearches: '/api/popularsearches/',
+  closeaccount: '/api/closeaccount/',
+  search: '/api/search/',
   articleinfo: '/api/articleinfo/',
   myarticles: '/api/myarticles/',
   publish: '/api/publish/',
@@ -93,7 +95,9 @@ export const URLS = {
   comment: '/api/comment/',
   logevent: '/api/logevent/',
   chatpeoplesearch: '/api/chatpeoplesearch/',
-  feedback: '/api/feedback/'
+  feedback: '/api/feedback/',
+  bookmark_article: '/api/bookmark_article/',
+  get_bookmarked_articles: '/api/get_bookmarked_articles/',
 }
 
 export const FONTS = {

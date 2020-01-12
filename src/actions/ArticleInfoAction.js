@@ -60,3 +60,13 @@ export const submitComment = (to_send) => {
     }).catch(e=>crashlytics().log("ArticleInfoAction LINE 60"+e.toString()))
   }
 }
+
+export const bookmarkArticle = (article_id, bookmarked) => {
+  console.log('This is pressed!')
+  return (dispatch)=>{
+    httpClient.post(URLS.bookmark_article, {article_id, add:!bookmarked}).then(()=>{
+      console.log('Gotresponse!!!!')
+      dispatch({type:ACTIONS.ARTICLE_BOOKMARK, payload:!bookmarked})
+    })
+  }
+}

@@ -141,8 +141,8 @@ class ChatScreen extends Component {
     return(
       <View style={{backgroundColor:COLORS.LIGHT}}>
         <ImageBackground style={{height:"100%", width:"100%"}} blurRadius={this.props.chat_background.blur}
-        source={(this.props.chat_background.image)?(
-          {uri:this.props.chat_background.image, cache:'reload'}
+        source={(!!this.props.chat_background.image)?(
+          {uri:this.props.chat_background.image}
           ):(
           require('../../assets/default_chat_background.jpg')
           )}>

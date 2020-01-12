@@ -58,6 +58,7 @@ class Write extends Component {
       return(
         <View style={{width:"100%"}}>
           <ScrollView style={{flex:1}} nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
+            <View style={{height:70, width:1}}/>
             <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} autoRun={true} duration={600} delay={100}
               style={{height:35, borderRadius:5, marginTop:30, marginLeft:15, alignItems:'center', elevation:6}}
             />
@@ -84,6 +85,7 @@ class Write extends Component {
               <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
               <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
             </ScrollView>
+            <View style={{height:200, width:1}}/>
           </ScrollView>
         </View>
       )
@@ -96,6 +98,16 @@ class Write extends Component {
           <FlatList
             data={category_list}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={false}
+                colors={["rgb(0,181, 213)"]}
+                onRefresh={()=>
+                {this.props.getMyArticles(Object.keys(this.props.myArticles).length, this.props.reload);}}
+              />
+            }
+            ListHeaderComponent={<View style={{height:70, width:1}}/>}
+            ListFooterComponent={<View style={{height:200, width:1}}/>}
             keyExtractor={(x) => x}
             renderItem = {({item}) => {
               return (
@@ -161,10 +173,11 @@ class Write extends Component {
         />
         {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
         
-        <SView style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
-          alignItems:'center', flexDirection:'row', shadowColor:'#202020',shadowOpacity:0.3,
+        <SView style={{borderRadius:10, height:55,paddingLeft:20,
+          alignItems:'center', flexDirection:'row', shadowColor:"#202020", shadowOpacity:0.3,
+          position:'absolute', top:10, zIndex:10,width:'92%', alignSelf:'center',
           shadowOffset:{width:0,height:10},shadowRadius:8,
-          backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, paddingHorizontal:25}}>
+          backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
             <Text style={{...styles.TextStyle, 
               color:COLORS.DARK}}>
               my articles
@@ -172,17 +185,7 @@ class Write extends Component {
         </SView>
         
           
-        <ScrollView showsVerticalScrollIndicator={false}
-          contentContainerStyle={{height:Dimensions.get('window').height}}
-          scrollEnabled={Object.keys(this.props.myArticles).length!==0}
-          refreshControl = {
-              <RefreshControl
-                refreshing={false}
-                colors={["rgb(0,181, 213)"]}
-                onRefresh={()=>
-                {this.props.getMyArticles(Object.keys(this.props.myArticles).length, this.props.reload);}}
-              />
-            }>
+        <View style={{height:Dimensions.get('window').height}}>
           {
             (Object.keys(this.props.myArticles).length!==0)?
             this.renderCategory():(
@@ -195,14 +198,9 @@ class Write extends Component {
             </View>
             )
           }
-          <View style={{height:150}}/>
-        </ScrollView>
-        {this.renderFloatingButton()}
-
-        <View style={{bottom:50, height:0}}>
-          <BottomTab icon_index={2}/>
         </View>
-
+        {this.renderFloatingButton()}
+        <BottomTab icon_index={2}/>
       </View>
     );
   }
@@ -225,7 +223,7 @@ export default connect(mapStateToProps, {setAuthToken, getMyArticles, clearPubli
 
 const styles = StyleSheet.create({
   TextStyle:{
-    fontSize:28,
+    fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
   },
   CategoryTextStyle:{

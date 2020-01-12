@@ -10,7 +10,6 @@ export default (state=INITIAL_STATE, action) => {
 	
 	switch (action.type){
 		case ACTIONS.LOGOUT:
-			console.log("ACTION.LOGOUT HERE 4")
       return {...INITIAL_STATE}
 
     case ACTIONS.ARTICLE_INFO_LOADING:
@@ -46,6 +45,11 @@ export default (state=INITIAL_STATE, action) => {
 		// 	}
 
 		// 	return {...state, selectedArticleInfo}
+		case ACTIONS.ARTICLE_BOOKMARK:
+			selectedArticleInfo = {...state.selectedArticleInfo};
+			console.log('Bookmarked is: ', action.payload)
+			selectedArticleInfo.bookmarked = action.payload;
+			return {...state, selectedArticleInfo};
 
 		default:
 			return state

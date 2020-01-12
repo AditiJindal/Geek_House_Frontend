@@ -48,7 +48,9 @@ export const changeChatWallpaper = (response, previous_image) => {
   return (dispatch) => {
     const target_path = RNFileSystem.ExternalStorageDirectoryPath+"/GeekHouse/"+`${uuid()}.jpg`
     const target_path_url =  `file://`+target_path
-    RNFileSystem.unlink(previous_image.substring(7)).catch(()=>{})
+    if (previous_image){
+      RNFileSystem.unlink(previous_image.substring(7)).catch(()=>{})
+    }
     RNFileSystem.copyFile(response.path, target_path).then(()=>{
       dispatch({type: ACTIONS.CHANGE_CHAT_BACKGROUND, payload:target_path_url})
     })

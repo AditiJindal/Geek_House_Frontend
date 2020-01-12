@@ -1,15 +1,12 @@
 import React, {PureComponent} from 'react';
-import { View, Text, StyleSheet, 
-  StatusBar, FlatList, Animated,
-  TextInput,
-  Dimensions, RefreshControl,
-  TouchableOpacity}from 'react-native';
+import { View, Text, StyleSheet, StatusBar, RefreshControl,
+  FlatList, Animated, TextInput,Dimensions, TouchableOpacity} from 'react-native';
 import _ from 'lodash';
 import {connect} from 'react-redux';
 import {Overlay,Icon} from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
 import LinearGradient from 'react-native-linear-gradient';
-import {getArticleInfo, setAuthToken, submitComment} from '../actions/ArticleInfoAction';
+import {getArticleInfo, setAuthToken, submitComment, bookmarkArticle} from '../actions/ArticleInfoAction';
 import {FONTS, COLOR_COMBOS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import CardView from './CardView';
 import Loading from './Loading';
@@ -171,25 +168,29 @@ class ArticleInfo extends PureComponent {
     if ((this.props.article_id===-1)){
       return null;
     }
+    const { bookmarked } = this.props.selectedArticleInfo;
     return(
       <View style={{width:"100%", alignItems:'center', flexDirection:'row',
         justifyContent:'space-evenly'}}>
-        <View style={{borderColor:COLORS.LESS_DARK,paddingHorizontal:15,borderWidth:1.2,
+        <TouchableOpacity style={{borderColor:COLORS.LESS_DARK,paddingHorizontal:15,borderWidth:1.2,
           paddingVertical:10, borderRadius:10, alignItems:'center', flexDirection:'row',
           width:130, justifyContent:'space-evenly'}}>
-          <Icon name="share" size={22} color={COLORS.LESSER_DARK}/>
-          <Text style={{fontFamily:FONTS.RALEWAY, color:COLORS.LESSER_DARK,fontSize:16}}>
+          <Icon name="share" type="feather" size={20} color={COLORS.LESSER_DARK}/>
+          <Text style={{fontFamily:FONTS.RALEWAY, color:COLORS.LESSER_DARK,fontSize:14}}>
             Share
           </Text>
-        </View>
-        <View style={{borderColor:COLORS.LESS_DARK,paddingHorizontal:15,borderWidth:1.2,
+        </TouchableOpacity>
+        <TouchableOpacity style={{borderColor:(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK,paddingHorizontal:15,borderWidth:1.2,
           paddingVertical:10, borderRadius:10, alignItems:'center', flexDirection:'row',
-          width:130, justifyContent:'space-evenly'}}>
-          <Icon name="bookmark" size={22} color={COLORS.LESSER_DARK}/>
-          <Text style={{fontFamily:FONTS.RALEWAY, color:COLORS.LESSER_DARK,fontSize:14}}>
-            Bookmark
+          width:130, justifyContent:'space-evenly'}}
+          onPress = {()=>{this.props.bookmarkArticle(this.props.article_id, bookmarked)}}>
+          <Icon name={(bookmarked)?"bookmark":"bookmark-border"} type="material" 
+          size={20} color={(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK}/>
+          <Text style={{fontFamily:FONTS.RALEWAY, color:(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK,
+          fontSize:(bookmarked)?10.5:13}}>
+            {(bookmarked)?'Bookmarked':'Bookmark'}
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
     )
   }
@@ -295,7 +296,7 @@ class ArticleInfo extends PureComponent {
 
   renderArticle(){
     const {COLORS} = this.props;
-    const {author, author_image, cards, 
+    const {author, author_image, cards,
       category, comments, rating, topic, viewed} = this.props.selectedArticleInfo;
 
     const headerHeight = this.state.scrollY.interpolate({
@@ -310,12 +311,12 @@ class ArticleInfo extends PureComponent {
     });
     const textAnim2 = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT +20],
-      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*4],
+      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*2.865],
       extrapolate:'clamp'
     });
     const textAnim3 = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT +60],
-      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*2],
+      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*1.23],
       extrapolate:'clamp'
     });
     const textAnim4 = this.state.scrollY.interpolate({
@@ -435,7 +436,7 @@ class ArticleInfo extends PureComponent {
           //   (
           //     <RefreshControl
           //       tintColor={'black'}
-          //       style={{zIndex:100, position:'absolute'}}
+          //       style={{zIndex:100, position:'absolute', height:HEADER_MAX_HEIGHT}}
           //       onRefresh={()=>{
           //       this.props.getArticleInfo(this.props.article_id, false, true)
           //       }}
@@ -533,7 +534,7 @@ class ArticleInfo extends PureComponent {
               </Text>
             </View>
           }
-          <View style={{height:100}}/>
+          <View style={{height:300}}/>
         </Animated.ScrollView>
       </View>
     );
@@ -603,7 +604,7 @@ const mapStateToProps =(state) => {
   }
 }
 
-export default connect(mapStateToProps, {getArticleInfo, setAuthToken, submitComment})(ArticleInfo)
+export default connect(mapStateToProps, {getArticleInfo, setAuthToken, submitComment, bookmarkArticle})(ArticleInfo)
 
 const styles = StyleSheet.create({
   OverlayStyle:{
