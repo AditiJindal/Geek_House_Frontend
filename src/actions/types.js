@@ -30,6 +30,9 @@ export const ACTIONS={
     ARTICLE_INFO_LOADING: 'articleinfo.loading',
     ARTICLE_ADD_COMMENT: 'article.add_comment',
     ARTICLE_BOOKMARK: 'article.bookmark',
+    BOOKMARKS_LOADING: 'article.bookmarks_loading',
+    GET_BOOKMARKS: 'article.get_bookmarks',
+    BOOKMARKS_ERROR: 'article.bookmarks_error',
 
     // WRITE
     WRITE_LOADING: 'write.loading',

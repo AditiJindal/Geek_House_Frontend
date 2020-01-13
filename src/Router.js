@@ -12,6 +12,7 @@ import ChatScreen from './screens/ChatScreen';
 import Settings from './screens/Settings';
 import About from './screens/About';
 import Feedback from './screens/Feedback';
+import Bookmark from './screens/Bookmark';
 import { COLORS_DARK_THEME } from './Constants';
 
 
@@ -33,6 +34,7 @@ const RouterComponent = () => {
             <Scene key="chatscreen" component={ChatScreen} hideNavBar/>
             <Scene key="settings" component={Settings} hideNavBar/>
             <Scene key="feedback" component={Feedback} hideNavBar/>
+            <Scene key="bookmark" component={Bookmark} hideNavBar/>
             <Scene key="about" component={About} hideNavBar/>
           </Scene>
         </Scene>

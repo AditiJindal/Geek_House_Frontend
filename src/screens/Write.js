@@ -1,21 +1,19 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux'
+import {connect} from 'react-redux';
 import { View, Text, StyleSheet, StatusBar, FlatList, Dimensions,
-  TouchableOpacity, RefreshControl} from 'react-native';
+  TouchableOpacity, RefreshControl, ScrollView} from 'react-native';
 import ArticleTile from '../components/ArticleTile';
 import {setAuthToken, getMyArticles, clearPublish} from '../actions/WriteAction';
 import {Icon} from "react-native-elements"; 
 import BottomTab from '../components/BottomTab';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
-import {logEvent} from '../actions/ChatAction'
+import {logEvent} from '../actions/ChatAction';
 import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import { Actions } from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
-import { ScrollView } from 'react-native-gesture-handler';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics'
-// import console = require('console');
+import analytics from '@react-native-firebase/analytics';
 
 
 
@@ -173,15 +171,25 @@ class Write extends Component {
         />
         {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
         
-        <SView style={{borderRadius:10, height:55,paddingLeft:20,
+        <SView style={{borderRadius:10, height:55,paddingLeft:20,paddingRight:10,
           alignItems:'center', flexDirection:'row', shadowColor:"#202020", shadowOpacity:0.3,
           position:'absolute', top:10, zIndex:10,width:'92%', alignSelf:'center',
-          shadowOffset:{width:0,height:10},shadowRadius:8,
+          shadowOffset:{width:0,height:10},shadowRadius:8,justifyContent:'space-between',
           backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
-            <Text style={{...styles.TextStyle, 
-              color:COLORS.DARK}}>
+            <Text style={{...styles.TextStyle, color:COLORS.DARK}}>
               my articles
             </Text>
+            <TouchableOpacity onPress={()=>{Actions.bookmark()}}>
+              <LinearGradient style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,elevation:7,
+                backgroundColor:COLORS.LESSER_DARK, flexDirection:'row', alignItems:'center'}} 
+                colors={["#f739bd", "#f953c6"]}
+                start={{x:0, y:1}} end={{x:1, y:1}}>
+                <Text style={{fontSize:14,fontFamily:FONTS.RALEWAY,color:COLORS_LIGHT_THEME.LIGHT, marginRight:5}}>
+                  bookmarks
+                </Text>
+                <Icon name="arrow-right" type="feather" size={14} color={COLORS_LIGHT_THEME.LIGHT}/>
+              </LinearGradient>
+            </TouchableOpacity>
         </SView>
         
           

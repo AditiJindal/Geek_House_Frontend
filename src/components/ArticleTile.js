@@ -134,8 +134,8 @@ export default class ArticleTile extends Component {
             <Image source={{uri:this.props.data.image}}
               style={{height:this.state.size, width:this.state.size,borderRadius:10}}
               blurRadius={0.15} resizeMode="cover"
-              onLoadEnd = {() => {this.setState({imageLoaded: true,loadSuccessful: true})}}
-              onError = {() => {this.setState({imageLoaded: true,loadSuccessful: false})}}>
+              onLoadEnd = {() => {console.log('Image loaded successfully');this.setState({imageLoaded: true,loadSuccessful: true})}}
+              onError = {() => {console.log('Error loading');this.setState({imageLoaded: false,loadSuccessful: false})}}>
               <ArticleInfo 
                 theme={this.props.theme}
                 onBackdropPress={() => {

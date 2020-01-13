@@ -62,11 +62,20 @@ export const submitComment = (to_send) => {
 }
 
 export const bookmarkArticle = (article_id, bookmarked) => {
-  console.log('This is pressed!')
   return (dispatch)=>{
     httpClient.post(URLS.bookmark_article, {article_id, add:!bookmarked}).then(()=>{
-      console.log('Gotresponse!!!!')
-      dispatch({type:ACTIONS.ARTICLE_BOOKMARK, payload:!bookmarked})
+      dispatch({type:ACTIONS.ARTICLE_BOOKMARK, payload:{article_id, bookmarked: !bookmarked}})
     })
+  }
+}
+
+export const getBookmarkedArticles = () => {
+  console.log('In Get bookmarks ')
+  return (dispatch) => {
+    dispatch({type:ACTIONS.BOOKMARKS_LOADING});
+    httpClient.get(URLS.get_bookmarked_articles).then((response) => {
+      console.log('Dispatched data: ', response.data)
+      dispatch({type:ACTIONS.GET_BOOKMARKS, payload:response.data})
+    }).catch(()=>{dispatch({type:ACTIONS.BOOKMARKS_ERROR, payload:"Couldn't get your bookmarked articles"})})
   }
 }

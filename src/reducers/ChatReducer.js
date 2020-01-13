@@ -247,7 +247,6 @@ export default (state=INITIAL_STATE, action) => {
         loading:false, status, total_unread_messages}
 
       delete action.payload.chats
-      console.log("This is the new_state: ", new_state)
 
       saveData(new_state)
       return new_state
