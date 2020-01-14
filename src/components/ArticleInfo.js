@@ -166,7 +166,7 @@ class ArticleInfo extends PureComponent {
   renderOptions(){
     const {COLORS} = this.props;
 
-    if ((this.props.article_id===-1) || this.props.selectedArticleInfo.my_article){
+    if ((this.props.article_id===-1) || this.props.selectedArticleInfo.my_article || this.props.selectedArticleInfo.cannotComment){
       return null;
     }
     const { bookmarked } = this.props.selectedArticleInfo;

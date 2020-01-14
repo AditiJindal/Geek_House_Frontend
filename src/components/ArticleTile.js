@@ -131,11 +131,11 @@ export default class ArticleTile extends Component {
           renderToHardwareTextureAndroid>
           {(this.props.data.image)?
           (
-            <Image source={{uri:this.props.data.image}}
+            <Image source={{uri:this.props.data.image, }}
               style={{height:this.state.size, width:this.state.size,borderRadius:10}}
               blurRadius={0.15} resizeMode="cover"
-              onLoadEnd = {() => {console.log('Image loaded successfully');this.setState({imageLoaded: true,loadSuccessful: true})}}
-              onError = {() => {console.log('Error loading');this.setState({imageLoaded: false,loadSuccessful: false})}}>
+              onLoad = {() => {console.log('Image loaded successfully');this.setState({imageLoaded: true,loadSuccessful: true})}}
+              onError = {() => {console.log('Error loading');this.setState({imageLoaded:true,loadSuccessful: false})}}>
               <ArticleInfo 
                 theme={this.props.theme}
                 onBackdropPress={() => {
@@ -177,7 +177,9 @@ const styles = StyleSheet.create({
     fontSize:20
   },
   TextStyleImageFail:{
-    fontFamily:FONTS.LATO,
-    fontSize:10
+    fontFamily:FONTS.RALEWAY_LIGHT,
+    fontSize:9,
+    bottom:5, left:7,
+    position:'absolute'
   }
 })

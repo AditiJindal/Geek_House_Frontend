@@ -126,7 +126,7 @@ class WriteArticle extends Component {
       <TouchableOpacity style={{borderRadius:10, height:58, paddingHorizontal:15,
         backgroundColor:COLORS.LIGHT, 
         elevation:7, justifyContent:'center', alignItems:"center",
-        bottom:15, right:15, position:"absolute", borderColor:color, borderWidth:2}} 
+        bottom:15, right:15, position:"absolute", borderColor:color,}} 
         activeOpacity={1} 
         onPress={(nextEnabled)?()=>{
           this.props.setContents(this.state.contents, this.state.topic, this.state.category);
@@ -171,7 +171,7 @@ class WriteArticle extends Component {
         <ArticleTile
           theme={this.props.theme}
           size={180}
-          data = {{image:"https://geek-house.s3.ap-south-1.amazonaws.com/guidlines.jpg",
+          data = {{image: this.props.image_adder+"guidlines.jpg",
           "topic":"Article Guidelines", "article_id":'guidelines'
           }}
           COLORS = {this.props.COLORS}
@@ -369,6 +369,8 @@ class WriteArticle extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    image_adder:state.home.image_adder,
+
     contents: state.write.contents,
     topic: state.write.topic,
     category: state.write.category,

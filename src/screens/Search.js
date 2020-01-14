@@ -36,7 +36,7 @@ class Search extends Component {
     }
   }
 
-  renderTopics(articles){
+  renderTopics(articles, category){
     return(
       <FlatList data={articles}
         horizontal
@@ -46,7 +46,7 @@ class Search extends Component {
         renderItem = {({item}) => {
           return (
             <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5}}>
-              <ArticleTile data={item} theme={this.props.theme} 
+              <ArticleTile data={{...item, category}} theme={this.props.theme} 
                 COLORS = {this.props.COLORS}
               />
             </View>
@@ -136,7 +136,7 @@ class Search extends Component {
 
     if (this.props.loading){
       return(
-        <View style={{width:"100%"}}>
+        <View style={{flex:1}}>
           <ScrollView style={{flex:1}} nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
             <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={!this.props.loading} autoRun={true} duration={650} delay={0} 
             style={{marginRight:25, borderRadius:8, height:50, width:200, marginTop:10, elevation:6}}/>
@@ -204,7 +204,7 @@ class Search extends Component {
             />
           }
           keyExtractor={(x) => x}
-          renderItem = {({item}) => {
+          renderItem = {({item}) => {  // item here is the category
             return (
               <View style={{marginTop:25, alignItems:'flex-start', justifyContent:'flex-start'}}>
                 <View style={{flex:1, marginLeft:15 }}>
@@ -215,7 +215,7 @@ class Search extends Component {
                     </Text>
                   </View>
                 </View>
-                {this.renderTopics(response[item])}
+                {this.renderTopics(response[item], item)}
               </View>
             )
           }}

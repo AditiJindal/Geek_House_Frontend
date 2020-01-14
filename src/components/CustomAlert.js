@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet,TouchableOpacity}from 'react-native';
-import {FONTS, ERROR_BUTTONS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants'
+import {FONTS, ERROR_BUTTONS} from '../Constants'
 import {Overlay} from "react-native-elements";
 import Image from 'react-native-fast-image';
 // import console = require('console');

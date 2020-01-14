@@ -29,7 +29,7 @@ class Write extends Component {
     this.props.getMyArticles(Object.keys(this.props.myArticles).length, this.props.reload);
   }
 
-  renderTopics(articles){
+  renderTopics(articles, category){
     return(
       <FlatList data={articles}
         horizontal
@@ -38,7 +38,7 @@ class Write extends Component {
         renderItem = {({item}) => {
           return (
             <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5}}>
-              <ArticleTile data={item} theme={this.props.theme}
+              <ArticleTile data={{...item, category}} theme={this.props.theme}
                 COLORS = {this.props.COLORS}
               />
             </View>
@@ -107,7 +107,7 @@ class Write extends Component {
             ListHeaderComponent={<View style={{height:70, width:1}}/>}
             ListFooterComponent={<View style={{height:200, width:1}}/>}
             keyExtractor={(x) => x}
-            renderItem = {({item}) => {
+            renderItem = {({item}) => {   // item here is the category
               return (
                 <View style={{marginTop:25, alignItems:'flex-start', justifyContent:'flex-start'}}>
                   <View style={{flex:1, marginLeft:15 }}>
@@ -117,7 +117,7 @@ class Write extends Component {
                         color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.GRAY}}>{item}</Text>
                     </View>
                   </View>
-                  {this.renderTopics(data[item])}
+                  {this.renderTopics(data[item], item)}
                 </View>
               )
             }}

@@ -61,13 +61,12 @@ class ImageUpload extends Component {
         backgroundColor:COLORS.LIGHT, 
         elevation:7, justifyContent:'center', alignItems:"center",
         bottom:15, right:15, position:"absolute", 
-        borderColor:COLORS.GREEN, 
-        borderWidth:2}} activeOpacity={0.7} 
+        borderColor:COLORS.GREEN}} activeOpacity={0.7} 
         onPress={()=>{(this.props.image.uri)?Actions.replace("publish"):this.setState({alertVisible:true})}}>
         <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:24, 
           color:COLORS.GREEN}}>NEXT</Text>
         <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:12, 
-          color:COLORS.GREEN}}>Preview</Text>
+          color:COLORS.GREEN}}>preview</Text>
       </TouchableOpacity>
     )
   }
@@ -184,7 +183,8 @@ class ImageUpload extends Component {
         preview_contents:this.props.contents, category:this.props.category}
       return(
         <View style={{alignItems:'center', justifyContent:'center'}}>
-          <ArticleTile size={180} data={data} theme={this.props.theme} COLORS={this.props.COLORS}/>
+          <ArticleTile size={180} data={{...data, category:this.props.category}} 
+          theme={this.props.theme} COLORS={this.props.COLORS}/>
           {
             (this.state.relatedImageWords)?(
               <View style={{alignItems:'flex-start', flexDirection:'row',

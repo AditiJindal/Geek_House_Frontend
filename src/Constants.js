@@ -132,8 +132,8 @@ export const FONTS = {
   LECKERLIONE: 'LeckerliOne-Regular'
 }
 
+
 export const COLOR_COMBOS = [
-  [COLORS_LIGHT_THEME.THEME1, COLORS_LIGHT_THEME.THEME2],
   ['rgb(72, 76, 75)', 'rgb(14, 150, 162)'],
   ['rgb(50, 93, 127)', 'rgb(103, 93, 121)'],
   ['rgb(0, 76, 112)', 'rgb(0, 147, 209)'],
@@ -152,7 +152,7 @@ export const COLOR_COMBOS = [
   ['#834d9b', '#d04ed6'],
   ['#2980b9', '#2c3e50'],
   ['#403A3E', '#BE5869'],
-  ['#00C9FF', '#62AE5D']
+  ['#00C9FF', '#62AE5D'],
 ]
 
 export const ICON_SIZE = 18

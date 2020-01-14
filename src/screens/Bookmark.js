@@ -7,6 +7,7 @@ import {getBookmarkedArticles} from '../actions/ArticleInfoAction';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import ArticleTile from '../components/ArticleTile';
 import {FONTS} from '../Constants';
+// import Carousel from 'react-native-snap-carousel';
 
 
 class Bookmark extends React.Component{
@@ -126,6 +127,24 @@ class Bookmark extends React.Component{
       />
     )
   }
+
+  // renderCategory2(){
+  //   const category_list = Object.keys(this.props.bookmarked_articles);
+
+  //   return (
+  //     <Carousel
+  //       ref = {ref=this.carousel = ref}
+  //       data={category_list}
+  //       renderItem = {(item)=>{
+  //         <View>
+  //           <Text>{item.toString()}</Text>
+  //         </View>
+  //       }}
+  //       sliderWidth="100%"
+  //       itemWidth="92%"
+  //     />
+  //   )
+  // }
 
   render(){
     return(

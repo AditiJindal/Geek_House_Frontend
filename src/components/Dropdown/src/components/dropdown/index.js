@@ -12,8 +12,13 @@ import {
   ViewPropTypes,
   I18nManager,
   TouchableOpacity,
+  TextInput,
+  UIManager,
+  LayoutAnimation
 } from 'react-native';
-import {COLORS_DARK_THEME, COLORS_LIGHT_THEME, FONTS} from '../../../../../Constants'
+import {FONTS} from '../../../../../Constants';
+import SView from 'react-native-simple-shadow-view';
+import Icon from 'react-native-vector-icons/Feather';
 
 import DropdownItem from '../item';
 import styles from './styles';
@@ -160,6 +165,7 @@ export default class Dropdown extends PureComponent {
       selected: -1,
       modal: false,
       value,
+      searchValue:""
     };
   }
 
@@ -170,6 +176,11 @@ export default class Dropdown extends PureComponent {
   // }
 
   componentDidMount() {
+    if (Platform.OS === 'android') {
+      if (UIManager.setLayoutAnimationEnabledExperimental) {
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+      }
+    }
     this.mounted = true;
   }
 
@@ -486,7 +497,7 @@ export default class Dropdown extends PureComponent {
   }
 
   renderItem({ item, index }) {
-    if (null == item) {
+    if (null == item){
       return null;
     }
 
@@ -546,6 +557,11 @@ export default class Dropdown extends PureComponent {
       },
     ];
 
+
+    if (!title.toUpperCase().includes(this.state.searchValue.toUpperCase())){
+      return null;
+    }
+
     return (
       <DropdownItem index={index} {...props}>
         <Text style={[styles.item, itemTextStyle, textStyle]} numberOfLines={1}>
@@ -553,6 +569,44 @@ export default class Dropdown extends PureComponent {
         </Text>
       </DropdownItem>
     );
+  }
+
+  renderSearch(){
+    const {COLORS} = this.props;
+    return (
+      <SView style={{width:"100%", height:35, justifyContent:'center', paddingHorizontal:10,
+      borderRadius:15, backgroundColor:COLORS.LESSER_LIGHT, top:10, alignSelf:'center',
+      position:'absolute', zIndex:10, flexDirection:'row', alignItems:'center',
+      shadowColor:'#202020',shadowOpacity:0.1, shadowOffset:{width:0,height:7},shadowRadius:6}}>
+        <Icon name="search" style={{marginBottom:3, marginHorizontal:2}} 
+        color={COLORS.LESS_DARK} size={16}/>
+        <TextInput
+          placeholder = "Search for a Category"
+          placeholderTextColor={COLORS.GRAY}
+          value = {this.state.searchValue}
+          style={{flex:1, fontFamily:FONTS.RALEWAY, color:COLORS.LESS_DARK, fontSize:14}}
+          onChangeText = {(text)=>{
+            LayoutAnimation.configureNext(
+              LayoutAnimation.create(
+                400,
+                LayoutAnimation.Types.easeInEaseOut,
+                LayoutAnimation.Properties.opacity,
+              ),
+            );
+            this.setState({searchValue:text})
+          }}
+        />
+        {
+          (this.state.searchValue)?(
+            <TouchableOpacity onPress={()=>{this.setState({searchValue:''})}}
+              activeOpacity={0.7}>
+              <Icon name="x" style={{marginBottom:3, marginHorizontal:2}} 
+              color={COLORS.LESS_DARK} size={16}/>
+            </TouchableOpacity>
+          ):(null)
+        }
+      </SView>
+    )
   }
 
   render() {
@@ -659,12 +713,17 @@ export default class Dropdown extends PureComponent {
               style={[styles.picker, pickerStyle, pickerStyleOverrides]}
               onStartShouldSetResponder={() => true}
             >
+              {this.renderSearch()}
               <FlatList
                 ref={this.updateScrollRef}
                 data={data}
+                keyboardShouldPersistTaps="always"
                 showsVerticalScrollIndicator={false}
+                ListHeaderComponent={<View style={{height:40, width:1}}/>}
+                ListFooterComponent={<View style={{height:60, width:1}}/>}
+                scrollEnabled={false}
                 style={styles.scroll}
-                renderItem={this.renderItem}
+                renderItem={(item)=>this.renderItem(item)}
                 keyExtractor={this.keyExtractor}
                 scrollEnabled={visibleItemCount < itemCount}
                 contentContainerStyle={styles.scrollContainer}
