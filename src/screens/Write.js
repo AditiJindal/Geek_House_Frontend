@@ -179,8 +179,9 @@ class Write extends Component {
             <Text style={{...styles.TextStyle, color:COLORS.DARK}}>
               my articles
             </Text>
-            <TouchableOpacity onPress={()=>{Actions.bookmark()}}>
-              <LinearGradient style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,elevation:7,
+            <TouchableOpacity onPress={()=>{Actions.bookmark()}}
+              activeOpacity={0.7} style={{backgroundColor:"#f739bd", borderRadius:6}}>
+              <LinearGradient style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,
                 backgroundColor:COLORS.LESSER_DARK, flexDirection:'row', alignItems:'center'}} 
                 colors={["#f739bd", "#f953c6"]}
                 start={{x:0, y:1}} end={{x:1, y:1}}>

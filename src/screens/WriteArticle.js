@@ -48,8 +48,9 @@ class WriteArticle extends Component {
   renderFloatingButton(){
     if (this.state.contents.length<=9){
       return (
-        <TouchableOpacity  style={{bottom:15, left:15, position:"absolute"}}
-          activeOpacity={1} onPress={()=>{this.addWriteView()}}>
+        <TouchableOpacity  style={{bottom:15, left:15, position:"absolute", backgroundColor:"#fc6767",
+          borderRadius:29}}
+          activeOpacity={0.7} onPress={()=>{this.addWriteView()}}>
           <LinearGradient style={{height:58,width:58, borderRadius:29, 
           backgroundColor:"#E23636", elevation:7, justifyContent:'center', alignItems:"center",
           }} colors={["#fc6767","#ec008c"]}>

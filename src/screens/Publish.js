@@ -89,11 +89,19 @@ class Publish extends Component {
     
     return(
       <View style={{flex:3, justifyContent:'center', alignItems:'center', marginBottom:50}}>
-        <View style={{position:"absolute",zIndex:10}}>
+        <View style={{position:"absolute",zIndex:10, alignItems:'center'}}>
           <ArticleTile size={this.state.value} data={{...data, category:this.props.category}}
             animate theme={this.props.theme} 
             COLORS = {this.props.COLORS}
           />
+          {
+            (!this.props.image.uri)?(
+              <Text style={{fontFamily:FONTS.PRODUCT_SANS, color:COLORS.GRAY,
+                  fontSize:10, marginTop:20, width:"60%", textAlign:'center'}}>
+                An image will be automatically assigned to your article when your publish it
+              </Text>
+            ):(null)
+          }
         </View>
         {this.renderSuccess()}
       </View>

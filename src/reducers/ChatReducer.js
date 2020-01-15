@@ -4,6 +4,7 @@ import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import analytics from '@react-native-firebase/analytics';
 import perf from '@react-native-firebase/perf';
 import {database} from '../database';
+import uuid from 'uuid';
 const MessagesCollection =  database.collections.get('messages');
 
 
@@ -35,15 +36,20 @@ const INITIAL_STATE={
 
 const trace = perf().newTrace("save_data_async_storage")
 
-const insertUnreadMessages = (unread_messages) => {
+const incomingMessageConverter = (data) => {
+  new_message = [{_id:uuid(), createdAt: data.createdAt, text:data.text, 
+    user:{_id:data.from}, image:data.image}]
+  return new_message
+}
+
+const insertUnreadMessages = (unread_messages, this_user_id) => {
   unread_messages.map(item=>{
-    saveMessageInDB({message:[item], other_user_id:item.from})
+    saveMessageInDB({message:incomingMessageConverter(item), other_user_id:item.from, isIncomming:true}, this_user_id)
   });
 }
 
 const saveMessageInDB = (payload, this_user_id) => {
   const {message, other_user_id} = payload
-  console.log("Pessage to save payload is: ", payload)
   let text_to_save=null
   let image_to_save={url:null, height:null, width:null, aspectRatio:null, name:null};
   if (message[0].text){
@@ -67,7 +73,7 @@ const saveMessageInDB = (payload, this_user_id) => {
       new_message.image_width = image_to_save.width,
       new_message.image_ar = image_to_save.aspectRatio,
       new_message.image_name = image_to_save.name
-    }).then(res=>console.log("RES AFTER SAVING IS: ", res._raw))
+    })
   })
 }
 
@@ -234,7 +240,7 @@ export default (state=INITIAL_STATE, action) => {
         });
       }
 
-      insertUnreadMessages(action.payload.unread_messages)
+      insertUnreadMessages(action.payload.unread_messages, state.user_id)
       action.payload.unread_messages.map((item)=>{
         status[item.from].unread_messages+=1;
         total_unread_messages+=1;        
@@ -270,7 +276,7 @@ export default (state=INITIAL_STATE, action) => {
       
       saveMessageInDB(action.payload, state.user_id)
       new_currentMessages = [...action.payload.message, ...state.currentMessages]
-      if (state.status.hasOwnProperty(action.payload.other_user_id)){
+      if (!state.status.hasOwnProperty(action.payload.other_user_id)){
         new_messages[action.payload.other_user_id] = action.payload.message;
         new_status[action.payload.other_user_id] = {online: true, typing: false, 
           unread_messages: 0};
@@ -293,7 +299,9 @@ export default (state=INITIAL_STATE, action) => {
       return new_state
 
     case ACTIONS.CHAT_CLEAR_OTHER_USER:
-      return {...state, chatScreenOpen: false, currentMessages:[], quick_replies:[]}
+      new_status = {...state.status}
+      new_status[state.other_user_data._id].unread_messages = 0;
+      return {...state, chatScreenOpen: false, currentMessages:[], quick_replies:[], status:new_status}
 
     case ACTIONS.CHAT_SAVE_DATA:
       saveData(state)

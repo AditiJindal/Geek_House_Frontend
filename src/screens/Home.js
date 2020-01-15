@@ -1,7 +1,8 @@
 import React, {PureComponent} from 'react';
 import { View, StyleSheet, Text, StatusBar,
   FlatList, ScrollView, TouchableNativeFeedback,Linking,
-  TouchableOpacity}from 'react-native';
+  TouchableOpacity,
+  Dimensions}from 'react-native';
 import {connect} from 'react-redux';
 import {
   logout,
@@ -324,12 +325,14 @@ class Home extends PureComponent {
       )
     }
     return (
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{height:70, width:1}}/>
-        {this.renderWelcome()}
-        {this.renderPopularArticles()}
-        <View style={{height:50}}/>
-      </ScrollView>
+     <View style={{flex:1,}}>
+        <ScrollView showsVerticalScrollIndicator={false}
+        contentContainerStyle={{flexGrow:1}}>
+          <View style={{height:70, width:1}}/>
+          {this.renderWelcome()}
+          {this.renderPopularArticles()}
+        </ScrollView>
+     </View>
     )
   }
 

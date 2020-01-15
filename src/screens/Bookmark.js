@@ -3,17 +3,17 @@ import {View, Text, TouchableOpacity, StyleSheet, FlatList, ScrollView} from 're
 import {Actions} from 'react-native-router-flux';
 import {Icon} from 'react-native-elements';
 import {connect} from 'react-redux';
-import {getBookmarkedArticles} from '../actions/ArticleInfoAction';
+import {setAuthToken, getBookmarkedArticles} from '../actions/ArticleInfoAction';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import ArticleTile from '../components/ArticleTile';
 import {FONTS} from '../Constants';
-// import Carousel from 'react-native-snap-carousel';
 
 
 class Bookmark extends React.Component{
 
   componentDidMount(){
     if (Object.keys(this.props.bookmarked_articles).length===0){
+      this.props.setAuthToken();
       this.props.getBookmarkedArticles();
     }
   }
@@ -128,27 +128,9 @@ class Bookmark extends React.Component{
     )
   }
 
-  // renderCategory2(){
-  //   const category_list = Object.keys(this.props.bookmarked_articles);
-
-  //   return (
-  //     <Carousel
-  //       ref = {ref=this.carousel = ref}
-  //       data={category_list}
-  //       renderItem = {(item)=>{
-  //         <View>
-  //           <Text>{item.toString()}</Text>
-  //         </View>
-  //       }}
-  //       sliderWidth="100%"
-  //       itemWidth="92%"
-  //     />
-  //   )
-  // }
-
   render(){
     return(
-      <View style={{flex:1}}>
+      <View style={{flex:1, backgroundColor:COLORS.LIGHT}}>
         {
           ((Object.keys(this.props.bookmarked_articles).length!==0) || this.props.bookmarks_loading)?
           this.renderCategory():(
@@ -183,7 +165,7 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps, {getBookmarkedArticles})(Bookmark);
+export default connect(mapStateToProps, {getBookmarkedArticles, setAuthToken})(Bookmark);
 
 
 const styles = StyleSheet.create({

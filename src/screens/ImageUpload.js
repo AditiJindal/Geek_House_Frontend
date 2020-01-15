@@ -38,10 +38,11 @@ class ImageUpload extends Component {
   renderChangeImageButton(){
     if (this.state.image.uri){
       return (
-        <TouchableOpacity  style={{bottom:15, left:15, position:"absolute"}}
+        <TouchableOpacity  style={{bottom:15, left:15, position:"absolute", elevation:7,
+        backgroundColor:"#fc521a", borderRadius:10}}
           activeOpacity={0.7} onPress={()=>{this.pickImage()}}>
           <LinearGradient style={{borderRadius:10, height:58, paddingHorizontal:15, 
-            elevation:7, justifyContent:'center', alignItems:"center"}} 
+            justifyContent:'center', alignItems:"center"}} 
             colors={["#fc521a", "#f79c33"]} start={{x:0, y:1}} end={{x:1, y:1}}>
             <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:22, color:COLORS_LIGHT_THEME.LESSER_LIGHT}}>Change</Text>
             <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:14, color:COLORS_LIGHT_THEME.LESSER_LIGHT}}>Image</Text>
@@ -188,11 +189,11 @@ class ImageUpload extends Component {
           {
             (this.state.relatedImageWords)?(
               <View style={{alignItems:'flex-start', flexDirection:'row',
-                marginTop:20, marginHorizontal:50}}>
+                marginTop:20, width:"60%"}}>
                 <Icon name="comment" type="octicon" size={15}
                   color={COLORS.GRAY} containerStyle={{marginTop:2}}/>
                 <Text style={{fontFamily:FONTS.PRODUCT_SANS, color:COLORS.GRAY,
-                  fontSize:12, marginLeft:10}}>
+                  fontSize:12, marginLeft:10, textAlign:'justify'}}>
                   {`This is what I see in this image : `} 
                   <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD}}>{this.state.relatedImageWords}</Text>
                 </Text>

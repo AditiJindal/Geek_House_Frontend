@@ -63,7 +63,7 @@ export default class ArticleTile extends Component {
       return (
         <TouchableOpacity onPress={() => {
           analytics().logViewItem({
-            item_id:this.props.data.article_id,
+            item_id:this.props.data.article_id.toString(),
             item_category:this.props.data.category,
             item_name:this.props.data.topic
           })

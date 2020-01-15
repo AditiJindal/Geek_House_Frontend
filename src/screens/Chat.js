@@ -232,7 +232,6 @@ class Chat extends Component {
 }
 
 const mapStateToProps = (state) => {
-  // console.log('chat state: ', state.chat)
   return {
     loading: state.chat.loading,
     chatPeople: state.chat.chatPeople,
