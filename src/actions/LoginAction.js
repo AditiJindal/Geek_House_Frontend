@@ -11,7 +11,7 @@ import uuid from 'uuid/v4';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
 import * as RNLocalize from "react-native-localize";
-import OneSignal from 'react-native-onesignal';
+// import OneSignal from 'react-native-onesignal';
 import analytics from '@react-native-firebase/analytics';
 import crashlytics from '@react-native-firebase/crashlytics';
 import {getQuickReplies} from './ChatAction';
@@ -20,12 +20,27 @@ import {getQuickReplies} from './ChatAction';
 var deviceNotificationId = null;
 var timer = null;
 
-OneSignal.init("79514e5e-4676-44b7-822e-8941eacb88d0");
-OneSignal.addEventListener('received', ()=>{});
-OneSignal.addEventListener('opened', ()=>{});
-OneSignal.getPermissionSubscriptionState((obj)=>
-  {deviceNotificationId = obj.userId;}
-);
+// OneSignal.init("79514e5e-4676-44b7-822e-8941eacb88d0");
+// OneSignal.addEventListener('received', ()=>{});
+// OneSignal.addEventListener('opened', ()=>{});
+// OneSignal.getPermissionSubscriptionState((obj)=>
+//   {deviceNotificationId = obj.userId;}
+// );
+
+
+const setFCMNotifications = async () => {
+  if (!messages().isRegisteredForRemoteNotifications){
+    console.log('Not registered for remote notifs, trying to register');
+    await messages().registerForRemoteNotifications();
+  }
+  const res = await messages().getToken();
+  deviceNotificationId = res;
+  console.log('Set user notifications: ', res)
+}
+
+
+setFCMNotifications()
+
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = HTTP_TIMEOUT;
