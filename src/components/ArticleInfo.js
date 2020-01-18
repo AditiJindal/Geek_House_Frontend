@@ -10,7 +10,7 @@ import {getArticleInfo, setAuthToken, submitComment, bookmarkArticle} from '../a
 import {FONTS, COLOR_COMBOS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import CardView from './CardView';
 import Loading from './Loading';
-// import {NativeAdsManager, AdSettings} from 'react-native-fbads';
+import {NativeAdsManager, AdSettings} from 'react-native-fbads';
 import NativeAdsComponent from './NativeAdsComponent';
 import Image from 'react-native-fast-image';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
@@ -39,10 +39,10 @@ class ArticleInfo extends PureComponent {
   }
 
   componentDidMount(){
-    // AdSettings.addTestDevice(AdSettings.currentDeviceHash);
-    // this.adsManager = new NativeAdsManager('2329203993862500_2500411190075112', 1);
-    // this.adsManager.setMediaCachePolicy('all');
-    // this.adsManager.onAdsLoaded(()=>{})
+    AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+    this.adsManager = new NativeAdsManager('2329203993862500_2500411190075112', 1);
+    this.adsManager.setMediaCachePolicy('all');
+    this.adsManager.onAdsLoaded(()=>{})
     if (this.props.article_id!==-1){
       this.props.setAuthToken()
     }
@@ -62,12 +62,12 @@ class ArticleInfo extends PureComponent {
             (item, i) => {
               return (
               <View>
-                {/* {(i===this.state.adIndex)?
+                {(i===this.state.adIndex)?
                   <NativeAdsComponent adsManager={this.adsManager} theme={this.props.theme}
                     COLORS = {this.props.COLORS}
                   />:
                   <View/>
-                } */}
+                }
                 <CardView 
                   theme={this.props.theme}
                   COLORS = {COLORS}

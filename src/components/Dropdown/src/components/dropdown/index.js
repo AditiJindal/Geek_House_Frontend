@@ -22,7 +22,6 @@ import Icon from 'react-native-vector-icons/Feather';
 
 import DropdownItem from '../item';
 import styles from './styles';
-// import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default class Dropdown extends PureComponent {
   static defaultProps = {

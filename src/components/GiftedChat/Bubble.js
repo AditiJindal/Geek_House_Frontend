@@ -4,7 +4,6 @@ import { Text, Clipboard, StyleSheet, TouchableWithoutFeedback, View, ViewPropTy
 import QuickReplies from './QuickReplies';
 import MessageText from './MessageText';
 import MessageImage from './MessageImage';
-import MessageVideo from './MessageVideo';
 import LinearGradient from 'react-native-linear-gradient';
 import Time from './Time';
 import Color from './Color';
@@ -171,16 +170,6 @@ export default class Bubble extends React.Component {
         }
         return null;
     }
-    renderMessageVideo() {
-        if (this.props.currentMessage && this.props.currentMessage.video) {
-            const { containerStyle, wrapperStyle, ...messageVideoProps } = this.props;
-            if (this.props.renderMessageVideo) {
-                return this.props.renderMessageVideo(messageVideoProps);
-            }
-            return <MessageVideo {...messageVideoProps}/>;
-        }
-        return null;
-    }
     renderTicks() {
         const { currentMessage, renderTicks, user } = this.props;
         if (renderTicks && currentMessage) {
@@ -250,7 +239,6 @@ export default class Bubble extends React.Component {
             <View>
               {this.renderCustomView()}
               {this.renderMessageImage()}
-              {this.renderMessageVideo()}
               {this.renderMessageText()}
               <View style={[
             styles[position].bottom,
@@ -275,7 +263,6 @@ Bubble.defaultProps = {
     touchableProps: {},
     onLongPress: null,
     renderMessageImage: null,
-    renderMessageVideo: null,
     renderMessageText: null,
     renderCustomView: null,
     renderUsername: null,
@@ -305,7 +292,6 @@ Bubble.propTypes = {
     touchableProps: PropTypes.object,
     onLongPress: PropTypes.func,
     renderMessageImage: PropTypes.func,
-    renderMessageVideo: PropTypes.func,
     renderMessageText: PropTypes.func,
     renderCustomView: PropTypes.func,
     renderUsernameOnMessage: PropTypes.bool,

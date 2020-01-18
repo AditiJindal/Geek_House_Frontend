@@ -3,7 +3,6 @@ import React from 'react';
 import { Animated, Platform, StyleSheet, View, SafeAreaView, } from 'react-native';
 import moment from 'moment';
 import uuid from 'uuid';
-import { isIphoneX } from 'react-native-iphone-x-helper';
 import * as utils from './utils';
 import Actions from './Actions';
 import Avatar from './Avatar';
@@ -42,9 +41,6 @@ class GiftedChat extends React.Component {
         };
         this.getLocale = () => this._locale;
         this.safeAreaIphoneX = (bottomOffset) => {
-            if (isIphoneX()) {
-                return bottomOffset === this._bottomOffset ? 33 : bottomOffset;
-            }
             return bottomOffset;
         };
         this.onKeyboardWillShow = (e) => {
