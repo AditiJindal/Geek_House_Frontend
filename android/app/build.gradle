@@ -210,6 +210,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-push-notification')
     implementation project(':@react-native-firebase_ml-natural-language')
     implementation project(':@react-native-firebase_messaging')
     implementation project(':@react-native-firebase_perf')

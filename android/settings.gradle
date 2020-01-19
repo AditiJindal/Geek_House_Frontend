@@ -1,4 +1,6 @@
 rootProject.name = 'Geek_House'
+include ':react-native-push-notification'
+project(':react-native-push-notification').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-push-notification/android')
 include ':@react-native-firebase_ml-natural-language'
 project(':@react-native-firebase_ml-natural-language').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/ml-natural-language/android')
 include ':@react-native-firebase_messaging'

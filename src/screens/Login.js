@@ -10,7 +10,7 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import Image from 'react-native-fast-image';
 import SplashScreen from 'react-native-splash-screen';
 import analytics from '@react-native-firebase/analytics';
-import messages from '@react-native-firebase/messaging';
+
 
 class Login extends Component {
 

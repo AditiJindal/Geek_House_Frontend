@@ -52,6 +52,7 @@
     "react-native-navigation-bar-color": "^1.0.0",
     "react-native-parsed-text": "^0.0.21",
     "react-native-permissions": "^2.0.8",
+    "react-native-push-notification": "^3.1.9",
     "react-native-router-flux": "^4.0.6",
     "react-native-shimmer-placeholder": "^1.0.35",
     "react-native-simple-shadow-view": "^1.6.3",

@@ -14,24 +14,16 @@ import * as RNLocalize from "react-native-localize";
 import analytics from '@react-native-firebase/analytics';
 import crashlytics from '@react-native-firebase/crashlytics';
 import {getQuickReplies} from './ChatAction';
+import messages from '@react-native-firebase/messaging';
 
-
-var deviceNotificationId = null;
 var timer = null;
 
-const setFCMNotifications = async () => {
+const getFCMToken = () => {
   if (!messages().isRegisteredForRemoteNotifications){
-    console.log('Not registered for remote notifs, trying to register');
-    await messages().registerForRemoteNotifications();
+    messages().registerForRemoteNotifications();
   }
-  const res = await messages().getToken();
-  deviceNotificationId = res;
-  console.log('Set user notifications: ', res)
+  return messages().getToken();
 }
-
-
-setFCMNotifications()
-
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = HTTP_TIMEOUT;
@@ -173,15 +165,17 @@ export const loginGoogle = () => {
   return (dispatch, getState)=>{
     GoogleSignin.configure({
       androidClientId: "315957273790-l39qn5bp73tj2ug8r46ejdcj5t2gb433.apps.googleusercontent.com",
-      webClientId: "315957273790-o4p20t2j3brt7c8bqc68814pj63j1lum.apps.googleusercontent.com"
+      webClientId: "315957273790-o4p20t2j3brt7c8bqc68814pj63j1lum.apps.googleusercontent.com",
+      forceConsentPrompt: true
     });
-    GoogleSignin.signIn().then((response)=>{
+    GoogleSignin.signIn().then(async (response)=>{
+      pushToken = await getFCMToken()
       let new_data = {
         id: response.user.id+'google',
         name: response.user.name, 
         email: response.user.email,
         image_url: response.user.photo,//response.user.photoURL,
-        pushToken:deviceNotificationId
+        pushToken
       };
       httpClient.post(URLS.login, new_data).then(
         (response) => {
@@ -234,13 +228,14 @@ export const loginFacebook = () => {
           fetch(`https://graph.facebook.com/${userId}?fields=email,picture.type(large),name&access_token=${token}`).then(
             (response) => {
               response.json().then(
-                (data) => {
+                async (data) => {
+                  pushToken = await getFCMToken()
                   let new_data = {
                     id:data.id+'facebook', 
                     name:data.name, 
                     email:data.email, 
                     image_url:data.picture.data.url,
-                    pushToken:deviceNotificationId
+                    pushToken
                   }
                   
                   httpClient.post(URLS.login, new_data).then(
