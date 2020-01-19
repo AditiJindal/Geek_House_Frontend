@@ -1,5 +1,5 @@
 import {ACTIONS} from './types';
-import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import {AppState,Alert} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
@@ -13,8 +13,9 @@ import Device from 'react-native-device-info';
 import * as RNLocalize from "react-native-localize";
 import analytics from '@react-native-firebase/analytics';
 import crashlytics from '@react-native-firebase/crashlytics';
-import {getQuickReplies} from './ChatAction';
+import {getQuickReplies, logEvent} from './ChatAction';
 import messages from '@react-native-firebase/messaging';
+import PushNotification from "react-native-push-notification";
 
 var timer = null;
 
@@ -40,8 +41,35 @@ const incomingMessageConverter = (data) => {
   return new_message
 }
 
+const handleNotification = (notification) => {
+  switch(notification.type){
+    case 'chat':
+      Actions.replace('chat');
+      analytics().logEvent('chat_notification_tapped')
+      return null;
+
+    case 'article':
+      analytics().logEvent('article_notification_tapped')
+      Actions.notification_article({articleData: {
+        article_id: notification.article_id,
+        category: notification.category,
+        topic: notification.topic,
+        image: notification.image,
+      }})
+
+    case 'feedback':
+      Actions.jump('feedback');
+      analytics().logEvent('feedback_notification_tapped')
+      logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');
+  
+    default:
+      return null;
+  }
+}
+
 
 const makeConnection = async (json_data, dispatch, getState) => {
+
   AsyncStorage.getItem(json_data.authtoken.toString()).then((response)=>{
     response = JSON.parse(response)
 
@@ -137,6 +165,10 @@ const makeConnection = async (json_data, dispatch, getState) => {
   });
   
   dispatch({type:ACTIONS.SET_SOCKET, payload: socket});
+
+  PushNotification.configure({
+    onNotification: (notification) => {handleNotification(notification)}
+  });
 }
 
 export const checkLogin = () => {

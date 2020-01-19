@@ -6,7 +6,8 @@ import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import io.invertase.firebase.ml.naturallanguage.ReactNativeFirebaseMLNaturalLanguagePackage;
-import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
+import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
+
 import io.invertase.firebase.perf.ReactNativeFirebasePerfPackage;
 import io.invertase.firebase.ml.vision.ReactNativeFirebaseMLVisionPackage;
 import com.facebook.react.ReactNativeHost;

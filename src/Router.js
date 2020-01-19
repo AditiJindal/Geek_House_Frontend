@@ -13,6 +13,7 @@ import Settings from './screens/Settings';
 import About from './screens/About';
 import Feedback from './screens/Feedback';
 import Bookmark from './screens/Bookmark';
+import NotificationArticle from './screens/NotificationArticle';
 import { COLORS_DARK_THEME } from './Constants';
 
 
@@ -36,6 +37,7 @@ const RouterComponent = () => {
             <Scene key="feedback" component={Feedback} hideNavBar/>
             <Scene key="bookmark" component={Bookmark} hideNavBar/>
             <Scene key="about" component={About} hideNavBar/>
+            <Scene key="notification_article" component={NotificationArticle} hideNavBar/>
           </Scene>
         </Scene>
       </Router>

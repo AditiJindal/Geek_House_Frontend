@@ -20,6 +20,19 @@
         <meta-data
           android:name="com.google.firebase.messaging.default_notification_icon"
           android:resource="@mipmap/ic_stat_ic_notification" />
+          
+        <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_name"
+          android:value="Chats"/>
+        <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_description"
+          android:value="Chat Notifications"/>
+
+        <service
+            android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
       
       <activity
         android:name=".MainActivity"
