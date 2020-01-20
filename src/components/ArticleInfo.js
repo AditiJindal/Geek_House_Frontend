@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import { View, Text, StyleSheet, StatusBar, RefreshControl,
+import { View, Text, StyleSheet, StatusBar,
   FlatList, Animated, TextInput,Dimensions, TouchableOpacity} from 'react-native';
 import _ from 'lodash';
 import {connect} from 'react-redux';
@@ -10,11 +10,10 @@ import {getArticleInfo, setAuthToken, submitComment, bookmarkArticle} from '../a
 import {FONTS, COLOR_COMBOS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import CardView from './CardView';
 import Loading from './Loading';
-import {NativeAdsManager, AdSettings} from 'react-native-fbads';
 import NativeAdsComponent from './NativeAdsComponent';
 import Image from 'react-native-fast-image';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-// import console = require('console');
+import TimedAlert from './TimedAlert';
 
 
 OVERLAY_WIDTH_PERCENT=88
@@ -39,10 +38,6 @@ class ArticleInfo extends PureComponent {
   }
 
   componentDidMount(){
-    AdSettings.addTestDevice(AdSettings.currentDeviceHash);
-    this.adsManager = new NativeAdsManager('2329203993862500_2500411190075112', 1);
-    this.adsManager.setMediaCachePolicy('all');
-    this.adsManager.onAdsLoaded(()=>{})
     if (this.props.article_id!==-1){
       this.props.setAuthToken()
     }
@@ -51,7 +46,6 @@ class ArticleInfo extends PureComponent {
   renderCardViews(cards){
 
     if (!this.state.adIndex && cards){
-
       this.setState({adIndex: _.random(1, cards.length-1)})
     }
 
@@ -62,10 +56,9 @@ class ArticleInfo extends PureComponent {
             (item, i) => {
               return (
               <View>
-                {(i===this.state.adIndex)?
-                  <NativeAdsComponent adsManager={this.adsManager} theme={this.props.theme}
-                    COLORS = {this.props.COLORS}
-                  />:
+                {(i===this.state.adIndex && this.props.adsManager)?
+                  <NativeAdsComponent theme={this.props.theme}
+                  COLORS = {this.props.COLORS} adsManager={this.props.adsManager} />:
                   <View/>
                 }
                 <CardView 
@@ -145,11 +138,19 @@ class ArticleInfo extends PureComponent {
           <TouchableOpacity
             style={{backgroundColor:COLORS.GREEN, 
               alignSelf:'flex-end', padding:10, borderRadius:30,elevation:7, margin:15}}
-            onPress={()=>{this.setState({scrollY: new Animated.Value(0)});this.props.submitComment({
-              rating:this.state.userCommentRating,
-              comment: this.state.commentText,
-              article_id: this.props.article_id
-            })}}>
+            onPress={()=>{
+              if (this.state.userCommentRating!==-1 || this.state.commentText){
+                this.setState({scrollY: new Animated.Value(0), commentText:'', userCommentRating:-1});
+                this.props.submitComment({
+                  rating:this.state.userCommentRating,
+                  comment: this.state.commentText,
+                  article_id: this.props.article_id
+                })
+              }
+              else{
+                this.timedAlert.showAlert(2000,"Please provide a rating or comment")
+              }
+            }}>
             <Icon
               name='send'
               activeOpacity={0}
@@ -229,6 +230,9 @@ class ArticleInfo extends PureComponent {
       
               renderItem={
                 ({item, index}) => {
+                  if (!item.rating){
+                    item.rating=0
+                  }
                   return (
                     <View>
                       <View style={{flexDirection:'row', alignItems:'center'}}>
@@ -236,10 +240,26 @@ class ArticleInfo extends PureComponent {
                           source={{uri:item.author_image}}
                           style={{height:48, width:48, borderRadius:25, marginRight:20}}
                         />
-                        <Text style={{fontFamily:FONTS.HELVETICA_NEUE, fontSize:20, textDecorationLine:'underline',
-                          color: COLORS.LESSER_DARK}}>
-                          {item.author}
-                        </Text>
+                        <View style={{flex:1, justifyContent:'space-evenly', alignItems:'flex-start'}}>
+                          <Text style={{fontFamily:FONTS.HELVETICA_NEUE, fontSize:18,
+                            color: COLORS.LESSER_DARK}}>
+                            {item.author}
+                          </Text>
+                          <StarRating
+                            activeOpacity={0.8}
+                            maxStars={5}
+                            disabled={true}
+                            showRating={true}
+                            rating={item.rating}
+                            emptyStarColor={'#FFFFFF'}
+                            halfStarColor={'#f5af19'}
+                            fullStarColor={'#f5af19'}
+                            starSize={14}
+                            emptyStar={'star'}
+                            fullStar={'star'}
+                            halfStar={'star-half-o'}
+                          />
+                        </View>
                       </View>
                       <Text style={{fontFamily:FONTS.HELVETICA_NEUE, textAlign:'justify',
                         fontSize:14, marginTop:10, marginHorizontal:10,
@@ -297,8 +317,8 @@ class ArticleInfo extends PureComponent {
 
   renderArticle(){
     const {COLORS} = this.props;
-    const {author, author_image, cards,
-      category, comments, rating, topic, viewed} = this.props.selectedArticleInfo;
+    const {author, author_image, cards, views,
+      category, comments, rating, topic} = this.props.selectedArticleInfo;
 
     const headerHeight = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
@@ -479,7 +499,7 @@ class ArticleInfo extends PureComponent {
                 color:COLORS.GRAY,
                 transform:[{translateX: textAnim3} ],
                 opacity:bigImageOpacity}}>
-                  {category}
+                  {`${category}\n${views} View${(views!==1)?'s':''}`}
               </Animated.Text>
               {
                 (rating)?
@@ -581,6 +601,9 @@ class ArticleInfo extends PureComponent {
               barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
               backgroundColor={COLORS.OVERLAY_COLOR}/>
             {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
+            <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} 
+              COLORS = {COLORS}
+            />
             {
               (this.props.loading)?
               <Loading size={128} white={(this.props.theme!=='light')}/>:
@@ -597,6 +620,9 @@ const mapStateToProps =(state) => {
   // console.log("selected article info: ", state.articleInfo.selectedArticleInfo)
   return {
     userData: state.login.data,
+
+    adsManager: state.home.adsManager,
+
     selectedArticleInfo: state.articleInfo.selectedArticleInfo,
     loading: state.articleInfo.loading,
 

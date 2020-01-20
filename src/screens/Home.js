@@ -1,8 +1,7 @@
 import React, {PureComponent} from 'react';
 import { View, StyleSheet, Text, StatusBar,
   FlatList, ScrollView, TouchableNativeFeedback,Linking,
-  TouchableOpacity,
-  Dimensions}from 'react-native';
+  TouchableOpacity}from 'react-native';
 import {connect} from 'react-redux';
 import {
   logout,
@@ -10,6 +9,7 @@ import {
   getWelcome,
   setAuthToken,
 } from '../actions';
+import _ from 'lodash';
 import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
 import Image from 'react-native-fast-image';
 import {logEvent, setupComplete} from '../actions/ChatAction';
@@ -29,10 +29,13 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
 import APP_INFO from '../../package.json';
 import analytics from '@react-native-firebase/analytics';
+import ArticleTileAds from '../components/ArticleTileAds';
 
 const OVERLAY_WIDTH_PERCENT=75
 const GOOGLE_PLAY_URL = `https://play.google.com/store/apps/details?id=${APP_INFO.package}`
 class Home extends PureComponent {
+  state = {adIndex:0}
+
   constructor() {
     super();
     this.slides = [];
@@ -279,15 +282,27 @@ class Home extends PureComponent {
 
   renderArticleTiles(){
     data_list = this.props.welcomeData.popular_topics;
+    const {COLORS, theme, adsManager} = this.props;
+    if (!this.state.adIndex && data_list && (data_list.length>2)){
+      this.setState({adIndex: _.random(2, data_list.length-1)})
+    }
     return(
       <FlatList data={data_list}
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(x) => x.article_id.toString()}
-        renderItem = {({item}) => {
+        renderItem = {({item, index}) => {
           return (
-            <View style={{marginVertical:15, marginHorizontal:5}}>
-              <ArticleTile data={item} size={180} theme={this.props.theme} COLORS={this.props.COLORS}/>
+            <View style={{marginVertical:15, marginHorizontal:5, flexDirection:'row', alignItems:'center'}}>
+              {
+                (index===this.state.adIndex && adsManager)?(
+                  <View style={{marginRight:10}}>
+                    <ArticleTileAds theme={theme} size={180}
+                      COLORS = {COLORS} adsManager={adsManager}/>
+                  </View>
+                ):null
+              }
+              <ArticleTile data={item} size={180} theme={theme} COLORS={COLORS}/>
             </View>
           )
         }}
@@ -473,6 +488,7 @@ const mapStateToProps = (state) => {
     loading: state.home.loading,
     error: state.home.error,
     selected_category: state.home.selected_category,
+    adsManager: state.home.adsManager,
 
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,

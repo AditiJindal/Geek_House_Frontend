@@ -68,6 +68,7 @@ export const COLORS_DARK_THEME = {
 export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
 export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
 export const BASE_URL = (__DEV__)?BASE_URL_DEBUG:BASE_URL_PROD
+console.log('BASE URL IS: ', BASE_URL)
 
 export const HTTP_TIMEOUT = 12000
 

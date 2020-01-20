@@ -22,7 +22,7 @@ export default (state=INITIAL_STATE, action) => {
 			let new_articles=[...state.articles]
 			if (action.payload.forceUpdate){
 				new_articles = state.articles.map((article) => {
-          if (article.article_id===action.payload.article_id){
+          if (article.article_id.to===action.payload.article_id){
             return action.payload.article
 					}
 					else{
@@ -58,7 +58,6 @@ export default (state=INITIAL_STATE, action) => {
 			return {...state, bookmarks_error:action.payload}
 
 		case ACTIONS.GET_BOOKMARKS:
-			console.log('Action.payload is: ', action.payload)
 			return {...state, bookmarked_articles:action.payload,
 			bookmarks_loading:false, bookmarks_error:false}
 

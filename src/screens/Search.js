@@ -4,12 +4,12 @@ import { View, Text, StyleSheet, StatusBar, RefreshControl,Dimensions,
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
 import BottomTab from '../components/BottomTab'
-import {SearchBar} from 'react-native-elements';
 import {FONTS, ERROR_MESSAGES,COLORS_LIGHT_THEME} from '../Constants';
 import ArticleTile from '../components/ArticleTile';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
 import Icon from 'react-native-vector-icons/Feather';
+import _ from 'lodash';
 import {
   getPopularSearches,
   setAuthToken,
@@ -25,8 +25,10 @@ import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import SView from 'react-native-simple-shadow-view';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import analytics from '@react-native-firebase/analytics';
+import ArticleTileAds from '../components/ArticleTileAds';
 
 class Search extends Component {
+  state = {adIndex:0, adCategoryIndex: 0}
 
   componentDidMount(){
     if (!this.props.popularSearchesData.response){
@@ -36,18 +38,30 @@ class Search extends Component {
     }
   }
 
-  renderTopics(articles, category){
+  renderTopics(articles, category, canShowAds){
+    const {theme, COLORS, adsManager} = this.props;
+    if (!this.state.adIndex && articles && (articles.length>2)){
+      this.setState({adIndex: _.random(2, articles.length-1)})
+    }
     return(
       <FlatList data={articles}
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(x) => x.article_id.toString()}
 
-        renderItem = {({item}) => {
+        renderItem = {({item, index}) => {
           return (
-            <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5}}>
-              <ArticleTile data={{...item, category}} theme={this.props.theme} 
-                COLORS = {this.props.COLORS}
+            <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5, alignItems:'center'}}>
+              {
+                (index===this.state.adIndex && adsManager && canShowAds)?(
+                  <View style={{marginRight:10}}>
+                    <ArticleTileAds theme={theme} 
+                      COLORS = {COLORS} adsManager={adsManager}/>
+                  </View>
+                ):null
+              }
+              <ArticleTile data={{...item, category}} theme={theme} 
+                COLORS = {COLORS}
               />
             </View>
           )
@@ -174,6 +188,10 @@ class Search extends Component {
 
     else{
       const category_list = Object.keys(response);
+      if (!this.state.adCategoryIndex){
+        this.setState({adCategoryIndex : _.random(1, category_list.length)})
+      }
+
       if (category_list.length===0){
         return (
           <View style={{height:Dimensions.get('window').height, width:"100%",paddingBottom:70, justifyContent:'center', alignItems:'center'}}>
@@ -204,7 +222,7 @@ class Search extends Component {
             />
           }
           keyExtractor={(x) => x}
-          renderItem = {({item}) => {  // item here is the category
+          renderItem = {({item, index}) => {  // item here is the category
             return (
               <View style={{marginTop:25, alignItems:'flex-start', justifyContent:'flex-start'}}>
                 <View style={{flex:1, marginLeft:15 }}>
@@ -215,7 +233,7 @@ class Search extends Component {
                     </Text>
                   </View>
                 </View>
-                {this.renderTopics(response[item], item)}
+                {this.renderTopics(response[item], item, (index===(this.state.adCategoryIndex-1)) )}
               </View>
             )
           }}
@@ -321,6 +339,8 @@ class Search extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    adsManager: state.home.adsManager,
+
     popularSearchesData: state.search.popularSearchesData,
     loading: state.search.loading,
     searchValue: state.search.searchValue,

@@ -9,6 +9,7 @@ import {FONTS, ERROR_BUTTONS,COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import ArticleTile from '../components/ArticleTile';
 import CustomAlert from '../components/CustomAlert';
+import TimedAlert from '../components/TimedAlert';
 import {logEvent} from '../actions/ChatAction';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
@@ -118,7 +119,7 @@ class ImageUpload extends Component {
       filterList = _.sortBy(filterList, ['confidence']).reverse();
       filterList = filterList.splice(0,5)
     }
-    if (filterList.length!==0){
+    if (filterList.length!==0){ 
       filterList.map((item, index)=>{
         if (index===filterList.length-1) { relatedImageWords += item.text}
         else { relatedImageWords += item.text+", "}
@@ -136,9 +137,12 @@ class ImageUpload extends Component {
       mediaType:'photo',
       chooseWhichLibraryTitle: "Select an App"
     }
-    // // console.log("in image")
     
     ImagePicker.launchImageLibrary(ImageOptions, (image)=>{
+      if (image.error){
+        this.timedAlert.showAlert(3000,"Image permission needed")
+        return
+      }
       this.ImageLabelDetection(image.path)
       if (!image.didCancel){
         delete image.data;
@@ -152,7 +156,7 @@ class ImageUpload extends Component {
             this.setState({image, imageSize:{width:resize.width, height:resize.height}});
             this.props.setImage(image);
           })  
-        })
+        }).catch(e=>crashlytics().log("ImageUploaf LINE 156"+e.toString()))
       }
     })
   }
@@ -282,6 +286,9 @@ class ImageUpload extends Component {
     return(
       <View style={{flex:1, backgroundColor:COLORS.LIGHT}}>
         {this.renderBack()}
+        <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} 
+          COLORS = {COLORS}
+        />
         <View style={{alignSelf:'center', justifyContent:'center', flex:1, margin:20}}>
           {this.renderAlert()}
           <View style={{justifyContent:'center', alignItems:'center', width:"100%",marginBottom:50,}}>

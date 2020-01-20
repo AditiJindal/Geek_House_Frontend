@@ -54,6 +54,7 @@ export const getArticleInfo = (article_id, preview_article, forceUpdate) => {
 
 export const submitComment = (to_send) => {
   return (dispatch, getState) => {
+    if (to_send.rating<0){to_send.rating=0}
     httpClient.post(URLS.comment, to_send).then((response) => {
       // dispatch({type:ACTIONS.ARTICLE_ADD_COMMENT, payload:to_send});
       articleHandler(dispatch, getState, to_send.article_id, false, true)

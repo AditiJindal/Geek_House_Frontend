@@ -2,14 +2,17 @@ import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, FlatList, ScrollView} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import {Icon} from 'react-native-elements';
+import _ from 'lodash';
 import {connect} from 'react-redux';
 import {setAuthToken, getBookmarkedArticles} from '../actions/ArticleInfoAction';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import ArticleTile from '../components/ArticleTile';
+import ArticleTileAds from '../components/ArticleTileAds';
 import {FONTS} from '../Constants';
 
 
 class Bookmark extends React.Component{
+  state={adIndex:0, adCategoryIndex: 0}
 
   componentDidMount(){
     if (Object.keys(this.props.bookmarked_articles).length===0){
@@ -82,6 +85,10 @@ class Bookmark extends React.Component{
 
     else{
       const category_list = Object.keys(this.props.bookmarked_articles);
+      if (!this.state.adCategoryIndex){
+        this.setState({adCategoryIndex: _.random(1, category_list.length)})
+      }
+
       return (
         <View style={{width:"100%", flex:1}}>
           <FlatList
@@ -89,7 +96,7 @@ class Bookmark extends React.Component{
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={this.renderHeader()}
             keyExtractor={(item, index) => index.toString()}
-            renderItem = {({item}) => {
+            renderItem = {({item, index}) => {
               return (
                 <View style={{marginTop:25, alignItems:'flex-start', justifyContent:'flex-start'}}>
                   <View style={{flex:1, marginLeft:15 }}>
@@ -99,7 +106,7 @@ class Bookmark extends React.Component{
                         color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.GRAY}}>{item}</Text>
                     </View>
                   </View>
-                  {this.renderTopics(data[item])}
+                  {this.renderTopics(data[item], (index===(this.state.adCategoryIndex-1)) )}
                 </View>
               )
             }}
@@ -109,17 +116,30 @@ class Bookmark extends React.Component{
     }
   }
 
-  renderTopics(articles){
+  renderTopics(articles, canShowAds){
+    const {COLORS, theme, adsManager} = this.props;
+
+    if (!this.state.adIndex && articles && (articles.length>2)){
+      this.setState({adIndex: _.random(2, articles.length-1)})
+    }
     return(
       <FlatList data={articles}
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, index) => index.toString()}
-        renderItem = {({item}) => {
+        renderItem = {({item, index}) => {
           return (
-            <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5}}>
-              <ArticleTile data={item} theme={this.props.theme}
-                COLORS = {this.props.COLORS}
+            <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5, alignItems:'center'}}>
+              {
+                (index===this.state.adIndex && adsManager && canShowAds)?(
+                  <View style={{marginRight:10}}>
+                    <ArticleTileAds theme={theme} 
+                      COLORS = {COLORS} adsManager={adsManager}/>
+                  </View>
+                ):null
+              }
+              <ArticleTile data={item} theme={theme}
+                COLORS = {COLORS}
               />
             </View>
           )
@@ -156,6 +176,8 @@ class Bookmark extends React.Component{
 
 const mapStateToProps = (state) => {
   return {
+    adsManager: state.home.adsManager,
+
     bookmarks_loading: state.articleInfo.bookmarks_loading,
     bookmarks_error: state.articleInfo.bookmarks_error,
     bookmarked_articles: state.articleInfo.bookmarked_articles,
