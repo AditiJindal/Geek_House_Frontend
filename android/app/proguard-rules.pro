@@ -11,6 +11,8 @@
 -keep class com.facebook.hermes.unicode.** { *; }
 -keep public class com.dylanvann.fastimage.* {*;}
 -keep public class com.dylanvann.fastimage.** {*;}
+-keep class io.invertase.firebase.** { *; }
+-dontwarn io.invertase.firebase.**
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public class * extends com.bumptech.glide.module.AppGlideModule
 -keep public enum com.bumptech.glide.load.ImageHeaderParser$** {

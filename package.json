@@ -1,6 +1,6 @@
 {
   "name": "Geek_House",
-  "version": "0.33",
+  "version": "1.0",
   "package": "com.tjprodutions.geekhousern",
   "private": true,
   "scripts": {
@@ -24,7 +24,6 @@
     "@react-native-firebase/ml-natural-language": "^6.2.0",
     "@react-native-firebase/ml-vision": "^6.2.0",
     "@react-native-firebase/perf": "^6.2.0",
-    "@sentry/react-native": "^1.2.0",
     "add": "^2.0.6",
     "axios": "^0.19.0",
     "es6-symbol": "^3.1.3",

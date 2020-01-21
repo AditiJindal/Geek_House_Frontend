@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import { View, StyleSheet,TouchableOpacity,Text}from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import {Icon} from 'react-native-elements';
 import {logEvent} from '../actions/ChatAction';
 import LinearGradient from 'react-native-linear-gradient';
 import {ICON_SIZE, SELECTED_ICON_SIZE, FONTS,LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
@@ -59,7 +59,7 @@ class BottomTab extends Component {
     
     return (
       <View>
-        <Icon name={iconName} size={ICON_SIZE+4}
+        <Icon name={iconName} size={ICON_SIZE+4} type={'feather'}
           color={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.DARK}/>
         <View style={{position:'absolute', bottom:6, right:4.5}}>
           {(this.props.total_typing!==0)?<Typing size={12} speed={1} theme={this.props.theme}/>:<Typing size={12} speed={0} theme={this.props.theme}/>}
@@ -85,7 +85,7 @@ class BottomTab extends Component {
         style={{height:40, width:SELECTED_ICON_SIZE+22, justifyContent:'center', alignItems:'center'}}>
           {
             (index!==3)?
-            <Icon name={iconName}
+            <Icon name={iconName} type={'feather'}
               size={ICON_SIZE}
               color={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.DARK}/>:
             this.renderChatButton(iconName)
@@ -98,7 +98,7 @@ class BottomTab extends Component {
         <LinearGradient style={styles.SelectedIconView}
         colors={COLOR_PALETE[index]}>
         
-          <Icon name={iconName}
+          <Icon name={iconName} type={'feather'}
             size={(index!==3)?SELECTED_ICON_SIZE:SELECTED_ICON_SIZE+4}
             color={COLORS_LIGHT_THEME.LIGHT}/>
         </LinearGradient>

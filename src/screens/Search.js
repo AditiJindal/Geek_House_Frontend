@@ -8,7 +8,7 @@ import {FONTS, ERROR_MESSAGES,COLORS_LIGHT_THEME} from '../Constants';
 import ArticleTile from '../components/ArticleTile';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
-import Icon from 'react-native-vector-icons/Feather';
+import {Icon} from 'react-native-elements';
 import _ from 'lodash';
 import {
   getPopularSearches,
@@ -39,7 +39,7 @@ class Search extends Component {
   }
 
   renderTopics(articles, category, canShowAds){
-    const {theme, COLORS, adsManager} = this.props;
+    const {theme, COLORS, adsManager, canShowAdsRemote} = this.props;
     if (!this.state.adIndex && articles && (articles.length>2)){
       this.setState({adIndex: _.random(2, articles.length-1)})
     }
@@ -53,7 +53,7 @@ class Search extends Component {
           return (
             <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5, alignItems:'center'}}>
               {
-                (index===this.state.adIndex && adsManager && canShowAds)?(
+                (index===this.state.adIndex && adsManager && canShowAds && canShowAdsRemote)?(
                   <View style={{marginRight:10}}>
                     <ArticleTileAds theme={theme} 
                       COLORS = {COLORS} adsManager={adsManager}/>
@@ -79,7 +79,7 @@ class Search extends Component {
         backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
         paddingHorizontal:10}}>
           <Icon name="search" size={20} style={{marginVertical:5, marginHorizontal:5}} 
-            color={COLORS.LESS_DARK}/>
+            color={COLORS.LESS_DARK} type={'feather'}/>
           <TextInput
             textAlignVertical='top'
             keyboardAppearance="light"
@@ -98,7 +98,7 @@ class Search extends Component {
             (this.props.searchValue.length>0)?(
               <Icon
                 name="x" onPress={()=>{this.props.clearSearch()}} color={COLORS.LESS_DARK}
-                size={20} style={{marginLeft:5, marginRight:10}}
+                size={20} style={{marginLeft:5, marginRight:10}} type={'feather'}
               />
             ):null
           }
@@ -340,6 +340,7 @@ class Search extends Component {
 const mapStateToProps = (state) => {
   return {
     adsManager: state.home.adsManager,
+    canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
 
     popularSearchesData: state.search.popularSearchesData,
     loading: state.search.loading,

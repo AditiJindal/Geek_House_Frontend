@@ -117,7 +117,7 @@ class Bookmark extends React.Component{
   }
 
   renderTopics(articles, canShowAds){
-    const {COLORS, theme, adsManager} = this.props;
+    const {COLORS, theme, adsManager, canShowAdsRemote} = this.props;
 
     if (!this.state.adIndex && articles && (articles.length>2)){
       this.setState({adIndex: _.random(2, articles.length-1)})
@@ -131,7 +131,7 @@ class Bookmark extends React.Component{
           return (
             <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5, alignItems:'center'}}>
               {
-                (index===this.state.adIndex && adsManager && canShowAds)?(
+                (index===this.state.adIndex && adsManager && canShowAds && canShowAdsRemote)?(
                   <View style={{marginRight:10}}>
                     <ArticleTileAds theme={theme} 
                       COLORS = {COLORS} adsManager={adsManager}/>
@@ -177,6 +177,7 @@ class Bookmark extends React.Component{
 const mapStateToProps = (state) => {
   return {
     adsManager: state.home.adsManager,
+    canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
 
     bookmarks_loading: state.articleInfo.bookmarks_loading,
     bookmarks_error: state.articleInfo.bookmarks_error,

@@ -134,9 +134,9 @@ android {
        javaMaxHeapSize "3g"
     }
 
-    packagingOptions {
-        pickFirst '**/*.so'
-    }
+    // packagingOptions {
+    //     pickFirst '**/*.so'
+    // }
 
     aaptOptions {
         noCompress "tflite"
@@ -146,8 +146,8 @@ android {
         applicationId "com.tjproductions.geekhousern"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.1"
+        versionCode 1
+        versionName "1.0"
         manifestPlaceholders = [
             appAuthRedirectScheme: 'io.identityserver.demo'
         ]
@@ -186,6 +186,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
+            minifyEnabled true
             signingConfig signingConfigs.debug
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
@@ -210,6 +211,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-vector-icons')
     implementation project(':react-native-push-notification')
     implementation project(':@react-native-firebase_ml-natural-language')
     implementation project(':@react-native-firebase_messaging')

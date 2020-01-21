@@ -57,6 +57,9 @@ target 'Geek_House' do
   pod 'RNFBMLNaturalLanguage', :path => '../node_modules/@react-native-firebase/ml-natural-language'
 
 
+
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
   target 'Geek_HouseTests' do
     inherit! :search_paths
     # Pods for testing

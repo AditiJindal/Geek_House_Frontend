@@ -1,8 +1,7 @@
 import React from 'react';
 import {View, TouchableOpacity, Text, StatusBar} from 'react-native';
-import {Overlay} from 'react-native-elements';
+import {Overlay, Icon} from 'react-native-elements';
 import {FONTS} from '../Constants';
-import Icon from 'react-native-vector-icons/Feather'
 import ImagePicker from 'react-native-image-picker';
 
 

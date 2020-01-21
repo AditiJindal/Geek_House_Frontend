@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 import {FONTS} from '../../../../../Constants';
 import SView from 'react-native-simple-shadow-view';
-import Icon from 'react-native-vector-icons/Feather';
+import {Icon} from 'react-native-elements';
 
 import DropdownItem from '../item';
 import styles from './styles';
@@ -578,7 +578,7 @@ export default class Dropdown extends PureComponent {
       position:'absolute', zIndex:10, flexDirection:'row', alignItems:'center',
       shadowColor:'#202020',shadowOpacity:0.1, shadowOffset:{width:0,height:7},shadowRadius:6}}>
         <Icon name="search" style={{marginBottom:3, marginHorizontal:2}} 
-        color={COLORS.LESS_DARK} size={16}/>
+        color={COLORS.LESS_DARK} size={16} type={'feather'}/>
         <TextInput
           placeholder = "Search for a Category"
           placeholderTextColor={COLORS.GRAY}
@@ -600,7 +600,7 @@ export default class Dropdown extends PureComponent {
             <TouchableOpacity onPress={()=>{this.setState({searchValue:''})}}
               activeOpacity={0.7}>
               <Icon name="x" style={{marginBottom:3, marginHorizontal:2}} 
-              color={COLORS.LESS_DARK} size={16}/>
+              color={COLORS.LESS_DARK} size={16} type={'feather'}/>
             </TouchableOpacity>
           ):(null)
         }

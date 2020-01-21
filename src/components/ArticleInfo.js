@@ -56,7 +56,7 @@ class ArticleInfo extends PureComponent {
             (item, i) => {
               return (
               <View>
-                {(i===this.state.adIndex && this.props.adsManager)?
+                {(i===this.state.adIndex && this.props.adsManager && this.props.canShowAdsRemote)?
                   <NativeAdsComponent theme={this.props.theme}
                   COLORS = {this.props.COLORS} adsManager={this.props.adsManager} />:
                   <View/>
@@ -172,28 +172,18 @@ class ArticleInfo extends PureComponent {
     }
     const { bookmarked } = this.props.selectedArticleInfo;
     return(
-      <View style={{width:"100%", alignItems:'center', flexDirection:'row',
-        justifyContent:'space-evenly'}}>
-        <TouchableOpacity style={{borderColor:COLORS.LESS_DARK,paddingHorizontal:15,borderWidth:1.2,
-          paddingVertical:10, borderRadius:10, alignItems:'center', flexDirection:'row',
-          width:130, justifyContent:'space-evenly'}}>
-          <Icon name="share" type="feather" size={20} color={COLORS.LESSER_DARK}/>
-          <Text style={{fontFamily:FONTS.RALEWAY, color:COLORS.LESSER_DARK,fontSize:14}}>
-            Share
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{borderColor:(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK,paddingHorizontal:15,borderWidth:1.2,
-          paddingVertical:10, borderRadius:10, alignItems:'center', flexDirection:'row',
-          width:130, justifyContent:'space-evenly'}}
-          onPress = {()=>{this.props.bookmarkArticle(this.props.article_id, bookmarked)}}>
-          <Icon name={(bookmarked)?"bookmark":"bookmark-border"} type="material" 
-          size={20} color={(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK}/>
-          <Text style={{fontFamily:FONTS.RALEWAY, color:(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK,
-          fontSize:(bookmarked)?10.5:13}}>
-            {(bookmarked)?'Bookmarked':'Bookmark'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={{borderColor:(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK,
+        paddingHorizontal:15,borderWidth:1.2, paddingVertical:10, borderRadius:10,
+        alignItems:'center', flexDirection:'row', width:130, justifyContent:'space-evenly',
+        alignSelf:'flex-start', marginVertical:10, marginLeft:20, elevation:7, backgroundColor:COLORS.LIGHT}}
+        onPress = {()=>{this.props.bookmarkArticle(this.props.article_id, bookmarked)}}>
+        <Icon name={(bookmarked)?"bookmark":"bookmark-border"} type="material" 
+        size={20} color={(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK}/>
+        <Text style={{fontFamily:FONTS.RALEWAY, color:(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK,
+        fontSize:(bookmarked)?10.5:13}}>
+          {(bookmarked)?'Bookmarked':'Bookmark'}
+        </Text>
+      </TouchableOpacity>
     )
   }
 
@@ -404,7 +394,7 @@ class ArticleInfo extends PureComponent {
               source={
                 (this.props.loadSuccessful)?
                 {uri:this.props.article_image}:
-                require("../../assets/images/placeholder/building.jpg")
+                require("../../assets/images/placeholder/placeholder.jpg")
               }
             />
           </LinearGradient>
@@ -542,8 +532,9 @@ class ArticleInfo extends PureComponent {
               }
           </View>
           <View style={{height:20}}/>
-          {this.renderOptions()}
+          
           {this.renderCardViews(cards)}
+          {this.renderOptions()}
           {
             (this.props.article_id!==-1)?
             this.renderComments(comments):
@@ -583,7 +574,7 @@ class ArticleInfo extends PureComponent {
         }
       }
       
-      if (this.props.selectedArticleInfo.article_id!==this.props.article_id){
+      if ((this.props.selectedArticleInfo.article_id!==this.props.article_id) && (!this.props.loading)){
         this.props.getArticleInfo(this.props.article_id, preview_article)
       }
 
@@ -622,6 +613,7 @@ const mapStateToProps =(state) => {
     userData: state.login.data,
 
     adsManager: state.home.adsManager,
+    canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
 
     selectedArticleInfo: state.articleInfo.selectedArticleInfo,
     loading: state.articleInfo.loading,

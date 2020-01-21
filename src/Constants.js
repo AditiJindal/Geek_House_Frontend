@@ -107,8 +107,6 @@ export const FONTS = {
 
   HELVETICA_NEUE:'HelveticaNeue',
 
-  ROBOTO_BOLD:'Roboto-Bold',
-
   GOTHAM_BLACK:'Gotham-Black',
 
   // LATO FONT
@@ -129,7 +127,7 @@ export const FONTS = {
   MERRIWEATHER_BOLD: 'Merriweather-Bold',
   MERRIWEATHER_LIGHT: 'Merriweather-Light',
 
-  // OFFICIAL FONT
+  // STYLISH FONT
   LECKERLIONE: 'LeckerliOne-Regular'
 }
 

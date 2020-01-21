@@ -17,8 +17,7 @@ import {Dropdown} from '../components/Dropdown';
 import LottieView from 'lottie-react-native'
 import AppIntroSlider from '../components/AppIntroSlider/AppIntroSlider';
 import ArticleTile from '../components/ArticleTile';
-import {Overlay} from 'react-native-elements';
-import Icon from 'react-native-vector-icons/Feather';
+import {Overlay, Icon} from 'react-native-elements';
 import {FONTS,COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
@@ -173,7 +172,7 @@ class Home extends PureComponent {
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
                   borderRadius:10, flex:1, margin:5}}
                 >
-                  <Icon name="settings" color={COLORS.DARK} size={24}/>
+                  <Icon name="settings" color={COLORS.DARK} size={24} type={'feather'}/>
                   <Text style={{...styles.LogoutButtonTextStyle, color:COLORS.DARK}}>settings</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -185,7 +184,7 @@ class Home extends PureComponent {
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
                   borderRadius:10, flex:1, margin:5}}
                 >
-                  <Icon name="message-square" color={COLORS.DARK} size={22}/>
+                  <Icon name="message-square" color={COLORS.DARK} size={22} type={'feather'}/>
                   <Text style={{...styles.LogoutButtonTextStyle, fontSize:14,
                     color:COLORS.DARK}}>feedback</Text>
                 </TouchableOpacity>
@@ -200,7 +199,7 @@ class Home extends PureComponent {
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
                   borderRadius:10, flex:1, margin:5}}
                 >
-                  <Icon name="user" color={COLORS.DARK} size={24}/>
+                  <Icon name="user" color={COLORS.DARK} size={24} type={'feather'}/>
                   <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>about us</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -213,7 +212,7 @@ class Home extends PureComponent {
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
                   borderRadius:10, flex:1, margin:5}}
                 >
-                  <Icon name="thumbs-up" color={COLORS.DARK} size={24}/>
+                  <Icon name="thumbs-up" color={COLORS.DARK} size={24} type={'feather'}/>
                   <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>
                     rate
                   </Text>
@@ -282,7 +281,7 @@ class Home extends PureComponent {
 
   renderArticleTiles(){
     data_list = this.props.welcomeData.popular_topics;
-    const {COLORS, theme, adsManager} = this.props;
+    const {COLORS, theme, adsManager, canShowAdsRemote} = this.props;
     if (!this.state.adIndex && data_list && (data_list.length>2)){
       this.setState({adIndex: _.random(2, data_list.length-1)})
     }
@@ -295,7 +294,7 @@ class Home extends PureComponent {
           return (
             <View style={{marginVertical:15, marginHorizontal:5, flexDirection:'row', alignItems:'center'}}>
               {
-                (index===this.state.adIndex && adsManager)?(
+                (index===this.state.adIndex && adsManager && canShowAdsRemote)?(
                   <View style={{marginRight:10}}>
                     <ArticleTileAds theme={theme} size={180}
                       COLORS = {COLORS} adsManager={adsManager}/>
@@ -485,6 +484,7 @@ const mapStateToProps = (state) => {
 
     overlayVisible: state.home.overlayVisible,
     welcomeData: state.home.welcomeData,
+    canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
     loading: state.home.loading,
     error: state.home.error,
     selected_category: state.home.selected_category,

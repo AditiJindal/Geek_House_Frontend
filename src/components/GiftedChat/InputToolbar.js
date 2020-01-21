@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View, Keyboard, ViewPropTypes, Text, 
-    StatusBar, TouchableOpacity,ImageBackground, Image} from 'react-native';
+    StatusBar, TouchableOpacity,ImageBackground} from 'react-native';
 import Composer from './Composer';
 import Send from './Send';
 import Actions from './Actions';
 import {COLORS_DARK_THEME, COLORS_LIGHT_THEME, FONTS} from '../../Constants'
-import Icon from 'react-native-vector-icons/Feather';
-import {Overlay} from 'react-native-elements';
+import {Overlay, Icon} from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import prettysize from 'prettysize';
@@ -178,7 +177,7 @@ export default class InputToolbar extends React.Component {
                                 Gallery
                             </Text>
                         </View>
-                        <Icon size={72} name="image"
+                        <Icon size={72} name="image" type={'feather'}
                         color={COLORS.LESSER_DARK}/>
                         <View style={{height:50, justifyContent:'center'}}>
                             <Text style={{color:COLORS.LESSER_DARK,
@@ -203,7 +202,7 @@ export default class InputToolbar extends React.Component {
                                 Camera
                             </Text>
                         </View>
-                        <Icon size={72} name="camera"
+                        <Icon size={72} name="camera" type={'feather'}
                         color={COLORS.LESSER_DARK}/>
                         <View style={{height:50, justifyContent:'center'}}>
                             <Text style={{color:COLORS.LESSER_DARK,
@@ -214,7 +213,7 @@ export default class InputToolbar extends React.Component {
                     </TouchableOpacity>
                 </Overlay>
                 {(!this.state.imageSelectorOpen)?(
-                    <Icon size={22} name="image"
+                    <Icon size={22} name="image" type={'feather'}
                     onPress={()=>{this.setState({imageSelectorOpen:true})}}
                     color={COLORS.LESSER_DARK}
                     />
@@ -230,7 +229,7 @@ export default class InputToolbar extends React.Component {
                 <View style={{flex:1, borderRadius:10, overflow:'hidden', height:100, marginBottom:5}}>
                     <ImageBackground blurRadius = {2} 
                         source={{uri:image.url}} style={{flex:1, alignItems:'flex-end'}}>
-                        <Icon size={24} name="x" onPress={()=>{this.props.onImageCross()}}
+                        <Icon size={24} name="x" type={'feather'} onPress={()=>{this.props.onImageCross()}}
                             style={{backgroundColor:this.props.primaryStyle.backgroundColor, position:'relative',
                             right:-3, top:-3, color:COLORS.LIGHT_GRAY,
                             borderBottomLeftRadius:15, paddingLeft:2.5, paddingBottom:2.5}}/>

@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet, Keyboard, BackHandler, ImageBackground} from 'react-native';
 import {connect} from 'react-redux';
-import {Badge} from 'react-native-elements';
-import Icon from 'react-native-vector-icons/Feather'
+import {Badge, Icon} from 'react-native-elements';
 import {FONTS} from '../Constants';
 import {GiftedChat} from '../components/GiftedChat/index';
 import { Actions } from 'react-native-router-flux';
@@ -119,8 +118,7 @@ class ChatScreen extends Component {
           </View>
           {(!this.state.imageViewerSelected)?(
             <View style={{height:32, width:48, justifyContent:'center', alignItems:'center'}}>
-              <Icon name="x-circle" size={22} 
-                color={COLORS.RED} 
+              <Icon name="x-circle" size={22} color={COLORS.RED} type={'feather'} 
                 onPress={() => {
                   if (this.props.other_user_data.newEntry){
                     this.props.getChatPeopleExplicitly()

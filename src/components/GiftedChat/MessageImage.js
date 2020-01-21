@@ -2,10 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { StyleSheet, View, ViewPropTypes, Dimensions,
     TouchableOpacity,StatusBar, Image} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import RNFileSystem from 'react-native-fs';
-import { Overlay,} from 'react-native-elements';
+import { Overlay,Icon} from 'react-native-elements';
 import ImageZoom from 'react-native-image-pan-zoom';
 
 const styles = StyleSheet.create({
@@ -111,7 +110,7 @@ export default class MessageImage extends Component {
                     
                     <TouchableOpacity activeOpacity={1}>
                         <Icon name="x-circle" size={22} 
-                            color={COLORS.RED} 
+                            color={COLORS.RED} type={'feather'}
                             onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
                             style={{padding:10, zIndex:10, top:5, right:5, position:'absolute'}}
                         />
