@@ -11,7 +11,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import ArticleTile from '../components/ArticleTile';
 import Loading from '../components/Loading';
 import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics'
+import analytics from '@react-native-firebase/analytics';
+const ConfettiData = require('../../assets/animations/confetti.json');
+
 class Publish extends Component {
 
   constructor() {
@@ -86,11 +88,20 @@ class Publish extends Component {
       preview_contents:this.props.contents, category:this.props.category}
     
     return(
-      <View style={{flex:3, justifyContent:'center', alignItems:'center'}}>
-        <View style={{position:"absolute",zIndex:10, paddingBottom:50}}>
-          <ArticleTile size={this.state.value} data={data} animate theme={this.props.theme} 
+      <View style={{flex:3, justifyContent:'center', alignItems:'center', marginBottom:50}}>
+        <View style={{position:"absolute",zIndex:10, alignItems:'center'}}>
+          <ArticleTile size={this.state.value} data={{...data, category:this.props.category}}
+            animate theme={this.props.theme} 
             COLORS = {this.props.COLORS}
           />
+          {
+            (!this.props.image.uri)?(
+              <Text style={{fontFamily:FONTS.PRODUCT_SANS, color:COLORS.GRAY,
+                  fontSize:10, marginTop:20, width:"60%", textAlign:'center'}}>
+                An image will be automatically assigned to your article when your publish it
+              </Text>
+            ):(null)
+          }
         </View>
         {this.renderSuccess()}
       </View>
@@ -154,7 +165,7 @@ class Publish extends Component {
         }}
         autoPlay={false} loop={false}
         style={{width: 400,height: 320}}
-        source = {require('../../assets/animations/confetti.json')}
+        source = {ConfettiData}
         speed={1}       
       />
     )
@@ -198,7 +209,7 @@ export default connect(mapStateToProps, {publishArticle, getMyArticles})(Publish
 
 const styles = StyleSheet.create({
   TextStyle:{
-    fontSize:28,
+    fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
     marginRight:10,
   },

@@ -1,8 +1,12 @@
 rootProject.name = 'Geek_House'
+include ':react-native-vector-icons'
+project(':react-native-vector-icons').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-vector-icons/android')
+include ':react-native-push-notification'
+project(':react-native-push-notification').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-push-notification/android')
+include ':@react-native-firebase_ml-natural-language'
+project(':@react-native-firebase_ml-natural-language').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/ml-natural-language/android')
 include ':@react-native-firebase_messaging'
 project(':@react-native-firebase_messaging').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/messaging/android')
-include ':@react-native-firebase_in-app-messaging'
-project(':@react-native-firebase_in-app-messaging').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/in-app-messaging/android')
 include ':@react-native-firebase_perf'
 project(':@react-native-firebase_perf').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/perf/android')
 include ':@react-native-firebase_ml-vision'
@@ -11,13 +15,11 @@ include ':react-native-document-picker'
 project(':react-native-document-picker').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-document-picker/android')
 include ':react-native-fs'
 project(':react-native-fs').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fs/android')
-include ':react-native-onesignal'
-project(':react-native-onesignal').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-onesignal/android')
-include ':react-native-onesignal'
-project(':react-native-onesignal').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-onesignal/android')
 include ':react-native-fbads'
 project(':react-native-fbads').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fbads/android/app')
 include ':react-native-customized-image-picker'
+include ':watermelondb'
+project(':watermelondb').projectDir = new File(rootProject.projectDir, '../node_modules/@nozbe/watermelondb/native/android')
 include ':react-native-device-info'
 project(':react-native-device-info').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-device-info/android')
 project(':react-native-customized-image-picker').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-customized-image-picker/android')

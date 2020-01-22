@@ -63,7 +63,7 @@ export default class ArticleTile extends Component {
       return (
         <TouchableOpacity onPress={() => {
           analytics().logViewItem({
-            item_id:this.props.data.article_id,
+            item_id:this.props.data.article_id.toString(),
             item_category:this.props.data.category,
             item_name:this.props.data.topic
           })
@@ -131,11 +131,11 @@ export default class ArticleTile extends Component {
           renderToHardwareTextureAndroid>
           {(this.props.data.image)?
           (
-            <Image source={{uri:this.props.data.image}}
+            <Image source={{uri:this.props.data.image, }}
               style={{height:this.state.size, width:this.state.size,borderRadius:10}}
               blurRadius={0.15} resizeMode="cover"
-              onLoadEnd = {() => {this.setState({imageLoaded: true,loadSuccessful: true})}}
-              onError = {() => {this.setState({imageLoaded: true,loadSuccessful: false})}}>
+              onLoad = {() => {console.log('Image loaded successfully');this.setState({imageLoaded: true,loadSuccessful: true})}}
+              onError = {() => {console.log('Error loading');this.setState({imageLoaded:true,loadSuccessful: false})}}>
               <ArticleInfo 
                 theme={this.props.theme}
                 onBackdropPress={() => {
@@ -177,7 +177,9 @@ const styles = StyleSheet.create({
     fontSize:20
   },
   TextStyleImageFail:{
-    fontFamily:FONTS.LATO,
-    fontSize:10
+    fontFamily:FONTS.RALEWAY_LIGHT,
+    fontSize:9,
+    bottom:5, left:7,
+    position:'absolute'
   }
 })

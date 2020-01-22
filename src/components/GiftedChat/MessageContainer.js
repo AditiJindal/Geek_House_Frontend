@@ -4,10 +4,13 @@ import { FlatList, View, StyleSheet, Keyboard, TouchableOpacity, Text, } from 'r
 import LoadEarlier from './LoadEarlier';
 import Message from './Message';
 import Color from './Color';
+import {FONTS, COLORS_LIGHT_THEME} from '../../Constants';
+import LinearGradient from 'react-native-linear-gradient';
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginBottom:20
+        marginBottom:20,
     },
     containerAlignTop: {
         flexDirection: 'row',
@@ -89,14 +92,6 @@ export default class MessageContainer extends React.PureComponent {
         this.scrollToBottom = () => {
             this.scrollTo({ offset: 0, animated: true });
         };
-        this.handleOnScroll = (event) => {
-            if (event.nativeEvent.contentOffset.y > this.props.scrollToBottomOffset) {
-                this.setState({ showScrollBottom: true });
-            }
-            else {
-                this.setState({ showScrollBottom: false });
-            }
-        };
         this.renderRow = ({ item, index }) => {
             if (!item._id && item._id !== 0) {
                 console.warn('GiftedChat: `_id` is missing for message', JSON.stringify(item));
@@ -171,18 +166,71 @@ export default class MessageContainer extends React.PureComponent {
         </TouchableOpacity>
       </View>);
     }
+
+    renderQuickReplies(){
+        if (this.props.quick_replies && this.props.quick_replies.length===0 && (!this.props.selectedImage)){
+            return <View style={{height:30, width:1}}/>;
+        }
+        return (
+            <View style={{flexDirection:'row', alignItems:'flex-end', height:30,alignItems:'center', marginLeft:5 }}>
+                {this.props.quick_replies.map((item)=>{
+                    return (
+                    <TouchableOpacity onPress={()=>{
+                            this.props.onSend({text: item.text}, true)
+                        }}>
+                        <LinearGradient style={{paddingHorizontal:10, paddingVertical:5, borderRadius:20, elevation:4,
+                        marginHorizontal:7, borderColor:COLORS_LIGHT_THEME.YELLOW,}} 
+                        colors = {["#fa163f", "#e32249"]}>
+                            <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:16, color:COLORS_LIGHT_THEME.LIGHT}}>
+                                {item.text}
+                            </Text>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                    )
+                })}
+            </View>
+        )
+    }
+
     render() {
+        const {COLORS} = this.props;
         if (!this.props.messages ||
             (this.props.messages && this.props.messages.length === 0)) {
-            return <View style={{flex:1, marginBottom:(this.props.selectedImage)?130:25}}/>;
+            return null;
         }
-        return (<View style={this.props.alignTop ? styles.containerAlignTop : {flex:1, marginBottom:(this.props.selectedImage)?125:25}}>
+        return (<View style={this.props.alignTop ? styles.containerAlignTop : {flex:1}}>
         {this.state.showScrollBottom && this.props.scrollToBottom
             ? this.renderScrollToBottomWrapper()
             : null}
         <FlatList 
             keyboardShouldPersistTaps="always"
-            ref={this.flatListRef} extraData={this.props.extraData} keyExtractor={this.keyExtractor} enableEmptySections automaticallyAdjustContentInsets={false} inverted={this.props.inverted} data={this.props.messages} style={styles.listStyle} contentContainerStyle={styles.contentContainerStyle} renderItem={this.renderRow} {...this.props.invertibleScrollViewProps} ListFooterComponent={this.renderHeaderWrapper} ListHeaderComponent={this.renderFooter} onScroll={this.handleOnScroll} scrollEventThrottle={100} {...this.props.listViewProps}/>
+            ref={this.flatListRef} 
+            extraData={this.props.extraData}
+            keyExtractor={this.keyExtractor} 
+            enableEmptySections 
+            automaticallyAdjustContentInsets={false} 
+            inverted={this.props.inverted}
+            data={this.props.messages} 
+            style={styles.listStyle}
+            onScroll = {this.props.onScroll}
+            contentContainerStyle={styles.contentContainerStyle} 
+            renderItem={this.renderRow} 
+            {...this.props.invertibleScrollViewProps}
+            ListFooterComponent={
+            <View style={{backgroundColor:COLORS.LIGHT+'86', borderRadius:10,paddingVertical:5,
+            paddingHorizontal:10, alignSelf:'center', margin:20}}>
+                <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:12,color:COLORS.DARK,}}>
+                    {`* Long press on an image to save it in gallery\n* Long press on text to copy it to clipboard`}
+                </Text>
+            </View>
+            }
+            ListHeaderComponent={<View>
+                {this.renderQuickReplies()}
+                <View style={{height:(this.props.selectedImage)?195:80,
+                justifyContent:'flex-start', alignItems:'center'}}/>
+            </View>}
+            scrollEventThrottle={100} 
+            {...this.props.listViewProps}/>
       </View>);
     }
 }

@@ -2,15 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { StyleSheet, View, ViewPropTypes, Dimensions,
     TouchableOpacity,StatusBar, Image} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import RNFileSystem from 'react-native-fs';
-
-// @ts-ignore
- 
-import { Overlay,} from 'react-native-elements';
+import { Overlay,Icon} from 'react-native-elements';
 import ImageZoom from 'react-native-image-pan-zoom';
-import { COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../../Constants';
 
 const styles = StyleSheet.create({
     container: {},
@@ -85,6 +80,7 @@ export default class MessageImage extends Component {
         let image_url = currentMessage.image.url
         const {width, aspectRatio} = currentMessage.image;
         if (image_url.substring(0,4) !== 'http'){
+            console.log("Adding adder")
             image_url = this.props.image_adder + currentMessage.image.url
         }
         
@@ -95,10 +91,11 @@ export default class MessageImage extends Component {
         <View style={[styles.container, containerStyle]}>
             <TouchableOpacity
                 onLongPress={()=>{this.saveFileToGallery(image_url, currentMessage.image.name)}}
-                delayLongPress={1200}
+                delayLongPress={1500} activeOpacity={0.9}
                 onPress={()=>{this.props.onViewerSelect(true);this.setState({imageViewerActive:true})}}>
-                <Image {...imageProps} style={{...styles.image, ...imageStyle, height:150/currentMessage.image.aspectRatio}} 
-                    source={{ uri: image_url, cache:'cacheOnly' }}/>
+                <Image {...imageProps} 
+                style={{...styles.image, ...imageStyle, height:150/currentMessage.image.aspectRatio}} 
+                source={{ uri: image_url, cache:'cacheOnly'}} blurRadius={this.state.imageViewerActive?8:0} />
             </TouchableOpacity>
             <Overlay isVisible={this.state.imageViewerActive} height="100%" width="100%"
                 onRequestClose={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
@@ -113,7 +110,7 @@ export default class MessageImage extends Component {
                     
                     <TouchableOpacity activeOpacity={1}>
                         <Icon name="x-circle" size={22} 
-                            color={COLORS.RED} 
+                            color={COLORS.RED} type={'feather'}
                             onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
                             style={{padding:10, zIndex:10, top:5, right:5, position:'absolute'}}
                         />

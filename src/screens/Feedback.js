@@ -5,7 +5,7 @@ import { COLORS_LIGHT_THEME, COLORS_DARK_THEME, FONTS } from '../Constants';
 import {submitFeedback} from '../actions/HomeAction';
 import {Actions} from 'react-native-router-flux';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import Icon from 'react-native-vector-icons/Feather';
+import {Icon} from 'react-native-elements';
 import SView from 'react-native-simple-shadow-view';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
@@ -39,7 +39,7 @@ class Feedback extends Component {
           
           onPress={() => {Actions.pop()}}
           style={{justifyContent:'center', alignItems:'center',padding:3}}>
-          <Icon name="arrow-left" type="material-community" size={26}
+          <Icon name="arrow-left" type="material-community" size={26} type={'feather'}
             containerStyle={{marginVertical:5, marginRight:15}} 
             color={COLORS.LESS_DARK}/>
         </TouchableOpacity>
@@ -100,7 +100,7 @@ class Feedback extends Component {
           (this.state.feedback_submitted)?(
             <View style={{flex:1, justifyContent:'center', alignItems:'center', flexWrap:'wrap'}}>
               <Icon name="check" size={72} style={{margin:20, padding:10, borderRadius:50,
-                backgroundColor:COLORS.GREEN}} 
+                backgroundColor:COLORS.GREEN}} type={'feather'}
                 color={COLORS.LESSER_LIGHT} />
               <Text style={{color:COLORS.LIGHT_GRAY,
                 fontFamily:FONTS.RALEWAY_LIGHT, fontSize:36, marginHorizontal:20, textAlign:'center', marginBottom:15}}>
@@ -153,7 +153,7 @@ class Feedback extends Component {
               backgroundColor:COLORS.LESSER_LIGHT,
               padding:10,borderBottomRightRadius:25,borderTopLeftRadius:25}}>
               <Icon name={(this.state.image_url)?"x":"plus"} size={22}
-              color={COLORS.GRAY}/>
+              color={COLORS.GRAY} type={'feather'}/>
               {
                 (!this.state.image_url)?(
                   <Text style={{color:COLORS.GRAY,
@@ -285,7 +285,7 @@ export default connect(mapStateToProps, {submitFeedback})(Feedback);
 
 const styles = StyleSheet.create({
   HeadingTextStyling:{
-    fontSize:28,
+    fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
   },
   SubheadingTextStyle: {

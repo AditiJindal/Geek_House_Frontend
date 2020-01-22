@@ -1,21 +1,19 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux'
+import {connect} from 'react-redux';
 import { View, Text, StyleSheet, StatusBar, FlatList, Dimensions,
-  TouchableOpacity, RefreshControl} from 'react-native';
+  TouchableOpacity, RefreshControl, ScrollView} from 'react-native';
 import ArticleTile from '../components/ArticleTile';
 import {setAuthToken, getMyArticles, clearPublish} from '../actions/WriteAction';
 import {Icon} from "react-native-elements"; 
 import BottomTab from '../components/BottomTab';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
-import {logEvent} from '../actions/ChatAction'
+import {logEvent} from '../actions/ChatAction';
 import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import { Actions } from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
-import { ScrollView } from 'react-native-gesture-handler';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics'
-// import console = require('console');
+import analytics from '@react-native-firebase/analytics';
 
 
 
@@ -31,7 +29,7 @@ class Write extends Component {
     this.props.getMyArticles(Object.keys(this.props.myArticles).length, this.props.reload);
   }
 
-  renderTopics(articles){
+  renderTopics(articles, category){
     return(
       <FlatList data={articles}
         horizontal
@@ -40,7 +38,7 @@ class Write extends Component {
         renderItem = {({item}) => {
           return (
             <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5}}>
-              <ArticleTile data={item} theme={this.props.theme}
+              <ArticleTile data={{...item, category}} theme={this.props.theme}
                 COLORS = {this.props.COLORS}
               />
             </View>
@@ -58,6 +56,7 @@ class Write extends Component {
       return(
         <View style={{width:"100%"}}>
           <ScrollView style={{flex:1}} nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
+            <View style={{height:70, width:1}}/>
             <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} autoRun={true} duration={600} delay={100}
               style={{height:35, borderRadius:5, marginTop:30, marginLeft:15, alignItems:'center', elevation:6}}
             />
@@ -84,6 +83,7 @@ class Write extends Component {
               <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
               <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:150, height:150, borderRadius:8,margin:15, marginHorizontal:5, elevation:6}}/>
             </ScrollView>
+            <View style={{height:200, width:1}}/>
           </ScrollView>
         </View>
       )
@@ -96,8 +96,18 @@ class Write extends Component {
           <FlatList
             data={category_list}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={false}
+                colors={["rgb(0,181, 213)"]}
+                onRefresh={()=>
+                {this.props.getMyArticles(Object.keys(this.props.myArticles).length, this.props.reload);}}
+              />
+            }
+            ListHeaderComponent={<View style={{height:70, width:1}}/>}
+            ListFooterComponent={<View style={{height:200, width:1}}/>}
             keyExtractor={(x) => x}
-            renderItem = {({item}) => {
+            renderItem = {({item}) => {   // item here is the category
               return (
                 <View style={{marginTop:25, alignItems:'flex-start', justifyContent:'flex-start'}}>
                   <View style={{flex:1, marginLeft:15 }}>
@@ -107,7 +117,7 @@ class Write extends Component {
                         color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.GRAY}}>{item}</Text>
                     </View>
                   </View>
-                  {this.renderTopics(data[item])}
+                  {this.renderTopics(data[item], item)}
                 </View>
               )
             }}
@@ -161,28 +171,30 @@ class Write extends Component {
         />
         {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
         
-        <SView style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
-          alignItems:'center', flexDirection:'row', shadowColor:'#202020',shadowOpacity:0.3,
-          shadowOffset:{width:0,height:10},shadowRadius:8,
-          backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, paddingHorizontal:25}}>
-            <Text style={{...styles.TextStyle, 
-              color:COLORS.DARK}}>
+        <SView style={{borderRadius:10, height:55,paddingLeft:20,paddingRight:10,
+          alignItems:'center', flexDirection:'row', shadowColor:"#202020", shadowOpacity:0.3,
+          position:'absolute', top:10, zIndex:10,width:'92%', alignSelf:'center',
+          shadowOffset:{width:0,height:10},shadowRadius:8,justifyContent:'space-between',
+          backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
+            <Text style={{...styles.TextStyle, color:COLORS.DARK}}>
               my articles
             </Text>
+            <TouchableOpacity onPress={()=>{Actions.bookmark()}}
+              activeOpacity={0.7} style={{backgroundColor:"#f739bd", borderRadius:6}}>
+              <LinearGradient style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,
+                backgroundColor:COLORS.LESSER_DARK, flexDirection:'row', alignItems:'center'}} 
+                colors={["#f739bd", "#f953c6"]}
+                start={{x:0, y:1}} end={{x:1, y:1}}>
+                <Text style={{fontSize:14,fontFamily:FONTS.RALEWAY,color:COLORS_LIGHT_THEME.LIGHT, marginRight:5}}>
+                  bookmarks
+                </Text>
+                <Icon name="arrow-right" type="feather" size={14} color={COLORS_LIGHT_THEME.LIGHT}/>
+              </LinearGradient>
+            </TouchableOpacity>
         </SView>
         
           
-        <ScrollView showsVerticalScrollIndicator={false}
-          contentContainerStyle={{height:Dimensions.get('window').height}}
-          scrollEnabled={Object.keys(this.props.myArticles).length!==0}
-          refreshControl = {
-              <RefreshControl
-                refreshing={false}
-                colors={["rgb(0,181, 213)"]}
-                onRefresh={()=>
-                {this.props.getMyArticles(Object.keys(this.props.myArticles).length, this.props.reload);}}
-              />
-            }>
+        <View style={{height:Dimensions.get('window').height}}>
           {
             (Object.keys(this.props.myArticles).length!==0)?
             this.renderCategory():(
@@ -195,14 +207,9 @@ class Write extends Component {
             </View>
             )
           }
-          <View style={{height:150}}/>
-        </ScrollView>
-        {this.renderFloatingButton()}
-
-        <View style={{bottom:50, height:0}}>
-          <BottomTab icon_index={2}/>
         </View>
-
+        {this.renderFloatingButton()}
+        <BottomTab icon_index={2}/>
       </View>
     );
   }
@@ -225,7 +232,7 @@ export default connect(mapStateToProps, {setAuthToken, getMyArticles, clearPubli
 
 const styles = StyleSheet.create({
   TextStyle:{
-    fontSize:28,
+    fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
   },
   CategoryTextStyle:{

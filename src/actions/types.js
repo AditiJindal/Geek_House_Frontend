@@ -29,6 +29,10 @@ export const ACTIONS={
     GET_ARTICLE_INFO: 'articleInfo.get',
     ARTICLE_INFO_LOADING: 'articleinfo.loading',
     ARTICLE_ADD_COMMENT: 'article.add_comment',
+    ARTICLE_BOOKMARK: 'article.bookmark',
+    BOOKMARKS_LOADING: 'article.bookmarks_loading',
+    GET_BOOKMARKS: 'article.get_bookmarks',
+    BOOKMARKS_ERROR: 'article.bookmarks_error',
 
     // WRITE
     WRITE_LOADING: 'write.loading',
@@ -58,11 +62,15 @@ export const ACTIONS={
     CHAT_SOCKET_CHANGE_CATEGORY: 'chat_socket_change_category',
     CHAT_FIRST_LOGIN: 'CHAT.first_login',
     CHAT_SETUP_COMPLETE: 'chat.setup_complete',
+    CHAT_GET_USER_MESSAGES: 'chat.get_user_messages',
+    CHAT_QUICK_REPLIES: 'chat.quick_replies',
 
     // SETTINGS
     SETTINGS_LOADING: 'settings.loading',
     GET_SETTINGS_DATA: 'settings.get_data',
     CHANGE_THEME: 'settings.change_theme',
-    SETTINGS_CHANGE_ANIMATION:'settings.change_animation'
+    SETTINGS_CHANGE_ANIMATION:'settings.change_animation',
+    CHANGE_CHAT_BACKGROUND: 'settings.change_chat_background',
+    CHANGE_CHAT_BACKGROUND_BLUR: 'settings.change_chat_background_blur'
 
 }

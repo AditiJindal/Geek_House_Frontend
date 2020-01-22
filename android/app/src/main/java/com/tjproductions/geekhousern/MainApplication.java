@@ -4,8 +4,11 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import io.invertase.firebase.ml.naturallanguage.ReactNativeFirebaseMLNaturalLanguagePackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
-import io.invertase.firebase.fiam.ReactNativeFirebaseFiamPackage;
+
 import io.invertase.firebase.perf.ReactNativeFirebasePerfPackage;
 import io.invertase.firebase.ml.vision.ReactNativeFirebaseMLVisionPackage;
 import com.facebook.react.ReactNativeHost;
@@ -14,6 +17,7 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import com.facebook.FacebookSdk;
 import java.util.List;
+import com.nozbe.watermelondb.WatermelonDBPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -30,6 +34,7 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
+          packages.add(new WatermelonDBPackage());
 
           return packages;
         }

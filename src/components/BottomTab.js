@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import { View, StyleSheet,TouchableOpacity,Text}from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import {Icon} from 'react-native-elements';
 import {logEvent} from '../actions/ChatAction';
 import LinearGradient from 'react-native-linear-gradient';
-import {ICON_SIZE, SELECTED_ICON_SIZE, FONTS,LOG_EVENT, COLORS_DARK_THEME, COLORS_LIGHT_THEME} from '../Constants';
+import {ICON_SIZE, SELECTED_ICON_SIZE, FONTS,LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
 import {Actions} from "react-native-router-flux"
 import Typing from '../components/Typing';
 import SView from 'react-native-simple-shadow-view';
@@ -59,7 +59,7 @@ class BottomTab extends Component {
     
     return (
       <View>
-        <Icon name={iconName} size={ICON_SIZE+4}
+        <Icon name={iconName} size={ICON_SIZE+4} type={'feather'}
           color={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.DARK}/>
         <View style={{position:'absolute', bottom:6, right:4.5}}>
           {(this.props.total_typing!==0)?<Typing size={12} speed={1} theme={this.props.theme}/>:<Typing size={12} speed={0} theme={this.props.theme}/>}
@@ -85,7 +85,7 @@ class BottomTab extends Component {
         style={{height:40, width:SELECTED_ICON_SIZE+22, justifyContent:'center', alignItems:'center'}}>
           {
             (index!==3)?
-            <Icon name={iconName}
+            <Icon name={iconName} type={'feather'}
               size={ICON_SIZE}
               color={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.DARK}/>:
             this.renderChatButton(iconName)
@@ -98,7 +98,7 @@ class BottomTab extends Component {
         <LinearGradient style={styles.SelectedIconView}
         colors={COLOR_PALETE[index]}>
         
-          <Icon name={iconName}
+          <Icon name={iconName} type={'feather'}
             size={(index!==3)?SELECTED_ICON_SIZE:SELECTED_ICON_SIZE+4}
             color={COLORS_LIGHT_THEME.LIGHT}/>
         </LinearGradient>
@@ -134,8 +134,12 @@ export default connect(mapStateToProps, {})(BottomTab)
 const styles = StyleSheet.create({
   BottomTabStyle:{
     height:40,
+    bottom:10,
+    position:'absolute',
+    width:"92%",
     shadowOpacity: 0.25,
     shadowRadius: 2,
+    zIndex:99,
     shadowOffset: { height:2.5},
     justifyContent:'space-around',
     flexDirection:'row',

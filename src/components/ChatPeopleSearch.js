@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, TextInput, TouchableOpacity, Text, Keyboard} from 'react-native';
 import {FONTS,COLORS_LIGHT_THEME} from '../Constants';
+import LinearGradient from 'react-native-linear-gradient';
 
 let searchValue = ""
 
@@ -23,16 +24,21 @@ const ChatPeopleSearch = (props) => {
           multiline={false}
           onChangeText={(value)=>{props.onTextChange(value)}}
         />
-        <TouchableOpacity 
-          style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,elevation:7,
-          backgroundColor:COLORS.LESSER_DARK}}
-          activeOpacity={0.75} onPress={()=>{Keyboard.dismiss();
+        <TouchableOpacity activeOpacity={1}
+          onPress={()=>{Keyboard.dismiss();
           props.onSearch(); searchValue = props.value}}>
-          <Text style={{fontFamily:FONTS.RALEWAY_BOLD, fontSize:18,
-          color:COLORS.LESSER_LIGHT}}>
-            search
-          </Text>
+          <LinearGradient style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,elevation:7,
+            backgroundColor:COLORS.LESSER_DARK}}
+            colors={(props.value.length>0)?
+              ['rgb(0,181, 213)','rgb(0,224, 211)']:
+              [COLORS_LIGHT_THEME.GRAY,COLORS_LIGHT_THEME.GRAY]}
+            start={{x:1, y:0}} end={{x:1, y:1}}>
+            <Text style={{fontSize:18,fontFamily:FONTS.RALEWAY_BOLD,color:COLORS_LIGHT_THEME.LIGHT}}>
+              search
+            </Text>
+          </LinearGradient>
         </TouchableOpacity>
+
       </View>
       {(props.showSearchResults)?(
         <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'flex-start',marginTop:5, }}>
@@ -60,5 +66,7 @@ const ChatPeopleSearch = (props) => {
     </View>
   )
 }
+
+
 
 export default ChatPeopleSearch;

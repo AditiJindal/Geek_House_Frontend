@@ -48,8 +48,9 @@ class WriteArticle extends Component {
   renderFloatingButton(){
     if (this.state.contents.length<=9){
       return (
-        <TouchableOpacity  style={{bottom:15, left:15, position:"absolute"}}
-          activeOpacity={1} onPress={()=>{this.addWriteView()}}>
+        <TouchableOpacity  style={{bottom:15, left:15, position:"absolute", backgroundColor:"#fc6767",
+          borderRadius:29}}
+          activeOpacity={0.7} onPress={()=>{this.addWriteView()}}>
           <LinearGradient style={{height:58,width:58, borderRadius:29, 
           backgroundColor:"#E23636", elevation:7, justifyContent:'center', alignItems:"center",
           }} colors={["#fc6767","#ec008c"]}>
@@ -93,7 +94,7 @@ class WriteArticle extends Component {
     }
 
     else{
-      this.state.contents.forEach((item, i) => {
+      this.state.contents.map((item, i) => {
         i=i+1;
         if (item.sub_heading.length===0){
           nextEnabled=false;
@@ -126,7 +127,7 @@ class WriteArticle extends Component {
       <TouchableOpacity style={{borderRadius:10, height:58, paddingHorizontal:15,
         backgroundColor:COLORS.LIGHT, 
         elevation:7, justifyContent:'center', alignItems:"center",
-        bottom:15, right:15, position:"absolute", borderColor:color, borderWidth:2}} 
+        bottom:15, right:15, position:"absolute", borderColor:color,}} 
         activeOpacity={1} 
         onPress={(nextEnabled)?()=>{
           this.props.setContents(this.state.contents, this.state.topic, this.state.category);
@@ -157,7 +158,7 @@ class WriteArticle extends Component {
 
   onClosePressed(remove_index){
     new_contents = [];
-    this.state.contents.forEach((obj, i) => {     
+    this.state.contents.map((obj, i) => {     
       if (i!==remove_index){
         new_contents.push(obj)
       }      
@@ -171,7 +172,7 @@ class WriteArticle extends Component {
         <ArticleTile
           theme={this.props.theme}
           size={180}
-          data = {{image:"https://geek-house.s3.ap-south-1.amazonaws.com/guidlines.jpg",
+          data = {{image: this.props.image_adder+"guidlines.jpg",
           "topic":"Article Guidelines", "article_id":'guidelines'
           }}
           COLORS = {this.props.COLORS}
@@ -190,7 +191,7 @@ class WriteArticle extends Component {
     return (
       <ScrollView ref={(scrollView)=> this.scrollView = scrollView}
         keyboardShouldPersistTaps="always">
-        <View style={{height:10}}/>
+        <View style={{height:70, width:1}}/>
         {this.renderCategoryDropdown()}
         {this.state.contents.map((obj, i)=>{
           return (
@@ -261,7 +262,7 @@ class WriteArticle extends Component {
   renderCategoryDropdown(){
     const {COLORS} = this.props;
     let new_data=[];
-    this.props.all_categories.forEach((item) => {new_data.push({value:item})})
+    this.props.all_categories.map((item) => {new_data.push({value:item})})
 
     return (
       <View style={{marginHorizontal:25}}>
@@ -269,7 +270,7 @@ class WriteArticle extends Component {
           theme={this.props.theme}
           COLORS = {COLORS}
           data = {new_data}
-          label = "Category Selection"
+          label = "Select a Category"
           itemColor={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.LESSER_DARK}
           value={this.props.category}
           fontSize={20}
@@ -294,10 +295,10 @@ class WriteArticle extends Component {
     const {COLORS} = this.props;
     return (
       <SView style={{shadowColor:'#202020',shadowOpacity:0.3, shadowOffset:{width:0,height:10},shadowRadius:8, 
-        borderRadius:10, margin:8, height:70, justifyContent:'space-between',
-        alignItems:'center', flexDirection:'row', 
+        borderRadius:10, height:55, justifyContent:'space-between',alignSelf:'center',zIndex:10,
+        alignItems:'center', flexDirection:'row', position:'absolute', width:"92%",top:10,
         backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
-        paddingHorizontal:10}}>
+        paddingHorizontal:10,}}>
           <TouchableOpacity onPress={()=>{this.onBackPress()}}>
             <Icon name="arrow-left" type="material-community" size={26}
               containerStyle={{marginVertical:5, marginRight:15}} 
@@ -315,7 +316,7 @@ class WriteArticle extends Component {
             value={this.state.topic}
             returnKeyType={"done"}
             placeholderTextColor={COLORS.LESSER_DARK}
-            style={{...styles.TextStyle,color:COLORS.DARK}}
+            style={{...styles.TextStyle,color:COLORS.DARK, marginBottom:3}}
           />
       </SView>
     )
@@ -368,8 +369,9 @@ class WriteArticle extends Component {
 }
 
 const mapStateToProps = (state) => {
-
   return {
+    image_adder:state.home.image_adder,
+
     contents: state.write.contents,
     topic: state.write.topic,
     category: state.write.category,

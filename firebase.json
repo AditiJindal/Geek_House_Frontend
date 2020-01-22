@@ -5,6 +5,8 @@
 
         "ml_vision_barcode_model": true,
         "ml_vision_label_model": true,
-        "ml_vision_image_label_model": true
+        "ml_vision_image_label_model": true,
+
+        "ml_natural_language_smart_reply_model": true
     }
 }

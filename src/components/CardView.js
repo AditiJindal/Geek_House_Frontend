@@ -1,14 +1,14 @@
 import React from 'react';
 import {Text, StyleSheet}from 'react-native';
 import {FONTS} from '../Constants';
-import SView from 'react-native-simple-shadow-view'
+import SView from 'react-native-simple-shadow-view';
 // import console = require('console');
 
 export default CardView = (props) => {
   const {COLORS} = props;
   return(
     <SView style={{...styles.CardViewStyle, 
-      backgroundColor:COLORS.LESS_LIGHT}}>
+      backgroundColor:(COLORS.THEME==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
       <Text style={{...styles.SubHeadingStyle,
         borderColor:COLORS.GRAY,
         color:COLORS.DARK}}>

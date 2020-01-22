@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Text, View} from 'react-native';
-// import * as FacebookAds from 'expo-ads-facebook';
 import {logEvent} from '../actions/ChatAction';
 import { COLORS_LIGHT_THEME, LOG_EVENT } from '../Constants';
 import {
@@ -11,9 +10,7 @@ import {
   withNativeAd
 } from 'react-native-fbads';
 import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics'
-
-
+import analytics from '@react-native-firebase/analytics';
 
 class NativeAdsComponent extends Component {
   render() {

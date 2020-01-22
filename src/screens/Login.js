@@ -1,15 +1,16 @@
 import React, {Component} from 'react';
 import { View, StyleSheet, Text, StatusBar, Alert}from 'react-native';
-import {connect} from 'react-redux'
-import {FONTS, COLORS_LIGHT_THEME} from '../Constants'
+import {connect} from 'react-redux';
+import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import {loginGoogle,loginFacebook, checkLogin} from '../actions';
 import Loading from '../components/Loading';
 import { Button } from 'react-native-elements';
-import changeNavigationBarColor from 'react-native-navigation-bar-color'
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import Image from 'react-native-fast-image';
-import SplashScreen from 'react-native-splash-screen'
-import analytics from '@react-native-firebase/analytics'
+import SplashScreen from 'react-native-splash-screen';
+import analytics from '@react-native-firebase/analytics';
+
 
 class Login extends Component {
 
@@ -18,9 +19,10 @@ class Login extends Component {
     facebookLoading:false,
   }
 
-  componentDidMount(){
+  componentDidMount = async () => {
     this.props.checkLogin();
     SplashScreen.hide();
+    // setFCMNotifications();
     analytics().logAppOpen();
     }
 

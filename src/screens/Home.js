@@ -9,6 +9,7 @@ import {
   getWelcome,
   setAuthToken,
 } from '../actions';
+import _ from 'lodash';
 import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
 import Image from 'react-native-fast-image';
 import {logEvent, setupComplete} from '../actions/ChatAction';
@@ -16,8 +17,7 @@ import {Dropdown} from '../components/Dropdown';
 import LottieView from 'lottie-react-native'
 import AppIntroSlider from '../components/AppIntroSlider/AppIntroSlider';
 import ArticleTile from '../components/ArticleTile';
-import {Overlay} from 'react-native-elements';
-import Icon from 'react-native-vector-icons/Feather';
+import {Overlay, Icon} from 'react-native-elements';
 import {FONTS,COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
@@ -28,10 +28,13 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
 import APP_INFO from '../../package.json';
 import analytics from '@react-native-firebase/analytics';
+import ArticleTileAds from '../components/ArticleTileAds';
 
 const OVERLAY_WIDTH_PERCENT=75
 const GOOGLE_PLAY_URL = `https://play.google.com/store/apps/details?id=${APP_INFO.package}`
 class Home extends PureComponent {
+  state = {adIndex:0}
+
   constructor() {
     super();
     this.slides = [];
@@ -45,7 +48,7 @@ class Home extends PureComponent {
       analytics().logTutorialBegin();
     }
     let new_data=[];
-    this.props.categories.forEach((item) => {new_data.push({value:item})})
+    this.props.categories.map((item) => {new_data.push({value:item})})
     this.slides = [
       {
         fullyCustom:true,
@@ -169,7 +172,7 @@ class Home extends PureComponent {
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
                   borderRadius:10, flex:1, margin:5}}
                 >
-                  <Icon name="settings" color={COLORS.DARK} size={24}/>
+                  <Icon name="settings" color={COLORS.DARK} size={24} type={'feather'}/>
                   <Text style={{...styles.LogoutButtonTextStyle, color:COLORS.DARK}}>settings</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -181,7 +184,7 @@ class Home extends PureComponent {
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
                   borderRadius:10, flex:1, margin:5}}
                 >
-                  <Icon name="message-square" color={COLORS.DARK} size={22}/>
+                  <Icon name="message-square" color={COLORS.DARK} size={22} type={'feather'}/>
                   <Text style={{...styles.LogoutButtonTextStyle, fontSize:14,
                     color:COLORS.DARK}}>feedback</Text>
                 </TouchableOpacity>
@@ -196,7 +199,7 @@ class Home extends PureComponent {
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
                   borderRadius:10, flex:1, margin:5}}
                 >
-                  <Icon name="user" color={COLORS.DARK} size={24}/>
+                  <Icon name="user" color={COLORS.DARK} size={24} type={'feather'}/>
                   <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>about us</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -209,7 +212,7 @@ class Home extends PureComponent {
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
                   borderRadius:10, flex:1, margin:5}}
                 >
-                  <Icon name="thumbs-up" color={COLORS.DARK} size={24}/>
+                  <Icon name="thumbs-up" color={COLORS.DARK} size={24} type={'feather'}/>
                   <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>
                     rate
                   </Text>
@@ -233,7 +236,7 @@ class Home extends PureComponent {
           <TouchableOpacity onPress={this.props.toggleOverlay.bind(this, {overlayVisible:true})}>
             <Image
               source={{uri:this.props.data.image_url}}
-              style={{height:48, width:48, borderRadius:24}}/>
+              style={{height:42, width:42, borderRadius:24}}/>
           </TouchableOpacity>
         </View>
       )
@@ -278,15 +281,27 @@ class Home extends PureComponent {
 
   renderArticleTiles(){
     data_list = this.props.welcomeData.popular_topics;
+    const {COLORS, theme, adsManager, canShowAdsRemote} = this.props;
+    if (!this.state.adIndex && data_list && (data_list.length>2)){
+      this.setState({adIndex: _.random(2, data_list.length-1)})
+    }
     return(
       <FlatList data={data_list}
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(x) => x.article_id.toString()}
-        renderItem = {({item}) => {
+        renderItem = {({item, index}) => {
           return (
-            <View style={{marginVertical:15, marginHorizontal:5}}>
-              <ArticleTile data={item} size={180} theme={this.props.theme} COLORS={this.props.COLORS}/>
+            <View style={{marginVertical:15, marginHorizontal:5, flexDirection:'row', alignItems:'center'}}>
+              {
+                (index===this.state.adIndex && adsManager && canShowAdsRemote)?(
+                  <View style={{marginRight:10}}>
+                    <ArticleTileAds theme={theme} size={180}
+                      COLORS = {COLORS} adsManager={adsManager}/>
+                  </View>
+                ):null
+              }
+              <ArticleTile data={item} size={180} theme={theme} COLORS={COLORS}/>
             </View>
           )
         }}
@@ -324,11 +339,14 @@ class Home extends PureComponent {
       )
     }
     return (
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {this.renderWelcome()}
-        {this.renderPopularArticles()}
-        <View style={{height:50}}/>
-      </ScrollView>
+     <View style={{flex:1,}}>
+        <ScrollView showsVerticalScrollIndicator={false}
+        contentContainerStyle={{flexGrow:1}}>
+          <View style={{height:70, width:1}}/>
+          {this.renderWelcome()}
+          {this.renderPopularArticles()}
+        </ScrollView>
+     </View>
     )
   }
 
@@ -447,9 +465,7 @@ class Home extends PureComponent {
         </ShadowView>
         {this.renderOverlay()}
         {this.renderHome()}
-        <View style={{bottom:50, height:0}}>
-          <BottomTab icon_index={0}/>
-        </View>
+        <BottomTab icon_index={0}/>
       </View>
       );
     }
@@ -468,9 +484,11 @@ const mapStateToProps = (state) => {
 
     overlayVisible: state.home.overlayVisible,
     welcomeData: state.home.welcomeData,
+    canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
     loading: state.home.loading,
     error: state.home.error,
     selected_category: state.home.selected_category,
+    adsManager: state.home.adsManager,
 
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,
@@ -490,7 +508,7 @@ export default connect(mapStateToProps, {
 
 const styles = StyleSheet.create({
   TextStyle:{
-    fontSize:28,
+    fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
   },
   AvatarTextStyle:{
@@ -519,11 +537,15 @@ const styles = StyleSheet.create({
     shadowOffset:{width:0,height:10},
     shadowRadius:8,
     borderRadius:10,
-    margin:8, 
-    height:70, 
-    justifyContent:'space-between',
+    position:'absolute',
+    height:55,
+    width:'92%',
+    alignSelf:'center', 
     alignItems:'center', 
     flexDirection:'row', 
-    paddingHorizontal:25
+    paddingHorizontal:20,
+    top:10,
+    zIndex:10,
+    justifyContent:'space-between'
   }
 })

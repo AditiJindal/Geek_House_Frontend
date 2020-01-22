@@ -1,1 +1,1 @@
-react-native run-android --deviceId=af076a7a --variant=release
+react-native run-android --variant=release

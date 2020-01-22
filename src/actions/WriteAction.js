@@ -1,6 +1,7 @@
 import {ACTIONS} from './types';
-import {URLS, BASE_URL, HTTP_TIMEOUT, OVERLAY_COLOR} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
 import axios from 'axios';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 
 // Bullshit to do in evey file ->
@@ -19,6 +20,7 @@ export const setAuthToken = () => {
 // till here
 
 export const getMyArticles = (myArticlesLength, reload) => {
+  console.log("Condition gets : ", myArticlesLength===0 || reload, myArticlesLength===0 , reload)
   if (myArticlesLength===0 || reload){
     return (dispatch) => {
       dispatch({type:ACTIONS.WRITE_LOADING});
@@ -27,7 +29,7 @@ export const getMyArticles = (myArticlesLength, reload) => {
           dispatch({type:ACTIONS.GET_MY_ARTICLES,
           payload:{response:response.data.response, all_categories:response.data.all_categories}})
         }
-      )
+      ).catch(e=>crashlytics().log("WriteAction LINE 30"+e.toString()))
     }
   }
   else{
@@ -83,15 +85,15 @@ export const publishArticle = (article) => {
                 dispatch({type:ACTIONS.PUBLISH_SUCCESS});
               }
             );
-          })
-        })
+          }).catch(e=>crashlytics().log("WriteAction LINE 86"+e.toString()))
+        }).catch(e=>crashlytics().log("WriteAction LINE 87"+e.toString()))
       }
     else{
       httpClient.post(URLS.publish, article).then(
         () => {       
           dispatch({type:ACTIONS.PUBLISH_SUCCESS});
         }
-      );      
+      ).catch(e=>crashlytics().log("WriteAction LINE 94"+e.toString()))
     }
     };
   }

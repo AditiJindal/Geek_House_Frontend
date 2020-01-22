@@ -9,13 +9,14 @@ import {FONTS, ERROR_BUTTONS,COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import ArticleTile from '../components/ArticleTile';
 import CustomAlert from '../components/CustomAlert';
+import TimedAlert from '../components/TimedAlert';
 import {logEvent} from '../actions/ChatAction';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from "@react-native-community/image-editor";
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
-import vision from '@react-native-firebase/ml-vision'
+import vision from '@react-native-firebase/ml-vision';
 
 class ImageUpload extends Component {
 
@@ -38,10 +39,11 @@ class ImageUpload extends Component {
   renderChangeImageButton(){
     if (this.state.image.uri){
       return (
-        <TouchableOpacity  style={{bottom:15, left:15, position:"absolute"}}
+        <TouchableOpacity  style={{bottom:15, left:15, position:"absolute", elevation:7,
+        backgroundColor:"#fc521a", borderRadius:10}}
           activeOpacity={0.7} onPress={()=>{this.pickImage()}}>
           <LinearGradient style={{borderRadius:10, height:58, paddingHorizontal:15, 
-            elevation:7, justifyContent:'center', alignItems:"center"}} 
+            justifyContent:'center', alignItems:"center"}} 
             colors={["#fc521a", "#f79c33"]} start={{x:0, y:1}} end={{x:1, y:1}}>
             <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:22, color:COLORS_LIGHT_THEME.LESSER_LIGHT}}>Change</Text>
             <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:14, color:COLORS_LIGHT_THEME.LESSER_LIGHT}}>Image</Text>
@@ -61,13 +63,12 @@ class ImageUpload extends Component {
         backgroundColor:COLORS.LIGHT, 
         elevation:7, justifyContent:'center', alignItems:"center",
         bottom:15, right:15, position:"absolute", 
-        borderColor:COLORS.GREEN, 
-        borderWidth:2}} activeOpacity={0.7} 
+        borderColor:COLORS.GREEN}} activeOpacity={0.7} 
         onPress={()=>{(this.props.image.uri)?Actions.replace("publish"):this.setState({alertVisible:true})}}>
         <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:24, 
           color:COLORS.GREEN}}>NEXT</Text>
         <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:12, 
-          color:COLORS.GREEN}}>Preview</Text>
+          color:COLORS.GREEN}}>preview</Text>
       </TouchableOpacity>
     )
   }
@@ -118,7 +119,7 @@ class ImageUpload extends Component {
       filterList = _.sortBy(filterList, ['confidence']).reverse();
       filterList = filterList.splice(0,5)
     }
-    if (filterList.length!==0){
+    if (filterList.length!==0){ 
       filterList.map((item, index)=>{
         if (index===filterList.length-1) { relatedImageWords += item.text}
         else { relatedImageWords += item.text+", "}
@@ -136,9 +137,12 @@ class ImageUpload extends Component {
       mediaType:'photo',
       chooseWhichLibraryTitle: "Select an App"
     }
-    // // console.log("in image")
     
     ImagePicker.launchImageLibrary(ImageOptions, (image)=>{
+      if (image.error){
+        this.timedAlert.showAlert(3000,"Image permission needed")
+        return
+      }
       this.ImageLabelDetection(image.path)
       if (!image.didCancel){
         delete image.data;
@@ -152,7 +156,7 @@ class ImageUpload extends Component {
             this.setState({image, imageSize:{width:resize.width, height:resize.height}});
             this.props.setImage(image);
           })  
-        })
+        }).catch(e=>crashlytics().log("ImageUploaf LINE 156"+e.toString()))
       }
     })
   }
@@ -184,15 +188,16 @@ class ImageUpload extends Component {
         preview_contents:this.props.contents, category:this.props.category}
       return(
         <View style={{alignItems:'center', justifyContent:'center'}}>
-          <ArticleTile size={180} data={data} theme={this.props.theme} COLORS={this.props.COLORS}/>
+          <ArticleTile size={180} data={{...data, category:this.props.category}} 
+          theme={this.props.theme} COLORS={this.props.COLORS}/>
           {
             (this.state.relatedImageWords)?(
               <View style={{alignItems:'flex-start', flexDirection:'row',
-                marginTop:20, marginHorizontal:50}}>
+                marginTop:20, width:"60%"}}>
                 <Icon name="comment" type="octicon" size={15}
                   color={COLORS.GRAY} containerStyle={{marginTop:2}}/>
                 <Text style={{fontFamily:FONTS.PRODUCT_SANS, color:COLORS.GRAY,
-                  fontSize:12, marginLeft:10}}>
+                  fontSize:12, marginLeft:10, textAlign:'justify'}}>
                   {`This is what I see in this image : `} 
                   <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD}}>{this.state.relatedImageWords}</Text>
                 </Text>
@@ -281,6 +286,9 @@ class ImageUpload extends Component {
     return(
       <View style={{flex:1, backgroundColor:COLORS.LIGHT}}>
         {this.renderBack()}
+        <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} 
+          COLORS = {COLORS}
+        />
         <View style={{alignSelf:'center', justifyContent:'center', flex:1, margin:20}}>
           {this.renderAlert()}
           <View style={{justifyContent:'center', alignItems:'center', width:"100%",marginBottom:50,}}>
@@ -310,7 +318,7 @@ export default connect(mapStateToProps, {setImage})(ImageUpload)
 
 const styles = StyleSheet.create({
   TextStyle:{
-    fontSize:28,
+    fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
   },
 })

@@ -1,1 +1,1 @@
-react-native run-android --deviceId=af076a7a
+react-native run-android

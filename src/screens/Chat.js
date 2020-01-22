@@ -59,11 +59,10 @@ class Chat extends Component {
   renderHeader(){
     const {COLORS} = this.props;
     return (
-      <SView style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
-        alignItems:'center', flexDirection:'row', shadowColor:'#202020',
-        shadowOpacity:0.3, shadowOffset:{width:0,height:10},shadowRadius:8,
-        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
-        paddingHorizontal:25}}>
+      <SView style={{borderRadius:10, height:55, paddingLeft:20,top:10,
+        alignItems:'center', flexDirection:'row', shadowColor:'#202020',zIndex:10,width:"92%",
+        shadowOpacity:0.3, shadowOffset:{width:0,height:10},shadowRadius:8,position:'absolute',
+        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, alignSelf:'center'}}>
           <Text style={{...styles.TextStyle, color:COLORS.DARK}}>
             chat
           </Text>
@@ -87,19 +86,17 @@ class Chat extends Component {
         keyboardShouldPersistTaps="always"
         data={DATA}
         ListHeaderComponent = {
-          <ChatPeopleSearch 
-            theme={this.props.theme}
-            COLORS = {COLORS}
-            value={this.state.chatPeopleSearchText}
-            onTextChange={(value)=>{this.setState({chatPeopleSearchText:value})}}
-            onSearch={()=>{this.showTimedAlert()
-            ;this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
-          />}
-        ListFooterComponent = {
-          <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:10, margin:20,
-            color:COLORS.GRAY}}>
-            {`* Long press on an image to save it in gallery\n* Long press on text to copy it to clipboard`}
-          </Text>
+          <View>
+            <View style={{height:70, width:1}}/>
+            <ChatPeopleSearch 
+              theme={this.props.theme}
+              COLORS = {COLORS}
+              value={this.state.chatPeopleSearchText}
+              onTextChange={(value)=>{this.setState({chatPeopleSearchText:value})}}
+              onSearch={()=>{this.showTimedAlert()
+              ;this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
+            />
+          </View>
         }
         ListEmptyComponent = {
           <View style={{flex:1, justifyContent:'center', alignItems:'center', marginBottom:50,
@@ -141,16 +138,20 @@ class Chat extends Component {
         contentContainerStyle={{marginTop:15, flex:1}}
         keyExtractor={(item, index)=>{index.toString()}}
         ListHeaderComponent = {
-          <ChatPeopleSearch 
-            theme={this.props.theme}
-            COLORS = {COLORS}
-            value={this.state.chatPeopleSearchText}
-            onTextChange={(value)=>{this.setState({chatPeopleSearchText:value})}}
-            onSearch={()=>{this.showTimedAlert();
-            this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
-            showSearchResults
-            onCancel={()=>{this.setState({chatPeopleSearchText:""}); this.props.chatPeopleSearchAction(null) }}
-          />}
+          <View>
+            <View style={{height:70, width:1}}/>
+            <ChatPeopleSearch 
+              theme={this.props.theme}
+              COLORS = {COLORS}
+              value={this.state.chatPeopleSearchText}
+              onTextChange={(value)=>{this.setState({chatPeopleSearchText:value})}}
+              onSearch={()=>{this.showTimedAlert();
+              this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
+              showSearchResults
+              onCancel={()=>{this.setState({chatPeopleSearchText:""}); this.props.chatPeopleSearchAction(null) }}
+            />
+          </View>
+        }
       ListEmptyComponent = {
         <View style={{flex:1, justifyContent:'center', alignItems:'center', marginBottom:50}}>
           <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:18,
@@ -219,27 +220,18 @@ class Chat extends Component {
           COLORS = {COLORS}
         />
         {this.renderHeader()}
-        {/* {
-          (this.props.loading)?
-          this.renderNoChatAvailable():
-          this.renderChatPeople()
-        } */}
         {
           (this.props.loading)?
           this.renderLoader():
           this.renderChatPeople()
         }
-
-        <View style={{bottom:50, height:0}}>
-          <BottomTab icon_index={3}/>
-        </View>
+        <BottomTab icon_index={3}/>
       </View>
     );
   }
 }
 
 const mapStateToProps = (state) => {
-  // console.log('chat state: ', state.chat)
   return {
     loading: state.chat.loading,
     chatPeople: state.chat.chatPeople,
@@ -259,7 +251,7 @@ export default connect(mapStateToProps, {setAuthToken, setUserData, chatPeopleSe
 
 const styles = StyleSheet.create({
   TextStyle:{
-    fontSize:28,
+    fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
   },
   SectionViewStyling:{

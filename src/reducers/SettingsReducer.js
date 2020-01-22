@@ -24,6 +24,9 @@ export default (state = INITIAL_STATE, action) => {
     case ACTIONS.SETTINGS_LOADING:
       return {...state, loading: true};
 
+    case ACTIONS.LOGOUT:
+      return {...INITIAL_STATE}
+
     default:
       return state;
   }

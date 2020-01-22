@@ -1,5 +1,5 @@
 import {ACTIONS} from './types';
-import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import {AppState,Alert} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
@@ -11,19 +11,20 @@ import uuid from 'uuid/v4';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
 import * as RNLocalize from "react-native-localize";
-import OneSignal from 'react-native-onesignal';
 import analytics from '@react-native-firebase/analytics';
 import crashlytics from '@react-native-firebase/crashlytics';
+import {getQuickReplies, logEvent} from './ChatAction';
+import messages from '@react-native-firebase/messaging';
+import PushNotification from "react-native-push-notification";
 
+var timer = null;
 
-var deviceNotificationId = null; 
-
-OneSignal.init("79514e5e-4676-44b7-822e-8941eacb88d0");
-OneSignal.addEventListener('received', ()=>{});
-OneSignal.addEventListener('opened', ()=>{});
-OneSignal.getPermissionSubscriptionState((obj)=>
-  {deviceNotificationId = obj.userId;}
-);
+const getFCMToken = () => {
+  if (!messages().isRegisteredForRemoteNotifications){
+    messages().registerForRemoteNotifications();
+  }
+  return messages().getToken();
+}
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = HTTP_TIMEOUT;
@@ -34,32 +35,56 @@ httpClient.defaults.baseURL = BASE_URL;
 // AsyncStorage.removeItem('authtoken')
 // AsyncStorage.removeItem('5e08f8fe7554cf1c7c9f17bc')
 
-
 const incomingMessageConverter = (data) => {
   new_message = [{_id:uuid(), createdAt: data.createdAt, text:data.text, 
     user:{_id:data.from}, image:data.image}]
   return new_message
 }
 
+const handleNotification = (notification) => {
+  switch(notification.type){
+    case 'chat':
+      Actions.replace('chat');
+      analytics().logEvent('chat_notification_tapped')
+      return null;
 
-const makeConnection = async (json_data, dispatch) => {
-  // console.log("in make connectino")
+    case 'article':
+      analytics().logEvent('article_notification_tapped')
+      Actions.notification_article({articleData: {
+        article_id: notification.article_id,
+        category: notification.category,
+        topic: notification.topic,
+        image: notification.image,
+      }})
+
+    case 'feedback':
+      Actions.jump('feedback');
+      analytics().logEvent('feedback_notification_tapped')
+      logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');
+  
+    default:
+      return null;
+  }
+}
+
+
+const makeConnection = async (json_data, dispatch, getState) => {
+
   AsyncStorage.getItem(json_data.authtoken.toString()).then((response)=>{
     response = JSON.parse(response)
-    console.log("This the respose in checkLogin: ", response)
 
     dispatch({type:ACTIONS.CHAT_FIRST_LOGIN, 
     payload: {first_login:response.first_login, authtoken:json_data.authtoken, theme: response.theme,}})
     
     dispatch({type:ACTIONS.CHAT_LOAD_DATA, 
       payload: {...response, user_id: json_data.authtoken.toString()}})
-  });
+  }).catch(e=>crashlytics().log("LoginAction LINE 56"+e.toString()))
   dispatch({type:ACTIONS.LOGIN_DATA, payload:{data:json_data.data,
     authtoken:json_data.authtoken, categories:json_data.categories}})
   const socket = io.connect(BASE_URL, {
-    timeout: 8000,
+    timeout: HTTP_TIMEOUT,
     forceNew:true,
-    reconnectionDelay:700,
+    reconnectionDelay:500,
     transports: ['websocket'],
     autoConnect: true,
   });
@@ -76,7 +101,6 @@ const makeConnection = async (json_data, dispatch) => {
     }
   })
   
-  // console.log('Device: ', Device);
   manufacturer = await Device.getManufacturer();
   designName = await Device.getDevice(),
   modelName = Device.getModel(),
@@ -91,14 +115,20 @@ const makeConnection = async (json_data, dispatch) => {
     deviceInfo: {manufacturer,designName,modelName,osName,totalMemory},
     carrier,
     countryCode: RNLocalize.getCountry(),
-    connectionType: 'null'
   }
 
   socket.emit('join', to_emit)
 
   socket.on('incoming_message', (data)=>{
-    dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:
-      {message:incomingMessageConverter(data),other_user_id: data.from, isIncomming:true}})
+    const message = incomingMessageConverter(data);
+    const {chat} = getState();
+    let temp_currentMessages = chat.currentMessages.slice(0,3);
+    if (temp_currentMessages.length!==0){
+      temp_currentMessages.push(message[0]);
+      clearTimeout(timer);
+      timer = setTimeout(()=>{getQuickReplies(dispatch,temp_currentMessages, chat.user_id);},500)
+    }
+    dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message,other_user_id: data.from, isIncomming:true}});
   });
 
   socket.on('incoming_typing', (data)=>{
@@ -123,59 +153,61 @@ const makeConnection = async (json_data, dispatch) => {
     socket.emit('not-disconnected', {id: json_data.authtoken})
   })
 
-  socket.on('reconnect', (data)=>{
+  socket.on('reconnect', ()=>{
     analytics().logEvent("app_reconnected")
     socket.emit('not-disconnected', {id: json_data.authtoken,
       name:json_data.data.name})
   })
 
-  socket.on('disconnect', (e)=> {
+  socket.on('disconnect', ()=> {
     analytics().logEvent("app_disconnected")
     dispatch({type:ACTIONS.CHAT_SAVE_DATA})
   });
   
   dispatch({type:ACTIONS.SET_SOCKET, payload: socket});
+
+  PushNotification.configure({
+    onNotification: (notification) => {handleNotification(notification)}
+  });
 }
 
 export const checkLogin = () => {
-  return (dispatch) => {
-    // dispatch({type:ACTIONS.CHECKING_LOGIN})
+  return (dispatch, getState) => {
     AsyncStorage.getItem('data').then(
       (response) => {
         if(response!==null && Object.keys(response).length!==0){
           json_data = JSON.parse(response)
-          // // console.log("here 0, json_data: ", json_data)
-          // Image.prefetch(json_data.data.image_url)
-          makeConnection(json_data, dispatch)
+          makeConnection(json_data, dispatch, getState)
           Actions.replace("main");
           analytics().setUserId(json_data.data.authtoken);
           crashlytics().setUserId(json_data.data.authtoken);
           crashlytics().setUserEmail(json_data.data.email);
           crashlytics().setUserName(json_data.data.name);
-          // console.log("json: ", json_data)
         }
         else{
           dispatch({type:ACTIONS.LOGOUT})
         }
       }
-  )}
+  ).catch(e=>crashlytics().log("LoginAction LINE 161"+e.toString()))
+}
 }
 
 
 export const loginGoogle = () => {
-  return (dispatch)=>{
+  return (dispatch, getState)=>{
     GoogleSignin.configure({
       androidClientId: "315957273790-l39qn5bp73tj2ug8r46ejdcj5t2gb433.apps.googleusercontent.com",
-      webClientId: "315957273790-o4p20t2j3brt7c8bqc68814pj63j1lum.apps.googleusercontent.com"
+      webClientId: "315957273790-o4p20t2j3brt7c8bqc68814pj63j1lum.apps.googleusercontent.com",
+      forceConsentPrompt: true
     });
-    GoogleSignin.signIn().then((response)=>{
-      // Notifications.getExpoPushTokenAsync().then((pushToken) => {
+    GoogleSignin.signIn().then(async (response)=>{
+      pushToken = await getFCMToken()
       let new_data = {
         id: response.user.id+'google',
         name: response.user.name, 
         email: response.user.email,
         image_url: response.user.photo,//response.user.photoURL,
-        pushToken:deviceNotificationId
+        pushToken
       };
       httpClient.post(URLS.login, new_data).then(
         (response) => {
@@ -194,24 +226,26 @@ export const loginGoogle = () => {
           else{
             analytics().logLogin({method:'google'})
           }
-          console.log("In google login first login is: ",response.data)
           dispatch({type:ACTIONS.CHAT_FIRST_LOGIN, 
             payload: {first_login:response.data.first_login, theme:response.data.theme,
               authtoken:final_data.authtoken}})
           dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
           // Image.prefetch(final_data.data.image_url)
-          makeConnection(final_data, dispatch);
+          makeConnection(final_data, dispatch, getState);
           Actions.replace("main");
         }
-      ).catch((e)=>{console.log("Error: ", e)})
+      ).catch(e=>{
+        crashlytics().log("LoginAction LINE 208"+e.toString());
+        Alert.alert("Here 5",e.toString())})
       // })
-    }).catch(e=>{crashlytics().log("LoginAction:loginGoogle:signIn")
-    ;crashlytics().recordError(e)})
+    }).catch(e=>{
+      Alert.alert("Here 4",e.toString());
+      crashlytics().log("LoginAction LINE 211"+e.toString())})
   }
 }
 
 export const loginFacebook = () => {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch({type:ACTIONS.LOADING_FB});
     LoginManager.logInWithPermissions(["public_profile", "email"]).then((response)=>{
       if (response.isCancelled){
@@ -226,14 +260,14 @@ export const loginFacebook = () => {
           fetch(`https://graph.facebook.com/${userId}?fields=email,picture.type(large),name&access_token=${token}`).then(
             (response) => {
               response.json().then(
-                (data) => {
-                  // Notifications.getExpoPushTokenAsync().then((pushToken)=>{
+                async (data) => {
+                  pushToken = await getFCMToken()
                   let new_data = {
                     id:data.id+'facebook', 
                     name:data.name, 
                     email:data.email, 
                     image_url:data.picture.data.url,
-                    pushToken:deviceNotificationId
+                    pushToken
                   }
                   
                   httpClient.post(URLS.login, new_data).then(
@@ -254,25 +288,28 @@ export const loginFacebook = () => {
                       else{
                         analytics().logLogin({method:'facebook'})
                       }
-                      console.log("In fb login first login is: ",response.data)
-                      // console.log("To save date is: loginFB: ", final_data)
                       dispatch({type:ACTIONS.CHAT_FIRST_LOGIN, 
                         payload: {first_login:response.data.first_login, theme:response.data.theme,
                           authtoken:final_data.authtoken}})
                       dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
-                      // Image.prefetch(final_data.data.image_url);
-                      makeConnection(final_data, dispatch)
+                      makeConnection(final_data, dispatch, getState)
                       Actions.replace("main");
                     }
-                  );
+                  ).catch(e=>{
+                    crashlytics().log("LoginAction LINE 272"+e.toString());
+                    Alert.alert("Here 3",e.toString())})
                   // })
                 }
-              )
+              ).catch(e=>crashlytics().log("LoginAction LINE 276"+e.toString()))
             }
-          )
+          ).catch(e=>{
+            crashlytics().log("LoginAction LINE 277"+e.toString());
+            Alert.alert("Here 2",e.toString())})
         })
       }
-    }).catch(e=>{crashlytics().log("LoginAction:loginFacebook:logInWithPermissions")
+    }).catch(e=>{
+    crashlytics().log("LoginAction LINE 280"+e.toString())
+    Alert.alert("Here 1",e.toString());crashlytics().log("LoginAction:loginFacebook:logInWithPermissions")
     ;crashlytics().recordError(e)})
   };
 }

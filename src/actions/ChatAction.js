@@ -3,10 +3,16 @@ import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import axios from 'axios';
 import _ from 'lodash';
 import {uploadImage} from './WriteAction';
+import crashlytics from '@react-native-firebase/crashlytics';
+import {database} from '../database';
+import { Q } from '@nozbe/watermelondb';
+import naturalLanguage from '@react-native-firebase/ml-natural-language';
+const MessagesCollection =  database.collections.get('messages');
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
-var socket=null
+var socket=null;
+var timer = null;
 
 httpClient.defaults.timeout = HTTP_TIMEOUT;
 httpClient.defaults.baseURL = BASE_URL;
@@ -30,7 +36,7 @@ export const getChatPeople = () => {
     dispatch({type:ACTIONS.CHAT_LOADING})
     httpClient.get(URLS.chatpeople).then(
       (response) => {dispatch({type:ACTIONS.GET_CHAT_PEOPLE, payload:response.data});}
-    );
+    ).catch(e=>crashlytics().log("ChatAction LINE 34"+e.toString()))
   };
 };
 
@@ -39,6 +45,7 @@ export const setUserData = (data) => {
 }
 
 export const sendMessage = (socket, message, other_user_id, image) => {
+  console.log('Message is: ', message)
   return (dispatch) => {
     let message_to_send = {text:"", to:"", image}
     if (image){
@@ -54,7 +61,7 @@ export const sendMessage = (socket, message, other_user_id, image) => {
           message_to_send.to = other_user_id;
           socket.emit('message', message_to_send)
           dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id, isIncomming:false}})
-        })
+        }).catch(e=>crashlytics().log("ChatAction LINE 58"+e.toString()))
       })
     }
     else{
@@ -109,6 +116,76 @@ export const checkMessagesObject = (other_user_id, messages) => {
   return {type:ACTIONS.CHECK_MESSAGES_OBJECT, payload:messages} 
 }
 
+const messageConverter = (item) => {
+  if (!!item.text){
+    text_to_save=item.text
+  }
+  else{
+    text_to_save=null
+  }
+  if (!!item.image_url){
+    image_to_save={
+      url:item.image_url, height:item.image_height,
+      width:item.image_width, aspectRatio:item.image_ar,
+      name: item.image_name
+    }
+  }
+  else{
+    image_to_save=null
+  }
+  to_return = {
+    _id:item.message_id,
+    createdAt: item.created_at,
+    user: {_id:item.user_id},
+
+    text:text_to_save,
+    image:image_to_save
+  }
+  return to_return
+}
+
+export const getCurrentUserMessages = (other_user_id, this_user_id) => {
+  t = Date.now()
+  return (dispatch)=>{
+    MessagesCollection.query(Q.where('other_user_id', other_user_id)).fetch().then((response)=>{
+      let new_response = []
+      response.map((x)=>{
+        item = x._raw
+        if (item.this_user_id===this_user_id){    // imp. check, prevents chat leak into other user's chats
+          new_response.unshift(messageConverter(item, this_user_id))  
+        }
+      });
+      clearTimeout(timer);
+      timer = setTimeout(()=>{getQuickReplies(dispatch, new_response.slice(0,4), this_user_id)}, 1500)
+      dispatch({type:ACTIONS.CHAT_GET_USER_MESSAGES, payload:new_response})
+    })
+  }
+}
+
 export const clearOtherUserData = () => {
   return {type: ACTIONS.CHAT_CLEAR_OTHER_USER}
+}
+
+export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
+  const feedList = []
+  recent_messages.reverse().map((item)=>{
+    if (!(item.text && item.createdAt && item.user._id)){
+      return
+    }
+
+    let obj = {text:item.text, timestamp:Date.parse(Date(item.createdAt))};
+    if (item.user._id===local_user_id){
+      obj.isLocalUser = true;
+    }
+    else{
+      obj.userId= item.user._id
+      obj.isLocalUser = false;
+    }
+    feedList.push(obj)
+    return
+  })
+
+  naturalLanguage().suggestReplies(feedList)
+  .then((response)=>{dispatch({type:ACTIONS.CHAT_QUICK_REPLIES, payload:response})})
+  .catch((e)=>{console.log('Error in quick replies', e)})
 }

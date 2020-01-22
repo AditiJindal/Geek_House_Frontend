@@ -1,7 +1,9 @@
 import {ACTIONS} from './types';
 import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
+import uuid from 'uuid';
 import axios from 'axios';
-// import console = require('console');
+import crashlytics from '@react-native-firebase/crashlytics';
+import RNFileSystem from 'react-native-fs';
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
@@ -25,7 +27,7 @@ export const getSettingsData = (reload) => {
       // // console.log(" i m reloading data: ")
       httpClient.get(URLS.settings).then((response)=>{
         dispatch({type: ACTIONS.GET_SETTINGS_DATA, payload: response.data})
-      })
+      }).catch(e=>crashlytics().log("SettingAction LINE 28"+e.toString()))
     }
   }
 }
@@ -40,4 +42,21 @@ export const changeAnimationSettings = () => {
 
 export const changeTheme = (value) => {
   return {type:ACTIONS.CHANGE_THEME, payload: value}
+}
+
+export const changeChatWallpaper = (response, previous_image) => {  
+  return (dispatch) => {
+    const target_path = RNFileSystem.ExternalStorageDirectoryPath+"/GeekHouse/"+`${uuid()}.jpg`
+    const target_path_url =  `file://`+target_path
+    if (previous_image){
+      RNFileSystem.unlink(previous_image.substring(7)).catch(()=>{})
+    }
+    RNFileSystem.copyFile(response.path, target_path).then(()=>{
+      dispatch({type: ACTIONS.CHANGE_CHAT_BACKGROUND, payload:target_path_url})
+    })
+  }
+}
+
+export const changeBlurRadius = (blur) => {
+  return {type:ACTIONS.CHANGE_CHAT_BACKGROUND_BLUR, payload:blur}
 }

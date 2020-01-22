@@ -27,7 +27,9 @@ export const COLORS_LIGHT_THEME = {
   STAR_YELLOW: "#f5af19",
   OVERLAY_COLOR: "#999999",
   SHIMMER_COLOR: ['#ebebeb', '#c5c5c5', '#ebebeb'],
-  URM_COLOR: "#cb2d3e"
+  URM_COLOR: "#cb2d3e",
+  THEME: 'light',
+  SHADOW_COLOR: "#202020"
 }
 
 export const COLORS_DARK_THEME = {
@@ -59,11 +61,14 @@ export const COLORS_DARK_THEME = {
   STAR_YELLOW: "#f3c921",
   OVERLAY_COLOR: "#181818",
   SHIMMER_COLOR: ["#323232", "#3c3c3c", "#464646"],
-  URM_COLOR: "#63d6a0"
+  URM_COLOR: "#63d6a0",
+  THEME:'dark',
+  SHADOW_COLOR:"#000000"
 };
 export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
 export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
 export const BASE_URL = (__DEV__)?BASE_URL_DEBUG:BASE_URL_PROD
+console.log('BASE URL IS: ', BASE_URL)
 
 export const HTTP_TIMEOUT = 12000
 
@@ -76,13 +81,13 @@ export const LOG_EVENT = {
 }
 
 export const URLS = {
-  login:'/api/login/',
-  welcome:'/api/welcome/',
+  login: '/api/login/',
+  welcome: '/api/welcome/',
   settings:'/api/settings/',
   logout: '/api/logout/',
-  popularsearches:'/api/popularsearches/',
-  closeaccount:'/api/closeaccount/',
-  search:'/api/search/',
+  popularsearches: '/api/popularsearches/',
+  closeaccount: '/api/closeaccount/',
+  search: '/api/search/',
   articleinfo: '/api/articleinfo/',
   myarticles: '/api/myarticles/',
   publish: '/api/publish/',
@@ -91,7 +96,9 @@ export const URLS = {
   comment: '/api/comment/',
   logevent: '/api/logevent/',
   chatpeoplesearch: '/api/chatpeoplesearch/',
-  feedback: '/api/feedback/'
+  feedback: '/api/feedback/',
+  bookmark_article: '/api/bookmark_article/',
+  get_bookmarked_articles: '/api/get_bookmarked_articles/',
 }
 
 export const FONTS = {
@@ -99,8 +106,6 @@ export const FONTS = {
   PRODUCT_SANS_BOLD:'Product-Sans-Bold',
 
   HELVETICA_NEUE:'HelveticaNeue',
-
-  ROBOTO_BOLD:'Roboto-Bold',
 
   GOTHAM_BLACK:'Gotham-Black',
 
@@ -122,12 +127,12 @@ export const FONTS = {
   MERRIWEATHER_BOLD: 'Merriweather-Bold',
   MERRIWEATHER_LIGHT: 'Merriweather-Light',
 
-  // OFFICIAL FONT
+  // STYLISH FONT
   LECKERLIONE: 'LeckerliOne-Regular'
 }
 
+
 export const COLOR_COMBOS = [
-  [COLORS_LIGHT_THEME.THEME1, COLORS_LIGHT_THEME.THEME2],
   ['rgb(72, 76, 75)', 'rgb(14, 150, 162)'],
   ['rgb(50, 93, 127)', 'rgb(103, 93, 121)'],
   ['rgb(0, 76, 112)', 'rgb(0, 147, 209)'],
@@ -146,7 +151,7 @@ export const COLOR_COMBOS = [
   ['#834d9b', '#d04ed6'],
   ['#2980b9', '#2c3e50'],
   ['#403A3E', '#BE5869'],
-  ['#00C9FF', '#62AE5D']
+  ['#00C9FF', '#62AE5D'],
 ]
 
 export const ICON_SIZE = 18
