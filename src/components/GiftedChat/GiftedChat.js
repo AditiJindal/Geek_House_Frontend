@@ -208,7 +208,7 @@ class GiftedChat extends React.Component {
     componentWillUnmount() {
         this.setIsMounted(false);
     }
-    componentWillReceiveProps(nextProps = {}) {
+    UNSAFE_componentWillReceiveProps(nextProps = {}) {
         const { messages, text } = nextProps;
         this.setMessages(messages || []);
         this.setTextFromProp(text);

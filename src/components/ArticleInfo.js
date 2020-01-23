@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import { View, Text, StyleSheet, StatusBar,
-  FlatList, Animated, TextInput,Dimensions, TouchableOpacity} from 'react-native';
+  Animated, TextInput,Dimensions, TouchableOpacity} from 'react-native';
 import _ from 'lodash';
 import {connect} from 'react-redux';
 import {Overlay,Icon} from 'react-native-elements';
@@ -55,7 +55,7 @@ class ArticleInfo extends PureComponent {
           {cards.map(
             (item, i) => {
               return (
-              <View>
+              <View key={i.toString()}>
                 {(i===this.state.adIndex && this.props.adsManager && this.props.canShowAdsRemote)?
                   <NativeAdsComponent theme={this.props.theme}
                   COLORS = {this.props.COLORS} adsManager={this.props.adsManager} />:
@@ -190,10 +190,8 @@ class ArticleInfo extends PureComponent {
   renderComments(comments){
     const {COLORS} = this.props;
     if (this.props.selectedArticleInfo.cannotComment){
-      // // console.log("here not comment")
       return <View/>
     }
-    // // console.log("ow here: ", this.props)
     return (
       <View style={{margin:5, marginTop:20}}>
         <Text style={{fontSize:32, 
@@ -213,18 +211,14 @@ class ArticleInfo extends PureComponent {
           
           {
             (comments && comments.length!==0)?
-            (<FlatList
-              horizontal={false}
-              data={comments}
-              keyExtractor={(item, i) => i.toString()}
-      
-              renderItem={
-                ({item, index}) => {
+            (
+              comments.map(
+                (item, index) => {
                   if (!item.rating){
                     item.rating=0
                   }
                   return (
-                    <View>
+                    <View key={index.toString()}>
                       <View style={{flexDirection:'row', alignItems:'center'}}>
                         <Image
                           source={{uri:item.author_image}}
@@ -265,8 +259,8 @@ class ArticleInfo extends PureComponent {
                     </View>
                   )
                 }
-              }
-            />):
+              )
+            ):
             (
               <View style={{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
                 <Icon type='material-community' name="comment-outline" size={18} 
@@ -299,7 +293,7 @@ class ArticleInfo extends PureComponent {
         return topic.toUpperCase()
       }
       else{
-        return topic.slice(0,22).toUpperCase() + '...'
+        return topic.slice(0,20).toUpperCase() + '...'
       }
     }
   }
@@ -554,7 +548,6 @@ class ArticleInfo extends PureComponent {
 
   render() {
     const {COLORS} = this.props;
-    // console.log("COLORS: ", COLORS)
     if (!this.props.isVisible){
       return <View/>;
     }
@@ -608,7 +601,6 @@ class ArticleInfo extends PureComponent {
 }
 
 const mapStateToProps =(state) => {
-  // console.log("selected article info: ", state.articleInfo.selectedArticleInfo)
   return {
     userData: state.login.data,
 

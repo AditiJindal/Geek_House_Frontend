@@ -78,7 +78,6 @@ export default class CustomAlert extends Component {
           width="auto"
           height="auto">
           <View style={{padding:10, backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
-
             <Text style={{...styles.TitleStyle,
               color:COLORS.DARK}}>
               {this.props.message.title}

@@ -22,12 +22,11 @@ class Settings extends Component {
   renderHeader(){
     const {COLORS} = this.props;
     return (
-      <View style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
-        marginHorizontal:15,
-        alignItems:'center', flexDirection:'row'}}>
+      <View key={'header'} 
+        style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
+        marginHorizontal:15,alignItems:'center', flexDirection:'row'}}>
         <TouchableOpacity
           activeOpacity={1}
-          
           onPress={() => {Actions.pop()}}
           style={{justifyContent:'center', alignItems:'center',padding:3}}>
           <Icon name="arrow-left" type="material-community" size={26}
@@ -66,8 +65,9 @@ class Settings extends Component {
   renderAboutCards(){
     return (
       <FlatList
+        key={'flatlist'}
         data={this.props.settingsData.about}
-        keyExtractor={(item, i)=>{return i.toString()}}
+        keyExtractor={(item, i)=>i.toString()}
         renderItem={({item})=>{return this.renderCard(item)}}
         contentContainerStyle={{paddingBottom:20}}
       />
@@ -76,7 +76,8 @@ class Settings extends Component {
 
   renderAbout(){
     return (
-      <ScrollView contentContainerStyle={{flex:1, paddingVertical:10, paddingHorizontal:10}}>
+      <ScrollView
+      contentContainerStyle={{flex:1, paddingVertical:10, paddingHorizontal:10}}>
         {this.renderHeader()}
         {this.renderAboutCards()}
       </ScrollView>

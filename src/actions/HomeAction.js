@@ -44,7 +44,7 @@ export const getWelcome = () => {
     dispatch({type:ACTIONS.HOME_LOADING});
 
     AdSettings.addTestDevice(AdSettings.currentDeviceHash);
-    let adsManager = new NativeAdsManager('2329203993862500_2500411190075112', 1);
+    let adsManager = new NativeAdsManager('2458153354447665_2459775687618765', 10);
     adsManager.setMediaCachePolicy('all');
 
     httpClient.get(URLS.welcome).then(
@@ -62,8 +62,9 @@ export const getWelcome = () => {
         }
       }
     ).catch(
-      (e) => {crashlytics().log("HomeAction LINE 61"+e.toString());
-        console.log('error is: ', e);dispatch({type:ACTIONS.HOME_ERROR, payload: "Sorry, could not connect to the server!"})}
+      (e) => {
+        crashlytics().log("HomeAction LINE 61"+e.toString());
+        dispatch({type:ACTIONS.HOME_ERROR, payload: "Sorry, could not connect to the server!"})}
     )
   }      
 };

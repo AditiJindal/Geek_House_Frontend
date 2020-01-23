@@ -144,7 +144,7 @@ class Home extends PureComponent {
         onBackdropPress={()=>{this.props.toggleOverlay({overlayVisible:false})}}
         width={`${OVERLAY_WIDTH_PERCENT}%`}
         height="auto">
-        <View>
+        <>
           <View style={{justifyContent:'space-around', alignItems:'center', flexDirection:'row', }}>
             <Image
               source={{uri:this.props.data.image_url}}
@@ -219,7 +219,7 @@ class Home extends PureComponent {
                 </TouchableOpacity>
               </View>
           </View>
-        </View>
+        </>
       </Overlay>
     )
   }
@@ -289,7 +289,7 @@ class Home extends PureComponent {
       <FlatList data={data_list}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(x) => x.article_id.toString()}
+        keyExtractor={(item) => item.article_id.toString()}
         renderItem = {({item, index}) => {
           return (
             <View style={{marginVertical:15, marginHorizontal:5, flexDirection:'row', alignItems:'center'}}>

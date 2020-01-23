@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { View, Text, StyleSheet, Keyboard, BackHandler, ImageBackground} from 'react-native';
+import { View, Text, StyleSheet, Keyboard, BackHandler, ImageBackground, TouchableOpacity} from 'react-native';
 import {connect} from 'react-redux';
 import {Badge, Icon} from 'react-native-elements';
 import {FONTS} from '../Constants';
@@ -117,17 +117,16 @@ class ChatScreen extends Component {
             </Text>):<View/>}
           </View>
           {(!this.state.imageViewerSelected)?(
-            <View style={{height:32, width:48, justifyContent:'center', alignItems:'center'}}>
-              <Icon name="x-circle" size={22} color={COLORS.RED} type={'feather'} 
-                onPress={() => {
-                  if (this.props.other_user_data.newEntry){
-                    this.props.getChatPeopleExplicitly()
-                  }
-                  this.props.clearOtherUserData();
-                  Actions.pop()
-                }}
-              />
-            </View>
+            <TouchableOpacity style={{height:32, width:48, justifyContent:'center', alignItems:'center'}}
+            onPress={() => {
+              if (this.props.other_user_data.newEntry){
+                this.props.getChatPeopleExplicitly()
+              }
+              this.props.clearOtherUserData();
+              Actions.pop()
+            }}>
+              <Icon name="x-circle" size={22} color={COLORS.RED} type={'feather'}/>
+            </TouchableOpacity>
           ):<View style={{height:32, width:48}}/>}
         </View>
       </View>

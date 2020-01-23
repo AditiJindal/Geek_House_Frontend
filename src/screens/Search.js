@@ -47,7 +47,7 @@ class Search extends Component {
       <FlatList data={articles}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(x) => x.article_id.toString()}
+        keyExtractor={(item) => item.article_id.toString()}
 
         renderItem = {({item, index}) => {
           return (
@@ -221,7 +221,7 @@ class Search extends Component {
               refreshing={false}
             />
           }
-          keyExtractor={(x) => x}
+          keyExtractor={(item, index) => index.toString()}
           renderItem = {({item, index}) => {  // item here is the category
             return (
               <View style={{marginTop:25, alignItems:'flex-start', justifyContent:'flex-start'}}>

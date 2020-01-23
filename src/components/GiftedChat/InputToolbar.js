@@ -161,6 +161,7 @@ export default class InputToolbar extends React.Component {
                     height="auto" width="auto"
                     overlayStyle={{flexDirection:'row',backgroundColor:'rgba(0,0,0,0)', elevation:0}}
                     onBackdropPress={()=>{this.setState({imageSelectorOpen:false})}}>
+                    <>
                     <TouchableOpacity
                         onPress={()=>{
                             this.setState({imageSelectorOpen:false});
@@ -211,12 +212,16 @@ export default class InputToolbar extends React.Component {
                             </Text>
                         </View>
                     </TouchableOpacity>
+                    </>
                 </Overlay>
                 {(!this.state.imageSelectorOpen)?(
-                    <Icon size={22} name="image" type={'feather'}
-                    onPress={()=>{this.setState({imageSelectorOpen:true})}}
-                    color={COLORS.LESSER_DARK}
-                    />
+                    <TouchableOpacity activeOpacity={1}
+                    onPress={()=>{this.setState({imageSelectorOpen:true})}}>
+                        <Icon size={22} name="image" type={'feather'}
+                        color={COLORS.LESSER_DARK}
+                        />
+                    </TouchableOpacity>
+                    
                 ):<View/>}
             </View>
         )

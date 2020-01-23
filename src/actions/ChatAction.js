@@ -7,7 +7,10 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import {database} from '../database';
 import { Q } from '@nozbe/watermelondb';
 import naturalLanguage from '@react-native-firebase/ml-natural-language';
+import perf from '@react-native-firebase/perf';
+
 const MessagesCollection =  database.collections.get('messages');
+const trace = perf().newTrace("get_chat_database");
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
@@ -45,7 +48,6 @@ export const setUserData = (data) => {
 }
 
 export const sendMessage = (socket, message, other_user_id, image) => {
-  console.log('Message is: ', message)
   return (dispatch) => {
     let message_to_send = {text:"", to:"", image}
     if (image){
@@ -109,7 +111,6 @@ export const getChatPeopleExplicitly = () => {
 }
 
 export const checkMessagesObject = (other_user_id, messages) => {
-  // // console.log("MESSAGES:: ",)
   if (!_.has(messages, other_user_id)){
     messages[other_user_id] = [];
   }
@@ -146,6 +147,7 @@ const messageConverter = (item) => {
 
 export const getCurrentUserMessages = (other_user_id, this_user_id) => {
   t = Date.now()
+  trace.start()
   return (dispatch)=>{
     MessagesCollection.query(Q.where('other_user_id', other_user_id)).fetch().then((response)=>{
       let new_response = []
@@ -155,6 +157,9 @@ export const getCurrentUserMessages = (other_user_id, this_user_id) => {
           new_response.unshift(messageConverter(item, this_user_id))  
         }
       });
+      trace.stop()
+      trace.putMetric('get_chat_database', Date.now()-t);
+      logEvent(LOG_EVENT.ASYNC_STORAGE_TIME, {mili_seconds: Date.now()-t,time: Date.now(), type:'get_chat_database'})
       clearTimeout(timer);
       timer = setTimeout(()=>{getQuickReplies(dispatch, new_response.slice(0,4), this_user_id)}, 1500)
       dispatch({type:ACTIONS.CHAT_GET_USER_MESSAGES, payload:new_response})
@@ -187,5 +192,5 @@ export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
 
   naturalLanguage().suggestReplies(feedList)
   .then((response)=>{dispatch({type:ACTIONS.CHAT_QUICK_REPLIES, payload:response})})
-  .catch((e)=>{console.log('Error in quick replies', e)})
+  .catch(e=>crashlytics().log("Error in Quick Replies : "+e.toString()))
 }

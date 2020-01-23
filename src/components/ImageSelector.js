@@ -50,6 +50,7 @@ class ImageSelector extends React.Component{
           height="auto" width="auto"
           overlayStyle={{flexDirection:'row',backgroundColor:'rgba(0,0,0,0)', elevation:0}}
           onBackdropPress={()=>{this.setState({imageSelectorOpen:false})}}>
+          <>
           <StatusBar 
             barStyle={(COLORS.THEME==='light')?'dark-content':'light-content'}
             backgroundColor={COLORS.OVERLAY_COLOR}/>
@@ -103,6 +104,7 @@ class ImageSelector extends React.Component{
               </Text>
             </View>
           </TouchableOpacity>
+          </>
         </Overlay>
       </View>
     )

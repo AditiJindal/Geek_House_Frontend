@@ -80,7 +80,6 @@ export default class MessageImage extends Component {
         let image_url = currentMessage.image.url
         const {width, aspectRatio} = currentMessage.image;
         if (image_url.substring(0,4) !== 'http'){
-            console.log("Adding adder")
             image_url = this.props.image_adder + currentMessage.image.url
         }
         
@@ -101,6 +100,7 @@ export default class MessageImage extends Component {
                 onRequestClose={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
                 overlayBackgroundColor={"rgba(0,0,0,0)"}
                 containerStyle={{padding:0, margin:0, elevation:0}}>
+                <>
                 <StatusBar 
                     barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
                     backgroundColor={COLORS.OVERLAY_COLOR}
@@ -108,21 +108,22 @@ export default class MessageImage extends Component {
                 <TouchableOpacity style={{flex:1, justifyContent:'center', alignItems:'center'}}
                     onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}} activeOpacity={1}>
                     
-                    <TouchableOpacity activeOpacity={1}>
+                    <TouchableOpacity
+                        onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
+                        style={{padding:10, zIndex:10, top:-5, right:5, position:'absolute'}}>
                         <Icon name="x-circle" size={22} 
-                            color={COLORS.RED} type={'feather'}
-                            onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
-                            style={{padding:10, zIndex:10, top:5, right:5, position:'absolute'}}
-                        />
-                        <ImageZoom  imageHeight={showHeight} imageWidth={showWidth}
-                            cropHeight={showHeight} cropWidth={showWidth}  
-                            style={{backgroundColor:'rgba(0,0,0,0.75)', borderRadius:15, overflow:'hidden'}}
-                            enableSwipeDown={true}
-                            onSwipeDown ={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}>
-                            <Image source={{uri:image_url}} style={{height:showHeight, width:showWidth}}/>
-                        </ImageZoom>
+                        color={COLORS.RED} type={'feather'}/>
                     </TouchableOpacity>
+                    
+                    <ImageZoom  imageHeight={showHeight} imageWidth={showWidth}
+                        cropHeight={showHeight} cropWidth={showWidth}  
+                        style={{backgroundColor:'rgba(0,0,0,0.75)', borderRadius:15, overflow:'hidden'}}
+                        enableSwipeDown={true}
+                        onSwipeDown ={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}>
+                        <Image source={{uri:image_url}} style={{height:showHeight, width:showWidth}}/>
+                    </ImageZoom>
                 </TouchableOpacity>
+                </>
             </Overlay>
         </View>
             );

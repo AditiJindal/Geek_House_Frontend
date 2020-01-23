@@ -1,7 +1,8 @@
 import {ACTIONS} from '../actions/types';
 import AsyncStorage from '@react-native-community/async-storage';
-import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
+import {COLORS_LIGHT_THEME, COLORS_DARK_THEME, LOG_EVENT} from '../Constants';
 import analytics from '@react-native-firebase/analytics';
+import {logEvent} from '../actions/ChatAction';
 import perf from '@react-native-firebase/perf';
 import {database} from '../database';
 import uuid from 'uuid';
@@ -91,7 +92,8 @@ const saveData = async (state) => {
   to_save = JSON.stringify(to_save)
   await AsyncStorage.setItem(state.user_id.toString(), to_save)
   trace.stop()
-  trace.putMetric('save_data_time', Date.now()-t)
+  trace.putMetric('save_data_time', Date.now()-t);
+  logEvent(LOG_EVENT.ASYNC_STORAGE_TIME, {mili_seconds: Date.now()-t,time: Date.now(), type:'save_data_async_storage'})
 }
 
 export default (state=INITIAL_STATE, action) => {
@@ -278,7 +280,7 @@ export default (state=INITIAL_STATE, action) => {
       new_currentMessages = [...action.payload.message, ...state.currentMessages]
       if (!state.status.hasOwnProperty(action.payload.other_user_id)){
         new_messages[action.payload.other_user_id] = action.payload.message;
-        new_status[action.payload.other_user_id] = {online: true, typing: false, 
+        new_status[action.payload.other_user_id] = {online: action.payload.isIncomming, typing: false, 
           unread_messages: 0};
 
         state.socket.emit("chat_people_explicitly");

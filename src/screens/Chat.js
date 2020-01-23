@@ -29,7 +29,6 @@ class Chat extends Component {
   }
 
   componentWillUnmount(){
-    // console.log("unmounting chat")
     logEvent(LOG_EVENT.TIME_IN_CHAT, {mili_seconds: Date.now()-this.state.showStartTime,
     endTime:Date.now()})
   }
@@ -136,7 +135,7 @@ class Chat extends Component {
       <FlatList
         data={this.props.chatPeopleSearch}
         contentContainerStyle={{marginTop:15, flex:1}}
-        keyExtractor={(item, index)=>{index.toString()}}
+        keyExtractor={(item, index)=>index.toString()}
         ListHeaderComponent = {
           <View>
             <View style={{height:70, width:1}}/>

@@ -6,22 +6,8 @@ import reducers from './src/reducers';
 import RouterComponent from './src/Router';
 import crashlytics from '@react-native-firebase/crashlytics';
 
-<<<<<<< HEAD
-// import * as Sentry from "@sentry/react-native";
-// import Constants from 'expo-constants';
-
-// Sentry.init({
-//   dsn:'https://6b7690bce216418c8548a265e31eb505@sentry.io/1858364',
-//   enableInExpoDevelopment:true,
-//   debug:true
-// });
-// Sentry.setRelease(Constants.manifest.revisionId);
-crashlytics().setCrashlyticsCollectionEnabled(true)
-console.disableYellowBox=true
-=======
 crashlytics().setCrashlyticsCollectionEnabled(true)
 console.disableYellowBox = true
->>>>>>> watermelon
 export default class App extends Component{
 
   constructor(){

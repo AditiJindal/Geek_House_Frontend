@@ -34,7 +34,7 @@ class Write extends Component {
       <FlatList data={articles}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(x) => x.article_id.toString()}
+        keyExtractor={(item) => item.article_id.toString()}
         renderItem = {({item}) => {
           return (
             <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5}}>
@@ -106,7 +106,7 @@ class Write extends Component {
             }
             ListHeaderComponent={<View style={{height:70, width:1}}/>}
             ListFooterComponent={<View style={{height:200, width:1}}/>}
-            keyExtractor={(x) => x}
+            keyExtractor={(item, index) => index.toString()}
             renderItem = {({item}) => {   // item here is the category
               return (
                 <View style={{marginTop:25, alignItems:'flex-start', justifyContent:'flex-start'}}>

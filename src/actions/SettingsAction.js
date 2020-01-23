@@ -24,7 +24,6 @@ export const getSettingsData = (reload) => {
     const state = getState();
 
     if (reload || !state.settings.gotSettingsData){
-      // // console.log(" i m reloading data: ")
       httpClient.get(URLS.settings).then((response)=>{
         dispatch({type: ACTIONS.GET_SETTINGS_DATA, payload: response.data})
       }).catch(e=>crashlytics().log("SettingAction LINE 28"+e.toString()))

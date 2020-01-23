@@ -1,6 +1,6 @@
 import {ACTIONS} from './types';
 import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
-import {AppState,Alert} from 'react-native';
+import {AppState} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {setSocket} from './ChatAction'
@@ -15,7 +15,10 @@ import analytics from '@react-native-firebase/analytics';
 import crashlytics from '@react-native-firebase/crashlytics';
 import {getQuickReplies, logEvent} from './ChatAction';
 import messages from '@react-native-firebase/messaging';
+import perf from '@react-native-firebase/perf';
 import PushNotification from "react-native-push-notification";
+
+const trace = perf().newTrace("get_data_async_storage")
 
 var timer = null;
 
@@ -70,7 +73,12 @@ const handleNotification = (notification) => {
 
 const makeConnection = async (json_data, dispatch, getState) => {
 
+  const t = Date.now()
+  trace.start()
   AsyncStorage.getItem(json_data.authtoken.toString()).then((response)=>{
+    trace.stop()
+    trace.putMetric('get_async_storage_time', Date.now()-t);
+    logEvent(LOG_EVENT.ASYNC_STORAGE_TIME, {mili_seconds: Date.now()-t,time: Date.now(), type:'get_data_async_storage'})
     response = JSON.parse(response)
 
     dispatch({type:ACTIONS.CHAT_FIRST_LOGIN, 
@@ -195,6 +203,7 @@ export const checkLogin = () => {
 
 export const loginGoogle = () => {
   return (dispatch, getState)=>{
+    dispatch({type:ACTIONS.LOADING_GOOGLE, payload:true});
     GoogleSignin.configure({
       androidClientId: "315957273790-l39qn5bp73tj2ug8r46ejdcj5t2gb433.apps.googleusercontent.com",
       webClientId: "315957273790-o4p20t2j3brt7c8bqc68814pj63j1lum.apps.googleusercontent.com",
@@ -230,26 +239,24 @@ export const loginGoogle = () => {
             payload: {first_login:response.data.first_login, theme:response.data.theme,
               authtoken:final_data.authtoken}})
           dispatch({type:ACTIONS.LOGIN_DATA, payload:final_data});
-          // Image.prefetch(final_data.data.image_url)
           makeConnection(final_data, dispatch, getState);
           Actions.replace("main");
         }
       ).catch(e=>{
         crashlytics().log("LoginAction LINE 208"+e.toString());
-        Alert.alert("Here 5",e.toString())})
-      // })
+        dispatch({type:ACTIONS.LOADING_GOOGLE, payload:false});})
     }).catch(e=>{
-      Alert.alert("Here 4",e.toString());
+      dispatch({type:ACTIONS.LOADING_GOOGLE, payload:false});
       crashlytics().log("LoginAction LINE 211"+e.toString())})
   }
 }
 
 export const loginFacebook = () => {
   return (dispatch, getState) => {
-    dispatch({type:ACTIONS.LOADING_FB});
+    dispatch({type:ACTIONS.LOADING_FB, payload:true});
     LoginManager.logInWithPermissions(["public_profile", "email"]).then((response)=>{
       if (response.isCancelled){
-        dispatch({type:ACTIONS.LOGIN_ERROR, payload:response.type});
+        dispatch({type:ACTIONS.LOADING_FB, payload:false});
       }
       else{
         AccessToken.getCurrentAccessToken().then((response)=>{
@@ -297,19 +304,22 @@ export const loginFacebook = () => {
                     }
                   ).catch(e=>{
                     crashlytics().log("LoginAction LINE 272"+e.toString());
-                    Alert.alert("Here 3",e.toString())})
-                  // })
+                    dispatch({type:ACTIONS.LOADING_FB, payload:false});})
                 }
-              ).catch(e=>crashlytics().log("LoginAction LINE 276"+e.toString()))
+              ).catch(e=>{
+                dispatch({type:ACTIONS.LOADING_FB, payload:false});
+                crashlytics().log("LoginAction LINE 276"+e.toString())})
             }
           ).catch(e=>{
-            crashlytics().log("LoginAction LINE 277"+e.toString());
-            Alert.alert("Here 2",e.toString())})
-        })
+            dispatch({type:ACTIONS.LOADING_FB, payload:false});
+            crashlytics().log("LoginAction LINE 277"+e.toString())})
+        }).catch(e=>{
+          dispatch({type:ACTIONS.LOADING_FB, payload:false});
+          crashlytics().log("LoginAction LINE 313"+e.toString())})
       }
     }).catch(e=>{
+    dispatch({type:ACTIONS.LOADING_FB, payload:false});
     crashlytics().log("LoginAction LINE 280"+e.toString())
-    Alert.alert("Here 1",e.toString());crashlytics().log("LoginAction:loginFacebook:logInWithPermissions")
-    ;crashlytics().recordError(e)})
+    crashlytics().recordError(e)})
   };
 }

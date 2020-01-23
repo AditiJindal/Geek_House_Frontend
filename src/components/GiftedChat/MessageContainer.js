@@ -123,7 +123,6 @@ export default class MessageContainer extends React.PureComponent {
             return null;
         };
         this.renderHeaderWrapper = () => (<View style={styles.headerWrapper}>{this.renderLoadEarlier()}</View>);
-        this.keyExtractor = (item) => `${item._id}`;
     }
     componentDidMount() {
         if (this.props.messages && this.props.messages.length === 0) {
@@ -132,20 +131,6 @@ export default class MessageContainer extends React.PureComponent {
     }
     componentWillUnmount() {
         this.detachKeyboardListeners();
-    }
-    componentWillReceiveProps(nextProps) {
-        if (this.props.messages &&
-            this.props.messages.length === 0 &&
-            nextProps.messages &&
-            nextProps.messages.length > 0) {
-            this.detachKeyboardListeners();
-        }
-        else if (this.props.messages &&
-            nextProps.messages &&
-            this.props.messages.length > 0 &&
-            nextProps.messages.length === 0) {
-            this.attachKeyboardListeners();
-        }
     }
     scrollTo(options) {
         if (this.flatListRef && this.flatListRef.current && options) {
@@ -173,11 +158,11 @@ export default class MessageContainer extends React.PureComponent {
         }
         return (
             <View style={{flexDirection:'row', alignItems:'flex-end', height:30,alignItems:'center', marginLeft:5 }}>
-                {this.props.quick_replies.map((item)=>{
+                {this.props.quick_replies.map((item, index)=>{
                     return (
                     <TouchableOpacity onPress={()=>{
                             this.props.onSend({text: item.text}, true)
-                        }}>
+                        }} key={index.toString()}>
                         <LinearGradient style={{paddingHorizontal:10, paddingVertical:5, borderRadius:20, elevation:4,
                         marginHorizontal:7, borderColor:COLORS_LIGHT_THEME.YELLOW,}} 
                         colors = {["#fa163f", "#e32249"]}>
@@ -206,7 +191,7 @@ export default class MessageContainer extends React.PureComponent {
             keyboardShouldPersistTaps="always"
             ref={this.flatListRef} 
             extraData={this.props.extraData}
-            keyExtractor={this.keyExtractor} 
+            keyExtractor={(item, index)=>index.toString()} 
             enableEmptySections 
             automaticallyAdjustContentInsets={false} 
             inverted={this.props.inverted}

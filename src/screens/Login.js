@@ -94,12 +94,6 @@ class Login extends Component {
         return <View/>
       }
     }
-  
-  displayErrorMessage(){
-    if (this.props.error){
-      Alert.alert(this.props.error)
-    }
-  }
 
   _renderLogin(){
     return(
@@ -119,7 +113,6 @@ class Login extends Component {
         <View style={{padding:10, flex:1, justifyContent:'center', alignItems:'center'}}>
           {this.renderGoogleButton()}
           {this.renderFacebookButton()}
-          {this.displayErrorMessage()}
         </View>
       </View>
     );
@@ -151,7 +144,6 @@ const mapStateToProps = (state) => {
   return {
     googleLoading:state.login.googleLoading,
     facebookLoading:state.login.facebookLoading,
-    error:state.login.error,
     loading: state.login.loading
   };
 }

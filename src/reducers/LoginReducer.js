@@ -5,7 +5,6 @@ const INITIAL_STATE={
   googleLoading:false,
   facebookLoading:false,
   loading: true,
-  error:'',
   authtoken:'',
   categories:[],
 }
@@ -17,29 +16,25 @@ export default (state=INITIAL_STATE, action) => {
       return {...INITIAL_STATE, loading: false}
 
     case ACTIONS.LOADING_FB:
-      return {...state, facebookLoading:true, error:''}
+      return {...state, facebookLoading:action.payload}
 
     case ACTIONS.LOADING_GOOGLE:
 
-      return {...state, googleLoading:true, error:''}
+      return {...state, googleLoading:action.payload}
 
     case ACTIONS.CHECKING_LOGIN: 
       return {...state, loading: true}
 
     case ACTIONS.LOGIN_DATA:
-      // console.log("insied login data!: ", action.payload)
       return {
         ...state,
         data:action.payload.data,
         facebookLoading:false, 
-        googleLoading:false, error:'', 
+        googleLoading:false,
         authtoken:action.payload.authtoken, 
         loading:false, 
         categories:action.payload.categories
       };
-    
-    case ACTIONS.LOGIN_ERROR:
-      return {data:{}, facebookLoading:false, googleLoading:false, error:action.payload, authtoken:'', loading:false};
 
     default:
       return state;

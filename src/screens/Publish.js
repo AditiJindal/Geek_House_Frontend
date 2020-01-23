@@ -27,12 +27,6 @@ class Publish extends Component {
     analytics().setCurrentScreen('Publish', 'Publish')
   }
 
-  componentWillReceiveProps(nextProps){
-    if (nextProps.published && !nextProps.loading){
-      this.animation.play()
-    }
-  }
-
   renderBack(){
     const {COLORS} = this.props;
     return (
@@ -114,7 +108,7 @@ class Publish extends Component {
       contents:this.props.contents, category:this.props.category}
     return (
       <TouchableOpacity activeOpacity={0.5} style={{borderWidth:0, bottom:15,position:"absolute",alignSelf:'center'}}
-        onPress={()=>{ this.props.publishArticle(data_to_send) }}>
+        onPress={()=>{ this.props.publishArticle(data_to_send, this.animation) }}>
         {
           (this.props.loading)?
             <Loading size={50}/>:

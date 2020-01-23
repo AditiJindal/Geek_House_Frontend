@@ -38,7 +38,7 @@ export default class RaisedText extends Component {
   componentDidMount(){
     if(this.props.animationEnabled){
       this.interval = setInterval(()=>{
-        setTimeout(()=>{
+        this.timer = setTimeout(()=>{
           if (this.state.card){
             this.state.card.flip()
           }
@@ -50,7 +50,7 @@ export default class RaisedText extends Component {
   componentWillUnmount(){
     if (this.props.animationEnabled){
       clearInterval(this.interval)
-      clearTimeout()
+      clearTimeout(this.timer)
     }
   }
 

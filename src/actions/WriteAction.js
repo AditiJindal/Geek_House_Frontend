@@ -20,7 +20,6 @@ export const setAuthToken = () => {
 // till here
 
 export const getMyArticles = (myArticlesLength, reload) => {
-  console.log("Condition gets : ", myArticlesLength===0 || reload, myArticlesLength===0 , reload)
   if (myArticlesLength===0 || reload){
     return (dispatch) => {
       dispatch({type:ACTIONS.WRITE_LOADING});
@@ -69,7 +68,7 @@ export const uploadImage = async (resourceData, file) => {
   })
 }
 
-export const publishArticle = (article) => {
+export const publishArticle = (article, success_animation) => {
   return (dispatch) => {
     dispatch({type:ACTIONS.WRITE_LOADING})
 
@@ -92,6 +91,7 @@ export const publishArticle = (article) => {
       httpClient.post(URLS.publish, article).then(
         () => {       
           dispatch({type:ACTIONS.PUBLISH_SUCCESS});
+          success_animation.play()
         }
       ).catch(e=>crashlytics().log("WriteAction LINE 94"+e.toString()))
     }

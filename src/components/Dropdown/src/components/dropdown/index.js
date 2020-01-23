@@ -167,13 +167,6 @@ export default class Dropdown extends PureComponent {
       searchValue:""
     };
   }
-
-  // componentWillReceiveProps({ value }) {
-  //   if (value !== this.props.value) {
-  //     this.setState({ value });
-  //   }
-  // }
-
   componentDidMount() {
     if (Platform.OS === 'android') {
       if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -188,7 +181,6 @@ export default class Dropdown extends PureComponent {
   }
 
   onPress(event) {
-    // console.log("Event is: ", event)
     let {
       data,
       disabled,
@@ -304,7 +296,6 @@ export default class Dropdown extends PureComponent {
         }
 
         if (this.mounted) {
-          // console.log("Setting state and value: ", value)
           this.setState({ value, modal: false });
         }
       });
@@ -322,7 +313,6 @@ export default class Dropdown extends PureComponent {
     let value = valueExtractor(data[index], index);
 
     if ('function' === typeof onChangeText) {
-      // console.log("Selected value: ", index)
       onChangeText(value, index, data);
     }
 
