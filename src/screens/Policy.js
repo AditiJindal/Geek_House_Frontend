@@ -1,23 +1,33 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StatusBar, StyleSheet, ScrollView, FlatList} from 'react-native';
+import { View, Text, TouchableOpacity, StatusBar, 
+  StyleSheet, ScrollView, Linking, BackHandler} from 'react-native';
 import { connect } from 'react-redux';
 import Loading from '../components/Loading';
-import {setAuthToken, getSettingsData} from '../actions/SettingsAction';
+import {getPolicy} from '../actions/LoginAction';
 import { Actions } from 'react-native-router-flux';
-import {FONTS} from '../Constants';
+import {FONTS, LOG_EVENT} from '../Constants';
 import { Icon } from 'react-native-elements';
+import {logEvent} from '../actions/ChatAction';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics'
+import analytics from '@react-native-firebase/analytics';
 
-class Settings extends Component {
+class Policy extends Component {
 
   componentDidMount(){
-    this.props.setAuthToken();
-    analytics().setCurrentScreen('About', 'About')
-    this.props.getSettingsData();
+    if (!this.props.policy){
+      this.props.getPolicy()
+    }
+    analytics().setCurrentScreen('Policy', 'Policy');
+    logEvent(LOG_EVENT.SCREEN_CHANGE, 'policy')
+    BackHandler.addEventListener('hardwareBackPress', ()=>{
+      changeNavigationBarColor(this.props.navBar, false)
+    })
   }
 
+  componentWillUnmount(){
+    BackHandler.removeEventListener('hardwareBackPress')
+  }
 
   renderHeader(){
     const {COLORS} = this.props;
@@ -27,7 +37,10 @@ class Settings extends Component {
         marginHorizontal:15,alignItems:'center', flexDirection:'row'}}>
         <TouchableOpacity
           activeOpacity={1}
-          onPress={() => {Actions.pop()}}
+          onPress={() => {
+            changeNavigationBarColor(this.props.navBar, false)
+            Actions.pop()
+          }}
           style={{justifyContent:'center', alignItems:'center',padding:3}}>
           <Icon name="arrow-left" type="material-community" size={26}
             containerStyle={{marginVertical:5, marginRight:15}} 
@@ -36,7 +49,7 @@ class Settings extends Component {
 
         <Text style={{...styles.HeadingTextStyling, 
         color:COLORS.LESS_DARK}}>
-          about
+          T&C and Policies
         </Text>
       </View>
     )
@@ -62,32 +75,54 @@ class Settings extends Component {
     )
   }
 
-  renderAboutCards(){
-    return (
-      this.props.settingsData.about.map(item => {
-        return this.renderCard(item)
-      })
-    );
+  renderPolicyCards(){
+    return this.props.policy.cards.map( item=>{
+      return this.renderCard(item)
+    })
   }
 
-  renderAbout(){
+  renderLinks(){
     const {COLORS} = this.props;
+    return(
+      <SView style={{
+        borderRadius:10, padding:5, marginVertical:5, marginHorizontal:15,
+        shadowColor:'#202020',shadowOpacity:0.25,shadowOffset:{width:0,height:8},shadowRadius:6,
+        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
+        paddingHorizontal:10, marginBottom:10}}>
+        <Text style={{...styles.SubheadingTextStyle, color:COLORS.LESSER_DARK}}>
+          Other Links
+        </Text>
+        {
+          this.props.policy.links.map((item, index)=>{return (              
+            <View style={{flexDirection:'row', alignItems:'flex-end'}}>
+              <Text style={{...styles.TextStyling, color:COLORS.LESS_DARK, fontSize:16}}>
+                {`${index+1}) `}
+              </Text>
+              <TouchableOpacity onPress={()=>{Linking.openURL(item.link)}}>
+                <Text style={{...styles.TextStyling, color:COLORS.DARK_BLUE, textDecorationLine:'underline', fontSize:16}}>
+                  {item.text}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )})
+        }
+      </SView>
+    )
+  }
+
+  renderPolicy(){
     return (
       <ScrollView
-      contentContainerStyle={{flexGrow:1, paddingVertical:10, paddingHorizontal:10}}>
+      contentContainerStyle={{flex:1, paddingTop:10, paddingHorizontal:10, paddingBottom:20}}>
         {this.renderHeader()}
-        {this.renderAboutCards()}
-        <TouchableOpacity onPress={()=>{Actions.jump('policy', {navBar:COLORS.LIGHT})}}
-          style={{bottom:10, position:'absolute', alignSelf:'center'}}>
-          <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.PRODUCT_SANS, textDecorationLine:'underline'}}>
-            Check our Terms & Conditions
-          </Text>
-        </TouchableOpacity>
+        {this.renderPolicyCards()}
+        {this.renderLinks()}
       </ScrollView>
     );
   }
 
   render(){
+    const {COLORS} = this.props;
     return (
       <View style={{flex:1, 
         backgroundColor:COLORS.LIGHT}}>
@@ -97,11 +132,11 @@ class Settings extends Component {
         />
         {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
         {
-          (this.props.loading)?
+          (this.props.policyLoading)?
           (<View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
             <Loading size={128} white={(this.props.theme!=='light')} />
           </View>):
-          this.renderAbout()
+          this.renderPolicy()
         }
       </View>
     );
@@ -110,17 +145,15 @@ class Settings extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    data: state.login.data,
-
-    settingsData: state.settings.settingsData,
-    loading: state.settings.loading,
+    policy: state.login.policy,
+    policyLoading: state.login.policyLoading,
 
     theme: state.chat.theme,
     COLORS: state.chat.COLORS
   }
 }
 
-export default connect(mapStateToProps, {setAuthToken, getSettingsData})(Settings);
+export default connect(mapStateToProps, {getPolicy})(Policy);
 
 const styles = StyleSheet.create({
   HeadingTextStyling:{

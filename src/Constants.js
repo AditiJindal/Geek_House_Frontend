@@ -1,3 +1,5 @@
+const prod_keys = require('../prod_keys.json');
+
 export const COLORS_LIGHT_THEME = {
   THEME1:'#00b0f0',
   THEME2:'#00b050',
@@ -69,6 +71,8 @@ export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
 export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
 export const BASE_URL = (__DEV__)?BASE_URL_DEBUG:BASE_URL_PROD
 
+export const KEYCODE = prod_keys.KEYCODE;
+
 export const HTTP_TIMEOUT = 12000
 
 export const LOG_EVENT = {
@@ -99,6 +103,7 @@ export const URLS = {
   feedback: '/api/feedback/',
   bookmark_article: '/api/bookmark_article/',
   get_bookmarked_articles: '/api/get_bookmarked_articles/',
+  policy: '/policy/'
 }
 
 export const FONTS = {

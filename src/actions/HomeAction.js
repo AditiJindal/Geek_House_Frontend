@@ -2,10 +2,17 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {ACTIONS} from './types';
 import {logEvent} from './ChatAction';
 import {uploadImage} from './WriteAction';
-import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT, KEYCODE} from '../Constants';
 import axios from 'axios';
 import {Actions} from 'react-native-router-flux';
 import {NativeAdsManager, AdSettings} from 'react-native-fbads';
+import CryptoJS from 'crypto-js';
+
+// var ciphertext = CryptoJS.AES.encrypt('my message', KEYCODE).toString()
+// var bytes  = CryptoJS.AES.decrypt(ciphertext, KEYCODE);
+// var plaintext = bytes.toString(CryptoJS.enc.Utf8);
+ 
+// console.log(plaintext==='my message');
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
@@ -16,7 +23,7 @@ httpClient.defaults.baseURL = BASE_URL;
 export const setAuthToken = () => {
   return (dispatch, getState) => {
     const state = getState();
-    httpClient.defaults.headers.common['Authorization'] = state.login.authtoken;
+    httpClient.defaults.headers.common['Authorization'] = state.login.authtoken
     dispatch({type:null})
   }
 }

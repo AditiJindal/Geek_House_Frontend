@@ -14,6 +14,8 @@ import About from './screens/About';
 import Feedback from './screens/Feedback';
 import Bookmark from './screens/Bookmark';
 import NotificationArticle from './screens/NotificationArticle';
+import Policy from './screens/Policy';
+
 import { COLORS_DARK_THEME } from './Constants';
 
 
@@ -39,6 +41,7 @@ const RouterComponent = () => {
             <Scene key="about" component={About} hideNavBar/>
             <Scene key="notification_article" component={NotificationArticle} hideNavBar/>
           </Scene>
+          <Scene key="policy" component={Policy} hideNavBar/>
         </Scene>
       </Router>
     );

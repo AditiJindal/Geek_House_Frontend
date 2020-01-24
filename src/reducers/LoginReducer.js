@@ -7,6 +7,8 @@ const INITIAL_STATE={
   loading: true,
   authtoken:'',
   categories:[],
+  policy: null,
+  policyLoading:true
 }
 
 export default (state=INITIAL_STATE, action) => {
@@ -34,6 +36,16 @@ export default (state=INITIAL_STATE, action) => {
         authtoken:action.payload.authtoken, 
         loading:false, 
         categories:action.payload.categories
+      };
+
+    case ACTIONS.LOGIN_POLICY:
+      return {
+        ...state,
+        policy:{
+          cards: action.payload.cards,
+          links: action.payload.links
+        },
+        policyLoading:false
       };
 
     default:

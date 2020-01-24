@@ -4,17 +4,19 @@ import { View, Text, TouchableOpacity,
 import { connect } from 'react-redux';
 import {setAuthToken} from '../actions/ArticleInfoAction';
 import { Actions } from 'react-native-router-flux';
-import {FONTS} from '../Constants';
+import {FONTS, LOG_EVENT} from '../Constants';
 import { Icon } from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import analytics from '@react-native-firebase/analytics';
 import ArticleTile from '../components/ArticleTile';
+import {logEvent} from '../actions/ChatAction';
 
 class NotificationArticle extends Component {
 
   componentDidMount(){
     this.props.setAuthToken();
-    analytics().setCurrentScreen('About', 'About')
+    analytics().setCurrentScreen('NotificationArticle', 'NotificationArticle');
+    logEvent(LOG_EVENT.SCREEN_CHANGE, 'notification_article')
   }
 
 

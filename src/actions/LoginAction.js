@@ -10,7 +10,6 @@ import io from 'socket.io-client';
 import uuid from 'uuid/v4';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
-import * as RNLocalize from "react-native-localize";
 import analytics from '@react-native-firebase/analytics';
 import crashlytics from '@react-native-firebase/crashlytics';
 import {getQuickReplies, logEvent} from './ChatAction';
@@ -122,7 +121,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
     name: json_data.data.name,
     deviceInfo: {manufacturer,designName,modelName,osName,totalMemory},
     carrier,
-    countryCode: RNLocalize.getCountry(),
+    countryCode:'IN',
   }
 
   socket.emit('join', to_emit)
@@ -322,4 +321,15 @@ export const loginFacebook = () => {
     crashlytics().log("LoginAction LINE 280"+e.toString())
     crashlytics().recordError(e)})
   };
+}
+
+export const getPolicy = () => {
+  return (dispatch) => {
+    httpClient.get(URLS.policy).then((response)=>{
+      // response should have two things in it ->
+      // 1) List of cards with title and content
+      // 2) List of links that user might want to see
+      dispatch({type:ACTIONS.LOGIN_POLICY, payload: response.data})
+    })
+  }
 }

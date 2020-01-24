@@ -6,6 +6,7 @@ export const ACTIONS={
     LOADING_GOOGLE: 'login.loading_google',
     LOGIN_ERROR: 'login.login_error',
     LOGIN_SUCCESS: 'login.login_success',
+    LOGIN_POLICY: 'login.policy',
 
     // HOME
     LOGOUT: 'home.logout',

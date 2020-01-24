@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import React, {Component} from 'react';
 import { View, StyleSheet, Text, StatusBar,
   FlatList, ScrollView, TouchableNativeFeedback,Linking,
   TouchableOpacity}from 'react-native';
@@ -31,8 +31,7 @@ import analytics from '@react-native-firebase/analytics';
 import ArticleTileAds from '../components/ArticleTileAds';
 
 const OVERLAY_WIDTH_PERCENT=75
-const GOOGLE_PLAY_URL = `https://play.google.com/store/apps/details?id=${APP_INFO.package}`
-class Home extends PureComponent {
+class Home extends Component {
   state = {adIndex:0}
 
   constructor() {
@@ -205,7 +204,7 @@ class Home extends PureComponent {
                 <TouchableOpacity
                   onPress={() => {
                     analytics().logEvent('app_rating')
-                    Linking.openURL(GOOGLE_PLAY_URL)
+                    Linking.openURL(this.props.welcomeData.playStoreUrl)
                   }}
                   style={{elevation:3,
                   justifyContent:'center', alignItems:'center', flexDirection:'row', 

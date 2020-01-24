@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { View, StyleSheet, Text, StatusBar, Alert}from 'react-native';
+import { View, StyleSheet, Text, StatusBar, TouchableOpacity}from 'react-native';
 import {connect} from 'react-redux';
 import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
@@ -10,7 +10,7 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import Image from 'react-native-fast-image';
 import SplashScreen from 'react-native-splash-screen';
 import analytics from '@react-native-firebase/analytics';
-
+import { Actions } from 'react-native-router-flux';
 
 class Login extends Component {
 
@@ -95,6 +95,18 @@ class Login extends Component {
       }
     }
 
+  _renderPolicy(){
+    return(
+      <TouchableOpacity style={{alignSelf:'center'}}
+        onPress={()=>{Actions.jump('policy', {navBar:COLORS_LIGHT_THEME.THEME2})}}>
+        <Text style={{fontSize:10, textDecorationLine:'underline',
+          fontFamily:FONTS.HELVETICA_NEUE, color:COLORS_LIGHT_THEME.LIGHT}}>
+          T&C and Policies
+        </Text>
+      </TouchableOpacity>
+    )
+  }
+
   _renderLogin(){
     return(
       <View style={{flex:1}}>
@@ -114,6 +126,7 @@ class Login extends Component {
           {this.renderGoogleButton()}
           {this.renderFacebookButton()}
         </View>
+        {this._renderPolicy()}
       </View>
     );
   }
@@ -135,7 +148,6 @@ class Login extends Component {
           this._renderLogin()
         }
       </LinearGradient>
-
     );
   }
 }
