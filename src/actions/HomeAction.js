@@ -2,17 +2,11 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {ACTIONS} from './types';
 import {logEvent} from './ChatAction';
 import {uploadImage} from './WriteAction';
-import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT, KEYCODE} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import axios from 'axios';
+import {encrypt, decrypt} from '../encryptionUtil';
 import {Actions} from 'react-native-router-flux';
 import {NativeAdsManager, AdSettings} from 'react-native-fbads';
-import CryptoJS from 'crypto-js';
-
-// var ciphertext = CryptoJS.AES.encrypt('my message', KEYCODE).toString()
-// var bytes  = CryptoJS.AES.decrypt(ciphertext, KEYCODE);
-// var plaintext = bytes.toString(CryptoJS.enc.Utf8);
- 
-// console.log(plaintext==='my message');
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
@@ -23,7 +17,7 @@ httpClient.defaults.baseURL = BASE_URL;
 export const setAuthToken = () => {
   return (dispatch, getState) => {
     const state = getState();
-    httpClient.defaults.headers.common['Authorization'] = state.login.authtoken
+    httpClient.defaults.headers.common['Authorization'] = encrypt(state.login.authtoken)
     dispatch({type:null})
   }
 }
@@ -84,10 +78,10 @@ export const submitFeedback = (feedback_obj) => {
     const local_image_url = feedback_obj.image_url
     if (local_image_url){
       httpClient.get(URLS.imageupload).then((response)=>{
-        const preSignedURL = response.data.url;
+        const preSignedURL = decrypt(response.data.url);
         uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, local_image_url)
         .then(()=>{
-          feedback_obj.image_url = response.data.key;
+          feedback_obj.image_url = decrypt(response.data.key);
           httpClient.post(URLS.feedback, feedback_obj)
         }).catch(e=>crashlytics().log("HomeAction LINE 80"+e.toString()))
       }).catch(e=>crashlytics().log("HomeAction LINE 81"+e.toString()))

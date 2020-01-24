@@ -2,7 +2,7 @@ import {ACTIONS} from './types';
 import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
 import axios from 'axios';
 import crashlytics from '@react-native-firebase/crashlytics';
-
+import {encrypt} from '../encryptionUtil';
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
@@ -13,7 +13,7 @@ httpClient.defaults.baseURL = BASE_URL;
 export const setAuthToken = () => {
   return (dispatch, getState) => {
     const state = getState();
-    httpClient.defaults.headers.common['Authorization'] = state.login.authtoken;
+    httpClient.defaults.headers.common['Authorization'] = encrypt(state.login.authtoken);
     dispatch({type:null})
   }
 }

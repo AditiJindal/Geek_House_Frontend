@@ -8,6 +8,7 @@ import {database} from '../database';
 import { Q } from '@nozbe/watermelondb';
 import naturalLanguage from '@react-native-firebase/ml-natural-language';
 import perf from '@react-native-firebase/perf';
+import {encrypt, decrypt} from '../encryptionUtil';
 
 const MessagesCollection =  database.collections.get('messages');
 const trace = perf().newTrace("get_chat_database");
@@ -23,7 +24,7 @@ httpClient.defaults.baseURL = BASE_URL;
 export const setAuthToken = () => {
   return (dispatch, getState) => {
     const state = getState();
-    httpClient.defaults.headers.common['Authorization'] = state.login.authtoken;
+    httpClient.defaults.headers.common['Authorization'] = encrypt(state.login.authtoken);
     dispatch({type:ACTIONS.CHAT_AUTH_TOKEN_SET})
   }
 }
@@ -47,11 +48,25 @@ export const setUserData = (data) => {
   return {type:ACTIONS.SET_CHAT_USER_DATA, payload:data}
 }
 
+const encryptMessage = (message) => {
+  if (message.image && message.image.url){
+    message.image.url = encrypt(message.image.url)
+  }
+  if (message.text){
+    message.text = encrypt(message.text)
+  }
+  return {...message}
+}
+
 export const sendMessage = (socket, message, other_user_id, image) => {
   return (dispatch) => {
     let message_to_send = {text:"", to:"", image}
     if (image){
       httpClient.get(URLS.imageupload).then((response)=>{
+        response.data.url = decrypt(response.data.url)
+        response.data.key = decrypt(response.data.key)
+        
+
         const psu = response.data.url;
         const pathToImage = image.url;
         const options = {contentType: "image/jpeg", uploadUrl: psu}
@@ -61,7 +76,10 @@ export const sendMessage = (socket, message, other_user_id, image) => {
           image.name = response.data.file_name
           message_to_send.text = message[0].text;
           message_to_send.to = other_user_id;
-          socket.emit('message', message_to_send)
+
+          socket.emit('message', encryptMessage(message_to_send));
+          message[0].image.url = decrypt(message[0].image.url)
+          
           dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id, isIncomming:false}})
         }).catch(e=>crashlytics().log("ChatAction LINE 58"+e.toString()))
       })
@@ -69,7 +87,7 @@ export const sendMessage = (socket, message, other_user_id, image) => {
     else{
       message_to_send.text = message[0].text;
       message_to_send.to = other_user_id;
-      socket.emit('message', message_to_send)
+      socket.emit('message', encryptMessage(message_to_send))
       dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id}})
     }
   }

@@ -16,6 +16,7 @@ import {getQuickReplies, logEvent} from './ChatAction';
 import messages from '@react-native-firebase/messaging';
 import perf from '@react-native-firebase/perf';
 import PushNotification from "react-native-push-notification";
+import { encrypt, decrypt } from '../encryptionUtil';
 
 const trace = perf().newTrace("get_data_async_storage")
 
@@ -69,6 +70,15 @@ const handleNotification = (notification) => {
   }
 }
 
+const decryptMessage = (message) => {
+  if (message.image && message.image.url){
+    message.image.url = decrypt(message.image.url)
+  }
+  if (message.text){
+    message.text = decrypt(message.text)
+  }
+  return message
+}
 
 const makeConnection = async (json_data, dispatch, getState) => {
 
@@ -127,6 +137,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
   socket.emit('join', to_emit)
 
   socket.on('incoming_message', (data)=>{
+    data = decryptMessage(data);
     const message = incomingMessageConverter(data);
     const {chat} = getState();
     let temp_currentMessages = chat.currentMessages.slice(0,3);
@@ -211,11 +222,11 @@ export const loginGoogle = () => {
     GoogleSignin.signIn().then(async (response)=>{
       pushToken = await getFCMToken()
       let new_data = {
-        id: response.user.id+'google',
+        id: encrypt(response.user.id+'google'),
         name: response.user.name, 
         email: response.user.email,
         image_url: response.user.photo,//response.user.photoURL,
-        pushToken
+        pushToken: encrypt(pushToken)
       };
       httpClient.post(URLS.login, new_data).then(
         (response) => {
@@ -269,11 +280,11 @@ export const loginFacebook = () => {
                 async (data) => {
                   pushToken = await getFCMToken()
                   let new_data = {
-                    id:data.id+'facebook', 
+                    id: encrypt(data.id+'facebook'), 
                     name:data.name, 
                     email:data.email, 
                     image_url:data.picture.data.url,
-                    pushToken
+                    pushToken: encrypt(pushToken)
                   }
                   
                   httpClient.post(URLS.login, new_data).then(
