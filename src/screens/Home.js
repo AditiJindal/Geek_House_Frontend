@@ -458,7 +458,7 @@ class Home extends Component {
           backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
           <Text style={{...styles.TextStyle, 
             color:COLORS.DARK}}>
-            home {APP_INFO.version}
+            home
           </Text>
           {this.renderAvatar()}
         </ShadowView>
