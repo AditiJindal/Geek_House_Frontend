@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     borderRadius:15,
   },
   SubHeadingStyle:{
-    fontFamily:FONTS.MERRIWEATHER,
+    fontFamily:FONTS.RALEWAY,
     fontSize:20,
     marginBottom:5,
     paddingBottom:3,
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   ContentStyle:{
     textAlign:'justify',
     fontFamily:FONTS.MERRIWEATHER,
-    fontSize:16,
+    fontSize:14,
     marginHorizontal:10,
     marginBottom:5,
     minHeight:MIN_TI_HEIGHT

@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     padding:15
   },
   SubHeadingStyle:{
-    fontFamily:FONTS.MERRIWEATHER_BOLD,
+    fontFamily:FONTS.RALEWAY_BOLD,
     fontSize:20,
     marginBottom:5,
     borderBottomWidth:0.5,
@@ -41,6 +41,6 @@ const styles = StyleSheet.create({
   ContentStyle:{
     textAlign:'justify',
     fontFamily:FONTS.MERRIWEATHER,
-    fontSize:16
+    fontSize:14
   }
 })

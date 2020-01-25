@@ -81,7 +81,7 @@ class Chat extends Component {
             refreshing={false}
           />
         }
-        contentContainerStyle={{marginTop:15, flex:1}}
+        contentContainerStyle={{marginTop:15, flexGrow:1}}
         keyboardShouldPersistTaps="always"
         data={DATA}
         ListHeaderComponent = {

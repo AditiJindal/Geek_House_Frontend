@@ -71,7 +71,10 @@ export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
 export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
 export const BASE_URL = (__DEV__)?BASE_URL_DEBUG:BASE_URL_PROD
 
-export const KEYCODE = prod_keys.KEYCODE;
+
+const KEYCODE_PROD = prod_keys.KEYCODE
+const KEYCODE_DEBUG = "MBpS0pmNerFI5ppMmvrdL4Cs2ebLvyJ5ZZLPcWredWM8bZLlj0pUUPcKUbjdzR6o"
+export const KEYCODE = (__DEV__)?KEYCODE_DEBUG:KEYCODE_PROD;
 
 export const HTTP_TIMEOUT = 12000
 

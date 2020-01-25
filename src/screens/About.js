@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StatusBar, StyleSheet, ScrollView, FlatList} from 'react-native';
+import { View, Text, TouchableOpacity, StatusBar, StyleSheet, ScrollView} from 'react-native';
 import { connect } from 'react-redux';
 import Loading from '../components/Loading';
 import {setAuthToken, getSettingsData} from '../actions/SettingsAction';
+import {logEvent} from '../actions/ChatAction';
 import { Actions } from 'react-native-router-flux';
-import {FONTS} from '../Constants';
+import {FONTS, LOG_EVENT} from '../Constants';
 import { Icon } from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
@@ -42,10 +43,10 @@ class Settings extends Component {
     )
   }
 
-  renderCard(item){
+  renderCard(item, index){
     const {COLORS} = this.props;
     return (
-      <SView style={{
+      <SView key={index.toString()} style={{
         borderRadius:10, padding:5, marginVertical:5, marginHorizontal:15,
         shadowColor:'#202020',shadowOpacity:0.25,shadowOffset:{width:0,height:8},shadowRadius:6,
         backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
@@ -64,9 +65,7 @@ class Settings extends Component {
 
   renderAboutCards(){
     return (
-      this.props.settingsData.about.map(item => {
-        return this.renderCard(item)
-      })
+      this.props.settingsData.about.map((item, index) => this.renderCard(item, index))
     );
   }
 
@@ -77,7 +76,10 @@ class Settings extends Component {
       contentContainerStyle={{flexGrow:1, paddingVertical:10, paddingHorizontal:10}}>
         {this.renderHeader()}
         {this.renderAboutCards()}
-        <TouchableOpacity onPress={()=>{Actions.jump('policy', {navBar:COLORS.LIGHT})}}
+        <View style={{height:20, width:1}}/>
+        <TouchableOpacity key={'touchable_opacity'} onPress={()=>{
+          logEvent(LOG_EVENT.SCREEN_CHANGE, 'policy');
+          Actions.jump('policy', {navBar:COLORS.LIGHT})}}
           style={{bottom:10, position:'absolute', alignSelf:'center'}}>
           <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.PRODUCT_SANS, textDecorationLine:'underline'}}>
             Check our Terms & Conditions
@@ -134,7 +136,8 @@ const styles = StyleSheet.create({
   },
   TextStyling: {
     fontFamily: FONTS.PRODUCT_SANS,
-    fontSize: 18,
-    marginVertical:2
+    fontSize: 14,
+    marginVertical:2,
+    textAlign:'justify'
   }
 })

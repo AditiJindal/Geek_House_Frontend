@@ -5,9 +5,8 @@ import { connect } from 'react-redux';
 import Loading from '../components/Loading';
 import {getPolicy} from '../actions/LoginAction';
 import { Actions } from 'react-native-router-flux';
-import {FONTS, LOG_EVENT} from '../Constants';
+import {FONTS} from '../Constants';
 import { Icon } from 'react-native-elements';
-import {logEvent} from '../actions/ChatAction';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
@@ -19,7 +18,6 @@ class Policy extends Component {
       this.props.getPolicy()
     }
     analytics().setCurrentScreen('Policy', 'Policy');
-    logEvent(LOG_EVENT.SCREEN_CHANGE, 'policy')
     BackHandler.addEventListener('hardwareBackPress', ()=>{
       changeNavigationBarColor(this.props.navBar, false)
     })
@@ -55,10 +53,11 @@ class Policy extends Component {
     )
   }
 
-  renderCard(item){
+  renderCard(item, index){
     const {COLORS} = this.props;
     return (
-      <SView style={{
+      <SView key={index.toString()}
+      style={{
         borderRadius:10, padding:5, marginVertical:5, marginHorizontal:15,
         shadowColor:'#202020',shadowOpacity:0.25,shadowOffset:{width:0,height:8},shadowRadius:6,
         backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
@@ -76,13 +75,12 @@ class Policy extends Component {
   }
 
   renderPolicyCards(){
-    return this.props.policy.cards.map( item=>{
-      return this.renderCard(item)
-    })
+    return this.props.policy.cards.map((item, index)=> this.renderCard(item, index))
   }
 
   renderLinks(){
     const {COLORS} = this.props;
+    if (this.props.policy.links.length===0){return null}
     return(
       <SView style={{
         borderRadius:10, padding:5, marginVertical:5, marginHorizontal:15,
@@ -94,7 +92,7 @@ class Policy extends Component {
         </Text>
         {
           this.props.policy.links.map((item, index)=>{return (              
-            <View style={{flexDirection:'row', alignItems:'flex-end'}}>
+            <View style={{flexDirection:'row', alignItems:'flex-end'}} key={index.toString()}>
               <Text style={{...styles.TextStyling, color:COLORS.LESS_DARK, fontSize:16}}>
                 {`${index+1}) `}
               </Text>
@@ -113,7 +111,7 @@ class Policy extends Component {
   renderPolicy(){
     return (
       <ScrollView
-      contentContainerStyle={{flex:1, paddingTop:10, paddingHorizontal:10, paddingBottom:20}}>
+      contentContainerStyle={{flexGrow:1, paddingTop:10, paddingHorizontal:10, paddingBottom:20}}>
         {this.renderHeader()}
         {this.renderPolicyCards()}
         {this.renderLinks()}
@@ -167,7 +165,8 @@ const styles = StyleSheet.create({
   },
   TextStyling: {
     fontFamily: FONTS.PRODUCT_SANS,
-    fontSize: 18,
-    marginVertical:2
+    fontSize: 14,
+    marginVertical:2,
+    textAlign:'justify'
   }
 })

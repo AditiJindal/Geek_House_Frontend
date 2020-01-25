@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   flatList: {
-    flex: 1,
+    flexGrow: 1,
     flexDirection: isAndroidRTL ? 'row-reverse' : 'row',
   },
   paginationContainer: {

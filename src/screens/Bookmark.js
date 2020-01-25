@@ -12,7 +12,7 @@ import {FONTS} from '../Constants';
 
 
 class Bookmark extends React.Component{
-  state={adIndex:0, adCategoryIndex: 0}
+  state={adIndex:0, adCategoryIndex: []}
 
   componentDidMount(){
     if (Object.keys(this.props.bookmarked_articles).length===0){
@@ -48,8 +48,8 @@ class Bookmark extends React.Component{
 
     if (this.props.bookmarks_loading){
       return(
-        <View style={{flex:1}}>
-          <ScrollView style={{flex:1}} nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
+        <View style={{flexGrow:1}}>
+          <ScrollView style={{flexGrow:1}} nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
             {this.renderHeader()}
             <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} autoRun={true} duration={600} delay={100}
               style={{height:35, borderRadius:5, marginTop:30, marginLeft:15, alignItems:'center', elevation:6}}
@@ -85,8 +85,14 @@ class Bookmark extends React.Component{
 
     else{
       const category_list = Object.keys(this.props.bookmarked_articles);
-      if (!this.state.adCategoryIndex){
-        this.setState({adCategoryIndex: _.random(1, category_list.length)})
+      if (!this.state.adCategoryIndex.length){
+        this.setState({adCategoryIndex : [
+          _.random(0, category_list.length),
+          _.random(0, category_list.length),
+          _.random(0, category_list.length),
+          _.random(0, category_list.length),
+          _.random(0, category_list.length)
+        ]})
       }
 
       return (
@@ -106,7 +112,7 @@ class Bookmark extends React.Component{
                         color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.GRAY}}>{item}</Text>
                     </View>
                   </View>
-                  {this.renderTopics(data[item], (index===(this.state.adCategoryIndex-1)) )}
+                  {this.renderTopics(data[item], this.state.adCategoryIndex.includes(index) )}
                 </View>
               )
             }}
@@ -131,7 +137,7 @@ class Bookmark extends React.Component{
           return (
             <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5, alignItems:'center'}}>
               {
-                (index===this.state.adIndex && adsManager && canShowAds && canShowAdsRemote)?(
+                (index===this.state.adIndex && index && adsManager && canShowAds && canShowAdsRemote)?(
                   <View style={{marginRight:10}}>
                     <ArticleTileAds theme={theme} 
                       COLORS = {COLORS} adsManager={adsManager}/>

@@ -28,7 +28,7 @@ import analytics from '@react-native-firebase/analytics';
 import ArticleTileAds from '../components/ArticleTileAds';
 
 class Search extends Component {
-  state = {adIndex:0, adCategoryIndex: 0}
+  state = {adIndex:0, adCategoryIndex: []}
 
   componentDidMount(){
     if (!this.props.popularSearchesData.response){
@@ -53,7 +53,7 @@ class Search extends Component {
           return (
             <View style={{marginVertical:15, flexDirection:'row', marginHorizontal:5, alignItems:'center'}}>
               {
-                (index===this.state.adIndex && adsManager && canShowAds && canShowAdsRemote)?(
+                (index===this.state.adIndex && index && adsManager && canShowAds && canShowAdsRemote)?(
                   <View style={{marginRight:10}}>
                     <ArticleTileAds theme={theme} 
                       COLORS = {COLORS} adsManager={adsManager}/>
@@ -151,7 +151,7 @@ class Search extends Component {
     if (this.props.loading){
       return(
         <View style={{flex:1}}>
-          <ScrollView style={{flex:1}} nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
+          <ScrollView style={{flexGrow:1}} nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
             <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={!this.props.loading} autoRun={true} duration={650} delay={0} 
             style={{marginRight:25, borderRadius:8, height:50, width:200, marginTop:10, elevation:6}}/>
             <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} autoRun={true} duration={600} delay={100}
@@ -188,8 +188,14 @@ class Search extends Component {
 
     else{
       const category_list = Object.keys(response);
-      if (!this.state.adCategoryIndex){
-        this.setState({adCategoryIndex : _.random(1, category_list.length)})
+      if (!this.state.adCategoryIndex.length){
+        this.setState({adCategoryIndex : [
+          _.random(0, category_list.length),
+          _.random(0, category_list.length),
+          _.random(0, category_list.length),
+          _.random(0, category_list.length),
+          _.random(0, category_list.length)
+        ]})
       }
 
       if (category_list.length===0){
@@ -205,7 +211,7 @@ class Search extends Component {
       return (
         <FlatList
           data={category_list}
-          contentContainerStyle={{width:"100%",}}
+          contentContainerStyle={{width:"100%", flexGrow:1}}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent = {
             <View>
@@ -233,7 +239,7 @@ class Search extends Component {
                     </Text>
                   </View>
                 </View>
-                {this.renderTopics(response[item], item, (index===(this.state.adCategoryIndex-1)) )}
+                {this.renderTopics(response[item], item, this.state.adCategoryIndex.includes(index) )}
               </View>
             )
           }}

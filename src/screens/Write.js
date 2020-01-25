@@ -55,7 +55,7 @@ class Write extends Component {
     if (this.props.loading){
       return(
         <View style={{width:"100%"}}>
-          <ScrollView style={{flex:1}} nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
+          <ScrollView style={{flexGrow:1}} nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
             <View style={{height:70, width:1}}/>
             <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} autoRun={true} duration={600} delay={100}
               style={{height:35, borderRadius:5, marginTop:30, marginLeft:15, alignItems:'center', elevation:6}}
