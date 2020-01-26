@@ -1,7 +1,7 @@
 import {ACTIONS} from './types';
-import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import axios from 'axios';
-import crashlytics from '@react-native-firebase/crashlytics';
+import {logEvent} from './ChatAction';
 import {encrypt, decrypt} from '../encryptionUtil';
 
 // Bullshit to do in evey file ->
@@ -28,7 +28,7 @@ export const getMyArticles = (myArticlesLength, reload) => {
           dispatch({type:ACTIONS.GET_MY_ARTICLES,
           payload:{response:response.data.response, all_categories:response.data.all_categories}})
         }
-      ).catch(e=>crashlytics().log("WriteAction LINE 30"+e.toString()))
+      ).catch(e=>logEvent(LOG_EVENT, {errorLine: 'WRITE ACTION - 32', description:e.toString()}))
     }
   }
   else{
@@ -76,7 +76,7 @@ export const publishArticle = (article, success_animation) => {
       httpClient.get(URLS.imageupload).then((response)=>{
         const preSignedURL = decrypt(response.data.url)
         const pathToImage = article.image
-        uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, pathToImage)        
+        uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, pathToImage)    
           .then(() => {
             article.image = decrypt(response.data.key)
             httpClient.post(URLS.publish, article).then(
@@ -84,8 +84,8 @@ export const publishArticle = (article, success_animation) => {
                 dispatch({type:ACTIONS.PUBLISH_SUCCESS});
               }
             );
-          }).catch(e=>crashlytics().log("WriteAction LINE 86"+e.toString()))
-        }).catch(e=>crashlytics().log("WriteAction LINE 87"+e.toString()))
+          }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'WRITE ACTION - 88', description:e.toString()}))
+        }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'WRITE ACTION - 89', description:e.toString()}))
       }
     else{
       httpClient.post(URLS.publish, article).then(
@@ -93,7 +93,7 @@ export const publishArticle = (article, success_animation) => {
           dispatch({type:ACTIONS.PUBLISH_SUCCESS});
           success_animation.play()
         }
-      ).catch(e=>crashlytics().log("WriteAction LINE 94"+e.toString()))
+      ).catch(e=>logEvent(LOG_EVENT, {errorLine: 'WRITE ACTION - 97', description:e.toString()}))
     }
     };
   }

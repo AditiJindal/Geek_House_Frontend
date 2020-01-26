@@ -99,11 +99,8 @@ class Feedback extends Component {
         {
           (this.state.feedback_submitted)?(
             <View style={{flex:1, justifyContent:'center', alignItems:'center', flexWrap:'wrap'}}>
-              <Icon name="check" size={72} style={{margin:20, padding:10, borderRadius:50,
-                backgroundColor:COLORS.GREEN}} type={'feather'}
-                color={COLORS.LESSER_LIGHT} />
               <Text style={{color:COLORS.LIGHT_GRAY,
-                fontFamily:FONTS.RALEWAY_LIGHT, fontSize:36, marginHorizontal:20, textAlign:'center', marginBottom:15}}>
+                fontFamily:FONTS.RALEWAY_LIGHT, fontSize:36, marginHorizontal:20, textAlign:'center',}}>
                 Thank You for Feedback
               </Text>
             </View>

@@ -4,9 +4,7 @@ import {createStore, applyMiddleware} from 'redux';
 import ReduxThunk from 'redux-thunk';
 import reducers from './src/reducers';
 import RouterComponent from './src/Router';
-import crashlytics from '@react-native-firebase/crashlytics';
 
-crashlytics().setCrashlyticsCollectionEnabled(true)
 console.disableYellowBox = true
 export default class App extends Component{
 

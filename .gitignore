@@ -32,7 +32,7 @@ coverage
 bower_components
 
 # PROD_KEYS
-prod_keys.json
+prod_keys.js
 
 # node-waf configuration
 .lock-wscript

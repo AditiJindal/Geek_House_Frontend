@@ -233,7 +233,7 @@ export default class AppIntroSlider extends React.Component {
           data={this.props.slides}
           horizontal
           pagingEnabled
-          keyExtractor = {({item, index})=>index.toString()}
+          keyExtractor = {(item, index)=>index.toString()}
           showsHorizontalScrollIndicator={false}
           bounces={false}
           style={styles.flatList}

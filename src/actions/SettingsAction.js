@@ -2,7 +2,6 @@ import {ACTIONS} from './types';
 import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
 import uuid from 'uuid';
 import axios from 'axios';
-import crashlytics from '@react-native-firebase/crashlytics';
 import RNFileSystem from 'react-native-fs';
 import {encrypt} from '../encryptionUtil';
 
@@ -27,7 +26,7 @@ export const getSettingsData = (reload) => {
     if (reload || !state.settings.gotSettingsData){
       httpClient.get(URLS.settings).then((response)=>{
         dispatch({type: ACTIONS.GET_SETTINGS_DATA, payload: response.data})
-      }).catch(e=>crashlytics().log("SettingAction LINE 28"+e.toString()))
+      }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'SEARCH ACTION - 30', description:e.toString()}))
     }
   }
 }

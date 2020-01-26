@@ -48,7 +48,7 @@ class Bookmark extends React.Component{
 
     if (this.props.bookmarks_loading){
       return(
-        <View style={{flexGrow:1}}>
+        <View style={{flex:1}}>
           <ScrollView style={{flexGrow:1}} nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
             {this.renderHeader()}
             <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} autoRun={true} duration={600} delay={100}
@@ -96,7 +96,7 @@ class Bookmark extends React.Component{
       }
 
       return (
-        <View style={{width:"100%", flex:1}}>
+        <View style={{flexGrow:1}}>
           <FlatList
             data={category_list}
             showsVerticalScrollIndicator={false}
@@ -160,7 +160,7 @@ class Bookmark extends React.Component{
         {
           ((Object.keys(this.props.bookmarked_articles).length!==0) || this.props.bookmarks_loading)?
           this.renderCategory():(
-          <View style={{flex:1,}}>
+          <View style={{flexGrow:1}}>
             {this.renderHeader()}
             <View style={{flex:1, justifyContent:'center', alignItems:'center', padding:30}}>
               <Text style={{textAlign:'center', fontFamily: FONTS.PRODUCT_SANS_BOLD, fontSize:18, 

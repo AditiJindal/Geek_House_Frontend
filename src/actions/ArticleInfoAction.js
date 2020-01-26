@@ -1,8 +1,9 @@
 import {ACTIONS} from './types';
-import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import axios from 'axios';
-import crashlytics from '@react-native-firebase/crashlytics';
+import {logEvent} from './ChatAction';
 import {encrypt} from '../encryptionUtil';
+
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
@@ -42,7 +43,7 @@ const articleHandler = (dispatch, getState, article_id, preview_article, forceUp
         (response) => {
           dispatch({type:ACTIONS.GET_ARTICLE_INFO, payload:{article:response.data, add:true, forceUpdate}})
         }
-      ).catch(e=>crashlytics().log("ArticleInfoAction LINE 45"+e.toString()))
+      ).catch(e=>logEvent(LOG_EVENT, {errorLine: 'ARTICLE INFO ACTION - 46', description:e.toString()}))
       }
     }
   
@@ -58,7 +59,7 @@ export const submitComment = (to_send) => {
     httpClient.post(URLS.comment, to_send).then((response) => {
       // dispatch({type:ACTIONS.ARTICLE_ADD_COMMENT, payload:to_send});
       articleHandler(dispatch, getState, to_send.article_id, false, true)
-    }).catch(e=>crashlytics().log("ArticleInfoAction LINE 60"+e.toString()))
+    }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'ARTICLE INFO ACTION - 62', description:e.toString()}))
   }
 }
 
@@ -66,7 +67,7 @@ export const bookmarkArticle = (article_id, bookmarked) => {
   return (dispatch)=>{
     httpClient.post(URLS.bookmark_article, {article_id, add:!bookmarked}).then(()=>{
       dispatch({type:ACTIONS.ARTICLE_BOOKMARK, payload:{article_id, bookmarked: !bookmarked}})
-    })
+    }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'ARTICLE INFO ACTION - 70', description:e.toString()}))
   }
 }
 
@@ -75,6 +76,8 @@ export const getBookmarkedArticles = () => {
     dispatch({type:ACTIONS.BOOKMARKS_LOADING});
     httpClient.get(URLS.get_bookmarked_articles).then((response) => {
       dispatch({type:ACTIONS.GET_BOOKMARKS, payload:response.data})
-    }).catch(()=>{dispatch({type:ACTIONS.BOOKMARKS_ERROR, payload:"Couldn't get your bookmarked articles"})})
+    }).catch((e)=>{
+      logEvent(LOG_EVENT, {errorLine: 'ARTICLE INFO ACTION - 80, Database Error', description:e.toString()})
+      dispatch({type:ACTIONS.BOOKMARKS_ERROR, payload:"Couldn't get your bookmarked articles"})})
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "Geek_House",
-  "version": "1.4",
+  "version": "1.5",
   "package": "com.tjprodutions.geekhousern",
   "private": true,
   "scripts": {
@@ -19,7 +19,6 @@
     "@react-native-community/image-editor": "^2.2.0",
     "@react-native-firebase/analytics": "^6.2.0",
     "@react-native-firebase/app": "^6.2.0",
-    "@react-native-firebase/crashlytics": "^6.2.0",
     "@react-native-firebase/messaging": "^6.2.0",
     "@react-native-firebase/ml-natural-language": "^6.2.0",
     "@react-native-firebase/ml-vision": "^6.2.0",

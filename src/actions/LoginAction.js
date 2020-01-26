@@ -11,14 +11,14 @@ import uuid from 'uuid/v4';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
 import analytics from '@react-native-firebase/analytics';
-import crashlytics from '@react-native-firebase/crashlytics';
 import {getQuickReplies, logEvent} from './ChatAction';
 import messages from '@react-native-firebase/messaging';
 import perf from '@react-native-firebase/perf';
 import PushNotification from "react-native-push-notification";
 import { encrypt, decrypt } from '../encryptionUtil';
 
-const trace = perf().newTrace("get_data_async_storage")
+const trace = perf().newTrace("get_data_async_storage");
+PushNotification.cancelAllLocalNotifications()
 
 var timer = null;
 
@@ -95,7 +95,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
     
     dispatch({type:ACTIONS.CHAT_LOAD_DATA, 
       payload: {...response, user_id: json_data.authtoken.toString()}})
-  }).catch(e=>crashlytics().log("LoginAction LINE 56"+e.toString()))
+  }).catch(()=>{})
   dispatch({type:ACTIONS.LOGIN_DATA, payload:{data:json_data.data,
     authtoken:json_data.authtoken, categories:json_data.categories}})
   const socket = io.connect(BASE_URL, {
@@ -198,15 +198,12 @@ export const checkLogin = () => {
           makeConnection(json_data, dispatch, getState)
           Actions.replace("main");
           analytics().setUserId(json_data.data.authtoken);
-          crashlytics().setUserId(json_data.data.authtoken);
-          crashlytics().setUserEmail(json_data.data.email);
-          crashlytics().setUserName(json_data.data.name);
         }
         else{
           dispatch({type:ACTIONS.LOGOUT})
         }
       }
-  ).catch(e=>crashlytics().log("LoginAction LINE 161"+e.toString()))
+  ).catch(()=>{})
 }
 }
 
@@ -222,21 +219,23 @@ export const loginGoogle = () => {
     GoogleSignin.signIn().then(async (response)=>{
       pushToken = await getFCMToken()
       let new_data = {
-        id: encrypt(response.user.id+'google'),
+        id: response.user.id+'google',
         name: response.user.name, 
         email: response.user.email,
         image_url: response.user.photo,//response.user.photoURL,
-        pushToken: encrypt(pushToken)
+        pushToken: pushToken
       };
-      httpClient.post(URLS.login, new_data).then(
+
+      let data_to_send = new_data
+      data_to_send.id = encrypt(data_to_send.id);
+      data_to_send.pushToken = encrypt(data_to_send.pushToken)
+
+      httpClient.post(URLS.login, data_to_send).then(
         (response) => {
           authtoken = response.data.token
           final_data = {data:new_data, authtoken:authtoken, 
             categories:response.data.categories, theme:response.data.theme}
           analytics().setUserId(authtoken);
-          crashlytics().setUserId(authtoken);
-          crashlytics().setUserEmail(new_data.email);
-          crashlytics().setUserName(new_data.name);
           to_save = JSON.stringify(final_data)
           AsyncStorage.setItem('data', to_save)
           if (response.data.first_login){
@@ -253,11 +252,9 @@ export const loginGoogle = () => {
           Actions.replace("main");
         }
       ).catch(e=>{
-        crashlytics().log("LoginAction LINE 208"+e.toString());
-        dispatch({type:ACTIONS.LOADING_GOOGLE, payload:false});})
+        dispatch({type:ACTIONS.LOADING_GOOGLE, payload:false})})
     }).catch(e=>{
-      dispatch({type:ACTIONS.LOADING_GOOGLE, payload:false});
-      crashlytics().log("LoginAction LINE 211"+e.toString())})
+      dispatch({type:ACTIONS.LOADING_GOOGLE, payload:false})})
   }
 }
 
@@ -280,22 +277,23 @@ export const loginFacebook = () => {
                 async (data) => {
                   pushToken = await getFCMToken()
                   let new_data = {
-                    id: encrypt(data.id+'facebook'), 
+                    id: data.id+'facebook', 
                     name:data.name, 
                     email:data.email, 
                     image_url:data.picture.data.url,
-                    pushToken: encrypt(pushToken)
+                    pushToken: pushToken
                   }
+
+                  let data_to_send = new_data
+                  data_to_send.id = encrypt(data_to_send.id);
+                  data_to_send.pushToken = encrypt(data_to_send.pushToken)
                   
-                  httpClient.post(URLS.login, new_data).then(
+                  httpClient.post(URLS.login, data_to_send).then(
                     (response) => {
                       authtoken = response.data.token
                       final_data = {data:new_data, authtoken:authtoken, 
                         categories:response.data.categories}
                       analytics().setUserId(authtoken);
-                      crashlytics().setUserId(authtoken);
-                      crashlytics().setUserEmail(data.email);
-                      crashlytics().setUserName(data.name);
                       
                       to_save = JSON.stringify(final_data)
                       AsyncStorage.setItem('data', to_save)
@@ -313,33 +311,25 @@ export const loginFacebook = () => {
                       Actions.replace("main");
                     }
                   ).catch(e=>{
-                    crashlytics().log("LoginAction LINE 272"+e.toString());
                     dispatch({type:ACTIONS.LOADING_FB, payload:false});})
                 }
               ).catch(e=>{
-                dispatch({type:ACTIONS.LOADING_FB, payload:false});
-                crashlytics().log("LoginAction LINE 276"+e.toString())})
+                dispatch({type:ACTIONS.LOADING_FB, payload:false})})
             }
           ).catch(e=>{
-            dispatch({type:ACTIONS.LOADING_FB, payload:false});
-            crashlytics().log("LoginAction LINE 277"+e.toString())})
+            dispatch({type:ACTIONS.LOADING_FB, payload:false})})
         }).catch(e=>{
-          dispatch({type:ACTIONS.LOADING_FB, payload:false});
-          crashlytics().log("LoginAction LINE 313"+e.toString())})
+          dispatch({type:ACTIONS.LOADING_FB, payload:false})})
       }
     }).catch(e=>{
     dispatch({type:ACTIONS.LOADING_FB, payload:false});
-    crashlytics().log("LoginAction LINE 280"+e.toString())
-    crashlytics().recordError(e)})
-  };
+  });
+  }
 }
 
 export const getPolicy = () => {
   return (dispatch) => {
     httpClient.get(URLS.policy).then((response)=>{
-      // response should have two things in it ->
-      // 1) List of cards with title and content
-      // 2) List of links that user might want to see
       dispatch({type:ACTIONS.LOGIN_POLICY, payload: response.data})
     })
   }

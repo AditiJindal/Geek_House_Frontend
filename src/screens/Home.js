@@ -26,7 +26,6 @@ import ShimmerPlaceHolder from 'react-native-shimmer-placeholder'
 import { Actions } from 'react-native-router-flux';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
-import APP_INFO from '../../package.json';
 import analytics from '@react-native-firebase/analytics';
 import ArticleTileAds from '../components/ArticleTileAds';
 

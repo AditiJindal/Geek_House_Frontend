@@ -4,8 +4,10 @@ import { connect } from 'react-redux';
 import {logout} from '../actions';
 import {logEvent} from '../actions/ChatAction';
 import Loading from '../components/Loading';
+import {decrypt} from '../encryptionUtil';
 import {setAuthToken, getSettingsData, settingsChangeFavouriteCategory, 
-  changeTheme, changeAnimationSettings, changeChatWallpaper, changeBlurRadius} from '../actions/SettingsAction';
+  changeTheme, changeAnimationSettings, 
+  changeChatWallpaper, changeBlurRadius} from '../actions/SettingsAction';
 import { Actions } from 'react-native-router-flux';
 import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
@@ -21,6 +23,7 @@ import TimedAlert from '../components/TimedAlert';
 
 
 const getId = (id) => {
+  id = decrypt(id)
   id = id.replace('google','');
   id = id.replace('facebook','');
   return id

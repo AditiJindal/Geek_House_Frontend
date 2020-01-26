@@ -1,4 +1,4 @@
-const prod_keys = require('../prod_keys.json');
+import {KEYCODE_PROD} from '../prod_keys';
 
 export const COLORS_LIGHT_THEME = {
   THEME1:'#00b0f0',
@@ -72,7 +72,6 @@ export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
 export const BASE_URL = (__DEV__)?BASE_URL_DEBUG:BASE_URL_PROD
 
 
-const KEYCODE_PROD = prod_keys.KEYCODE
 const KEYCODE_DEBUG = "MBpS0pmNerFI5ppMmvrdL4Cs2ebLvyJ5ZZLPcWredWM8bZLlj0pUUPcKUbjdzR6o"
 export const KEYCODE = (__DEV__)?KEYCODE_DEBUG:KEYCODE_PROD;
 
@@ -84,7 +83,8 @@ export const LOG_EVENT = {
   CURRENT_VIEW_MODE: 'current_view_mode',
   TIME_IN_CHAT: 'time_in_chat',
   TIME_IN_ARTICLE_INFO: 'time_in_article_info',
-  ASYNC_STORAGE_TIME: 'async_storage_time'
+  ASYNC_STORAGE_TIME: 'async_storage_time',
+  ERROR: 'error'
 }
 
 export const URLS = {

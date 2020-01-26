@@ -3,7 +3,6 @@ import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import axios from 'axios';
 import _ from 'lodash';
 import {uploadImage} from './WriteAction';
-import crashlytics from '@react-native-firebase/crashlytics';
 import {database} from '../database';
 import { Q } from '@nozbe/watermelondb';
 import naturalLanguage from '@react-native-firebase/ml-natural-language';
@@ -40,7 +39,7 @@ export const getChatPeople = () => {
     dispatch({type:ACTIONS.CHAT_LOADING})
     httpClient.get(URLS.chatpeople).then(
       (response) => {dispatch({type:ACTIONS.GET_CHAT_PEOPLE, payload:response.data});}
-    ).catch(e=>crashlytics().log("ChatAction LINE 34"+e.toString()))
+    ).catch(e=>logEvent(LOG_EVENT, {errorLine: 'CHAT ACTION - 43', description:e.toString()}))
   };
 };
 
@@ -81,8 +80,8 @@ export const sendMessage = (socket, message, other_user_id, image) => {
           message[0].image.url = decrypt(message[0].image.url)
           
           dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id, isIncomming:false}})
-        }).catch(e=>crashlytics().log("ChatAction LINE 58"+e.toString()))
-      })
+        }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'CHAT ACTION - 83, Upload to AWS S3', description:e.toString()}))
+      }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'CHAT ACTION - 84, Image Upload', description:e.toString()}))
     }
     else{
       message_to_send.text = message[0].text;
@@ -210,5 +209,5 @@ export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
 
   naturalLanguage().suggestReplies(feedList)
   .then((response)=>{dispatch({type:ACTIONS.CHAT_QUICK_REPLIES, payload:response})})
-  .catch(e=>crashlytics().log("Error in Quick Replies : "+e.toString()))
+  .catch(e=>logEvent(LOG_EVENT, {errorLine: 'CHAT ACTION - 213, Quick Replies Error', description:e.toString()}))
 }

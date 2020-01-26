@@ -1,8 +1,8 @@
 import {ACTIONS} from './types';
-import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import {OVERLAY_COLOR} from '../Constants';
+import {logEvent} from './ChatAction';
 import axios from 'axios';
-import crashlytics from '@react-native-firebase/crashlytics'
 import {encrypt} from '../encryptionUtil';
 
 // Bullshit to do in evey file ->
@@ -18,7 +18,6 @@ export const setAuthToken = () => {
     dispatch({type:null})
   }
 }
-
 // till here
 
 
@@ -28,7 +27,7 @@ export const getPopularSearches = () => {
     httpClient.get(URLS.popularsearches).then((response) => {
       dispatch({type:ACTIONS.POPULAR_SEARCHES_SUCCESS, payload:response.data})
     }).catch(() => {
-      crashlytics().log("SearchAction LINE 30"+e.toString());
+      logEvent(LOG_EVENT, {errorLine: 'SEARCH ACTION - 31', description:e.toString()})
       showAlert(true, {})})
   }
 }
@@ -49,7 +48,7 @@ export const doSearch = (search, category) => {
       (response) => {
         dispatch({type:ACTIONS.DO_SEARCH, payload:response.data})
       }
-    ).catch(e=>crashlytics().log("SearchAction LINE 51"+e.toString()))
+    ).catch(e=>logEvent(LOG_EVENT, {errorLine: 'SEARCH ACTION - 452', description:e.toString()}))
   }
 }
 

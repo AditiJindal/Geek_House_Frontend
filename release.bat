@@ -1,1 +1,1 @@
-react-native run-android --variant=release
+cd android && gradlew assembleRelease

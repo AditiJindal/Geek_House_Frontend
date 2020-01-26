@@ -2,12 +2,12 @@ import React, {Component} from 'react';
 import { View, StyleSheet, TextInput, TouchableOpacity, Text}from 'react-native';
 import {Icon} from 'react-native-elements'
 import CustomAlert from '../components/CustomAlert';
-import {FONTS, ERROR_MESSAGES} from '../Constants';
+import {FONTS, ERROR_MESSAGES, LOG_EVENT} from '../Constants';
+import {logEvent} from '../actions/ChatAction';
 import SView from 'react-native-simple-shadow-view';
 import vision from '@react-native-firebase/ml-vision';
 import ImageSelector from './ImageSelector';
 import Loading from './Loading';
-import crashlytics from '@react-native-firebase/crashlytics';
 
 
 const MIN_TI_HEIGHT = 120;
@@ -38,7 +38,7 @@ export default class WriteView extends Component {
       }
       this.props.onContentChange(response.text, this.props.index);
       this.setState({visionLoading:false})
-    }).catch(e=>crashlytics().log("WriteView LINE 40"+e.toString()))
+    }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'WRITE VIEW - 42', description:e.toString()}))
 
   }
 
