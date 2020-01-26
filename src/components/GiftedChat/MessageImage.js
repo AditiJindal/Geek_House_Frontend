@@ -107,21 +107,21 @@ export default class MessageImage extends Component {
                 />
                 <TouchableOpacity style={{flex:1, justifyContent:'center', alignItems:'center'}}
                     onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}} activeOpacity={1}>
-                    
-                    <TouchableOpacity
+                    <View style={{height:showHeight, width:showWidth}}>
+                        <TouchableOpacity
                         onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
                         style={{padding:10, zIndex:10, top:-5, right:5, position:'absolute'}}>
-                        <Icon name="x-circle" size={22} 
-                        color={COLORS.RED} type={'feather'}/>
-                    </TouchableOpacity>
-                    
-                    <ImageZoom  imageHeight={showHeight} imageWidth={showWidth}
-                        cropHeight={showHeight} cropWidth={showWidth}  
-                        style={{backgroundColor:'rgba(0,0,0,0.75)', borderRadius:15, overflow:'hidden'}}
-                        enableSwipeDown={true}
-                        onSwipeDown ={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}>
-                        <Image source={{uri:image_url}} style={{height:showHeight, width:showWidth}}/>
-                    </ImageZoom>
+                            <Icon name="x-circle" size={22} 
+                                color={COLORS.RED} type={'feather'}/>
+                        </TouchableOpacity>
+                        <ImageZoom  imageHeight={showHeight} imageWidth={showWidth}
+                            cropHeight={showHeight} cropWidth={showWidth}  
+                            style={{backgroundColor:'rgba(0,0,0,0.4)', borderRadius:15, overflow:'hidden'}}
+                            enableSwipeDown={true}
+                            onSwipeDown ={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}>
+                            <Image source={{uri:image_url}} style={{height:showHeight, width:showWidth}}/>
+                        </ImageZoom>
+                    </View>
                 </TouchableOpacity>
                 </>
             </Overlay>
