@@ -163,10 +163,6 @@ const makeConnection = async (json_data, dispatch, getState) => {
     }
   });
 
-  socket.on('unread_messages', (data)=>{
-    dispatch({type:ACTIONS.CHAT_UNREAD_MESSAGES, payload: data})
-  });
-
   socket.on('you-are-disconnected', ()=>{
     socket.emit('not-disconnected', {id: json_data.authtoken})
   })
