@@ -39,7 +39,7 @@ export const getChatPeople = () => {
     dispatch({type:ACTIONS.CHAT_LOADING})
     httpClient.get(URLS.chatpeople).then(
       (response) => {dispatch({type:ACTIONS.GET_CHAT_PEOPLE, payload:response.data});}
-    ).catch(e=>logEvent(LOG_EVENT, {errorLine: 'CHAT ACTION - 43', description:e.toString()}))
+    ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'CHAT ACTION - 43', description:e.toString()}))
   };
 };
 
@@ -60,6 +60,7 @@ const encryptMessage = (message) => {
 export const sendMessage = (socket, message, other_user_id, image) => {
   return (dispatch) => {
     let message_to_send = {text:"", to:"", image}
+    dispatch({type:ACTIONS.CHAT_IMAGE_UPLOADING, payload:{imageUploading:true}})
     if (image){
       httpClient.get(URLS.imageupload).then((response)=>{
         response.data.url = decrypt(response.data.url)
@@ -80,14 +81,14 @@ export const sendMessage = (socket, message, other_user_id, image) => {
           message[0].image.url = decrypt(message[0].image.url)
           
           dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id, isIncomming:false}})
-        }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'CHAT ACTION - 83, Upload to AWS S3', description:e.toString()}))
-      }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'CHAT ACTION - 84, Image Upload', description:e.toString()}))
+        }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'CHAT ACTION - 83, Upload to AWS S3', description:e.toString()}))
+      }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'CHAT ACTION - 84, Image Upload', description:e.toString()}))
     }
     else{
+      dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id}})
       message_to_send.text = message[0].text;
       message_to_send.to = other_user_id;
       socket.emit('message', encryptMessage(message_to_send))
-      dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id}})
     }
   }
 }
@@ -162,7 +163,7 @@ const messageConverter = (item) => {
   return to_return
 }
 
-export const getCurrentUserMessages = (other_user_id, this_user_id) => {
+export const getCurrentUserMessages = (other_user_id, this_user_id, quickRepliesEnabled) => {
   t = Date.now()
   trace.start()
   return (dispatch)=>{
@@ -177,8 +178,12 @@ export const getCurrentUserMessages = (other_user_id, this_user_id) => {
       trace.stop()
       trace.putMetric('get_chat_database', Date.now()-t);
       logEvent(LOG_EVENT.ASYNC_STORAGE_TIME, {mili_seconds: Date.now()-t,time: Date.now(), type:'get_chat_database'})
-      clearTimeout(timer);
-      timer = setTimeout(()=>{getQuickReplies(dispatch, new_response.slice(0,4), this_user_id)}, 1500)
+      
+      if (quickRepliesEnabled){
+        clearTimeout(timer);
+        timer = setTimeout(()=>{getQuickReplies(dispatch, new_response.slice(0,4), this_user_id)}, 1000)
+      }
+
       dispatch({type:ACTIONS.CHAT_GET_USER_MESSAGES, payload:new_response})
     })
   }
@@ -186,6 +191,14 @@ export const getCurrentUserMessages = (other_user_id, this_user_id) => {
 
 export const clearOtherUserData = () => {
   return {type: ACTIONS.CHAT_CLEAR_OTHER_USER}
+}
+
+export const onImageSelect = (image, imageMetaData) => {
+  return {type:ACTIONS.CHAT_SCREEN_IMAGE_SELECT, payload:{selectedImage:image, imageMetaData} }
+}
+
+export const onComposerTextChanged = (text)=> {
+  return {type:ACTIONS.CHAT_COMPOSER_TEXT_CHANGED, payload:{text}}
 }
 
 export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
@@ -209,5 +222,5 @@ export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
 
   naturalLanguage().suggestReplies(feedList)
   .then((response)=>{dispatch({type:ACTIONS.CHAT_QUICK_REPLIES, payload:response})})
-  .catch(e=>logEvent(LOG_EVENT, {errorLine: 'CHAT ACTION - 213, Quick Replies Error', description:e.toString()}))
+  .catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'CHAT ACTION - 213, Quick Replies Error', description:e.toString()}))
 }

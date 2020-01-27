@@ -7,6 +7,7 @@ export const ACTIONS={
     LOGIN_ERROR: 'login.login_error',
     LOGIN_SUCCESS: 'login.login_success',
     LOGIN_POLICY: 'login.policy',
+    LOGIN_INTERNET_REACHABLE: 'login.internet_reachable',
 
     // HOME
     LOGOUT: 'home.logout',
@@ -65,12 +66,16 @@ export const ACTIONS={
     CHAT_SETUP_COMPLETE: 'chat.setup_complete',
     CHAT_GET_USER_MESSAGES: 'chat.get_user_messages',
     CHAT_QUICK_REPLIES: 'chat.quick_replies',
+    CHAT_COMPOSER_TEXT_CHANGED: 'chat.composer_text_changed',
+    CHAT_SCREEN_IMAGE_SELECT: 'chat.image_select',
+    CHAT_IMAGE_UPLOADING: 'chat.image_uploading',
 
     // SETTINGS
     SETTINGS_LOADING: 'settings.loading',
     GET_SETTINGS_DATA: 'settings.get_data',
     CHANGE_THEME: 'settings.change_theme',
     SETTINGS_CHANGE_ANIMATION:'settings.change_animation',
+    SETTINGS_CHANGE_QUICK_REPLIES: 'settings.change_quick_replies',
     CHANGE_CHAT_BACKGROUND: 'settings.change_chat_background',
     CHANGE_CHAT_BACKGROUND_BLUR: 'settings.change_chat_background_blur'
 

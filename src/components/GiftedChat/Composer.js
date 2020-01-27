@@ -41,9 +41,6 @@ export default class Composer extends React.Component {
                 this.props.onInputSizeChanged(this.contentSize);
             }
         };
-        this.onChangeText = (text) => {
-            this.props.onTextChanged(text);
-        };
     }
     render() {
         return (<TextInput 
@@ -54,8 +51,9 @@ export default class Composer extends React.Component {
         placeholderTextColor={this.props.placeholderTextColor} 
         multiline={this.props.multiline} 
         onChange={this.onContentSizeChange} 
-        onContentSizeChange={this.onContentSizeChange} 
-        onChangeText={this.onChangeText} style={[
+        onContentSizeChange={this.onContentSizeChange}
+        onChangeText={(text)=>{this.props.onComposerTextChanged(text)}} 
+        style={[
             styles.textInput,
             this.props.textInputStyle,
             { height: this.props.composerHeight },
@@ -72,7 +70,6 @@ Composer.defaultProps = {
     textInputStyle: {},
     textInputAutoFocus: false,
     keyboardAppearance: 'default',
-    onTextChanged: () => { },
     onInputSizeChanged: () => { },
 };
 Composer.propTypes = {
@@ -81,7 +78,6 @@ Composer.propTypes = {
     placeholder: PropTypes.string,
     placeholderTextColor: PropTypes.string,
     textInputProps: PropTypes.object,
-    onTextChanged: PropTypes.func,
     onInputSizeChanged: PropTypes.func,
     multiline: PropTypes.bool,
     textInputStyle: PropTypes.any,

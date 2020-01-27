@@ -8,7 +8,8 @@ const INITIAL_STATE={
   authtoken:'',
   categories:[],
   policy: null,
-  policyLoading:true
+  policyLoading:true,
+  internetReachable:false
 }
 
 export default (state=INITIAL_STATE, action) => {
@@ -47,6 +48,9 @@ export default (state=INITIAL_STATE, action) => {
         },
         policyLoading:false
       };
+
+    case ACTIONS.LOGIN_INTERNET_REACHABLE:
+      return {...state, internetReachable:action.payload}
 
     default:
       return state;

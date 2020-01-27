@@ -27,7 +27,7 @@ export const getPopularSearches = () => {
     httpClient.get(URLS.popularsearches).then((response) => {
       dispatch({type:ACTIONS.POPULAR_SEARCHES_SUCCESS, payload:response.data})
     }).catch(() => {
-      logEvent(LOG_EVENT, {errorLine: 'SEARCH ACTION - 31', description:e.toString()})
+      logEvent(LOG_EVENT.ERROR, {errorLine: 'SEARCH ACTION - 31', description:e.toString()})
       showAlert(true, {})})
   }
 }
@@ -48,7 +48,7 @@ export const doSearch = (search, category) => {
       (response) => {
         dispatch({type:ACTIONS.DO_SEARCH, payload:response.data})
       }
-    ).catch(e=>logEvent(LOG_EVENT, {errorLine: 'SEARCH ACTION - 452', description:e.toString()}))
+    ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'SEARCH ACTION - 452', description:e.toString()}))
   }
 }
 

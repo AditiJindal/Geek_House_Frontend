@@ -156,7 +156,7 @@ class ImageUpload extends Component {
             this.setState({image, imageSize:{width:resize.width, height:resize.height}});
             this.props.setImage(image);
           })  
-        }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'ARTICLE INFO ACTION - 46', description:e.toString()}))
+        }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'ARTICLE INFO ACTION - 46', description:e.toString()}))
       }
     })
   }

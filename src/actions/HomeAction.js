@@ -32,7 +32,7 @@ export const logout = () => {
       () => {
         dispatch({type:ACTIONS.LOGOUT, payload:true});
       }
-    ).catch(e=>logEvent(LOG_EVENT, {errorLine: 'HOME ACTION - 35', description:e.toString()}))
+    ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'HOME ACTION - 35', description:e.toString()}))
   }
 }
 
@@ -56,7 +56,7 @@ export const getWelcome = () => {
               dispatch({type:ACTIONS.LOGOUT});
               Actions.replace("login_main");logEvent(LOG_EVENT.SCREEN_CHANGE, 'login_main');
             }
-          ).catch(e=>logEvent(LOG_EVENT, {errorLine: 'HOME ACTION - 59', description:e.toString()}))
+          ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'HOME ACTION - 59', description:e.toString()}))
         }
         else{
           dispatch({type:ACTIONS.WELCOME, payload: {...response.data, adsManager}})
@@ -64,7 +64,7 @@ export const getWelcome = () => {
       }
     ).catch(
       (e) => {
-        logEvent(LOG_EVENT, {errorLine: 'HOME ACTION - 67, Connection Error', description:e.toString()})
+        logEvent(LOG_EVENT.ERROR, {errorLine: 'HOME ACTION - 67, Connection Error', description:e.toString()})
         dispatch({type:ACTIONS.HOME_ERROR, payload: "Sorry, could not connect to the server!"})}
     )
   }      
@@ -83,8 +83,8 @@ export const submitFeedback = (feedback_obj) => {
         .then(()=>{
           feedback_obj.image_url = decrypt(response.data.key);
           httpClient.post(URLS.feedback, feedback_obj)
-        }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'HOME ACTION - 86', description:e.toString()}))
-      }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'HOME ACTION - 87', description:e.toString()}))
+        }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'HOME ACTION - 86', description:e.toString()}))
+      }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'HOME ACTION - 87', description:e.toString()}))
     }
     else{
       httpClient.post(URLS.feedback, feedback_obj)

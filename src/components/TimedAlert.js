@@ -12,7 +12,7 @@ export default class TimedAlert extends Component {
   state = {
     show:false,
     message:"",
-    topPadding:true
+    topPadding:80
   }
   
   componentDidMount() {
@@ -25,7 +25,7 @@ export default class TimedAlert extends Component {
     }
   }
 
-  showAlert(duration, message, topPadding=true){
+  showAlert(duration, message, topPadding=80){
     {LayoutAnimation.configureNext(ANIMATION_CONFIG)}
     this.setState({show:true, message, topPadding})
     clearTimeout(this.timer);
@@ -43,7 +43,7 @@ export default class TimedAlert extends Component {
     return (
       <View style={{paddingHorizontal:15, paddingVertical:15,maxWidth:"92%", margin:15,
         backgroundColor:COLORS.LESSER_DARK, zIndex:10,flexDirection:'row',alignItems:'center',
-        borderRadius:15, alignSelf:'center', top:(this.state.topPadding)?80:30, 
+        borderRadius:15, alignSelf:'center', top:(this.state.topPadding)?this.state.topPadding:30, 
         position:'absolute', elevation:10}}>
         <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD,
         fontSize:14, color:COLORS.LESSER_LIGHT}}>

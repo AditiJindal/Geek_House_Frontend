@@ -2,8 +2,9 @@ import React, {Component} from 'react';
 import { View, StyleSheet, Text, StatusBar, TouchableOpacity}from 'react-native';
 import {connect} from 'react-redux';
 import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
+import NetInfo from '@react-native-community/netinfo';
 import LinearGradient from 'react-native-linear-gradient';
-import {loginGoogle,loginFacebook, checkLogin} from '../actions';
+import {loginGoogle,loginFacebook, checkLogin, internetHandler} from '../actions/LoginAction';
 import Loading from '../components/Loading';
 import { Button } from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
@@ -22,8 +23,9 @@ class Login extends Component {
   componentDidMount = async () => {
     this.props.checkLogin();
     SplashScreen.hide();
-    // setFCMNotifications();
     analytics().logAppOpen();
+    NetInfo.fetch().then(state=>this.props.internetHandler(state.isInternetReachable));
+    NetInfo.addEventListener(state=>this.props.internetHandler(state.isInternetReachable));
     }
 
   renderGoogleButton(){
@@ -160,8 +162,8 @@ const mapStateToProps = (state) => {
   };
 }
 
-export default connect(mapStateToProps, {loginGoogle,loginFacebook, checkLogin
-})(Login);
+export default connect(mapStateToProps, {loginGoogle,loginFacebook, checkLogin,
+  internetHandler})(Login);
 
 
 const styles = StyleSheet.create({

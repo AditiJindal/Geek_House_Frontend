@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Text, Clipboard, StyleSheet, TouchableWithoutFeedback, View, ViewPropTypes } from 'react-native';
+import { Text, Clipboard, StyleSheet, TouchableOpacity, 
+    View, ViewPropTypes, Dimensions } from 'react-native';
 import QuickReplies from './QuickReplies';
 import MessageText from './MessageText';
 import MessageImage from './MessageImage';
@@ -8,6 +9,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import Time from './Time';
 import Color from './Color';
 import { isSameUser, isSameDay } from './utils';
+
+const DEVICE_WIDTH = Dimensions.get('screen').width
+const MAX_WIDTH = 0.7*DEVICE_WIDTH
+
 const styles = {
     left: StyleSheet.create({
         container: {
@@ -222,7 +227,8 @@ export default class Bubble extends React.Component {
         const { position, containerStyle, wrapperStyle, bottomContainerStyle, } = this.props;
         return (<View style={[
             styles[position].container,
-            containerStyle && containerStyle[position]
+            containerStyle && containerStyle[position],
+            {maxWidth:MAX_WIDTH}
         ]}>
 
         <LinearGradient style={[
@@ -233,9 +239,8 @@ export default class Bubble extends React.Component {
             ]} 
             colors={(position==="right"?["#00B4DB", "#00ccdb"]:["#F4F4F4", "#F4F4F4"])} 
             start={{x:0, y:1}} end={{x:1, y:1}}>
-          <TouchableWithoutFeedback 
-          delayLongPress={1200}
-          onLongPress={this.onLongPress} accessibilityTraits='text' {...this.props.touchableProps}>
+          <TouchableOpacity activeOpacity={0.8}
+            onLongPress={()=>{this.onLongPress()}} accessibilityTraits='text' {...this.props.touchableProps}>
             <View>
               {this.renderCustomView()}
               {this.renderMessageImage()}
@@ -249,7 +254,7 @@ export default class Bubble extends React.Component {
                 {this.renderTicks()}
               </View>
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
         </LinearGradient>
 
         {this.renderQuickReplies()}

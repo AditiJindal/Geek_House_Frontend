@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, StatusBar, StyleSheet, ScrollView} from 'react-native';
 import { connect } from 'react-redux';
-import {logout} from '../actions';
+import {logout} from '../actions/HomeAction';
 import {logEvent} from '../actions/ChatAction';
 import Loading from '../components/Loading';
 import {decrypt} from '../encryptionUtil';
 import {setAuthToken, getSettingsData, settingsChangeFavouriteCategory, 
-  changeTheme, changeAnimationSettings, 
+  changeTheme, changeAnimationSettings, changeQuickRepliesSettings, 
   changeChatWallpaper, changeBlurRadius} from '../actions/SettingsAction';
 import { Actions } from 'react-native-router-flux';
 import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
@@ -274,25 +274,62 @@ class Settings extends Component {
             color:COLORS.LESSER_DARK, }}>
             Random Animations
           </Text>
-          <Switch
-            value = {this.props.animationOn}
-            onValueChange = {()=>{this.props.changeAnimationSettings()}}
-            backgroundActive={COLORS_LIGHT_THEME.GREEN}
-            backgroundInactive={COLORS.GRAY}
-            circleSize={22}
-            barHeight={28}
-            changeValueImmediately={true}
-            innerCircleStyle={{elevation:5}}
-            switchLeftPx={3}
-            switchRightPx={3}
-            circleBorderWidth={0}
-            circleActiveColor={COLORS_LIGHT_THEME.LIGHT}
-            circleInActiveColor={COLORS_LIGHT_THEME.LIGHT}
-          />
+          <View style={{flex:1, alignItems:'flex-end', paddingRight:15}}>
+            <Switch
+              value = {this.props.animationOn}
+              onValueChange = {()=>{this.props.changeAnimationSettings()}}
+              backgroundActive={COLORS_LIGHT_THEME.GREEN}
+              backgroundInactive={COLORS.GRAY}
+              circleSize={22}
+              barHeight={28}
+              changeValueImmediately={true}
+              innerCircleStyle={{elevation:5}}
+              switchLeftPx={3}
+              switchRightPx={3}
+              circleBorderWidth={0}
+              circleActiveColor={COLORS_LIGHT_THEME.LIGHT}
+              circleInActiveColor={COLORS_LIGHT_THEME.LIGHT}
+            />
+          </View>
         </View>
         <Text style={{fontSize:13, fontFamily:FONTS.RALEWAY, marginLeft:10,marginTop:5,
           color:COLORS.GRAY}}>
           {`Enable random animations and gestures\nwhich will occur from nowhere`}
+        </Text>
+      </View>
+    )
+  }
+
+  renderQuickRepliesSwitch(){
+    const {COLORS} = this.props;
+    return(
+      <View style={{marginVertical:5}}>
+        <View style={{flexDirection:'row', alignItems:'center',}}>
+          <Text style={{marginRight:30,fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
+            color:COLORS.LESSER_DARK, }}>
+            Smart Replies
+          </Text>
+          <View style={{flex:1, alignItems:'flex-end', paddingRight:15}}>
+            <Switch
+              value = {this.props.quickRepliesEnabled}
+              onValueChange = {()=>{this.props.changeQuickRepliesSettings()}}
+              backgroundActive={COLORS_LIGHT_THEME.GREEN}
+              backgroundInactive={COLORS.GRAY}
+              circleSize={22}
+              barHeight={28}
+              changeValueImmediately={true}
+              innerCircleStyle={{elevation:5}}
+              switchLeftPx={3}
+              switchRightPx={3}
+              circleBorderWidth={0}
+              circleActiveColor={COLORS_LIGHT_THEME.LIGHT}
+              circleInActiveColor={COLORS_LIGHT_THEME.LIGHT}
+            />
+          </View>
+        </View>
+        <Text style={{fontSize:13, fontFamily:FONTS.RALEWAY, marginLeft:10,marginTop:5,
+          color:COLORS.GRAY}}>
+          {`Enable smart replies to get suggestions\nin chat, for quick responses`}
         </Text>
       </View>
     )
@@ -316,12 +353,12 @@ class Settings extends Component {
     const {COLORS} = this.props
     return(
       <View style={{marginBottom:30}}>
-        <Text style={{marginRight:30,fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
+        <Text style={{marginRight:30,fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD, marginTop:5,
           color:COLORS.LESSER_DARK, }}>
           Change your chat wallpaper
         </Text>
         <TouchableOpacity style={{backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
-          paddingHorizontal:12, paddingVertical:6, elevation:8, borderRadius:30, 
+          paddingHorizontal:12, paddingVertical:6, elevation:8, borderRadius:8, 
           alignSelf:'flex-start', marginVertical:10,flexDirection:'row', 
           justifyContent:'space-between', width:195, alignItems:'center'}}
           onPress={()=>{this.imageSelector.showImageSelector()}}>
@@ -330,11 +367,11 @@ class Settings extends Component {
             Choose an Image
           </Text>
         </TouchableOpacity>
-        <View style={{flexDirection:'row', alignItems:'center',marginTop:10}}>
+        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
           <Text style={{fontSize:16, fontFamily:FONTS.PRODUCT_SANS,color:COLORS.LESSER_DARK,marginRight:20}}>
             Wallpaper blur effect
           </Text>
-          <View style={{flexDirection:'row', alignItems:'center', width:120, justifyContent:'space-between'}}>
+          <View style={{flexDirection:'row',alignItems:'center', width:120, justifyContent:'space-between', marginRight:10}}>
             <TouchableOpacity onPress={()=>{this.handleBlurOption(false)}} style={{padding:10,}}>
               <Icon name="minus" type="feather" size={18} color={COLORS.GRAY}/>
             </TouchableOpacity>
@@ -362,6 +399,7 @@ class Settings extends Component {
         {this.renderYourArticlesStats()}
         {this.renderThemeButton()}
         {this.renderAnimationSwitch()}
+        {this.renderQuickRepliesSwitch()}
         {this.changeChatWallpaper()}
         {this.renderLogoutButton()}
         
@@ -411,13 +449,15 @@ const mapStateToProps = (state) => {
     loading: state.settings.loading,
     fav_category: state.settings.fav_category,
     animationOn: state.chat.animationOn,
+    quickRepliesEnabled: state.chat.quickRepliesEnabled,
     chat_background: state.chat.chat_background,
   }
 }
 
 export default connect(mapStateToProps, {
   logout, setAuthToken, getSettingsData, settingsChangeFavouriteCategory, 
-  changeTheme, changeAnimationSettings, changeChatWallpaper, changeBlurRadius})(Settings);
+  changeTheme, changeAnimationSettings, changeQuickRepliesSettings,
+  changeChatWallpaper, changeBlurRadius})(Settings);
 
 const styles = StyleSheet.create({
   HeadingTextStyling:{

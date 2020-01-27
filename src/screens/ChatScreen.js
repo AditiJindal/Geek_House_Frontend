@@ -1,26 +1,25 @@
 import React, {Component} from 'react';
-import { View, Text, StyleSheet, Keyboard, BackHandler, ImageBackground, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, Keyboard, BackHandler, 
+  ImageBackground, TouchableOpacity} from 'react-native';
 import {connect} from 'react-redux';
 import {Badge, Icon} from 'react-native-elements';
 import {FONTS} from '../Constants';
 import {GiftedChat} from '../components/GiftedChat/index';
 import { Actions } from 'react-native-router-flux';
 import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData, setAuthToken,
-  getChatPeopleExplicitly, getCurrentUserMessages} from '../actions/ChatAction';
+  getChatPeopleExplicitly, getCurrentUserMessages, onImageSelect, onComposerTextChanged
+} from '../actions/ChatAction';
 import Image from 'react-native-fast-image';
 import TimedAlert from '../components/TimedAlert';
 
 class ChatScreen extends Component {
 
-  state={
-    selectedImage: null,
-    imageViewerSelected: false
-  }
+  state={imageViewerSelected: false}
 
   componentDidMount(){
     this.props.setAuthToken();
-    this.props.getCurrentUserMessages(this.props.other_user_data._id, this.props.user_id)
-    // this.props.checkMessagesObject(this.props.other_user_data._id, this.props.messages);
+    this.props.getCurrentUserMessages(this.props.other_user_data._id, 
+      this.props.user_id, this.props.quickRepliesEnabled)
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>this.keyboardDidShow());
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', ()=>this.keyboardDidHide());
     BackHandler.addEventListener('hardwareBackPress', ()=>{
@@ -134,7 +133,7 @@ class ChatScreen extends Component {
   }
 
   render() {
-    const {COLORS} = this.props;
+    const {COLORS, chatScreenState} = this.props;
     return(
       <View style={{backgroundColor:COLORS.LIGHT}}>
         <ImageBackground style={{height:"100%", width:"100%"}} blurRadius={this.props.chat_background.blur}
@@ -154,7 +153,6 @@ class ChatScreen extends Component {
                 <GiftedChat
                   theme={this.props.theme}
                   COLORS = {COLORS}
-      
                   primaryStyle={{backgroundColor:
                     (this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT, elevation:7}}
                   textInputStyle={{
@@ -163,22 +161,28 @@ class ChatScreen extends Component {
                     }}
                   messages={this.props.currentMessages}
                   onSend={(message) => {
-                    this.setState({selectedImage:null});
                     this.props.sendMessage(this.props.socket, message, 
-                    this.props.other_user_data._id, this.state.selectedImage)
+                    this.props.other_user_data._id, chatScreenState.selectedImage)
                   }}
                   placeholder="Type to chat..."
                   renderAvatar={null}
                   showTimedAlert = {(duration, message)=>{
-                    this.timedAlert.showAlert(duration, message)
+                    this.timedAlert.showAlert(duration, message, 46)
                   }}
                   quick_replies = {this.props.quick_replies}
                   user={{_id:this.props.authtoken}}
-                  selectedImage = {this.state.selectedImage}
-                  onImageSelect = {(image)=>{this.setState({selectedImage:image})}}
-                  onImageCross = {()=>{this.setState({selectedImage:null})}}
+                  selectedImage = {chatScreenState.selectedImage}
+                  onComposerTextChanged = {this.props.onComposerTextChanged}
+                  onImageSelect = {this.props.onImageSelect}
+                  onImageCross = {()=>{
+                    this.props.onImageSelect(null,{name:"", oldSize:null, newSize:null})
+                  }}
                   image_adder={this.props.image_adder}
                   onViewerSelect = {(value)=>{this.setState({imageViewerSelected:value})}}
+                  internetReachable={this.props.internetReachable}
+                  text={chatScreenState.text}
+                  imageMetaData={chatScreenState.imageMetaData}
+                  imageUploading={chatScreenState.imageUploading}
                 />
               </View>)
           }
@@ -191,10 +195,12 @@ class ChatScreen extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    image_adder:state.home.image_adder,
-    loading: state.chat.loading,
     authtoken: state.login.authtoken,
+    internetReachable: state.login.internetReachable,
 
+    image_adder:state.home.image_adder,
+
+    loading: state.chat.loading,
     other_user_data: state.chat.other_user_data,
     user_id: state.chat.user_id,
     socket: state.chat.socket,
@@ -203,12 +209,16 @@ const mapStateToProps = (state) => {
     COLORS: state.chat.COLORS,
     currentMessages: state.chat.currentMessages,
     chat_background: state.chat.chat_background,
-    quick_replies: state.chat.quick_replies
+    quick_replies: state.chat.quick_replies,
+    quickRepliesEnabled: state.chat.quickRepliesEnabled,
+    chatScreenState: state.chat.chatScreenState
   }
 }
 
 export default connect(mapStateToProps, {setAuthToken, sendMessage, getChatPeopleExplicitly,
-  checkMessagesObject, sendTyping, clearOtherUserData, getCurrentUserMessages})(ChatScreen);
+  checkMessagesObject, sendTyping, clearOtherUserData, getCurrentUserMessages,
+  onImageSelect, onComposerTextChanged
+})(ChatScreen);
 
 const styles = StyleSheet.create({
   TextStyle:{

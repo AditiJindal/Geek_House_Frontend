@@ -28,7 +28,7 @@ export const getMyArticles = (myArticlesLength, reload) => {
           dispatch({type:ACTIONS.GET_MY_ARTICLES,
           payload:{response:response.data.response, all_categories:response.data.all_categories}})
         }
-      ).catch(e=>logEvent(LOG_EVENT, {errorLine: 'WRITE ACTION - 32', description:e.toString()}))
+      ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'WRITE ACTION - 32', description:e.toString()}))
     }
   }
   else{
@@ -84,8 +84,8 @@ export const publishArticle = (article, success_animation) => {
                 dispatch({type:ACTIONS.PUBLISH_SUCCESS});
               }
             );
-          }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'WRITE ACTION - 88', description:e.toString()}))
-        }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'WRITE ACTION - 89', description:e.toString()}))
+          }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'WRITE ACTION - 88', description:e.toString()}))
+        }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'WRITE ACTION - 89', description:e.toString()}))
       }
     else{
       httpClient.post(URLS.publish, article).then(
@@ -93,7 +93,7 @@ export const publishArticle = (article, success_animation) => {
           dispatch({type:ACTIONS.PUBLISH_SUCCESS});
           success_animation.play()
         }
-      ).catch(e=>logEvent(LOG_EVENT, {errorLine: 'WRITE ACTION - 97', description:e.toString()}))
+      ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'WRITE ACTION - 97', description:e.toString()}))
     }
     };
   }

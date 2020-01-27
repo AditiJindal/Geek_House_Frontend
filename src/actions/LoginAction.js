@@ -3,7 +3,7 @@ import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import {AppState} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
-import {setSocket} from './ChatAction'
+import {setSocket, getQuickReplies, logEvent} from './ChatAction';
 import axios from 'axios';
 import {Actions} from 'react-native-router-flux';
 import io from 'socket.io-client';
@@ -11,16 +11,18 @@ import uuid from 'uuid/v4';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
 import analytics from '@react-native-firebase/analytics';
-import {getQuickReplies, logEvent} from './ChatAction';
 import messages from '@react-native-firebase/messaging';
 import perf from '@react-native-firebase/perf';
 import PushNotification from "react-native-push-notification";
 import { encrypt, decrypt } from '../encryptionUtil';
+import {setJSExceptionHandler, setNativeExceptionHandler} from 'react-native-exception-handler';
+import APP_INFO from '../../package.json';
 
 const trace = perf().newTrace("get_data_async_storage");
 PushNotification.cancelAllLocalNotifications()
 
 var timer = null;
+var uniqueDeviceId = null;
 
 const getFCMToken = () => {
   if (!messages().isRegisteredForRemoteNotifications){
@@ -117,21 +119,10 @@ const makeConnection = async (json_data, dispatch, getState) => {
       analytics().logEvent("app_came_foreground")
     }
   })
-  
-  manufacturer = await Device.getManufacturer();
-  designName = await Device.getDevice(),
-  modelName = Device.getModel(),
-  osName = await Device.getBaseOs(),
-  totalMemory = await Device.getTotalMemory(),
-  carrier = await Device.getCarrier();
-
 
   let to_emit={
     id: json_data.authtoken, 
     name: json_data.data.name,
-    deviceInfo: {manufacturer,designName,modelName,osName,totalMemory},
-    carrier,
-    countryCode:'IN',
   }
 
   socket.emit('join', to_emit)
@@ -139,12 +130,12 @@ const makeConnection = async (json_data, dispatch, getState) => {
   socket.on('incoming_message', (data)=>{
     data = decryptMessage(data);
     const message = incomingMessageConverter(data);
-    const {chat} = getState();
-    let temp_currentMessages = chat.currentMessages.slice(0,3);
-    if (temp_currentMessages.length!==0){
+    const {chat:{currentMessages, user_id, quickRepliesEnabled}} = getState();
+    if ((currentMessages.slice(0,4)!==0) && quickRepliesEnabled){
+      let temp_currentMessages = currentMessages.slice(0,4);
       temp_currentMessages.push(message[0]);
       clearTimeout(timer);
-      timer = setTimeout(()=>{getQuickReplies(dispatch,temp_currentMessages, chat.user_id);},500)
+      timer = setTimeout(()=>{getQuickReplies(dispatch,temp_currentMessages, user_id);},1000)
     }
     dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message,other_user_id: data.from, isIncomming:true}});
   });
@@ -182,6 +173,49 @@ const makeConnection = async (json_data, dispatch, getState) => {
 
   PushNotification.configure({
     onNotification: (notification) => {handleNotification(notification)}
+  });
+
+  manufacturer = await Device.getManufacturer();
+  designName = await Device.getDevice();
+  phoneModel = Device.getModel();
+  totalMemory = await Device.getTotalMemory();
+  carrier = await Device.getCarrier();
+  uniqueDeviceId = await Device.getUniqueId();
+  firstInstall = await Device.getFirstInstallTime();
+  freeDisk = await Device.getFreeDiskStorage();
+  IPAddress = await Device.getIpAddress();
+  lastUpdatedApp = await Device.getLastUpdateTime();
+  macAddress = await Device.getMacAddress();
+  osVersion = await Device.getSystemVersion();
+  currentAppVersion = APP_INFO.version;
+  
+  let fullDeviceInfo = {
+    deviceInfo: {manufacturer, designName, phoneModel, totalMemory},
+    carrier,
+    freeDisk, IPAddress,
+    uniqueDeviceId, firstInstall, lastUpdatedApp,
+    macAddress, currentAppVersion, osVersion
+  }
+  socket.emit('device_info', fullDeviceInfo)
+
+  setJSExceptionHandler((e, isFatal)=>{
+    if (isFatal){
+      logEvent(LOG_EVENT.ERROR, 
+        {errorLine: `Global JS_Exception`, description:JSON.stringify(e)})
+    }
+    else{
+      return null;
+    }
+  });
+
+  setJSExceptionHandler((e, isFatal)=>{
+    if (isFatal){
+      logEvent(LOG_EVENT.ERROR, 
+        {errorLine: `Global Native_Exception`, description:JSON.stringify(e)})
+    }
+    else{
+      return null;
+    }
   });
 }
 
@@ -329,4 +363,8 @@ export const getPolicy = () => {
       dispatch({type:ACTIONS.LOGIN_POLICY, payload: response.data})
     })
   }
+}
+
+export const internetHandler = (internetReachable) => {
+  return {type:ACTIONS.LOGIN_INTERNET_REACHABLE, payload:internetReachable}
 }

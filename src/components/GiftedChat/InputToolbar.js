@@ -1,34 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View, Keyboard, ViewPropTypes, Text, 
-    StatusBar, TouchableOpacity,ImageBackground} from 'react-native';
+    TouchableOpacity,ImageBackground} from 'react-native';
 import Composer from './Composer';
 import Send from './Send';
 import Actions from './Actions';
-import {COLORS_DARK_THEME, COLORS_LIGHT_THEME, FONTS} from '../../Constants'
+import {COLORS_DARK_THEME, FONTS} from '../../Constants';
+import Loading from '../Loading';
 import {Overlay, Icon} from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import prettysize from 'prettysize';
-
-const getStatusBarColor = (theme, i) => {
-    if (i){
-        if (theme==='light'){
-            return COLORS_LIGHT_THEME.OVERLAY_COLOR
-        }
-        else{
-            return COLORS_DARK_THEME.OVERLAY_COLOR
-        }
-    }
-    else{
-        if (theme==='light'){
-            return COLORS_LIGHT_THEME.LIGHT
-        }
-        else{
-            return COLORS_DARK_THEME.LIGHT
-        }
-    }
-}
 
 
 const styles = StyleSheet.create({
@@ -37,6 +19,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
+        position:'absolute'
     },
     primary: {
         margin:10,
@@ -52,26 +35,9 @@ export default class InputToolbar extends React.Component {
     constructor() {
         super(...arguments);
         this.state = {
-            position: 'absolute',
             imageSelectorOpen: false,
-            imageMetaData: {name:"", oldSize:null, newSize:null}
         };
-        this.keyboardWillShowListener = undefined;
-        this.keyboardWillHideListener = undefined;
-        this.keyboardWillShow = () => {
-            if (this.state.position !== 'relative') {
-                this.setState({
-                    position: 'relative',
-                });
-            }
-        };
-        this.keyboardWillHide = () => {
-            if (this.state.position !== 'absolute') {
-                this.setState({
-                    position: 'absolute',
-                });
-            }
-        };
+        
     }
     componentDidMount() {
         this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
@@ -135,9 +101,13 @@ export default class InputToolbar extends React.Component {
             const resize = this.getImageResize(imageSize);
             ImageResizer.createResizedImage(image.uri, resize.width, resize.height, "JPEG", 90).then((resizedImage)=>{
                 const aspectRatio = resize.width/resize.height;
-                const to_send = {url:resizedImage.uri, height:resize.height, width: resize.width, aspectRatio }
-                this.setState({imageMetaData:{newSize:resizedImage.size, name: image.fileName}})
-                this.props.onImageSelect(to_send)
+                const to_send = {
+                    url:resizedImage.uri, 
+                    height:resize.height, 
+                    width: resize.width, aspectRatio
+                }
+                imageMetaData = {newSize:resizedImage.size, name: image.fileName}
+                this.props.onImageSelect(to_send, imageMetaData)
             })
         }
     }
@@ -227,25 +197,38 @@ export default class InputToolbar extends React.Component {
         )
     }
     renderSelectedImage(){
-        const {COLORS} = this.props;
+        const {COLORS, imageUploading} = this.props;
         const image = this.props.selectedImage;
         if (image){
             return (
                 <View style={{flex:1, borderRadius:10, overflow:'hidden', height:100, marginBottom:5}}>
-                    <ImageBackground blurRadius = {2} 
+                    <ImageBackground blurRadius={1.5}
                         source={{uri:image.url}} style={{flex:1, alignItems:'flex-end'}}>
+                        {
+                            (imageUploading)?(
+                                <View style={{alignItems:'center',right:0, left:0, justifyContent:'center',
+                                    bottom:0, top:0, position:'absolute', 
+                                    backgroundColor:(this.props.theme==='light')?"rgba(255,255,255,0.4)":"rgba(50,50,50,0.4)"}}>
+                                    <Loading size={42} white={(this.props.theme!=='light')}/>
+                                </View>
+                            ):null
+                        }
                         <Icon size={24} name="x" type={'feather'} onPress={()=>{this.props.onImageCross()}}
-                            style={{backgroundColor:this.props.primaryStyle.backgroundColor, position:'relative',
-                            right:-3, top:-3, color:COLORS.LIGHT_GRAY,
-                            borderBottomLeftRadius:15, paddingLeft:2.5, paddingBottom:2.5}}/>
-                        <View style={{alignSelf:'flex-start', justifyContent:'flex-end', flex:1, padding:5}}>
-                            <Text style={{color:COLORS_DARK_THEME.LESSER_DARK,
+                            containerStyle={{backgroundColor:this.props.primaryStyle.backgroundColor, 
+                            position:'relative',right:-3, top:-3,zIndex:10,
+                            borderBottomLeftRadius:15, paddingLeft:2.5, paddingBottom:2.5}}
+                            color={COLORS.LIGHT_GRAY}
+                        />
+                        <View style={{position:'absolute',bottom:5, left:5, 
+                            backgroundColor:"rgba(50,50,50,0.3)",
+                            borderRadius:7.5, paddingVertical:5, paddingHorizontal:10}}>
+                            <Text style={{color:COLORS_DARK_THEME.LESS_DARK,
                                 fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:8}}>
-                                {this.state.imageMetaData.name}
+                                {this.props.imageMetaData.name}
                             </Text>
-                            <Text style={{color:COLORS_DARK_THEME.GRAY,
+                            <Text style={{color:COLORS_DARK_THEME.LESSER_DARK,
                                 fontFamily:FONTS.PRODUCT_SANS, fontSize:8}}>
-                                After compression size: {prettysize(this.state.imageMetaData.newSize)}
+                                Image size: {prettysize(this.props.imageMetaData.newSize)}
                             </Text>
                         </View>
                     </ImageBackground>
@@ -261,7 +244,6 @@ export default class InputToolbar extends React.Component {
         return (<View style={[
             styles.container,
             this.props.containerStyle,
-            { position: this.state.position },
         ]}> 
         <View style={[styles.primary, this.props.primaryStyle]}>
             {this.renderSelectedImage()}

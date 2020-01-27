@@ -38,7 +38,7 @@ export default class WriteView extends Component {
       }
       this.props.onContentChange(response.text, this.props.index);
       this.setState({visionLoading:false})
-    }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'WRITE VIEW - 42', description:e.toString()}))
+    }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'WRITE VIEW - 42', description:e.toString()}))
 
   }
 

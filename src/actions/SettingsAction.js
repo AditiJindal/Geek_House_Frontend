@@ -26,7 +26,7 @@ export const getSettingsData = (reload) => {
     if (reload || !state.settings.gotSettingsData){
       httpClient.get(URLS.settings).then((response)=>{
         dispatch({type: ACTIONS.GET_SETTINGS_DATA, payload: response.data})
-      }).catch(e=>logEvent(LOG_EVENT, {errorLine: 'SEARCH ACTION - 30', description:e.toString()}))
+      }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'SEARCH ACTION - 30', description:e.toString()}))
     }
   }
 }
@@ -37,6 +37,10 @@ export const settingsChangeFavouriteCategory = (selected_category) => {
 
 export const changeAnimationSettings = () => {
   return {type:ACTIONS.SETTINGS_CHANGE_ANIMATION}
+}
+
+export const changeQuickRepliesSettings = () => {
+  return {type:ACTIONS.SETTINGS_CHANGE_QUICK_REPLIES}
 }
 
 export const changeTheme = (value) => {

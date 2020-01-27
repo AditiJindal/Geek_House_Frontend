@@ -22,11 +22,21 @@ export default class Send extends Component {
         const { text, containerStyle, onSend, children, textStyle,disabled, } = this.props;
             return (
         <TouchableOpacity testID='send' accessible accessibilityLabel='send'  activeOpacity={1} onPress={() => {
-            if (((text && text.trim().length > 0) || this.props.selectedImage) && onSend) {
-                onSend({ text: text.trim(), image:this.props.selectedImage }, true);
+            if  (this.props.internetReachable){
+                if (( (text && text.trim().length > 0) || this.props.selectedImage) && onSend){
+                    onSend({ text: text.trim(), image:this.props.selectedImage }, true);
+                }
+                else{
+                    this.props.showTimedAlert(2000, "Enter a message");   
+                }
+            }
+            else{
+                this.props.showTimedAlert(2000, "Internet not available");
             }
             }} accessibilityTraits='button' disabled={disabled} style={{opacity:1, justifyContent: 'flex-end',alignSelf:'center'}}>
-            <LinearGradient style={[styles.container, containerStyle]} colors={["#97e063", "#a8e063"]}
+            <LinearGradient style={[styles.container, containerStyle]} colors={
+                (this.props.internetReachable)?["#97e063", "#a8e063"]:[COLORS_LIGHT_THEME.GRAY, COLORS_LIGHT_THEME.GRAY]
+                }
             start={{x:0.75, y:0.75}} end={{x:0.25, y:0.25}}>
                 <View>
                     {children || <Text style={[styles.text, textStyle]}>{'SEND'}</Text>}

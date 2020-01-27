@@ -132,10 +132,6 @@ class GiftedChat extends React.Component {
             if (this.props.onInputTextChanged) {
                 this.props.onInputTextChanged(text);
             }
-            // Only set state if it's not being overridden by a prop.
-            if (this.props.text === undefined) {
-                this.setState({ text });
-            }
         };
         this.onInitialLayoutViewLayout = (e) => {
             const { layout } = e.nativeEvent;

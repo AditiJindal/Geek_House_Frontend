@@ -8,7 +8,7 @@ import {
   toggleOverlay,
   getWelcome,
   setAuthToken,
-} from '../actions';
+} from '../actions/HomeAction';
 import _ from 'lodash';
 import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
 import Image from 'react-native-fast-image';
