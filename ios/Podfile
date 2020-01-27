@@ -60,6 +60,8 @@ target 'Geek_House' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+  pod 'RNFBCrashlytics', :path => '../node_modules/@react-native-firebase/crashlytics'
+
   target 'Geek_HouseTests' do
     inherit! :search_paths
     # Pods for testing

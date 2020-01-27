@@ -48,7 +48,6 @@ Day.contextTypes = {
 };
 Day.defaultProps = {
     currentMessage: {
-        // TODO: test if crash when createdAt === null
         createdAt: null,
     },
     previousMessage: {},

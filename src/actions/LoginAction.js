@@ -1,6 +1,6 @@
 import {ACTIONS} from './types';
 import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
-import {AppState} from 'react-native';
+import {AppState, Alert} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {setSocket, getQuickReplies, logEvent} from './ChatAction';
@@ -208,7 +208,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
     }
   });
 
-  setJSExceptionHandler((e, isFatal)=>{
+  setNativeExceptionHandler((e, isFatal)=>{
     if (isFatal){
       logEvent(LOG_EVENT.ERROR, 
         {errorLine: `Global Native_Exception`, description:JSON.stringify(e)})

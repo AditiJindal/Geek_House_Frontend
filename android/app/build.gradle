@@ -1,6 +1,11 @@
 apply plugin: "com.android.application"
 apply plugin: 'kotlin-android'
 apply plugin: "com.google.firebase.firebase-perf"
+apply plugin: 'io.fabric'
+
+crashlytics {
+  enableNdk true
+}
 
 import com.android.build.OutputFile
 
@@ -129,24 +134,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    dexOptions {
-       javaMaxHeapSize "3g"
-    }
-
-    // packagingOptions {
-    //     pickFirst '**/*.so'
-    // }
-
-    aaptOptions {
-        noCompress "tflite"
-    }
 
     defaultConfig {
         applicationId "com.tjproductions.geekhousern"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9
-        versionName "1.6"
+        versionCode 11
+        versionName "1.6.2"
         manifestPlaceholders = [
             appAuthRedirectScheme: 'io.identityserver.demo'
         ]
@@ -207,9 +201,27 @@ android {
 
         }
     }
+    bundle {
+        language {
+            // Specifies that the app bundle should not support
+            // configuration APKs for language resources. These
+            // resources are instead packaged with each base and
+            // dynamic feature APK.
+            enableSplit = false
+        }
+        density {
+            // This property is set to true by default.
+            enableSplit = true
+        }
+        abi {
+            // This property is set to true by default.
+            enableSplit = true
+        }
+    }
 }
 
 dependencies {
+    implementation project(':@react-native-firebase_crashlytics')
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-push-notification')
     implementation project(':@react-native-firebase_ml-natural-language')
