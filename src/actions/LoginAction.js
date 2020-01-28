@@ -1,6 +1,6 @@
 import {ACTIONS} from './types';
-import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
-import {AppState, Alert} from 'react-native';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
+import {AppState} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {setSocket, getQuickReplies, logEvent} from './ChatAction';
@@ -19,8 +19,6 @@ import {setJSExceptionHandler, setNativeExceptionHandler} from 'react-native-exc
 import APP_INFO from '../../package.json';
 
 const trace = perf().newTrace("get_data_async_storage");
-PushNotification.cancelAllLocalNotifications()
-
 var timer = null;
 var uniqueDeviceId = null;
 
@@ -35,6 +33,23 @@ const httpClient = axios.create();
 httpClient.defaults.timeout = HTTP_TIMEOUT;
 httpClient.defaults.baseURL = BASE_URL;
 
+PushNotification.popInitialNotification((notification) => {
+  Console.log(notification);
+})
+
+const setPushNotifications = async () => {
+  PushNotification.configure({
+    onNotification: (notification) => {
+      console.log(notification);
+      makeLocalNotification(notification)
+      handleNotification(notification)
+    },
+    popInitialNotification:false
+  });
+}
+
+setPushNotifications()
+
 // COMMENT-OUT THERE 3 LINES
 // AsyncStorage.removeItem('data')
 // AsyncStorage.removeItem('authtoken')
@@ -46,7 +61,24 @@ const incomingMessageConverter = (data) => {
   return new_message
 }
 
-const handleNotification = (notification) => {
+export const makeLocalNotification = (notification) => {
+  PushNotification.localNotification({
+    autoCancel: true,
+    largeIcon: "ic_launcher",
+    smallIcon: "ic_stat_ic_notification",
+    color: COLORS_LIGHT_THEME.THEME1,
+    vibrate: true,
+    vibration: 200,
+    priority: "max",
+    visibility: "private", 
+    importance: "max",
+
+    title: (notification.title)?decrypt(notification.title):null,
+    message: decrypt(notification.body),
+  });
+}
+
+export const handleNotification = (notification) => {
   switch(notification.type){
     case 'chat':
       Actions.replace('chat');
@@ -112,11 +144,14 @@ const makeConnection = async (json_data, dispatch, getState) => {
   AppState.addEventListener('change', (appState)=>{
     if ((appState==='background') || (appState==='inactive')){
       socket.emit('send-me-offline', {id: json_data.authtoken});
-      analytics().logEvent("app_went_background")
+      analytics().logEvent("app_went_background");
+      logEvent(LOG_EVENT.SCREEN_CHANGE, 'app_went_background');
     }
     else{
       socket.emit('not-disconnected', {id: json_data.authtoken});
-      analytics().logEvent("app_came_foreground")
+      analytics().logEvent("app_came_foreground");
+      logEvent(LOG_EVENT.SCREEN_CHANGE, 'app_came_foreground');
+      PushNotification.cancelAllLocalNotifications();
     }
   })
 
@@ -170,10 +205,6 @@ const makeConnection = async (json_data, dispatch, getState) => {
   });
   
   dispatch({type:ACTIONS.SET_SOCKET, payload: socket});
-
-  PushNotification.configure({
-    onNotification: (notification) => {handleNotification(notification)}
-  });
 
   manufacturer = await Device.getManufacturer();
   designName = await Device.getDevice();
