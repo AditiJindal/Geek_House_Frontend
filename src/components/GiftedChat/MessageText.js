@@ -9,7 +9,6 @@ const WWW_URL_PATTERN = /^www\./i;
 const textStyle = {
     fontSize: 16,
     fontFamily:FONTS.PRODUCT_SANS,
-    lineHeight: 20,
     marginTop: 5,
     marginBottom: 5,
     marginLeft: 10,
@@ -42,6 +41,21 @@ const styles = {
         },
     }),
 };
+
+const isEmoji = (text) => {
+    let regex_test = text.match(/(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/);
+    return (regex_test && (text.length===2))
+}
+
+const getAppropriateSize = (text) => {
+    let length = Number(text.length);
+
+    if (isEmoji(text)){return 30}
+    else if(length===1){return 20}
+    else if(20>length){return 16}
+    return 14
+}
+
 export default class MessageText extends React.Component {
     constructor() {
         super(...arguments);
@@ -98,7 +112,7 @@ export default class MessageText extends React.Component {
         <ParsedText style={[
             styles[this.props.position].text,
             this.props.textStyle && this.props.textStyle[this.props.position],
-            this.props.customTextStyle,
+            this.props.customTextStyle, {fontSize: getAppropriateSize(this.props.currentMessage.text)}
         ]} parse={[
             ...this.props.parsePatterns(linkStyle),
             { type: 'url', style: linkStyle, onPress: this.onUrlPress },

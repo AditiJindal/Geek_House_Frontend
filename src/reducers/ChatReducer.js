@@ -22,7 +22,7 @@ const INITIAL_STATE={
   chats: [],
   messages: {}, // {"user_id": [ {_id:Number, text:String, created_at: Date, user: {_id:String}} ,{}, {} ]}
   other_user_data: {},
-  status: {}, // {"user_id":{online: true, typing: false, unread_messages: 2}}
+  status: {}, // {"user_id":{online: true, typing: false, unread_messages: 2, recentMessage:"", recentActivity: Date}}
   total_typing: 0,
   total_unread_messages: 0,
   chatScreenOpen: false,
@@ -56,6 +56,20 @@ const insertUnreadMessages = (unread_messages, this_user_id) => {
   });
 }
 
+const reorderChatsList = (list, elem) => {
+  new_list = [];
+  list.map((item)=>{
+    if (item._id===elem){
+      new_list.unshift(item);
+    }
+    else{
+      new_list.push(item);
+    }
+  });
+
+  return new_list
+}
+
 const saveMessageInDB = (payload, this_user_id) => {
   const {message, other_user_id} = payload
   let text_to_save=null
@@ -86,7 +100,7 @@ const saveMessageInDB = (payload, this_user_id) => {
 }
 
 const saveData = async (state, recordPerf = false) => {
-  to_save = {
+  let to_save = {
     status: state.status,
     total_unread_messages:state.total_unread_messages,
     theme: state.theme,
@@ -94,6 +108,7 @@ const saveData = async (state, recordPerf = false) => {
     quickRepliesEnabled: state.quickRepliesEnabled,
     first_login: state.first_login,
     chat_background: state.chat_background,
+    chats: state.chats,
   };
   
   if (recordPerf){
@@ -128,7 +143,8 @@ export default (state=INITIAL_STATE, action) => {
       if (Object.keys(action.payload).length!==1){
         new_messages = {...action.payload.messages};
         total_unread_messages = action.payload.total_unread_messages;
-        new_status = {...action.payload.status}
+        new_status = {...action.payload.status};
+        new_chats = [...action.payload.chats];
 
         if (!action.payload.theme){
           action.payload.theme=INITIAL_STATE.theme
@@ -150,7 +166,9 @@ export default (state=INITIAL_STATE, action) => {
           quickRepliesEnabled:action.payload.quickRepliesEnabled,
           chat_background: action.payload.chat_background,
           user_id, messages:new_messages, COLORS, 
-          total_unread_messages, status:new_status, loaded_from_storage:true}
+          total_unread_messages, status:new_status, loaded_from_storage:true,
+          chats:new_chats
+        }
         saveData(new_state)
         return new_state
       }
@@ -239,6 +257,7 @@ export default (state=INITIAL_STATE, action) => {
       new_messages={...state.messages}
       duplicate_status = {...state.status};
       total_unread_messages = state.total_unread_messages;
+
       if (state.loaded_from_storage && (Object.keys(state.status).length!==0)){
         status = {...state.status};
         all_users.map((item)=>{
@@ -246,14 +265,16 @@ export default (state=INITIAL_STATE, action) => {
             status[item._id] = {online:false, typing:false, unread_messages:0}
           }
           (action.payload.allOnline.includes(item._id))?online=true:online=false
-          status[item._id]={online, typing: false, unread_messages: status[item._id].unread_messages}
+          status[item._id]={online, typing: false, unread_messages: status[item._id].unread_messages,
+            recentMessage: status[item._id].recentMessage, recentActivity: status[item._id].recentActivity}
         });
       }
       else{
         status = {}
         all_users.map((item)=>{
           (action.payload.allOnline.includes(item._id))?online=true:online=false
-          status[item._id]={online, typing: false, unread_messages: 0}
+          status[item._id]={online, typing: false, unread_messages: 0, 
+            recentMessage:"", recentActivity:Date.now()}
         });
       }
 
@@ -278,28 +299,40 @@ export default (state=INITIAL_STATE, action) => {
     case ACTIONS.CHAT_MESSAGE_HANDLER:
       // new_messages = {...state.messages};
       new_status = {...state.status};
-      new_chats = [...state.chats];
       total_unread_messages = state.total_unread_messages;
       new_currentMessages = [];
+      payload_message = action.payload.message
+      let recentMessage = payload_message[0].text
 
       // action.payload.message is [ { ... } ], is an array containing one object
+      state.chats = reorderChatsList(state.chats, action.payload.other_user_id)
+
+      if (!recentMessage){
+        recentMessage = "Sent a photo 📷"
+      }
 
       if (action.payload.isIncomming){
         analytics().logEvent("received_message");
       }
       else{
         analytics().logEvent("sent_message");
+        recentMessage = "You : " + recentMessage
       }
       
       saveMessageInDB(action.payload, state.user_id);
 
-      new_currentMessages = [...action.payload.message, ...state.currentMessages]
+      new_currentMessages = [...payload_message, ...state.currentMessages]
       if (!state.status.hasOwnProperty(action.payload.other_user_id)){
-        new_messages[action.payload.other_user_id] = action.payload.message;
+        new_messages[action.payload.other_user_id] = payload_message;
         new_status[action.payload.other_user_id] = {online: action.payload.isIncomming, typing: false, 
-          unread_messages: 0};
+          unread_messages: 0, recentMessage,
+          recentActivity:payload_message[0].createdAt};
 
         state.socket.emit("chat_people_explicitly");
+      }
+      else{
+        new_status[action.payload.other_user_id].recentActivity = payload_message[0].createdAt
+        new_status[action.payload.other_user_id].recentMessage = recentMessage
       }
 
       if ((action.payload.other_user_id !== state.other_user_data._id) || (!state.chatScreenOpen)){
@@ -313,9 +346,9 @@ export default (state=INITIAL_STATE, action) => {
         total_unread_messages=0
       }
       
-      new_state = {...state, loading:false, currentMessages:new_currentMessages, chats:new_chats,
+      new_state = {...state, loading:false, currentMessages:new_currentMessages, chats:[...state.chats],
         status: new_status, total_unread_messages, quick_replies:[],
-        chatScreenState:INITIAL_CHAT_SCREEN_STATE
+        chatScreenState:INITIAL_CHAT_SCREEN_STATE,
       };
 
       saveData(new_state);
@@ -328,7 +361,7 @@ export default (state=INITIAL_STATE, action) => {
         quick_replies:[], status:new_status, chatScreenState:INITIAL_CHAT_SCREEN_STATE}
 
     case ACTIONS.CHAT_SAVE_DATA:
-      saveData(state, true)
+      saveData(state,true)
       return state
 
     case ACTIONS.SETTINGS_CHANGE_ANIMATION:

@@ -92,8 +92,8 @@ class Chat extends Component {
               COLORS = {COLORS}
               value={this.state.chatPeopleSearchText}
               onTextChange={(value)=>{this.setState({chatPeopleSearchText:value})}}
-              onSearch={()=>{this.showTimedAlert()
-              ;this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
+              onSearch={()=>{this.showTimedAlert();
+              this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
             />
           </View>
         }
@@ -107,7 +107,7 @@ class Chat extends Component {
           </View>
         }
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
         if (!this.props.status.hasOwnProperty(item._id)){
           this.props.status[item._id] = {online: true, typing: false, unread_messages: 0}
         }
@@ -118,10 +118,12 @@ class Chat extends Component {
           typing={this.props.status[item._id].typing} 
           online={this.props.status[item._id].online}
           unread_messages= {this.props.status[item._id].unread_messages}
+          recentActivity = {this.props.status[item._id].recentActivity}
+          recentMessage = {this.props.status[item._id].recentMessage}
           onPress={()=>{
           this.props.setUserData(item);
           Actions.chatscreen();
-          analytics().setCurrentScreen("ChatScreen", "ChatScreen")
+          analytics().setCurrentScreen("ChatScreen", "ChatScreen");
           logEvent(LOG_EVENT.SCREEN_CHANGE, 'chatscreen');}}
         />)
         }}
@@ -134,7 +136,7 @@ class Chat extends Component {
     return (
       <FlatList
         data={this.props.chatPeopleSearch}
-        contentContainerStyle={{marginTop:15, flex:1}}
+        contentContainerStyle={{marginTop:15, flexGrow:1}}
         keyExtractor={(item, index)=>index.toString()}
         ListHeaderComponent = {
           <View>
@@ -159,9 +161,10 @@ class Chat extends Component {
           </Text>
         </View>
       }
-        renderItem={({item})=>{
+        renderItem={({item, index})=>{
           return (
           <ChatPeople data={item}
+            finalElem={this.props.chatPeopleSearch && index===(this.props.chatPeopleSearch.length-1)}
             theme={this.props.theme}
             chatPeopleSearch = {true}
             data = {item}
@@ -241,7 +244,7 @@ const mapStateToProps = (state) => {
     theme:state.chat.theme,
     COLORS: state.chat.COLORS,
     authTokenSet:state.chat.authTokenSet,
-    chatPeopleSearch:state.chat.chatPeopleSearch
+    chatPeopleSearch:state.chat.chatPeopleSearch,
   }
 }
 

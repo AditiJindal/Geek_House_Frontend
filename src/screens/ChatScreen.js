@@ -97,8 +97,8 @@ class ChatScreen extends Component {
               (
                 <Badge
                   status="success"
-                  containerStyle={{ position: 'absolute', top: 2, right: 0,}}
-                  badgeStyle={{height:12, width:12, borderRadius:6, borderWidth:1}}
+                  containerStyle={{ position: 'absolute', top: 2, right: 0}}
+                  badgeStyle={{height:12, width:12, borderRadius:6, borderWidth:1.2, borderColor:COLORS.LIGHT}}
                 />
               ):<View/>
             }
@@ -110,7 +110,7 @@ class ChatScreen extends Component {
               {this.renderStatus(this.props.status[this.props.other_user_data._id])}
             </Text>
             {(this.props.other_user_data.fav_category)?
-            (<Text style={{...styles.IntrestStyle, 
+            (<Text style={{...styles.InterestStyle, 
               color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
               {this.props.other_user_data.fav_category}
             </Text>):<View/>}
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     fontFamily:FONTS.PRODUCT_SANS_BOLD,
     flexWrap:'wrap'
   },
-  IntrestStyle:{
+  InterestStyle:{
     fontSize:10,
     fontFamily:FONTS.PRODUCT_SANS,
   },

@@ -222,5 +222,7 @@ export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
 
   naturalLanguage().suggestReplies(feedList)
   .then((response)=>{dispatch({type:ACTIONS.CHAT_QUICK_REPLIES, payload:response})})
-  .catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'CHAT ACTION - 213, Quick Replies Error', description:e.toString()}))
+  .catch(e=>
+    logEvent(LOG_EVENT.ERROR, {errorLine: 'CHAT ACTION - 213, Quick Replies Error', description:e.toString()}
+  ))
 }

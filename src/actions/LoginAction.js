@@ -40,7 +40,6 @@ PushNotification.popInitialNotification((notification) => {
 const setPushNotifications = async () => {
   PushNotification.configure({
     onNotification: (notification) => {
-      console.log(notification);
       makeLocalNotification(notification)
       handleNotification(notification)
     },
@@ -66,14 +65,13 @@ export const makeLocalNotification = (notification) => {
     autoCancel: true,
     largeIcon: "ic_launcher",
     smallIcon: "ic_stat_ic_notification",
-    color: COLORS_LIGHT_THEME.THEME1,
     vibrate: true,
     vibration: 200,
     priority: "max",
     visibility: "private", 
     importance: "max",
 
-    title: (notification.title)?decrypt(notification.title):null,
+    title: decrypt(notification.title),
     message: decrypt(notification.body),
   });
 }

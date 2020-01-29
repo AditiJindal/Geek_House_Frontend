@@ -48,7 +48,7 @@ class Bookmark extends React.Component{
 
     if (this.props.bookmarks_loading){
       return(
-        <View style={{flex:1}}>
+        <View style={{flexGrow:1}}>
           <ScrollView style={{flexGrow:1}} nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
             {this.renderHeader()}
             <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} autoRun={true} duration={600} delay={100}

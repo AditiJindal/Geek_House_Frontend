@@ -4,6 +4,8 @@ import { StyleSheet, Text, View, ViewPropTypes, } from 'react-native';
 import moment from 'moment';
 import Color from './Color';
 import { TIME_FORMAT } from './Constant';
+import {FONTS} from '../../Constants';
+
 const containerStyle = {
     marginLeft: 10,
     marginRight: 10,
@@ -44,7 +46,7 @@ export default class Time extends Component {
             ]}>
           <Text style={[
                 styles[position].text,
-                textStyle && textStyle[position],
+                textStyle && textStyle[position], {fontFamily:FONTS.PRODUCT_SANS, fontSize:9}
             ]}>
             {moment(currentMessage.createdAt)
                 .locale(this.context.getLocale())

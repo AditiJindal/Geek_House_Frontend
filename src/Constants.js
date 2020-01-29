@@ -15,6 +15,7 @@ export const COLORS_LIGHT_THEME = {
 
   GRAY: '#787878',
   LIGHT_GRAY: '#aaaaaa',
+  DARK_GRAY: '#787878',
 
   LIGHT_BLUE: '#6cd4ec',
   DARK_BLUE: '#2395b1',
@@ -49,6 +50,7 @@ export const COLORS_DARK_THEME = {
 
   GRAY: '#b4b4b4',
   LIGHT_GRAY: '#8c8c8c',
+  DARK_GRAY: '#c8c8c8',
 
   LIGHT_BLUE: '#6cd4ec',
   DARK_BLUE: '#2395b1',

@@ -229,20 +229,24 @@ class ArticleInfo extends PureComponent {
                             color: COLORS.LESSER_DARK}}>
                             {item.author}
                           </Text>
-                          <StarRating
-                            activeOpacity={0.8}
-                            maxStars={5}
-                            disabled={true}
-                            showRating={true}
-                            rating={item.rating}
-                            emptyStarColor={'#FFFFFF'}
-                            halfStarColor={'#f5af19'}
-                            fullStarColor={'#f5af19'}
-                            starSize={14}
-                            emptyStar={'star'}
-                            fullStar={'star'}
-                            halfStar={'star-half-o'}
-                          />
+                          {
+                            (item.rating)?(
+                              <StarRating
+                                activeOpacity={0.8}
+                                maxStars={5}
+                                disabled={true}
+                                showRating={true}
+                                rating={item.rating}
+                                emptyStarColor={'#FFFFFF'}
+                                halfStarColor={'#f5af19'}
+                                fullStarColor={'#f5af19'}
+                                starSize={14}
+                                emptyStar={'star'}
+                                fullStar={'star'}
+                                halfStar={'star-half-o'}
+                              />
+                            ):null
+                          }
                         </View>
                       </View>
                       <Text style={{fontFamily:FONTS.HELVETICA_NEUE, textAlign:'justify',

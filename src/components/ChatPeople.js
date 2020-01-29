@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
-import {FONTS} from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 import Typing from '../components/Typing';
 import Image from 'react-native-fast-image';
-import SView from 'react-native-simple-shadow-view'
+import TimeAgo from 'react-native-timeago';
 
 getInitials = (name) => {
   if (!name){return null}
@@ -30,7 +30,7 @@ const getBadge = (props) => {
   else if (props.online){
     return (
       <View style={{
-        position:'absolute', right:0, top:0, borderColor:COLORS.LESSER_LIGHT, borderWidth:1,
+        position:'absolute', right:0, top:0, borderColor:COLORS.LIGHT, borderWidth:1,
         backgroundColor:'rgb(82, 196, 27)', height:10, width:10, borderRadius:5}}>
       </View>
     );
@@ -40,8 +40,24 @@ const getBadge = (props) => {
   }
 }
 
+const getRecentTime = (time) => {
+  return (
+    <Text style={{color:COLORS_LIGHT_THEME.THEME1, fontSize:10, 
+      fontFamily:FONTS.PRODUCT_SANS_BOLD}}>
+      <TimeAgo time={Date.parse(time)} interval={30000}/>
+    </Text>
+  )
+}
+
+const getRecentMessage = (message) => {
+  if (message.length>30){
+    message = message.substring(0,28) + "..."
+  }
+  return message
+}
+
 export default ChatPeople = (props) => {
-  let IMAGE_SIZE = 36;
+  let IMAGE_SIZE = 40;
   if (props.chatPeopleSearch){
     IMAGE_SIZE = 48
   }
@@ -49,49 +65,53 @@ export default ChatPeople = (props) => {
   
   return(
     <TouchableOpacity activeOpacity={1} onPress={() => {props.onPress()}}>
-      <SView style={{...styles.ViewStyling, borderRadius:IMAGE_SIZE/4,
-        backgroundColor:(props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
-        <View>
-          <Image
-            source={(props.data.image_url)?{uri:props.data.image_url}:require('../../assets/icons/user.png')}
-            style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE/2}}
-          />
-          {getBadge(props)}
-        </View>
-        
-        <View style={{marginHorizontal:10, justifyContent:'center', alignItems:'center'}}>
-          <Text style={{...styles.TextStyle, 
-            color:COLORS.LESS_DARK}}>
-            {props.data.name}
-          </Text>
-          {(props.data.fav_category)?
-          (<Text style={{...styles.IntrestStyle, 
-            color:(props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
-            {props.data.fav_category}
-          </Text>):
-          <View/>}
-          {(props.data.email)?(
-            <Text style={{...styles.IntrestStyle, 
-            color:(props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
-              {props.data.email}
+      <View style={{...styles.ViewStyling, borderColor:COLORS.GRAY, 
+        backgroundColor:COLORS.LIGHT,borderRadius:IMAGE_SIZE/4}}>
+        <View style={{justifyContent:'center', flexDirection:'row', alignItems:'center'}}>
+          <View>
+            <Image
+              source={(props.data.image_url)?{uri:props.data.image_url}:require('../../assets/icons/user.png')}
+              style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE/2}}
+            />
+            {getBadge(props)}
+          </View>
+          
+          <View style={{marginHorizontal:10, justifyContent:'center', alignItems:'flex-start'}}>
+            <Text style={{...styles.TextStyle, 
+              color:COLORS.LESS_DARK}}>
+              {props.data.name}
             </Text>
-          ):<View/>}
+            {(props.data.email)?(
+              <Text style={{...styles.InterestStyle, fontSize:12,
+              color:(props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
+                {props.data.email}
+              </Text>
+            ):null}
+            {(props.recentMessage && props.recentActivity)?(
+              <Text style={{...styles.InterestStyle, fontSize:14, 
+                color:COLORS.DARK_GRAY}}>
+                {getRecentMessage(props.recentMessage)}
+            </Text>
+            ):null}
+            {(props.recentMessage && props.recentActivity)?(
+              getRecentTime(props.recentActivity)
+            ):null}
+          </View>
         </View>
 
         {
           (props.unread_messages)?
           (
-            <View style={{...styles.BadgeViewStyle, right: -10 - (props.unread_messages.toString().length*5), 
-              borderColor:(props.theme==='light')?COLORS.RED:COLORS.GREEN,
-              backgroundColor:(props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
+            <View style={{...styles.BadgeViewStyle,
+              backgroundColor:(props.theme==='light')?COLORS.RED:COLORS.GREEN}}>
               <Text style={{...styles.BadgeTextStyle, 
-                color:(props.theme==='light')?COLORS.RED:COLORS.GREEN}}>
+                color:COLORS.LIGHT}}>
                 {props.unread_messages}
               </Text>
             </View>
-          ):<View/>
+          ):null
         }
-      </SView>
+      </View>
     </TouchableOpacity>
   );
 }
@@ -100,22 +120,22 @@ const styles = StyleSheet.create({
   ViewStyling:{
     alignItems:'center',
     flexDirection:'row',
-    alignSelf:'flex-start',
-    paddingHorizontal:10,
-    paddingVertical:7,
-    shadowColor:'#101010',
-    shadowOpacity:0.25, 
-    shadowOffset:{width:0,height:4},
-    shadowRadius:5,
-    margin:10,
-    marginRight:80,
+    paddingHorizontal:15,
+    paddingVertical:10,
+    width:"90%",
+    margin:8, 
+    flex:1,
+    justifyContent:'space-between',
+    alignSelf:'center',
+    borderWidth:0.5,
+    overflow:'hidden',
   },
   TextStyle:{
     fontSize:18,
     fontFamily:FONTS.PRODUCT_SANS_BOLD,
   },
-  IntrestStyle:{
-    fontSize:12,
+  InterestStyle:{
+    fontSize:10,
     fontFamily:FONTS.PRODUCT_SANS,
   },
   BadgeTextStyle:{
@@ -123,13 +143,11 @@ const styles = StyleSheet.create({
     fontSize:12
   },
   BadgeViewStyle:{
-    position: 'absolute',
-    borderWidth:2,
     borderRadius:20,
     justifyContent:'center',
     alignItems:'center',
     padding:3,
-    elevation:5,
+    elevation:6,
     minWidth: 28,
     minHeight:28,
   }
