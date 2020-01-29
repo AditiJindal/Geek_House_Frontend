@@ -1,5 +1,5 @@
 import {ACTIONS} from './types';
-import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import {AppState} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
@@ -15,7 +15,8 @@ import messages from '@react-native-firebase/messaging';
 import perf from '@react-native-firebase/perf';
 import PushNotification from "react-native-push-notification";
 import { encrypt, decrypt } from '../encryptionUtil';
-import {setJSExceptionHandler, setNativeExceptionHandler} from 'react-native-exception-handler';
+import {setJSExceptionHandler, 
+  setNativeExceptionHandler} from 'react-native-exception-handler';
 import APP_INFO from '../../package.json';
 
 const trace = perf().newTrace("get_data_async_storage");
@@ -78,11 +79,6 @@ export const makeLocalNotification = (notification) => {
 
 export const handleNotification = (notification) => {
   switch(notification.type){
-    case 'chat':
-      Actions.replace('chat');
-      analytics().logEvent('chat_notification_tapped')
-      return null;
-
     case 'article':
       analytics().logEvent('article_notification_tapped')
       Actions.notification_article({articleData: {
@@ -170,6 +166,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
       clearTimeout(timer);
       timer = setTimeout(()=>{getQuickReplies(dispatch,temp_currentMessages, user_id);},1000)
     }
+    console.log("Message : ", message)
     dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message,other_user_id: data.from, isIncomming:true}});
   });
 

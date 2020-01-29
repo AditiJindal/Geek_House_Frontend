@@ -2,6 +2,7 @@ import {ACTIONS} from '../actions/types';
 import AsyncStorage from '@react-native-community/async-storage';
 import {COLORS_LIGHT_THEME, COLORS_DARK_THEME, LOG_EVENT} from '../Constants';
 import analytics from '@react-native-firebase/analytics';
+import _ from 'lodash';
 import {logEvent} from '../actions/ChatAction';
 import perf from '@react-native-firebase/perf';
 import {database} from '../database';
@@ -44,16 +45,29 @@ const INITIAL_STATE={
 
 const trace = perf().newTrace("save_data_async_storage")
 
-const incomingMessageConverter = (data) => {
-  new_message = [{_id:uuid(), createdAt: data.createdAt, text:data.text, 
-    user:{_id:data.from}, image:data.image}]
+const incomingMessageConverter = (item) => {
+  new_message = [{_id:uuid(), createdAt: item.createdAt, text:item.text, 
+    user:{_id:item.from}, image:item.image}]
   return new_message
 }
 
-const insertUnreadMessages = (unread_messages, this_user_id) => {
+const insertUnreadMessages = (unread_messages, this_user_id, status, total_unread_messages, chats) => {
+  let new_chats = [...chats];
   unread_messages.map(item=>{
-    saveMessageInDB({message:incomingMessageConverter(item), other_user_id:item.from, isIncomming:true}, this_user_id)
+
+    status[item.from].unread_messages+=1;
+    status[item.from].recentMessage = (item.text)?item.text:"Sent a photo 📷"
+    status[item.from].recentActivity = item.createdAt
+    total_unread_messages+=1;
+
+    new_chats = reorderChatsList(new_chats, item.from)
+
+    saveMessageInDB({message:incomingMessageConverter(item), 
+      other_user_id:item.from, isIncomming:true}, this_user_id)
+
   });
+
+  return {status, total_unread_messages, new_chats}
 }
 
 const reorderChatsList = (list, elem) => {
@@ -253,7 +267,7 @@ export default (state=INITIAL_STATE, action) => {
       // status: {'<other_user_id>': {online:bool, typing:bool, unread_messages:Array}}
       // messages: {'<other_user_id>': [message_objects]}
       
-      const all_users = action.payload.chats
+      const all_users = [...action.payload.chats]
       new_messages={...state.messages}
       duplicate_status = {...state.status};
       total_unread_messages = state.total_unread_messages;
@@ -278,16 +292,13 @@ export default (state=INITIAL_STATE, action) => {
         });
       }
 
-      insertUnreadMessages(action.payload.unread_messages, state.user_id)
-      action.payload.unread_messages.map((item)=>{
-        status[item.from].unread_messages+=1;
-        total_unread_messages+=1;        
-      });
+      let {status, total_unread_messages, new_chats} = insertUnreadMessages(action.payload.unread_messages, 
+        state.user_id, status, total_unread_messages, action.payload.chats);
 
       if (total_unread_messages<0){total_unread_messages=0}
       if (action.payload.explicitly){status=duplicate_status}
 
-      let new_state = {...state, chatPeople:action.payload, chats:action.payload.chats,
+      let new_state = {...state, chatPeople:action.payload, chats:new_chats,
         loading:false, status, total_unread_messages}
 
       delete action.payload.chats
