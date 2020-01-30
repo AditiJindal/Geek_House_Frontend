@@ -179,21 +179,21 @@ class Write extends Component {
             <Text style={{...styles.TextStyle, color:COLORS.DARK}}>
               my articles
             </Text>
-            <TouchableOpacity onPress={()=>{Actions.bookmark()}}
-              activeOpacity={0.7} style={{backgroundColor:"#f739bd", borderRadius:6}}>
+            <TouchableOpacity activeOpacity={0.8}
+              onPress={()=>{Actions.bookmark()}}>
               <LinearGradient style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,
-                backgroundColor:COLORS.LESSER_DARK, flexDirection:'row', alignItems:'center'}} 
-                colors={["#f739bd", "#f953c6"]}
+                flexDirection:'row', alignItems:'center'}}
+                colors={["#2193b0", "#6dd5ed"]}
                 start={{x:0, y:1}} end={{x:1, y:1}}>
-                <Text style={{fontSize:14,fontFamily:FONTS.RALEWAY,color:COLORS_LIGHT_THEME.LIGHT, marginRight:5}}>
-                  bookmarks
+                <Text style={{fontSize:16,fontFamily:FONTS.RALEWAY_BOLD,color:COLORS_LIGHT_THEME.LIGHT}}>
+                  {'bookmarks '}
                 </Text>
-                <Icon name="arrow-right" type="feather" size={14} color={COLORS_LIGHT_THEME.LIGHT}/>
+                <Icon name="arrow-right" type="feather" size={20} color={COLORS_LIGHT_THEME.LIGHT}/>
               </LinearGradient>
             </TouchableOpacity>
         </SView>
-        
-          
+
+
         <View style={{height:Dimensions.get('window').height}}>
           {
             (Object.keys(this.props.myArticles).length!==0)?

@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
     },
     contentContainerStyle: {
         justifyContent: 'flex-end',
+        flexGrow:1
     },
     headerWrapper: {
         flex: 1,
@@ -205,7 +206,9 @@ export default class MessageContainer extends React.PureComponent {
             <View style={{backgroundColor:COLORS.LIGHT+'86', borderRadius:10,paddingVertical:5,
             paddingHorizontal:10, alignSelf:'center', margin:20}}>
                 <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:12,color:COLORS.DARK,}}>
-                    {`* Long press on an image to save it in gallery\n* Long press on text to copy it to clipboard`}
+                    {`* Long press on an image to save it in gallery\n\
+* Long press on text to copy it to clipboard\n\
+* Your chat is encrypted and secure`}
                 </Text>
             </View>
             }

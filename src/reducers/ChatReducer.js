@@ -33,7 +33,7 @@ const INITIAL_STATE={
   theme: "light",
   animationOn:true,
   quickRepliesEnabled: true,
-  chat_background:{image:null, blur:3},
+  chat_background:{image:null, blur:0},
   chatPeopleSearchLoading:false,
   authTokenSet: false,
   chatPeopleSearch:null,

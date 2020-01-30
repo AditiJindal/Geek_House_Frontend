@@ -5,6 +5,8 @@ import axios from 'axios';
 import RNFileSystem from 'react-native-fs';
 import {encrypt} from '../encryptionUtil';
 
+var timer = null;
+
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
 
@@ -62,4 +64,37 @@ export const changeChatWallpaper = (response, previous_image) => {
 
 export const changeBlurRadius = (blur) => {
   return {type:ACTIONS.CHANGE_CHAT_BACKGROUND_BLUR, payload:blur}
+}
+
+const nameValidator = (name) => {
+  if (name.length<2){return {error:'Name too short'}}
+  if (name.length>32){return {error:'Name too long'}}
+  if (name.includes('@')){return {error:'Name cannot contain @'}}
+  else {return {error:false}}
+}
+
+export const changeName = (name, callback) => {
+  // this goes into LoginReducer as name remains with LoginReducer
+  return (dispatch) => {
+    dispatch({type:ACTIONS.SETTINGS_CHANGE_NAME, payload:{name, confirmChange:false}});
+
+    name = name.trim();
+    clearTimeout(timer);
+    timer = setTimeout(()=>{
+      const {error} = nameValidator(name);
+      if (!error){
+        httpClient.post(URLS.change_name, {name}).then(()=>{
+          dispatch({type:ACTIONS.SETTINGS_CHANGE_NAME, payload:{name, confirmChange:true}});
+          callback('Name changed successfully')
+        });
+      }
+      else{
+        callback(error);
+      }
+    },500);
+  } 
+}
+
+export const revertName = () => {
+  return {type:ACTIONS.SETTINGS_CHANGE_NAME, payload:{revertName:true}}
 }

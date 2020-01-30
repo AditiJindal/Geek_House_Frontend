@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StatusBar, StyleSheet, ScrollView} from 'react-native';
+import { View, Text, TouchableOpacity, StatusBar, StyleSheet, ScrollView, TextInput} from 'react-native';
 import { connect } from 'react-redux';
 import {logout} from '../actions/HomeAction';
 import {logEvent} from '../actions/ChatAction';
 import Loading from '../components/Loading';
-import {decrypt} from '../encryptionUtil';
 import {setAuthToken, getSettingsData, settingsChangeFavouriteCategory, 
   changeTheme, changeAnimationSettings, changeQuickRepliesSettings, 
-  changeChatWallpaper, changeBlurRadius} from '../actions/SettingsAction';
+  changeChatWallpaper, changeBlurRadius, changeName, revertName} from '../actions/SettingsAction';
 import { Actions } from 'react-native-router-flux';
 import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
@@ -21,14 +20,6 @@ import analytics from '@react-native-firebase/analytics';
 import ImageSelector from '../components/ImageSelector';
 import TimedAlert from '../components/TimedAlert';
 
-
-const getId = (id) => {
-  id = decrypt(id)
-  id = id.replace('google','');
-  id = id.replace('facebook','');
-  return id
-}
-
 class Settings extends Component {
 
   state = {
@@ -36,42 +27,37 @@ class Settings extends Component {
   }
 
   componentDidMount(){
-
     this.props.setAuthToken();
     this.props.getSettingsData();
+  }
+
+  componentWillUnmount(){
+    this.props.revertName()
   }
 
   renderRating(rating){
     const {COLORS} = this.props;
     if (rating){
       return (
-        <View style={{flexDirection:'row', alignItems:"center"}}>
-          <StarRating
-            activeOpacity={0.8}
-            maxStars={rating}
-            disabled={true}
-            showRating={true}
-            rating={rating}
-            emptyStarColor={'#FFFFFF'}
-            halfStarColor={(this.props.theme==='light')?'#f5af19':"rgb(243, 201, 33)"}
-            fullStarColor={(this.props.theme==='light')?'#f5af19':"rgb(243, 201, 33)"}
-            starSize={14}
-            emptyStar={'star'}
-            fullStar={'star'}
-            halfStar={'star-half-o'}
-          />
-          <Text style={{...styles.TextStyling,fontSize:14, 
-            color: COLORS.LESSER_DARK}}>
-            {`  ${rating}/5`}
-          </Text>
-        </View>
+        <StarRating
+          activeOpacity={0.8}
+          maxStars={rating}
+          disabled={true}
+          showRating={true}
+          rating={rating}
+          emptyStarColor={'#FFFFFF'}
+          halfStarColor={(this.props.theme==='light')?'#f5af19':"rgb(243, 201, 33)"}
+          fullStarColor={(this.props.theme==='light')?'#f5af19':"rgb(243, 201, 33)"}
+          starSize={14}
+          emptyStar={'star'}
+          fullStar={'star'}
+          halfStar={'star-half-o'}
+        />
       )
     }
     else{
       return (
-        <Text style={{marginLeft:10, fontSize:10, 
-          fontFamily:FONTS.HELVETICA_NEUE, 
-            color:COLORS.LIGHT_GRAY}}>
+        <Text style={{...styles.TextStyling,fontSize:14, color: COLORS.GRAY}}>
           *Not yet rated
         </Text>
       )
@@ -106,17 +92,25 @@ class Settings extends Component {
       <SView style={{flex:1}}>
         <TouchableOpacity
           activeOpacity={1} style={{alignSelf:'flex-start', marginTop:15}}
-          onPress={()=>{this.props.logout()}}>
+          onPress={()=>{
+            if (this.props.internetReachable){
+              this.props.logout()
+            }
+            else{
+              this.timedAlert.showAlert(3000,'Internet required to logout')
+            }
+          }}>
           <LinearGradient
-            colors={["#ef473a","#cb2d3e"]} 
-            style={{elevation:5, justifyContent:'space-between',
-            justifyContent:'center', alignItems:'center', flexDirection:'row', 
-            backgroundColor:COLORS_LIGHT_THEME.LIGHT,
-            alignSelf:'flex-start', padding:15, borderRadius:15}}
-            >
-            <Text style={styles.LogoutButtonTextStyle}>Logout</Text>
+            colors={(this.props.internetReachable)?["#ef473a","#cb2d3e"]:[COLORS.GRAY, COLORS.GRAY]} 
+            style={{elevation:6, justifyContent:'space-evenly',
+            alignItems:'center', flexDirection:'row', paddingVertical:7,
+            alignSelf:'flex-start', paddingHorizontal:10, borderRadius:8}}>
+            <Text style={{...styles.LogoutButtonTextStyle, 
+              color:(this.props.internetReachable)?COLORS_LIGHT_THEME.LIGHT:COLORS.LIGHT}}>
+              Logout
+            </Text>
             <Icon name="log-out" type="feather" size={20}
-              color={COLORS_LIGHT_THEME.LIGHT}/>
+              color={(this.props.internetReachable)?COLORS_LIGHT_THEME.LIGHT:COLORS.LIGHT}/>
           </LinearGradient>
           
         </TouchableOpacity>
@@ -165,20 +159,42 @@ class Settings extends Component {
         backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
         paddingHorizontal:10,marginBottom:10}}>
         <View>
-          <Text style={{...styles.SubheadingTextStyle, 
+          <Text style={{...styles.SubheadingTextStyle,
             color:COLORS.LESSER_DARK}}>Profile</Text>
         </View>
-        <Text style={{...styles.TextStyling, color:COLORS.GRAY}}>
-        <Text style={{fontSize:16, textDecorationLine:'underline'}}>Name</Text>: {this.props.data.name}</Text>
+        <View style={{flexDirection:'row', alignItems:'flex-end', marginVertical:2}}>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY,
+            fontFamily:FONTS.PRODUCT_SANS_BOLD,}}>
+            {'Name: '}
+          </Text>
+          <TextInput
+            value={this.props.data.name}
+            onChangeText = {name=>this.props.changeName(name, (msg)=>{
+              this.timedAlert.showAlert(3000,msg, false)
+            })}
+            style={{...styles.TextStyling, margin:0, padding:0,
+              color:COLORS.GRAY, borderBottomWidth:1, borderColor:COLORS.GRAY}}
+          />
+        </View>
 
-        <Text style={{...styles.TextStyling, color:COLORS.GRAY}}>
-        <Text style={{fontSize:16, textDecorationLine:'underline'}}>Email</Text>: {this.props.data.email}</Text>
-        
-        <Text style={{...styles.TextStyling, color:COLORS.GRAY}}>
-        <Text style={{fontSize:16, textDecorationLine:'underline'}}>Geek House ID</Text>: {getId(this.props.data.id)}</Text>
+        <View style={{flexDirection:'row', alignItems:'flex-end', marginVertical:2}}>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY, fontFamily:FONTS.PRODUCT_SANS_BOLD}}>
+            {'Email: '}
+          </Text>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY, marginBottom:1}}>
+            {this.props.data.email}
+          </Text>
+        </View>
 
-        <Text style={{...styles.TextStyling, color:COLORS.GRAY}}>
-        <Text style={{fontSize:16, textDecorationLine:'underline'}}>Favourite Category</Text>: {this.props.fav_category}</Text>
+        <View style={{flexDirection:'row', alignItems:'flex-end', marginVertical:2}}>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY, fontFamily:FONTS.PRODUCT_SANS_BOLD}}>
+            {'Favourite Category: '}
+          </Text>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY}}>
+            {this.props.fav_category}
+          </Text>
+        </View>
+
       </SView>
     )
   }
@@ -194,14 +210,25 @@ class Settings extends Component {
           <Text style={{...styles.SubheadingTextStyle,
             color:COLORS.LESSER_DARK}}>Articles You Viewed</Text>
         </View>
-        <Text style={{...styles.TextStyling, color:COLORS.GRAY}}>
-        <Text style={{fontSize:14}}>Articles Viewed</Text>: {this.props.settingsData.articles_viewed}</Text>
 
-        <View style={{flexDirection:'row', alignItems:'center'}}>
-          <Text style={{...styles.TextStyling, color:COLORS.GRAY}}>
-          <Text style={{fontSize:14}}>Average Rating Given by You</Text>{' :  '}</Text>
-          {this.renderRating(this.props.settingsData.average_rating_given)}
+        <View style={{flexDirection:'row', alignItems:'flex-end', marginVertical:2}}>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY, fontFamily:FONTS.PRODUCT_SANS_BOLD}}>
+            {'Articles Viewed: '}
+          </Text>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY, marginBottom:1}}>
+            {this.props.settingsData.articles_viewed}
+          </Text>
         </View>
+
+        <View style={{flexDirection:'row', alignItems:'flex-end', marginVertical:2}}>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY, fontFamily:FONTS.PRODUCT_SANS_BOLD}}>
+            {'Average Rating Given: '}
+          </Text>
+          <View style={{marginBottom:3}}>
+            {this.renderRating(this.props.settingsData.average_rating_given)}
+          </View>
+        </View>
+        
       </SView>
     );
   }
@@ -215,32 +242,50 @@ class Settings extends Component {
         paddingHorizontal:10, marginVertical:10}}>
         <View>
           <Text style={{...styles.SubheadingTextStyle,
-            color:COLORS.LESSER_DARK}}>On Your Articles</Text>
+            color:COLORS.LESSER_DARK}}>Your Articles</Text>
         </View>
 
-        <Text style={{...styles.TextStyling, color:COLORS.GRAY}}>
-        <Text style={{fontSize:14}}>Total Articles Written</Text>: {this.props.settingsData.articles_written}</Text>
+        <View style={{flexDirection:'row', alignItems:'flex-end', marginVertical:2}}>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY, fontFamily:FONTS.PRODUCT_SANS_BOLD}}>
+            {'Total Articles Written: '}
+          </Text>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY, marginBottom:1}}>
+            {this.props.settingsData.articles_written}
+          </Text>
+        </View>
 
-        <Text style={{...styles.TextStyling, color:COLORS.GRAY}}>
-        <Text style={{fontSize:14}}>Total Article Views</Text>: {this.props.settingsData.total_views_on_articles}</Text>
+        <View style={{flexDirection:'row', alignItems:'flex-end', marginVertical:2}}>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY, fontFamily:FONTS.PRODUCT_SANS_BOLD}}>
+            {'Total Article Views: '}
+          </Text>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY, marginBottom:1}}>
+          </Text>
+        </View>
+
+        <View style={{flexDirection:'row', alignItems:'flex-end', marginVertical:2}}>
+          <Text style={{...styles.TextStyling, color:COLORS.GRAY, fontFamily:FONTS.PRODUCT_SANS_BOLD}}>
+            {'Average Rating: '}
+          </Text>
+          <View style={{marginBottom:3}}>
+            {this.renderRating(this.props.settingsData.average_rating_received)}
+          </View>
+        </View>
         
-        <View style={{flexDirection:'row', alignItems:'center'}}>
-          <Text style={{...styles.TextStyling, color:COLORS.GRAY}}>
-          <Text style={{fontSize:14}}>Average Rating</Text>{' :  '}</Text>
-          { this.renderRating(this.props.settingsData.average_rating_received)}
-        </View>
       </SView>
     );
   }
 
-  renderDropdown(){
+  renderCategorySelector(){
     let new_data=[];
     this.props.categories.map((item) => {new_data.push({value:item})})
     const {COLORS} = this.props;
 
     return (
-      <View>
-        <Text style={{...styles.TextStyling, color:(this.props.theme==='light')?COLORS.GRAY:COLORS.LESSER_DARK}}>Change Your Favourite Category</Text>
+      <View style={{marginTop:20}}>
+        <Text style={{...styles.TextStyling, 
+          color:(this.props.theme==='light')?COLORS.GRAY:COLORS.LESSER_DARK}}>
+          Change Your Favourite Category
+        </Text>
         <Dropdown
           theme={this.props.theme}
           COLORS = {COLORS}
@@ -336,17 +381,17 @@ class Settings extends Component {
   }
 
   handleBlurOption(isIncrease){
-    
     if(isIncrease && (this.state.blur<15)){
-      clearTimeout(this.timer);
       this.setState({blur:this.state.blur+0.5})
-      this.timer = setTimeout(()=>{this.props.changeBlurRadius(this.state.blur)},1)
     }
     if(!isIncrease && (this.state.blur>0)){
-      clearTimeout(this.timer);
       this.setState({blur:this.state.blur-0.5})
-      this.timer = setTimeout(()=>{this.props.changeBlurRadius(this.state.blur)},1)
     }
+
+    clearTimeout(this.timer);
+    this.timer = setTimeout(()=>{
+      this.props.changeBlurRadius(this.state.blur);
+    },1)
   }
 
   changeChatWallpaper(){
@@ -394,15 +439,15 @@ class Settings extends Component {
         contentContainerStyle={{paddingVertical:10, paddingHorizontal:25}}>
         {this.renderHeader()}
         {this.renderUserInfo()}
-        {this.renderDropdown()}
         {this.renderArticlesYouViewedStats()}
         {this.renderYourArticlesStats()}
         {this.renderThemeButton()}
+        {this.renderCategorySelector()}
         {this.renderAnimationSwitch()}
         {this.renderQuickRepliesSwitch()}
         {this.changeChatWallpaper()}
         {this.renderLogoutButton()}
-        
+        <View style={{height:20, width:1}}/>
       </ScrollView>
     );
   }
@@ -441,6 +486,7 @@ const mapStateToProps = (state) => {
   return {
     data: state.login.data,
     categories: state.login.categories,
+    internetReachable: state.login.internetReachable,
 
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,
@@ -457,7 +503,7 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   logout, setAuthToken, getSettingsData, settingsChangeFavouriteCategory, 
   changeTheme, changeAnimationSettings, changeQuickRepliesSettings,
-  changeChatWallpaper, changeBlurRadius})(Settings);
+  changeChatWallpaper, changeBlurRadius, changeName, revertName})(Settings);
 
 const styles = StyleSheet.create({
   HeadingTextStyling:{
@@ -466,7 +512,7 @@ const styles = StyleSheet.create({
   },
   LogoutButtonTextStyle:{
     color:COLORS_LIGHT_THEME.LIGHT,
-    fontFamily:FONTS.RALEWAY,
+    fontFamily:FONTS.PRODUCT_SANS,
     fontSize:18,
     marginRight:15
   },
@@ -476,7 +522,7 @@ const styles = StyleSheet.create({
   },
   TextStyling: {
     fontFamily: FONTS.PRODUCT_SANS,
-    fontSize: 18,
-    marginVertical:2
+    fontSize: 16,
+    textAlignVertical:'bottom'
   }
 })

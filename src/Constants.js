@@ -108,7 +108,8 @@ export const URLS = {
   feedback: '/api/feedback/',
   bookmark_article: '/api/bookmark_article/',
   get_bookmarked_articles: '/api/get_bookmarked_articles/',
-  policy: '/policy/'
+  policy: '/policy/',
+  change_name: '/api/change_name/'
 }
 
 export const FONTS = {

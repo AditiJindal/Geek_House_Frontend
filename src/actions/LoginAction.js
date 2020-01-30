@@ -288,11 +288,12 @@ export const loginGoogle = () => {
 
       httpClient.post(URLS.login, data_to_send).then(
         (response) => {
+          new_data.name = response.data.name
           authtoken = response.data.token
           final_data = {data:new_data, authtoken:authtoken, 
-            categories:response.data.categories, theme:response.data.theme}
+            categories:response.data.categories}
           analytics().setUserId(authtoken);
-          to_save = JSON.stringify(final_data)
+          to_save = JSON.stringify(final_data);
           AsyncStorage.setItem('data', to_save)
           if (response.data.first_login){
             analytics().logSignUp({method:'google'})
@@ -346,6 +347,7 @@ export const loginFacebook = () => {
                   
                   httpClient.post(URLS.login, data_to_send).then(
                     (response) => {
+                      new_data.name = response.data.name
                       authtoken = response.data.token
                       final_data = {data:new_data, authtoken:authtoken, 
                         categories:response.data.categories}

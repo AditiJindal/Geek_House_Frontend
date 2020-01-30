@@ -94,7 +94,7 @@ class Search extends Component {
             placeholderTextColor={COLORS.LESSER_DARK}
             style={{fontSize:20,marginTop:6,flex:1, borderBottomWidth:1, padding:0,
             paddingHorizontal:5, marginHorizontal:5, borderColor:COLORS.LESSER_DARK,
-            fontFamily:FONTS.RALEWAY,color:COLORS.DARK, marginBottom:3}}
+            fontFamily:FONTS.RALEWAY, color:COLORS.DARK, marginBottom:3}}
           />
           {
             (this.props.searchValue.length>0)?(
@@ -120,8 +120,8 @@ class Search extends Component {
                 this.props.showAlert(true, ERROR_MESSAGES.NO_SEARCH_CHARACTER)
               }
             }}>
-            <LinearGradient style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,elevation:7,
-              backgroundColor:COLORS.LESSER_DARK, marginLeft:10,}}
+            <LinearGradient style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,
+              marginLeft:10,}}
               colors={((this.props.searchValue.length>1) && (!this.props.loading))?
                 ['rgb(0,181, 213)','rgb(0,224, 211)']:
                 [COLORS_LIGHT_THEME.GRAY,COLORS_LIGHT_THEME.GRAY]}

@@ -4,7 +4,8 @@ import { View, Text, StyleSheet, StatusBar,FlatList, RefreshControl } from 'reac
 import BottomTab from '../components/BottomTab';
 import {logEvent} from '../actions/ChatAction';
 import {FONTS,LOG_EVENT} from '../Constants';
-import {setAuthToken, setUserData, chatPeopleSearchAction, getChatPeopleExplicitly} from '../actions/ChatAction';
+import {setAuthToken, setUserData, 
+  chatPeopleSearchAction, getChatPeopleExplicitly} from '../actions/ChatAction';
 import {Actions} from 'react-native-router-flux'
 import ChatPeople from '../components/ChatPeople';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
@@ -13,6 +14,8 @@ import ChatPeopleSearch from '../components/ChatPeopleSearch';
 import Loading from '../components/Loading';
 import TimedAlert from '../components/TimedAlert';
 import analytics from '@react-native-firebase/analytics'
+
+
 
 class Chat extends Component {
 
@@ -49,9 +52,15 @@ class Chat extends Component {
     );
   };
 
-  showTimedAlert(){
-    if (!this.state.chatPeopleSearchText){
-      this.timedAlert.showAlert(3000, "Please enter some text");
+  onSearch(){
+    if (this.state.chatPeopleSearchText.length===0){
+      this.timedAlert.showAlert(2000, "Please enter some text");
+    }
+    else if (this.state.chatPeopleSearchText.length===0){
+      this.timedAlert.showAlert(2000, "Please enter some more text");
+    }
+    else{
+      this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)
     }
   }
 
@@ -92,8 +101,7 @@ class Chat extends Component {
               COLORS = {COLORS}
               value={this.state.chatPeopleSearchText}
               onTextChange={(value)=>{this.setState({chatPeopleSearchText:value})}}
-              onSearch={()=>{this.showTimedAlert();
-              this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
+              onSearch={()=>this.onSearch()}
             />
           </View>
         }
@@ -146,8 +154,7 @@ class Chat extends Component {
               COLORS = {COLORS}
               value={this.state.chatPeopleSearchText}
               onTextChange={(value)=>{this.setState({chatPeopleSearchText:value})}}
-              onSearch={()=>{this.showTimedAlert();
-              this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)}}
+              onSearch={()=>this.onSearch()}
               showSearchResults
               onCancel={()=>{this.setState({chatPeopleSearchText:""}); this.props.chatPeopleSearchAction(null) }}
             />

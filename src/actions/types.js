@@ -77,6 +77,7 @@ export const ACTIONS={
     SETTINGS_CHANGE_ANIMATION:'settings.change_animation',
     SETTINGS_CHANGE_QUICK_REPLIES: 'settings.change_quick_replies',
     CHANGE_CHAT_BACKGROUND: 'settings.change_chat_background',
-    CHANGE_CHAT_BACKGROUND_BLUR: 'settings.change_chat_background_blur'
+    CHANGE_CHAT_BACKGROUND_BLUR: 'settings.change_chat_background_blur',
+    SETTINGS_CHANGE_NAME: 'settings.change_name'
 
 }
