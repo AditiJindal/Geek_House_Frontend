@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux'
+import {connect} from 'react-redux';
 import { View, Text, StyleSheet, StatusBar,FlatList, RefreshControl } from 'react-native';
 import BottomTab from '../components/BottomTab';
 import {logEvent} from '../actions/ChatAction';
@@ -13,9 +13,7 @@ import SView from 'react-native-simple-shadow-view';
 import ChatPeopleSearch from '../components/ChatPeopleSearch';
 import Loading from '../components/Loading';
 import TimedAlert from '../components/TimedAlert';
-import analytics from '@react-native-firebase/analytics'
-
-
+import analytics from '@react-native-firebase/analytics';
 
 class Chat extends Component {
 
@@ -128,6 +126,7 @@ class Chat extends Component {
           unread_messages= {this.props.status[item._id].unread_messages}
           recentActivity = {this.props.status[item._id].recentActivity}
           recentMessage = {this.props.status[item._id].recentMessage}
+          image_adder = {this.props.image_adder}
           onPress={()=>{
           this.props.setUserData(item);
           Actions.chatscreen();
@@ -156,7 +155,8 @@ class Chat extends Component {
               onTextChange={(value)=>{this.setState({chatPeopleSearchText:value})}}
               onSearch={()=>this.onSearch()}
               showSearchResults
-              onCancel={()=>{this.setState({chatPeopleSearchText:""}); this.props.chatPeopleSearchAction(null) }}
+              onCancel={()=>{this.setState({chatPeopleSearchText:""}); 
+                this.props.chatPeopleSearchAction(null) }}
             />
           </View>
         }
@@ -176,6 +176,7 @@ class Chat extends Component {
             chatPeopleSearch = {true}
             data = {item}
             COLORS = {COLORS}
+            image_adder = {this.props.image_adder}
             onPress={()=>{
             this.props.setUserData(item);
             Actions.chatscreen();
@@ -242,16 +243,17 @@ class Chat extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    loading: state.chat.loading,
-    chatPeople: state.chat.chatPeople,
-    chats: state.chat.chats,
-    status: state.chat.status,
-    chatPeopleSearchLoading: state.chat.chatPeopleSearchLoading,
+    image_adder: state.home.image_adder,
 
     theme:state.chat.theme,
+    chats: state.chat.chats,
+    status: state.chat.status,
     COLORS: state.chat.COLORS,
+    loading: state.chat.loading,
+    chatPeople: state.chat.chatPeople,
     authTokenSet:state.chat.authTokenSet,
     chatPeopleSearch:state.chat.chatPeopleSearch,
+    chatPeopleSearchLoading: state.chat.chatPeopleSearchLoading,
   }
 }
 

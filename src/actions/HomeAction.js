@@ -77,7 +77,7 @@ export const submitFeedback = (feedback_obj) => {
   return (dispatch) => {
     const local_image_url = feedback_obj.image_url
     if (local_image_url){
-      httpClient.get(URLS.imageupload).then((response)=>{
+      httpClient.get(URLS.imageupload, {params:{type:'feedback', image_type:'jpeg'}}).then((response)=>{
         const preSignedURL = decrypt(response.data.url);
         uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, local_image_url)
         .then(()=>{

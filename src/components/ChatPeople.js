@@ -56,6 +56,13 @@ const getRecentMessage = (message) => {
   return message
 }
 
+const imageUrlCorrector = (image_url, image_adder) => {
+  if (image_url.substring(0,4) !== 'http'){
+    image_url = image_adder + image_url
+  }
+  return image_url
+}
+
 export default ChatPeople = (props) => {
   let IMAGE_SIZE = 40;
   if (props.chatPeopleSearch){
@@ -70,7 +77,9 @@ export default ChatPeople = (props) => {
         <View style={{justifyContent:'center', flexDirection:'row', alignItems:'center'}}>
           <View>
             <Image
-              source={(props.data.image_url)?{uri:props.data.image_url}:require('../../assets/icons/user.png')}
+              source={(props.data.image_url)?
+                {uri:imageUrlCorrector(props.data.image_url, props.image_adder)}:
+                require('../../assets/icons/user.png')}
               style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE/2}}
             />
             {getBadge(props)}

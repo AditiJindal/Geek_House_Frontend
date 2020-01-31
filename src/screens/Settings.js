@@ -6,8 +6,10 @@ import {logEvent} from '../actions/ChatAction';
 import Loading from '../components/Loading';
 import {setAuthToken, getSettingsData, settingsChangeFavouriteCategory, 
   changeTheme, changeAnimationSettings, changeQuickRepliesSettings, 
-  changeChatWallpaper, changeBlurRadius, changeName, revertName} from '../actions/SettingsAction';
+  changeChatWallpaper, changeBlurRadius, changeName, revertName, changeImageUrl
+  } from '../actions/SettingsAction';
 import { Actions } from 'react-native-router-flux';
+import Image from 'react-native-fast-image';
 import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import { Icon } from 'react-native-elements';
@@ -19,6 +21,8 @@ import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 import ImageSelector from '../components/ImageSelector';
 import TimedAlert from '../components/TimedAlert';
+import ImageResizer from 'react-native-image-resizer';
+import ImageEditor from '@react-native-community/image-editor';
 
 class Settings extends Component {
 
@@ -33,6 +37,57 @@ class Settings extends Component {
 
   componentWillUnmount(){
     this.props.revertName()
+  }
+
+  getImageResize(imageSize){
+    const MAX_WIDTH = 384;
+    const MAX_HEIGHT = MAX_WIDTH;
+
+    let resize = {...imageSize}
+    let ratio = imageSize.width/imageSize.height
+    if (resize.width>MAX_WIDTH){
+      resize={width:MAX_WIDTH, height:Math.floor(MAX_WIDTH/ratio)}
+    }
+    if (resize.height>MAX_HEIGHT){
+      resize={width:Math.floor(MAX_HEIGHT*ratio), height:MAX_HEIGHT}
+    }
+    return resize
+  }
+
+  getCropCoordinates({width, height}){
+    // needs to be in 1:1 aspect ratio
+    let originX, originY, crop;
+    if (width<height){
+      const requiredHeight = width
+      const remainingHeight = height-requiredHeight;
+      originX = 0;
+      originY = Math.floor(remainingHeight/2);
+      crop = {offset:{x:originX, y:originY}, size:{width, height:requiredHeight}};
+    }
+    else{
+      const requiredWidth = height
+      const remainingWidth = width-requiredWidth;
+      originY = 0;
+      originX = Math.floor(remainingWidth/2);
+      crop = {offset:{x:originX, y:originY}, size:{width:requiredWidth, height}};
+    }
+    return crop
+  }
+
+  pickImage(image){
+    if (image.didCancel){return null;}
+
+    const imageSize = {width:image.width, height:image.height};
+    const resize = this.getImageResize(imageSize);
+    crop = this.getCropCoordinates(resize);
+
+    ImageResizer.createResizedImage(image.uri, resize.width, resize.height, "JPEG", 80).then((resized_image)=>{
+      ImageEditor.cropImage(resized_image.uri, crop).then((crop_image)=>{
+        this.props.changeImageUrl(crop_image, (msg)=>{
+          this.timedAlert.showAlert(3000,msg, false)
+        })
+      })
+    });
   }
 
   renderRating(rating){
@@ -91,7 +146,7 @@ class Settings extends Component {
     return (
       <SView style={{flex:1}}>
         <TouchableOpacity
-          activeOpacity={1} style={{alignSelf:'flex-start', marginTop:15}}
+          activeOpacity={1} style={{alignSelf:'flex-start', marginTop:50}}
           onPress={()=>{
             if (this.props.internetReachable){
               this.props.logout()
@@ -151,50 +206,83 @@ class Settings extends Component {
     )
   }
 
+  imageUrlCorrector(image_url){
+    if (image_url.substring(0,4) !== 'http'){
+      image_url = this.props.image_adder + image_url
+    }
+    return image_url
+  }
+
+  renderProfilePictureEditor(){
+    const {COLORS, data} = this.props;
+
+    return(
+      <TouchableOpacity activeOpacity={0.8}
+          onPress={()=>{
+            this.imageSelector.showImageSelector(this.pickImage.bind(this))
+          }} disabled={this.props.profile_pic_loading}>
+          <View style={{padding:10, backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
+            {
+              (this.props.profile_pic_loading)?(
+                <Loading size={64} white={(this.props.theme!=='light')}/>
+              ):(
+                <Image
+                  source={{uri:this.imageUrlCorrector(data.image_url)}}
+                  style={{height:64, width:64, borderRadius:32, elevation:7}}
+                />
+              )
+            }
+          </View>
+                       
+        </TouchableOpacity>
+    )
+  }
+
+  renderNameInput(){
+    const {COLORS, data} = this.props;
+    
+    return (
+      <TextInput
+        value={data.name}
+        onChangeText = {name=>this.props.changeName(name, (msg)=>{
+          this.timedAlert.showAlert(3000,msg, false)
+        })}
+        multiline={true}
+        maxLength={32}
+        style={{...styles.AvatarTextStyle, margin:0, padding:0, flexWrap:'wrap',
+          color:COLORS.DARK, borderBottomWidth:0.7, borderColor:COLORS.DARK}}
+      />
+    )
+  }
+
   renderUserInfo(){
-    const {COLORS} = this.props;
+    const {COLORS, data} = this.props;
+
     return (
       <SView style={{
-        borderRadius:12, padding:5, shadowColor:'#202020',shadowOpacity:0.20,shadowOffset:{width:0,height:7},shadowRadius:5, 
+        borderRadius:12, shadowColor:'#202020',shadowOpacity:0.20,
+        shadowOffset:{width:0,height:7}, shadowRadius:5, flex:1, 
         backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
-        paddingHorizontal:10,marginBottom:10}}>
-        <View>
-          <Text style={{...styles.SubheadingTextStyle,
-            color:COLORS.LESSER_DARK}}>Profile</Text>
+        marginBottom:10}}>
+        
+        <View style={{justifyContent:'space-between', alignItems:'center', 
+        flexDirection:'row', marginHorizontal:10, flexWrap:'wrap' }}>
+          {this.renderProfilePictureEditor()}
+          <View style={{alignItems:'flex-end',}}>
+            {this.renderNameInput()}
+            <Text style={{...styles.AvatarTextStyle, fontSize:14, marginTop:3, color:COLORS.GRAY}}>
+              {data.email}
+            </Text>
+          </View>
         </View>
-        <View style={{flexDirection:'row', alignItems:'flex-end', marginVertical:2}}>
-          <Text style={{...styles.TextStyling, color:COLORS.GRAY,
-            fontFamily:FONTS.PRODUCT_SANS_BOLD,}}>
-            {'Name: '}
-          </Text>
-          <TextInput
-            value={this.props.data.name}
-            onChangeText = {name=>this.props.changeName(name, (msg)=>{
-              this.timedAlert.showAlert(3000,msg, false)
-            })}
-            style={{...styles.TextStyling, margin:0, padding:0,
-              color:COLORS.GRAY, borderBottomWidth:1, borderColor:COLORS.GRAY}}
-          />
-        </View>
-
-        <View style={{flexDirection:'row', alignItems:'flex-end', marginVertical:2}}>
-          <Text style={{...styles.TextStyling, color:COLORS.GRAY, fontFamily:FONTS.PRODUCT_SANS_BOLD}}>
-            {'Email: '}
-          </Text>
-          <Text style={{...styles.TextStyling, color:COLORS.GRAY, marginBottom:1}}>
-            {this.props.data.email}
+        <View style={{height:15, justifyContent:'center', alignItems:'center', 
+          backgroundColor:COLORS.DARK_GRAY, flex:1, 
+          borderBottomLeftRadius:12, borderBottomRightRadius:12}}>
+          <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:10,
+            color:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
+            You can edit your name and profile picture
           </Text>
         </View>
-
-        <View style={{flexDirection:'row', alignItems:'flex-end', marginVertical:2}}>
-          <Text style={{...styles.TextStyling, color:COLORS.GRAY, fontFamily:FONTS.PRODUCT_SANS_BOLD}}>
-            {'Favourite Category: '}
-          </Text>
-          <Text style={{...styles.TextStyling, color:COLORS.GRAY}}>
-            {this.props.fav_category}
-          </Text>
-        </View>
-
       </SView>
     )
   }
@@ -281,10 +369,10 @@ class Settings extends Component {
     const {COLORS} = this.props;
 
     return (
-      <View style={{marginTop:20}}>
-        <Text style={{...styles.TextStyling, 
-          color:(this.props.theme==='light')?COLORS.GRAY:COLORS.LESSER_DARK}}>
-          Change Your Favourite Category
+      <View style={{marginVertical:10}}>
+        <Text style={{marginRight:30,fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
+          color:COLORS.LESSER_DARK, }}>
+          Change Favourite Category
         </Text>
         <Dropdown
           theme={this.props.theme}
@@ -310,11 +398,54 @@ class Settings extends Component {
     )
   }
 
+  renderThemeChangeSwitch(){
+    const {COLORS, theme} = this.props;
+    const oppositeTheme = (this.props.theme==='light')?'dark':'light'
+    return(
+      <View style={{marginVertical:5}}>
+        <View style={{flexDirection:'row', alignItems:'center', marginTop:20}}>
+          <Text style={{marginRight:30,fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
+            color:COLORS.LESSER_DARK, }}>
+            Switch Theme
+          </Text>
+          <View style={{flex:1, alignItems:'flex-end', paddingRight:15}}>
+            <Switch
+              value = {theme==='light'}
+              onValueChange = {()=>{
+                analytics().setUserProperties({Theme: oppositeTheme});
+                this.props.changeTheme((oppositeTheme));
+                logEvent(LOG_EVENT.CURRENT_VIEW_MODE, oppositeTheme)}}
+              backgroundActive={COLORS_LIGHT_THEME.GREEN}
+              backgroundInactive={COLORS.GRAY}
+              circleSize={22}
+              barHeight={28}
+              changeValueImmediately={true}
+              innerCircleStyle={{elevation:5}}
+              switchLeftPx={3}
+              switchRightPx={3}
+              circleBorderWidth={0}
+              circleActiveColor={COLORS_LIGHT_THEME.LIGHT}
+              circleInActiveColor={COLORS_LIGHT_THEME.LIGHT}
+            />
+          </View>
+        </View>
+        <Text style={{fontSize:13, fontFamily:FONTS.RALEWAY, marginLeft:10,marginTop:5,
+          color:COLORS.GRAY}}>
+          {
+            (oppositeTheme==='light')?
+            `Currently in Dark theme, switch to\nLight theme for vibrant colors`:
+            `Currently in Light theme, switch to\nDark theme for less strain on eyes`
+          }
+        </Text>
+      </View>
+    )
+  }
+
   renderAnimationSwitch(){
     const {COLORS} = this.props;
     return(
       <View style={{marginVertical:5}}>
-        <View style={{flexDirection:'row', alignItems:'center', marginTop:20}}>
+        <View style={{flexDirection:'row', alignItems:'center', marginVertical:5}}>
           <Text style={{marginRight:30,fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
             color:COLORS.LESSER_DARK, }}>
             Random Animations
@@ -406,7 +537,14 @@ class Settings extends Component {
           paddingHorizontal:12, paddingVertical:6, elevation:8, borderRadius:8, 
           alignSelf:'flex-start', marginVertical:10,flexDirection:'row', 
           justifyContent:'space-between', width:195, alignItems:'center'}}
-          onPress={()=>{this.imageSelector.showImageSelector()}}>
+          onPress={()=>{this.imageSelector.showImageSelector(
+            (response)=>{
+              this.props.changeChatWallpaper(response,
+              this.props.chat_background.image);
+              this.timedAlert.showAlert(3000,'Image applied', false)
+              })
+            }
+          }>
           <Icon name="plus-circle" type="feather" size={20} color={COLORS.LESSER_DARK} />
           <Text style={{fontFamily:FONTS.PRODUCT_SANS, color:COLORS.LESSER_DARK, fontSize:18}}>
             Choose an Image
@@ -441,10 +579,11 @@ class Settings extends Component {
         {this.renderUserInfo()}
         {this.renderArticlesYouViewedStats()}
         {this.renderYourArticlesStats()}
-        {this.renderThemeButton()}
-        {this.renderCategorySelector()}
+        {/* {this.renderThemeButton()} */}
+        {this.renderThemeChangeSwitch()}
         {this.renderAnimationSwitch()}
         {this.renderQuickRepliesSwitch()}
+        {this.renderCategorySelector()}
         {this.changeChatWallpaper()}
         {this.renderLogoutButton()}
         <View style={{height:20, width:1}}/>
@@ -464,9 +603,6 @@ class Settings extends Component {
         <ImageSelector
           COLORS = {this.props.COLORS}
           onRef={ref=>this.imageSelector = ref}
-          onSelect = {(response)=>{this.props.changeChatWallpaper(response,
-          this.props.chat_background.image);
-          this.timedAlert.showAlert(3000,'Image applied', false)}}
         />
         <TimedAlert onRef={ref=>this.timedAlert = ref}
           COLORS={COLORS}/>
@@ -488,22 +624,25 @@ const mapStateToProps = (state) => {
     categories: state.login.categories,
     internetReachable: state.login.internetReachable,
 
-    theme: state.chat.theme,
-    COLORS: state.chat.COLORS,
+    image_adder: state.home.image_adder,
 
-    settingsData: state.settings.settingsData,
     loading: state.settings.loading,
     fav_category: state.settings.fav_category,
+    settingsData: state.settings.settingsData,
+    profile_pic_loading: state.settings.profile_pic_loading,
+
+    theme: state.chat.theme,
+    COLORS: state.chat.COLORS,
     animationOn: state.chat.animationOn,
-    quickRepliesEnabled: state.chat.quickRepliesEnabled,
     chat_background: state.chat.chat_background,
+    quickRepliesEnabled: state.chat.quickRepliesEnabled,
   }
 }
 
 export default connect(mapStateToProps, {
   logout, setAuthToken, getSettingsData, settingsChangeFavouriteCategory, 
   changeTheme, changeAnimationSettings, changeQuickRepliesSettings,
-  changeChatWallpaper, changeBlurRadius, changeName, revertName})(Settings);
+  changeChatWallpaper, changeBlurRadius, changeName, revertName, changeImageUrl})(Settings);
 
 const styles = StyleSheet.create({
   HeadingTextStyling:{
@@ -524,5 +663,9 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRODUCT_SANS,
     fontSize: 16,
     textAlignVertical:'bottom'
+  },
+  AvatarTextStyle:{
+    fontSize:16,
+    fontFamily:FONTS.RALEWAY_LIGHT,
   }
 })

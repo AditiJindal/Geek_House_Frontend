@@ -12,21 +12,26 @@ import ImagePicker from 'react-native-image-picker';
 //   onSelect = {(response)=>{console.log(response)}}
 // />
 
-// call this.imageSelector.showImageSelector() from anywhere, when user selects an image,
+// call this.imageSelector.showImageSelector(callbackFunc) 
+// from anywhere, when user selects an image,
 // onSelect will be called, else it won't be called
+
+// callbackFunc is the function which will be called once the user selects an image
+// and it will be passed a response argument
 
 class ImageSelector extends React.Component{
 
   state = {
-    imageSelectorOpen:false
+    imageSelectorOpen:false,
+    callbackFunc: ()=>{}
   }
 
   componentDidMount(){
     this.props.onRef(this)
   }
 
-  showImageSelector(){
-    this.setState({imageSelectorOpen:true})
+  showImageSelector(callbackFunc){
+    this.setState({imageSelectorOpen:true, callbackFunc})
   }
 
   render(){
@@ -58,7 +63,7 @@ class ImageSelector extends React.Component{
             onPress={()=>{
               this.setState({imageSelectorOpen:false});
               ImagePicker.launchImageLibrary(ImageOptions, (response)=>{
-                if (!response.didCancel){this.props.onSelect(response)}
+                if (!response.didCancel){this.state.callbackFunc(response)}
               })
             }}
             activeOpacity={0.8} 
@@ -83,7 +88,7 @@ class ImageSelector extends React.Component{
             onPress={()=>{
               this.setState({imageSelectorOpen:false});
               ImagePicker.launchCamera(ImageOptions, (response)=>{
-                if (!response.didCancel){this.props.onSelect(response)}
+                if (!response.didCancel){this.state.callbackFunc(response)}
               })
             }}
             activeOpacity={0.8}

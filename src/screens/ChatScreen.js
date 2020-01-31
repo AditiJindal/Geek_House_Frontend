@@ -73,6 +73,13 @@ class ChatScreen extends Component {
     )
   }
 
+  imageUrlCorrector(image_url){
+    if (image_url.substring(0,4) !== 'http'){
+      image_url = this.props.image_adder + image_url
+    }
+    return image_url
+  }
+
   renderHeader(){
     const {COLORS} = this.props;
     return (
@@ -85,7 +92,7 @@ class ChatScreen extends Component {
             <Image
               source={
                 (this.props.other_user_data.image_url)?
-                {uri:this.props.other_user_data.image_url}:
+                {uri:this.imageUrlCorrector(this.props.other_user_data.image_url)}:
                 require('../../assets/icons/user.png')
               }
               style={{height:42, width:42, borderRadius:24}}
@@ -121,8 +128,8 @@ class ChatScreen extends Component {
               if (this.props.other_user_data.newEntry){
                 this.props.getChatPeopleExplicitly()
               }
-              this.props.clearOtherUserData();
               Actions.pop()
+              this.props.clearOtherUserData();
             }}>
               <Icon name="x-circle" size={22} color={COLORS.RED} type={'feather'}/>
             </TouchableOpacity>

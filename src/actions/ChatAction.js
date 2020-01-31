@@ -10,7 +10,7 @@ import perf from '@react-native-firebase/perf';
 import {encrypt, decrypt} from '../encryptionUtil';
 
 const MessagesCollection =  database.collections.get('messages');
-const trace = perf().newTrace("get_chat_database");
+const trace = perf().newTrace("mobile_db_time_get");
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
@@ -62,7 +62,7 @@ export const sendMessage = (socket, message, other_user_id, image) => {
     let message_to_send = {text:"", to:"", image}
     dispatch({type:ACTIONS.CHAT_IMAGE_UPLOADING, payload:{imageUploading:true}})
     if (image){
-      httpClient.get(URLS.imageupload).then((response)=>{
+      httpClient.get(URLS.imageupload, {params:{type:'chat', image_type:'jpeg'}}).then((response)=>{
         response.data.url = decrypt(response.data.url)
         response.data.key = decrypt(response.data.key)
         
@@ -164,7 +164,7 @@ const messageConverter = (item) => {
 }
 
 export const getCurrentUserMessages = (other_user_id, this_user_id, quickRepliesEnabled) => {
-  t = Date.now()
+  var t = Date.now()
   trace.start()
   return (dispatch)=>{
     MessagesCollection.query(Q.where('other_user_id', other_user_id)).fetch().then((response)=>{
@@ -176,15 +176,16 @@ export const getCurrentUserMessages = (other_user_id, this_user_id, quickReplies
         }
       });
       trace.stop()
-      trace.putMetric('get_chat_database', Date.now()-t);
-      logEvent(LOG_EVENT.ASYNC_STORAGE_TIME, {mili_seconds: Date.now()-t,time: Date.now(), type:'get_chat_database'})
+      trace.putMetric('mobile_db_time_get', Date.now()-t);
+      logEvent(LOG_EVENT.MOBILE_DB_TIME, 
+        {mili_seconds: Date.now()-t,time: Date.now(), type:'mobile_db_time_get'})
       
       if (quickRepliesEnabled){
         clearTimeout(timer);
         timer = setTimeout(()=>{getQuickReplies(dispatch, new_response.slice(0,4), this_user_id)}, 1000)
       }
 
-      dispatch({type:ACTIONS.CHAT_GET_USER_MESSAGES, payload:new_response})
+      dispatch({type:ACTIONS.CHAT_GET_USER_MESSAGES, payload:new_response});
     })
   }
 }

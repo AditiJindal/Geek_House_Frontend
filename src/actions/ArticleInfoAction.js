@@ -50,7 +50,8 @@ const articleHandler = (dispatch, getState, article_id, preview_article, forceUp
 }
 
 export const getArticleInfo = (article_id, preview_article, forceUpdate) => {
-  return (dispatch, getState)=>{articleHandler(dispatch, getState, article_id, preview_article, forceUpdate)}
+  return (dispatch, getState)=>{
+    articleHandler(dispatch, getState, article_id, preview_article, forceUpdate)}
 }
 
 export const submitComment = (to_send) => {

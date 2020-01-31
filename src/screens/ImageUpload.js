@@ -74,20 +74,22 @@ class ImageUpload extends Component {
   }
 
   getImageResize(imageSize){
+    const MAX_WIDTH = 800;
+    const MAX_HEIGHT = 600;
+
     let resize = {...imageSize}
     let ratio = imageSize.width/imageSize.height
-    if (resize.width>800){
-      resize={width:800, height:Math.floor(800/ratio)}
+    if (resize.width>MAX_WIDTH){
+      resize={width:MAX_WIDTH, height:Math.floor(MAX_WIDTH/ratio)}
     }
-    if (resize.height>600){
-      resize={width:Math.floor(600*ratio), height:600}
+    if (resize.height>MAX_HEIGHT){
+      resize={width:Math.floor(MAX_HEIGHT*ratio), height:MAX_HEIGHT}
     }
     return resize
   }
 
   getCropCoordinates({width,height}){
     let originX, originY, crop;
-
     if ((width/height)<(4/3)){
       let requiredHeight = Math.floor(width*(3/4))
       let remainingHeight = height-requiredHeight;

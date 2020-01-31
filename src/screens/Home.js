@@ -22,12 +22,14 @@ import {FONTS,COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
 import BottomTab from '../components/BottomTab';
+import Loading from '../components/Loading';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder'
 import { Actions } from 'react-native-router-flux';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 import ArticleTileAds from '../components/ArticleTileAds';
+
 
 const OVERLAY_WIDTH_PERCENT=75
 class Home extends Component {
@@ -133,8 +135,15 @@ class Home extends Component {
     return initials
   }
 
+  imageUrlCorrector(image_url){
+    if (image_url.substring(0,4) !== 'http'){
+      image_url = this.props.image_adder + image_url
+    }
+    return image_url
+  }
+
   renderOverlay(){
-    const {COLORS} = this.props;
+    const {COLORS, loading, theme} = this.props;
     return (
       <Overlay isVisible={this.props.overlayVisible}
         borderRadius={20}
@@ -144,10 +153,15 @@ class Home extends Component {
         height="auto">
         <>
           <View style={{justifyContent:'space-around', alignItems:'center', flexDirection:'row', }}>
-            <Image
-              source={{uri:this.props.data.image_url}}
+            {(!loading)?(<Image
+              source={{uri:this.imageUrlCorrector(this.props.data.image_url)}}
               style={{marginRight:10, marginBottom:15, height:64, width:64, borderRadius:32,elevation:7}}
-            />
+            />):
+            (
+              <View style={{height:42, width:42, justifyContent:'center', alignItems:'center'}}>
+                <Loading size={42} white={(theme==='light')}/>
+              </View>
+            )}
             <View style={{alignItems:'flex-end'}}>
               <Text style={{...styles.AvatarTextStyle, 
                 color:COLORS.DARK}}>
@@ -223,18 +237,25 @@ class Home extends Component {
   }
 
   renderAvatar(){
-    const {COLORS} = this.props;
-    if (this.props.overlayVisible){
+    const {COLORS, loading, overlayVisible, theme} = this.props;
+    if (overlayVisible){
       return <View/>
     }
     else{
       return(
-        <View style={{borderRadius:30, padding:2, 
-          backgroundColor:COLORS.LIGHT, elevation:4}}>
+        <View style={{borderRadius:30, backgroundColor:COLORS.LIGHT, elevation:5}}>
           <TouchableOpacity onPress={this.props.toggleOverlay.bind(this, {overlayVisible:true})}>
-            <Image
-              source={{uri:this.props.data.image_url}}
-              style={{height:42, width:42, borderRadius:24}}/>
+            {
+              (!loading)?(
+                <Image
+                  source={{uri:this.imageUrlCorrector(this.props.data.image_url)}}
+                  style={{height:42, width:42, borderRadius:24}}/>
+              ):(
+                <View style={{height:42, width:42, justifyContent:'center', alignItems:'center'}}>
+                  <Loading size={42} white={theme==='light'}/>
+                </View>
+              )
+            }
           </TouchableOpacity>
         </View>
       )
@@ -480,17 +501,17 @@ const mapStateToProps = (state) => {
     categories: state.login.categories,
     first_login: state.chat.first_login,
 
-    overlayVisible: state.home.overlayVisible,
-    welcomeData: state.home.welcomeData,
-    canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
-    loading: state.home.loading,
     error: state.home.error,
-    selected_category: state.home.selected_category,
+    loading: state.home.loading,
     adsManager: state.home.adsManager,
+    image_adder: state.home.image_adder,
+    welcomeData: state.home.welcomeData,
+    overlayVisible: state.home.overlayVisible,
+    selected_category: state.home.selected_category,
+    canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
 
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,
-
     animationOn: state.chat.animationOn
   }
 }

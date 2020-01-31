@@ -57,7 +57,9 @@ export default class WriteView extends Component {
           style={{...styles.ContentStyle, color:COLORS.DARK}} 
           placeholder={"Enter something..."}/>
         <View style={{height:25}}/>
-        <TouchableOpacity activeOpacity={0.6} onPress={()=>{this.imageSelector.showImageSelector()}}
+        <TouchableOpacity activeOpacity={0.6} onPress={()=>{this.imageSelector.showImageSelector(
+          (response)=>{this.doTextRecognition(response.path)}
+        )}}
           style={{flexDirection:'row', alignItems:'flex-end', position:'absolute', bottom:0,
           paddingVertical:5, paddingHorizontal:12, backgroundColor:COLORS.LESSER_LIGHT,
           borderBottomLeftRadius:15, borderTopRightRadius:15, elevation:2}}>
@@ -79,7 +81,6 @@ export default class WriteView extends Component {
         <ImageSelector
           COLORS = {this.props.COLORS}
           onRef={ref=>this.imageSelector = ref}
-          onSelect = {(response)=>{this.doTextRecognition(response.path)}}
         />
         <CustomAlert
           theme={this.props.theme}

@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import React, {Component} from 'react';
 import { View, Text, StyleSheet, StatusBar,
   Animated, TextInput,Dimensions, TouchableOpacity} from 'react-native';
 import _ from 'lodash';
@@ -25,7 +25,7 @@ BORDER_RADIUS=PROFILE_IMAGE_MAX_HEIGHT/2;
 TOPIC_SIZE=36
 TOPIC_SMALL_SIZE=18
 
-class ArticleInfo extends PureComponent {
+class ArticleInfo extends Component {
 
   constructor() {
     super();
@@ -80,6 +80,13 @@ class ArticleInfo extends PureComponent {
     let initials = name.match(/\b\w/g) || [];
     initials = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
     return initials
+  }
+
+  imageUrlCorrector(image_url){
+    if (image_url.substring(0,4) !== 'http'){
+      image_url = this.props.image_adder + image_url
+    }
+    return image_url
   }
 
   showStarRating(){
@@ -221,7 +228,7 @@ class ArticleInfo extends PureComponent {
                     <View key={index.toString()}>
                       <View style={{flexDirection:'row', alignItems:'center'}}>
                         <Image
-                          source={{uri:item.author_image}}
+                          source={{uri:this.imageUrlCorrector(item.author_image)}}
                           style={{height:48, width:48, borderRadius:25, marginRight:20}}
                         />
                         <View style={{flex:1, justifyContent:'space-evenly', alignItems:'flex-start'}}>
@@ -302,12 +309,11 @@ class ArticleInfo extends PureComponent {
     }
   }
 
-
   renderArticle(){
     const {COLORS} = this.props;
-    const {author, author_image, cards, views,
-      category, comments, rating, topic} = this.props.selectedArticleInfo;
-
+    const {author, cards, views, category, comments,author_image,
+      rating, topic} = this.props.selectedArticleInfo;
+    
     const headerHeight = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
       outputRange: [0, -HEADER_MAX_HEIGHT+HEADER_MIN_HEIGHT],
@@ -422,11 +428,7 @@ class ArticleInfo extends PureComponent {
             }}
           >
             <Animated.Image
-              source={
-                (author_image)?
-                {uri:author_image}:
-                require('../../assets/icons/user.png')
-              }
+              source={{uri:author_image}}
               style={{height:PROFILE_IMAGE_MAX_HEIGHT,
               zIndex:20,
               transform: [{rotate:pictureRotate}],resizeMode:'contain',
@@ -609,6 +611,7 @@ const mapStateToProps =(state) => {
     userData: state.login.data,
 
     adsManager: state.home.adsManager,
+    image_adder: state.home.image_adder,
     canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
 
     selectedArticleInfo: state.articleInfo.selectedArticleInfo,

@@ -79,7 +79,11 @@ export default (state=INITIAL_STATE, action) => {
       if (action.payload.revertName){
         new_state.data.name = state.nameCopy
       }
+      return new_state
 
+    case ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE:
+      new_state = {...state, data: {...state.data, ...action.payload}}
+      saveLoginData(new_state)
       return new_state
 
     default:

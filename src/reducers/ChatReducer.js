@@ -8,6 +8,8 @@ import perf from '@react-native-firebase/perf';
 import {database} from '../database';
 import uuid from 'uuid';
 const MessagesCollection =  database.collections.get('messages');
+const traceDB = perf().newTrace("mobile_db_time_save");
+const trace = perf().newTrace("save_data_async_storage");
 
 const INITIAL_CHAT_SCREEN_STATE = {
   selectedImage: null,
@@ -33,7 +35,7 @@ const INITIAL_STATE={
   theme: "light",
   animationOn:true,
   quickRepliesEnabled: true,
-  chat_background:{image:null, blur:0},
+  chat_background:{image:null, blur:2},
   chatPeopleSearchLoading:false,
   authTokenSet: false,
   chatPeopleSearch:null,
@@ -42,8 +44,6 @@ const INITIAL_STATE={
   quick_replies: [],
   currentMessages:[] // list of messages of currently loaded person
 }
-
-const trace = perf().newTrace("save_data_async_storage")
 
 const incomingMessageConverter = (item) => {
   new_message = [{_id:uuid(), createdAt: item.createdAt, text:item.text, 
@@ -95,6 +95,8 @@ const saveMessageInDB = (payload, this_user_id) => {
     image_to_save=message[0].image
   }
   // saving message to database
+  traceDB.start()
+  var t = Date.now()
   database.action(async () => {
     MessagesCollection.create(new_message => {
       new_message.other_user_id = other_user_id.toString(),
@@ -110,6 +112,11 @@ const saveMessageInDB = (payload, this_user_id) => {
       new_message.image_ar = image_to_save.aspectRatio,
       new_message.image_name = image_to_save.name
     })
+  }).then(()=>{
+    traceDB.stop()
+    traceDB.putMetric('mobile_db_time_save', Date.now()-t);
+    logEvent(LOG_EVENT.MOBILE_DB_TIME, 
+      {mili_seconds: Date.now()-t,time: Date.now(), type:'mobile_db_time_save'})
   })
 }
 

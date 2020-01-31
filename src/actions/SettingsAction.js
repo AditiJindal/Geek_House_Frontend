@@ -3,7 +3,8 @@ import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
 import uuid from 'uuid';
 import axios from 'axios';
 import RNFileSystem from 'react-native-fs';
-import {encrypt} from '../encryptionUtil';
+import {encrypt, decrypt} from '../encryptionUtil';
+import {uploadImage} from './WriteAction';
 
 var timer = null;
 
@@ -68,7 +69,6 @@ export const changeBlurRadius = (blur) => {
 
 const nameValidator = (name) => {
   if (name.length<2){return {error:'Name too short'}}
-  if (name.length>32){return {error:'Name too long'}}
   if (name.includes('@')){return {error:'Name cannot contain @'}}
   else {return {error:false}}
 }
@@ -97,4 +97,35 @@ export const changeName = (name, callback) => {
 
 export const revertName = () => {
   return {type:ACTIONS.SETTINGS_CHANGE_NAME, payload:{revertName:true}}
+}
+
+export const changeImageUrl = (image_url, callback) => {
+  // this goes into LoginReducer as image_url remains with LoginReducer
+
+  return (dispatch) => {
+    dispatch({type:ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING, payload:true})
+    httpClient.get(URLS.imageupload, {params:{type:'profile_picture', image_type:'jpeg'}}).then((response)=>{
+      const preSignedURL = decrypt(response.data.url);
+      uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, image_url)
+      .then(()=>{
+        aws_image_url = decrypt(response.data.key);
+        httpClient.post(URLS.change_profile_pic, {image_url:response.data.key}) // sending encrypted url
+        .then(()=>{
+          // when everything is right, we change the image_url
+          callback("Profile pic changed successfully")
+          dispatch({type:ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE, payload:{image_url:aws_image_url}});
+          dispatch({type:ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING, payload:false});
+        }).catch(e=>{
+          callback("Not able to change profile pic")
+          dispatch({type:ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING, payload:false})
+        })
+      }).catch(e=>{
+        callback("Couldn't change profile pic")
+        dispatch({type:ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING, payload:false})
+      })
+    }).catch(e=>{
+      callback("Unable to change profile pic")
+      dispatch({type:ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING, payload:false})
+    })
+  }
 }

@@ -73,7 +73,7 @@ export const publishArticle = (article, success_animation) => {
     dispatch({type:ACTIONS.WRITE_LOADING})
 
     if (article.image){
-      httpClient.get(URLS.imageupload).then((response)=>{
+      httpClient.get(URLS.imageupload, {params:{type:'article', image_type:'jpeg'}}).then((response)=>{
         const preSignedURL = decrypt(response.data.url)
         const pathToImage = article.image
         uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, pathToImage)    

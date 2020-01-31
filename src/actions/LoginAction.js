@@ -115,7 +115,8 @@ const makeConnection = async (json_data, dispatch, getState) => {
   AsyncStorage.getItem(json_data.authtoken.toString()).then((response)=>{
     trace.stop()
     trace.putMetric('get_async_storage_time', Date.now()-t);
-    logEvent(LOG_EVENT.ASYNC_STORAGE_TIME, {mili_seconds: Date.now()-t,time: Date.now(), type:'get_data_async_storage'})
+    logEvent(LOG_EVENT.ASYNC_STORAGE_TIME, 
+      {mili_seconds: Date.now()-t,time: Date.now(), type:'get_data_async_storage'})
     response = JSON.parse(response)
 
     dispatch({type:ACTIONS.CHAT_FIRST_LOGIN, 
@@ -166,7 +167,6 @@ const makeConnection = async (json_data, dispatch, getState) => {
       clearTimeout(timer);
       timer = setTimeout(()=>{getQuickReplies(dispatch,temp_currentMessages, user_id);},1000)
     }
-    console.log("Message : ", message)
     dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message,other_user_id: data.from, isIncomming:true}});
   });
 
@@ -289,6 +289,8 @@ export const loginGoogle = () => {
       httpClient.post(URLS.login, data_to_send).then(
         (response) => {
           new_data.name = response.data.name
+          new_data.image_url = response.data.image_url
+
           authtoken = response.data.token
           final_data = {data:new_data, authtoken:authtoken, 
             categories:response.data.categories}
@@ -348,6 +350,8 @@ export const loginFacebook = () => {
                   httpClient.post(URLS.login, data_to_send).then(
                     (response) => {
                       new_data.name = response.data.name
+                      new_data.image_url = response.data.image_url
+                      
                       authtoken = response.data.token
                       final_data = {data:new_data, authtoken:authtoken, 
                         categories:response.data.categories}

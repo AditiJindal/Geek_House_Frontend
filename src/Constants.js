@@ -32,7 +32,8 @@ export const COLORS_LIGHT_THEME = {
   SHIMMER_COLOR: ['#ebebeb', '#c5c5c5', '#ebebeb'],
   URM_COLOR: "#cb2d3e",
   THEME: 'light',
-  SHADOW_COLOR: "#202020"
+  SHADOW_COLOR: "#202020",
+  IS_LIGHT_THEME: true
 }
 
 export const COLORS_DARK_THEME = {
@@ -67,7 +68,8 @@ export const COLORS_DARK_THEME = {
   SHIMMER_COLOR: ["#323232", "#3c3c3c", "#464646"],
   URM_COLOR: "#63d6a0",
   THEME:'dark',
-  SHADOW_COLOR:"#000000"
+  SHADOW_COLOR:"#000000",
+  IS_LIGHT_THEME: false
 };
 export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
 export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
@@ -86,6 +88,7 @@ export const LOG_EVENT = {
   TIME_IN_CHAT: 'time_in_chat',
   TIME_IN_ARTICLE_INFO: 'time_in_article_info',
   ASYNC_STORAGE_TIME: 'async_storage_time',
+  MOBILE_DB_TIME: 'mobile_db_time',
   ERROR: 'error'
 }
 
@@ -109,7 +112,8 @@ export const URLS = {
   bookmark_article: '/api/bookmark_article/',
   get_bookmarked_articles: '/api/get_bookmarked_articles/',
   policy: '/policy/',
-  change_name: '/api/change_name/'
+  change_name: '/api/change_name/',
+  change_profile_pic: '/api/change_profile_pic/',
 }
 
 export const FONTS = {

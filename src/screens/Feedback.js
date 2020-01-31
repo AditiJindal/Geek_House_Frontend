@@ -213,9 +213,10 @@ class Feedback extends Component {
             circleInActiveColor={COLORS_LIGHT_THEME.LIGHT}
           />
         </View>
+        
         <Text style={{fontSize:11, fontFamily:FONTS.RALEWAY, paddingHorizontal:30, textAlign:'center',
           color:COLORS.GRAY}}>
-          * Your name and email will not be submitted with this feedback
+          * Your name and email will not be submitted with when anonymous
         </Text>
       </View>
     )
@@ -231,7 +232,7 @@ class Feedback extends Component {
           <LinearGradient style={{borderRadius:15,flex:1,justifyContent:'center', alignItems:"center"}} 
             colors={["#f953c6", "#b91d73"]} start={{x:1, y:0}} end={{x:1, y:1}}>
             <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:22, color:COLORS_LIGHT_THEME.LIGHT}}>
-              {`${(!this.state.feedback_submitted)?"SUBMIT":"Go Back"}`}
+              {`${(!this.state.feedback_submitted)?"SUBMIT":"BACK"}`}
             </Text>
           </LinearGradient>
         </SView>
