@@ -159,6 +159,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
 
   socket.on('incoming_message', (data)=>{
     data = decryptMessage(data);
+    console.log("GOT DATA : ", data)
     const message = incomingMessageConverter(data);
     const {chat:{currentMessages, user_id, quickRepliesEnabled}} = getState();
     if ((currentMessages.slice(0,4)!==0) && quickRepliesEnabled){
@@ -167,7 +168,8 @@ const makeConnection = async (json_data, dispatch, getState) => {
       clearTimeout(timer);
       timer = setTimeout(()=>{getQuickReplies(dispatch,temp_currentMessages, user_id);},1000)
     }
-    dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message,other_user_id: data.from, isIncomming:true}});
+    dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, 
+      payload:{message,other_user_id: data.from, isIncomming:true}});
   });
 
   socket.on('incoming_typing', (data)=>{

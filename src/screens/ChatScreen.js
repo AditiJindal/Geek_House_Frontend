@@ -95,7 +95,8 @@ class ChatScreen extends Component {
                 {uri:this.imageUrlCorrector(this.props.other_user_data.image_url)}:
                 require('../../assets/icons/user.png')
               }
-              style={{height:42, width:42, borderRadius:24}}
+              style={{height:48, width:48, borderRadius:24,
+              backgroundColor:COLORS.LIGHT, elevation:4}}
             />
             {
               (!this.props.other_user_data.newEntry 
@@ -104,11 +105,12 @@ class ChatScreen extends Component {
               (
                 <Badge
                   status="success"
-                  containerStyle={{ position: 'absolute', top: 2, right: 0}}
-                  badgeStyle={{height:12, width:12, borderRadius:6, borderWidth:1.2, borderColor:COLORS.LIGHT}}
+                  containerStyle={{ position: 'absolute', top: 2, right: 0, elevation:7}}
+                  badgeStyle={{height:12, width:12, borderRadius:6,
+                  borderWidth:1.2, borderColor:COLORS.LIGHT}}
                 />
-              ):<View/>
-            }
+              ):null
+            } 
           </View>
           <View style={{justifyContent:'center', marginLeft:10, flex:6, alignItems:'center'}}>
             <Text style={{...styles.TextStyle, 

@@ -152,7 +152,8 @@ class Home extends Component {
         width={`${OVERLAY_WIDTH_PERCENT}%`}
         height="auto">
         <>
-          <View style={{justifyContent:'space-around', alignItems:'center', flexDirection:'row', }}>
+          <View style={{justifyContent:'space-around', alignItems:'center', flexDirection:'row', 
+            backgroundColor:COLORS.LIGHT}}>
             {(!loading)?(<Image
               source={{uri:this.imageUrlCorrector(this.props.data.image_url)}}
               style={{marginRight:10, marginBottom:15, height:64, width:64, borderRadius:32,elevation:7}}
@@ -162,13 +163,11 @@ class Home extends Component {
                 <Loading size={42} white={(theme==='light')}/>
               </View>
             )}
-            <View style={{alignItems:'flex-end'}}>
-              <Text style={{...styles.AvatarTextStyle, 
-                color:COLORS.DARK}}>
+            <View style={{flex:1}}>
+              <Text style={{...styles.AvatarTextStyle,color:COLORS.DARK, textAlign:'right'}}>
                 {this.props.data.name}
               </Text>
-              <Text style={{...styles.AvatarTextStyle, fontSize:12,
-                color:COLORS.GRAY}}>
+              <Text style={{...styles.AvatarTextStyle, fontSize:12,alignSelf:'flex-end',color:COLORS.GRAY}}>
                 {this.props.data.email}
               </Text>
             </View>

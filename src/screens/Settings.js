@@ -248,9 +248,10 @@ class Settings extends Component {
           this.timedAlert.showAlert(3000,msg, false)
         })}
         multiline={true}
-        maxLength={32}
+        maxLength={36}
         style={{...styles.AvatarTextStyle, margin:0, padding:0, flexWrap:'wrap',
-          color:COLORS.DARK, borderBottomWidth:0.7, borderColor:COLORS.DARK}}
+          color:COLORS.DARK, textDecorationLine:'underline', borderColor:COLORS.DARK,
+          width:"100%", textAlign:'right'}}
       />
     )
   }
@@ -268,9 +269,9 @@ class Settings extends Component {
         <View style={{justifyContent:'space-between', alignItems:'center', 
         flexDirection:'row', marginHorizontal:10, flexWrap:'wrap' }}>
           {this.renderProfilePictureEditor()}
-          <View style={{alignItems:'flex-end',}}>
+          <View style={{flex:1}}>
             {this.renderNameInput()}
-            <Text style={{...styles.AvatarTextStyle, fontSize:14, marginTop:3, color:COLORS.GRAY}}>
+            <Text style={{...styles.AvatarTextStyle, fontSize:14,alignSelf:'flex-end', marginTop:3, color:COLORS.GRAY}}>
               {data.email}
             </Text>
           </View>

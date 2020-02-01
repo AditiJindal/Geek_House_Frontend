@@ -7,6 +7,8 @@ import {logEvent} from '../actions/ChatAction';
 import perf from '@react-native-firebase/perf';
 import {database} from '../database';
 import uuid from 'uuid';
+import {decrypt} from '../encryptionUtil';
+
 const MessagesCollection =  database.collections.get('messages');
 const traceDB = perf().newTrace("mobile_db_time_save");
 const trace = perf().newTrace("save_data_async_storage");
@@ -51,9 +53,20 @@ const incomingMessageConverter = (item) => {
   return new_message
 }
 
+const decryptMessage = (message) => {
+  if (message.image){
+    message.image.url = decrypt(message.image.url)
+  }
+  if (message.text){
+    message.text = decrypt(message.text)
+  }
+  return message
+}
+
 const insertUnreadMessages = (unread_messages, this_user_id, status, total_unread_messages, chats) => {
   let new_chats = [...chats];
   unread_messages.map(item=>{
+    item = decryptMessage(item);
 
     status[item.from].unread_messages+=1;
     status[item.from].recentMessage = (item.text)?item.text:"Sent a photo 📷"
@@ -368,6 +381,8 @@ export default (state=INITIAL_STATE, action) => {
         status: new_status, total_unread_messages, quick_replies:[],
         chatScreenState:INITIAL_CHAT_SCREEN_STATE,
       };
+
+      console.log("NEW STATE IS: ", new_state)
 
       saveData(new_state);
       return new_state

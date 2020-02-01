@@ -18,11 +18,10 @@ const getBadge = (props) => {
   if (props.typing){
     return (
       <View style={{
-        position:'absolute', right:-4, top:0, justifyContent:'center', alignItems:'center',
-        borderColor:COLORS.LIGHT, borderWidth:1,
-        height:10 , width:14, borderRadius:5, 
-        backgroundColor:COLORS.YELLOW
-        }}>
+        position:'absolute', right:0, top:0, justifyContent:'center', alignItems:'center',
+        borderColor:COLORS.LIGHT, borderWidth:1, elevation:5,
+        height:12 , width:16, borderRadius:6, backgroundColor:COLORS.YELLOW
+      }}>
         <Typing size={14}/>
       </View>
     );
@@ -30,8 +29,8 @@ const getBadge = (props) => {
   else if (props.online){
     return (
       <View style={{
-        position:'absolute', right:0, top:0, borderColor:COLORS.LIGHT, borderWidth:1,
-        backgroundColor:'rgb(82, 196, 27)', height:10, width:10, borderRadius:5}}>
+        position:'absolute', right:2, top:2, borderColor:COLORS.LIGHT, borderWidth:1,elevation:5,
+        backgroundColor:'rgb(82, 196, 27)', height:12, width:12, borderRadius:6}}>
       </View>
     );
   }
@@ -64,23 +63,21 @@ const imageUrlCorrector = (image_url, image_adder) => {
 }
 
 export default ChatPeople = (props) => {
-  let IMAGE_SIZE = 40;
-  if (props.chatPeopleSearch){
-    IMAGE_SIZE = 48
-  }
+  let IMAGE_SIZE = 56;
   const {COLORS} = props;
   
   return(
     <TouchableOpacity activeOpacity={1} onPress={() => {props.onPress()}}>
       <View style={{...styles.ViewStyling, borderColor:COLORS.GRAY, 
-        backgroundColor:COLORS.LIGHT,borderRadius:IMAGE_SIZE/4}}>
+        backgroundColor:COLORS.LIGHT, borderRadius:IMAGE_SIZE/4}}>
         <View style={{justifyContent:'center', flexDirection:'row', alignItems:'center'}}>
           <View>
             <Image
               source={(props.data.image_url)?
                 {uri:imageUrlCorrector(props.data.image_url, props.image_adder)}:
                 require('../../assets/icons/user.png')}
-              style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE/2}}
+              style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE/2,
+                backgroundColor:COLORS.LIGHT, elevation:5}}
             />
             {getBadge(props)}
           </View>
