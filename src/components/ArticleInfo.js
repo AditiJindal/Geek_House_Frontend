@@ -16,14 +16,12 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import TimedAlert from './TimedAlert';
 
 
-OVERLAY_WIDTH_PERCENT=88
-HEADER_MAX_HEIGHT = Math.floor(Dimensions.get('window').width * (OVERLAY_WIDTH_PERCENT/100)) *0.75;
-HEADER_MIN_HEIGHT = 70;
-PROFILE_IMAGE_MAX_HEIGHT = 76;
-PROFILE_IMAGE_MIN_HEIGHT = 18;
-BORDER_RADIUS=PROFILE_IMAGE_MAX_HEIGHT/2;
-TOPIC_SIZE=36
-TOPIC_SMALL_SIZE=18
+const OVERLAY_WIDTH_PERCENT=88
+const HEADER_MAX_HEIGHT = Math.floor(Dimensions.get('window').width * (OVERLAY_WIDTH_PERCENT/100)) *0.75;
+const HEADER_MIN_HEIGHT = 70;
+const PROFILE_IMAGE_MAX_HEIGHT = 76;
+const BORDER_RADIUS=PROFILE_IMAGE_MAX_HEIGHT/2;
+const TOPIC_SMALL_SIZE=18
 
 class ArticleInfo extends Component {
 

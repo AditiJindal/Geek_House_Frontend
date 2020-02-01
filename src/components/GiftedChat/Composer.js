@@ -57,7 +57,14 @@ export default class Composer extends React.Component {
             styles.textInput,
             this.props.textInputStyle,
             { height: this.props.composerHeight },
-        ]} autoFocus={this.props.textInputAutoFocus} value={this.props.text} enablesReturnKeyAutomatically underlineColorAndroid='transparent' keyboardAppearance={this.props.keyboardAppearance} {...this.props.textInputProps}/>);
+        ]} autoFocus={this.props.textInputAutoFocus} 
+        value={this.props.text} 
+        enablesReturnKeyAutomatically 
+        underlineColorAndroid='transparent' 
+        keyboardAppearance={this.props.keyboardAppearance} 
+        {...this.props.textInputProps}
+        keyboardType={'default'}
+        />);
     }
 }
 Composer.defaultProps = {

@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
 import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 import Typing from '../components/Typing';
+import {Icon} from 'react-native-elements';
 import Image from 'react-native-fast-image';
 import TimeAgo from 'react-native-timeago';
 
@@ -62,14 +63,38 @@ const imageUrlCorrector = (image_url, image_adder) => {
   return image_url
 }
 
+const getAppropriateAccessory = (props) => {
+  const {COLORS, isSelector, isSelected} = props;
+
+  if (!isSelector && props.unread_messages){
+    return (
+      <View style={{...styles.BadgeViewStyle,
+        backgroundColor:(props.theme==='light')?COLORS.RED:COLORS.GREEN}}>
+        <Text style={{...styles.BadgeTextStyle, 
+          color:COLORS.LIGHT}}>
+          {props.unread_messages}
+        </Text>
+      </View>
+    )
+  }
+  
+  if (isSelector){
+    return (isSelected)?
+    (<Icon type={'feather'} name={'check'} color={COLORS.GREEN} size={20} />):
+    null
+  }
+  return null
+}
+
 export default ChatPeople = (props) => {
-  let IMAGE_SIZE = 56;
-  const {COLORS} = props;
+  const {COLORS, isSelector, isSelected, data} = props;
+  let IMAGE_SIZE = (isSelector)?42:56;
   
   return(
-    <TouchableOpacity activeOpacity={1} onPress={() => {props.onPress()}}>
+    <TouchableOpacity activeOpacity={(isSelector)?0.5:1} onPress={() => {props.onPress(data._id, isSelected)}}>
       <View style={{...styles.ViewStyling, borderColor:COLORS.GRAY, 
-        backgroundColor:COLORS.LIGHT, borderRadius:IMAGE_SIZE/4}}>
+        paddingVertical:10, borderWidth:(isSelector)?0:0.5, 
+        backgroundColor:COLORS.LIGHT, borderRadius:(isSelector)?0:IMAGE_SIZE/4}}>
         <View style={{justifyContent:'center', flexDirection:'row', alignItems:'center'}}>
           <View>
             <Image
@@ -105,18 +130,8 @@ export default ChatPeople = (props) => {
           </View>
         </View>
 
-        {
-          (props.unread_messages)?
-          (
-            <View style={{...styles.BadgeViewStyle,
-              backgroundColor:(props.theme==='light')?COLORS.RED:COLORS.GREEN}}>
-              <Text style={{...styles.BadgeTextStyle, 
-                color:COLORS.LIGHT}}>
-                {props.unread_messages}
-              </Text>
-            </View>
-          ):null
-        }
+        {getAppropriateAccessory(props)}
+
       </View>
     </TouchableOpacity>
   );
@@ -127,13 +142,10 @@ const styles = StyleSheet.create({
     alignItems:'center',
     flexDirection:'row',
     paddingHorizontal:15,
-    paddingVertical:10,
     width:"90%",
-    margin:8, 
     flex:1,
     justifyContent:'space-between',
     alignSelf:'center',
-    borderWidth:0.5,
     overflow:'hidden',
   },
   TextStyle:{
