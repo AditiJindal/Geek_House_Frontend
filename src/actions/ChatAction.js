@@ -14,7 +14,7 @@ const trace = perf().newTrace("mobile_db_time_get");
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
-var socket=null;
+var socket=null;  // MAKE SURE THIS SOCKET BECOMES NULL WHEN LOGOUT
 var timer = null;
 
 httpClient.defaults.timeout = HTTP_TIMEOUT;
@@ -227,3 +227,9 @@ export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
     logEvent(LOG_EVENT.ERROR, {errorLine: 'CHAT ACTION - 213, Quick Replies Error', description:e.toString()}
   ))
 }
+
+export const createGroup = (newGroupInfo) => {
+  socket.emit('create_group', newGroupInfo)
+  return {type:null}
+}
+

@@ -80,8 +80,8 @@ const getAppropriateAccessory = (props) => {
   
   if (isSelector){
     return (isSelected)?
-    (<Icon type={'feather'} name={'check'} color={COLORS.GREEN} size={20} />):
-    null
+    (<Icon type={'feather'} name={'check-square'} color={COLORS.GREEN} size={20} />):
+    (<Icon type={'feather'} name={'square'} color={COLORS.GRAY} size={20} />)
   }
   return null
 }
@@ -91,7 +91,7 @@ export default ChatPeople = (props) => {
   let IMAGE_SIZE = (isSelector)?42:56;
   
   return(
-    <TouchableOpacity activeOpacity={(isSelector)?0.5:1} onPress={() => {props.onPress(data._id, isSelected)}}>
+    <TouchableOpacity activeOpacity={1} onPress={() => {props.onPress(data._id, isSelected)}}>
       <View style={{...styles.ViewStyling, borderColor:COLORS.GRAY, 
         paddingVertical:10, borderWidth:(isSelector)?0:0.5, 
         backgroundColor:COLORS.LIGHT, borderRadius:(isSelector)?0:IMAGE_SIZE/4}}>

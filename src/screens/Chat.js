@@ -6,7 +6,7 @@ import BottomTab from '../components/BottomTab';
 import {Overlay, Icon} from 'react-native-elements';
 import {logEvent} from '../actions/ChatAction';
 import {FONTS,LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
-import {setAuthToken, setUserData, 
+import {setAuthToken, setUserData, createGroup,
   chatPeopleSearchAction, getChatPeopleExplicitly} from '../actions/ChatAction';
 import {Actions} from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
@@ -27,7 +27,7 @@ class Chat extends Component {
       showStartTime: Date.now(),
       chatPeopleSearchText:"",
       peopleSelectorVisible:false,
-      newGroupInfo: {name:'', users:[]}
+      newGroupData: {name:'', users:[]}
     }
   }
 
@@ -99,17 +99,25 @@ class Chat extends Component {
   getSelectedUsers(user_id, shouldRemove){
     if (shouldRemove){
       new_users = [];
-      this.state.newGroupInfo.users.map((item)=>{
+      this.state.newGroupData.users.map((item)=>{
         if (item!==user_id){
           new_users.push(item)
         }
       })
     }
-    else{
-      new_users = [...this.state.newGroupInfo.users, user_id]
-    }
+    else if(this.state.newGroupData.users.length<129) {new_users = [...this.state.newGroupData.users, user_id]}
+    else {this.timedAlert.showAlert(2000, 'Maximum limit of 128 reached')}
     
-    this.setState({newGroupInfo:{...this.state.newGroupInfo, users:new_users}});
+    this.setState({newGroupData:{...this.state.newGroupData, users:new_users}});
+  }
+
+  onGroupDone(){
+    if (this.state.newGroupData.users.length<2) {this.timedAlert.showAlert(2000, 'You need to have atleast 2 prticipants')}
+    else{
+      if (!this.state.newGroupData.name) {this.state.newGroupData.name='New Group'}
+      this.props.createGroup(this.state.newGroupData);
+      this.setState({peopleSelectorVisible:false})
+    }
   }
 
   renderChatPeopleSelector(){
@@ -136,20 +144,30 @@ class Chat extends Component {
                 keyboardType={"visible-password"}
                 placeholder={"Enter name of the group..."}
                 placeholderTextColor={COLORS.GRAY}
-                value={this.state.newGroupInfo.name} maxLength={56}
-                onChangeText={text=>this.setState({newGroupInfo: {...this.state.newGroupInfo, name:text}})}
+                value={this.state.newGroupData.name} maxLength={56}
+                onChangeText={text=>this.setState({newGroupData: {...this.state.newGroupData, name:text}})}
                 style={{fontFamily:FONTS.RALEWAY, fontSize:18, color:COLORS.DARK, 
                   borderColor:COLORS.GRAY, padding:0, margin:0, borderBottomWidth:1}}
               />
-              <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY_BOLD, 
-                fontSize:18, marginTop:30}}>
-                Select People To Add
-              </Text>
-              <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY, fontSize:12}}>
-                {(this.state.newGroupInfo.users.length)?(
-                  `${this.state.newGroupInfo.users.length} people selected`
-                ):" "}
-              </Text>
+              <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingTop:30, paddingBottom:5}}>
+                <View>
+                  <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY_BOLD, fontSize:18}}>
+                    Select People To Add
+                  </Text>
+                  {
+                    (this.state.newGroupData.users.length)?(
+                      <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY, fontSize:12}}>
+                      {`${this.state.newGroupData.users.length} participants selected`}
+                    </Text>
+                    ):null
+                  }
+                </View>
+                <TouchableOpacity style={{padding:8, borderRadius:30, elevation:3,
+                  backgroundColor:(this.state.newGroupData.users.length<2)?(COLORS.GRAY):(COLORS.GREEN)}} 
+                  activeOpacity={0.8} onPress={this.onGroupDone.bind(this)}>
+                  <Icon type={'feather'} name={'check'} size={26} color={COLORS.LIGHT}/>
+                </TouchableOpacity>
+              </View>
             </View>
           }
           ListFooterComponent = {<View style={{height:8,width:1}}/>}
@@ -166,12 +184,13 @@ class Chat extends Component {
                   theme={this.props.theme}
                   image_adder = {this.props.image_adder}
                   isSelector={true}
-                  isSelected={this.state.newGroupInfo.users.includes(DATA[index]._id)}
+                  isSelected={this.state.newGroupData.users.includes(DATA[index]._id)}
                   onPress={(user_id, shouldRemove)=>this.getSelectedUsers(user_id, shouldRemove)}
                 />
                 {
                   ((DATA.length-1)!==index)?(
-                    <View style={{height:0.5, width:"80%", alignSelf:'center', backgroundColor:COLORS.GRAY}}/>
+                    <View style={{height:0.5, width:"80%", alignSelf:'center',
+                      backgroundColor:COLORS.GRAY, margin:1}}/>
                   ):null
                 }
               </>
@@ -366,7 +385,6 @@ const mapStateToProps = (state) => {
     status: state.chat.status,
     COLORS: state.chat.COLORS,
     loading: state.chat.loading,
-    chatPeople: state.chat.chatPeople,
     authTokenSet:state.chat.authTokenSet,
     chatPeopleSearch:state.chat.chatPeopleSearch,
     chatPeopleSearchLoading: state.chat.chatPeopleSearchLoading,
@@ -374,7 +392,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {setAuthToken, setUserData, chatPeopleSearchAction,
-  getChatPeopleExplicitly})(Chat);
+  getChatPeopleExplicitly, createGroup})(Chat);
 
 const styles = StyleSheet.create({
   TextStyle:{

@@ -292,6 +292,8 @@ export default (state=INITIAL_STATE, action) => {
       duplicate_status = {...state.status};
       total_unread_messages = state.total_unread_messages;
 
+      console.log("Chat people is : ", action.payload)
+
       if (state.loaded_from_storage && (Object.keys(state.status).length!==0)){
         status = {...state.status};
         all_users.map((item)=>{
@@ -321,7 +323,7 @@ export default (state=INITIAL_STATE, action) => {
       let new_state = {...state, chatPeople:action.payload, chats:new_chats,
         loading:false, status, total_unread_messages}
 
-      delete action.payload.chats
+      // delete action.payload.chats
 
       saveData(new_state)
       return new_state

@@ -1,0 +1,2 @@
+In ChatPeople.js, isGroup is comming true when a group is there
+So diable showing of online/offline there
