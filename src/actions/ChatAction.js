@@ -59,8 +59,10 @@ const encryptMessage = (message) => {
 
 export const sendMessage = (socket, message, other_user_id, image) => {
   return (dispatch) => {
-    let message_to_send = {text:"", to:"", image}
-    dispatch({type:ACTIONS.CHAT_IMAGE_UPLOADING, payload:{imageUploading:true}})
+    let message_to_send = {text:"", to:"", image, ...message[0]}
+    console.log("HERE MESSAGE IS ::::", message, other_user_id)
+
+    dispatch({type:ACTIONS.CHAT_IMAGE_UPLOADING, payload:{imageUploading:true}});
     if (image){
       httpClient.get(URLS.imageupload, {params:{type:'chat', image_type:'jpeg'}}).then((response)=>{
         response.data.url = decrypt(response.data.url)

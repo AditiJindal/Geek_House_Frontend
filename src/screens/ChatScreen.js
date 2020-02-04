@@ -116,7 +116,9 @@ class ChatScreen extends Component {
             <Text style={{...styles.TextStyle, 
               color:COLORS.LESS_DARK}}>
               {this.props.other_user_data.name}
-              {this.renderStatus(this.props.status[this.props.other_user_data._id])}
+              {(!this.props.other_user_data.isGroup)?
+                this.renderStatus(this.props.status[this.props.other_user_data._id]):
+                null}
             </Text>
             {(this.props.other_user_data.fav_category)?
             (<Text style={{...styles.InterestStyle, 
@@ -170,7 +172,7 @@ class ChatScreen extends Component {
                     }}
                   messages={this.props.currentMessages}
                   onSend={(message) => {
-                    this.props.sendMessage(this.props.socket, message, 
+                    this.props.sendMessage(this.props.socket, [{...message[0], isGroup: this.props.other_user_data.isGroup}], 
                     this.props.other_user_data._id, chatScreenState.selectedImage)
                   }}
                   placeholder="Type to chat..."

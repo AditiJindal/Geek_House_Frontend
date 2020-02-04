@@ -14,8 +14,7 @@ getInitials = (name) => {
 }
 
 const getBadge = (props) => {
-  const {COLORS} = props;
-
+  const {COLORS, data} = props;
   if (props.typing){
     return (
       <View style={{
@@ -27,7 +26,7 @@ const getBadge = (props) => {
       </View>
     );
   }
-  else if (props.online){
+  else if (props.online && !data.isGroup){
     return (
       <View style={{
         position:'absolute', right:2, top:2, borderColor:COLORS.LIGHT, borderWidth:1,elevation:5,
@@ -44,7 +43,7 @@ const getRecentTime = (time) => {
   return (
     <Text style={{color:COLORS_LIGHT_THEME.THEME1, fontSize:10, 
       fontFamily:FONTS.PRODUCT_SANS_BOLD}}>
-      <TimeAgo time={Date.parse(time)} interval={30000}/>
+      <TimeAgo time={Date.parse(time)} interval={20000}/>
     </Text>
   )
 }
