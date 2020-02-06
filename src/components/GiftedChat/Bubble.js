@@ -8,6 +8,8 @@ import MessageImage from './MessageImage';
 import LinearGradient from 'react-native-linear-gradient';
 import Time from './Time';
 import Color from './Color';
+import {FONTS} from '../../Constants';
+import toMaterialStyle from 'material-color-hash';
 import { isSameUser, isSameDay } from './utils';
 
 const DEVICE_WIDTH = Dimensions.get('screen').width
@@ -79,15 +81,16 @@ const styles = {
             marginRight: 10,
         },
         username: {
-            top: -3,
             left: 0,
-            fontSize: 12,
+            fontSize: 13,
+            fontFamily:FONTS.PRODUCT_SANS_BOLD,
             backgroundColor: 'transparent',
             color: '#aaa',
         },
         usernameView: {
             flexDirection: 'row',
             marginHorizontal: 10,
+            marginTop:5, 
         },
     }),
 };
@@ -205,16 +208,17 @@ export default class Bubble extends React.Component {
     }
     renderUsername() {
         const { currentMessage, user } = this.props;
-        if (this.props.renderUsernameOnMessage && currentMessage) {
+        if (currentMessage && currentMessage.user.name) {
             if (user && currentMessage.user._id === user._id) {
                 return null;
             }
-            return (<View style={styles.content.usernameView}>
-          <Text style={[styles.content.username, this.props.usernameStyle]}>
-            ~ {currentMessage.user.name}
-          </Text>
-        </View>);
-        }
+            return (
+            <View style={styles.content.usernameView}>
+                <Text style={[styles.content.username, this.props.usernameStyle, {color:toMaterialStyle(currentMessage.user.name, '400').backgroundColor}]}>
+                    {currentMessage.user.name}
+                </Text>
+            </View>
+        );}
         return null;
     }
     renderCustomView() {
@@ -239,6 +243,7 @@ export default class Bubble extends React.Component {
             ]} 
             colors={(position==="right"?["#00B4DB", "#00ccdb"]:["#F4F4F4", "#F4F4F4"])} 
             start={{x:0, y:1}} end={{x:1, y:1}}>
+            {this.renderUsername()}
           <TouchableOpacity activeOpacity={0.8}
             onLongPress={()=>{this.onLongPress()}} accessibilityTraits='text' {...this.props.touchableProps}>
             <View>
@@ -249,7 +254,7 @@ export default class Bubble extends React.Component {
             styles[position].bottom,
             bottomContainerStyle && bottomContainerStyle[position],
         ]}>
-                {this.renderUsername()}
+                
                 {this.renderTime()}
                 {this.renderTicks()}
               </View>

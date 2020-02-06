@@ -60,7 +60,6 @@ const encryptMessage = (message) => {
 export const sendMessage = (socket, message, other_user_id, image) => {
   return (dispatch) => {
     let message_to_send = {text:"", to:"", image, ...message[0]}
-    console.log("HERE MESSAGE IS ::::", message, other_user_id)
 
     dispatch({type:ACTIONS.CHAT_IMAGE_UPLOADING, payload:{imageUploading:true}});
     if (image){
@@ -79,6 +78,7 @@ export const sendMessage = (socket, message, other_user_id, image) => {
           message_to_send.text = message[0].text;
           message_to_send.to = other_user_id;
 
+          console.log("Message to send is: ", message_to_send)
           socket.emit('message', encryptMessage(message_to_send));
           message[0].image.url = decrypt(message[0].image.url)
           
@@ -157,7 +157,7 @@ const messageConverter = (item) => {
   to_return = {
     _id:item.message_id,
     createdAt: item.created_at,
-    user: {_id:item.user_id},
+    user: {_id:item.user_id, name:item.user_name},
 
     text:text_to_save,
     image:image_to_save

@@ -49,7 +49,7 @@ const INITIAL_STATE={
 
 const incomingMessageConverter = (item) => {
   new_message = [{_id:uuid(), createdAt: item.createdAt, text:item.text, 
-    user:{_id:item.from}, image:item.image}]
+    user:{_id:item.from, name:item.groupSender}, image:item.image}]
   return new_message
 }
 
@@ -116,6 +116,7 @@ const saveMessageInDB = (payload, this_user_id) => {
       new_message.message_id = message[0]._id,
       new_message.created_at = Date.parse(message[0].createdAt),
       new_message.user_id = message[0].user._id,
+      new_message.user_name = message[0].user.name,
       new_message.this_user_id = this_user_id
   
       new_message.text = text_to_save,
@@ -292,8 +293,6 @@ export default (state=INITIAL_STATE, action) => {
       duplicate_status = {...state.status};
       total_unread_messages = state.total_unread_messages;
 
-      console.log("Chat people is : ", action.payload)
-
       if (state.loaded_from_storage && (Object.keys(state.status).length!==0)){
         status = {...state.status};
         all_users.map((item)=>{
@@ -383,9 +382,6 @@ export default (state=INITIAL_STATE, action) => {
         status: new_status, total_unread_messages, quick_replies:[],
         chatScreenState:INITIAL_CHAT_SCREEN_STATE,
       };
-
-      console.log("NEW STATE IS: ", new_state)
-
       saveData(new_state);
       return new_state
 

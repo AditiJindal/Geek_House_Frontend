@@ -57,7 +57,7 @@ setPushNotifications()
 
 const incomingMessageConverter = (data) => {
   new_message = [{_id:uuid(), createdAt: data.createdAt, text:data.text, 
-    user:{_id:data.from}, image:data.image}]
+    user:{_id:data.from, name:data.groupSender}, image:data.image}]
   return new_message
 }
 
@@ -159,12 +159,10 @@ const makeConnection = async (json_data, dispatch, getState) => {
 
   socket.on('incoming_message', (data)=>{
     data = decryptMessage(data);
-    console.log("GOT DATA : ", data)
     const message = incomingMessageConverter(data);
     const {chat:{currentMessages, user_id, quickRepliesEnabled}} = getState();
     if ((currentMessages.slice(0,4)!==0) && quickRepliesEnabled){
-      let temp_currentMessages = currentMessages.slice(0,4);
-      temp_currentMessages.push(message[0]);
+      let temp_currentMessages = [...currentMessages.slice(0,4), ...message];
       clearTimeout(timer);
       timer = setTimeout(()=>{getQuickReplies(dispatch,temp_currentMessages, user_id);},1000)
     }

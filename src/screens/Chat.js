@@ -229,6 +229,9 @@ class Chat extends Component {
             />
           </View>
         }
+        ListFooterComponent = {
+          <View style={{height:100, width:1}}/>
+        }
         ListEmptyComponent = {
           <View style={{flex:1, justifyContent:'center', alignItems:'center', marginBottom:50,
             padding:40,}}>

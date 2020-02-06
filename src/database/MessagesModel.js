@@ -20,6 +20,7 @@ export default class Messages extends Model {
   @field('message_id') message_id
   @field('created_at') created_at
   @field('user_id') user_id
+  @field('user_name') user_name
   @field('text') text
   @field('image_url') image_url
   @field('image_height') image_height
