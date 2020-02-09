@@ -147,7 +147,7 @@ class Search extends Component {
 
     if (this.props.searchResults){
       response = this.props.searchResults;
-      jsx = <View/>
+      jsx = null
     }
 
     if (this.props.loading){
@@ -285,11 +285,11 @@ class Search extends Component {
         )
       }
       else{
-        return <View/>
+        return null
       }
     }
     else{
-      return <View/>
+      return null
     }
   }
 
@@ -308,7 +308,7 @@ class Search extends Component {
         />
       )
     }
-    return (<View/>)
+    return (null)
   }
 
   getStatusBarColor(){

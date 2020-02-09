@@ -52,7 +52,7 @@ class ImageUpload extends Component {
       )
     }
     else{
-      return <View/>
+      return null
     }
   }
 

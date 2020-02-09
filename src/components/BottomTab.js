@@ -50,7 +50,7 @@ class BottomTab extends Component {
       )
     }
     else {
-      return <View/>
+      return null
     }
   }
 

@@ -58,7 +58,7 @@ class Login extends Component {
         }
       }
       else{
-        return <View/>
+        return null
       }
     }
 
@@ -93,7 +93,7 @@ class Login extends Component {
         }
       }
       else{
-        return <View/>
+        return null
       }
     }
 
@@ -118,7 +118,7 @@ class Login extends Component {
             source={require('../../assets/images/loginIcon.png')}
           />
           {
-            (this.props.loading)?<View/>:
+            (this.props.loading)?null:
             <Text style={styles.InfoTextStyle}>
               ALL NEW PLATFORM FOR SHARING KNOWLEDGE
             </Text>

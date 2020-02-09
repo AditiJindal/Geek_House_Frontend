@@ -48,70 +48,67 @@ class ImageSelector extends React.Component{
         okTitle: "Not Now"
       }
     }
-    return (
-      <View style={{paddingHorizontal:10}}>
-        
-        <Overlay isVisible={this.state.imageSelectorOpen}
-          height="auto" width="auto"
-          overlayStyle={{flexDirection:'row',backgroundColor:'rgba(0,0,0,0)', elevation:0}}
-          onBackdropPress={()=>{this.setState({imageSelectorOpen:false})}}>
-          <>
-          <StatusBar 
-            barStyle={(COLORS.THEME==='light')?'dark-content':'light-content'}
-            backgroundColor={COLORS.OVERLAY_COLOR}/>
-          <TouchableOpacity
-            onPress={()=>{
-              this.setState({imageSelectorOpen:false});
-              ImagePicker.launchImageLibrary(ImageOptions, (response)=>{
-                if (!response.didCancel){this.state.callbackFunc(response)}
-              })
-            }}
-            activeOpacity={0.8} 
-            style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
-            backgroundColor:COLORS.LESSER_LIGHT, marginRight:15}}>
-            <View style={{height:50, justifyContent:'center'}}>
-              <Text style={{color:COLORS.LESSER_DARK,
-                fontFamily:FONTS.RALEWAY_BOLD, textAlign:'center', fontSize:16}}>
-                Gallery
-              </Text>
-              </View>
-              <Icon size={72} name="image" type="feather"
-              color={COLORS.LESSER_DARK}/>
-              <View style={{height:50, justifyContent:'center'}}>
-                <Text style={{color:COLORS.LESSER_DARK,
-                  fontFamily:FONTS.PRODUCT_SANS, textAlign:'center', fontSize:12}}>
-                  {`Select from\nGallery`}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-            onPress={()=>{
-              this.setState({imageSelectorOpen:false});
-              ImagePicker.launchCamera(ImageOptions, (response)=>{
-                if (!response.didCancel){this.state.callbackFunc(response)}
-              })
-            }}
-            activeOpacity={0.8}
-            style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
-            backgroundColor:COLORS.LESSER_LIGHT}}>
-            <View style={{height:50, justifyContent:'center'}}>
-              <Text style={{color:COLORS.LESSER_DARK,
-                  fontFamily:FONTS.RALEWAY_BOLD, textAlign:'center', fontSize:16}}>
-                  Camera
-              </Text>
+    return ( 
+      <Overlay isVisible={this.state.imageSelectorOpen}
+        height="auto" width="auto"
+        overlayStyle={{flexDirection:'row',backgroundColor:'rgba(0,0,0,0)', elevation:0}}
+        onBackdropPress={()=>{this.setState({imageSelectorOpen:false})}}>
+        <>
+        <StatusBar 
+          barStyle={(COLORS.THEME==='light')?'dark-content':'light-content'}
+          backgroundColor={COLORS.OVERLAY_COLOR}/>
+        <TouchableOpacity
+          onPress={()=>{
+            this.setState({imageSelectorOpen:false});
+            ImagePicker.launchImageLibrary(ImageOptions, (response)=>{
+              if (!response.didCancel){this.state.callbackFunc(response)}
+            })
+          }}
+          activeOpacity={0.8} 
+          style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
+          backgroundColor:COLORS.LESSER_LIGHT, marginRight:15}}>
+          <View style={{height:50, justifyContent:'center'}}>
+            <Text style={{color:COLORS.LESSER_DARK,
+              fontFamily:FONTS.RALEWAY_BOLD, textAlign:'center', fontSize:16}}>
+              Gallery
+            </Text>
             </View>
-            <Icon size={72} name="camera" type="feather"
+            <Icon size={72} name="image" type="feather"
             color={COLORS.LESSER_DARK}/>
             <View style={{height:50, justifyContent:'center'}}>
               <Text style={{color:COLORS.LESSER_DARK,
                 fontFamily:FONTS.PRODUCT_SANS, textAlign:'center', fontSize:12}}>
-                {`Click from\nCamera`}
+                {`Select from\nGallery`}
               </Text>
             </View>
           </TouchableOpacity>
-          </>
-        </Overlay>
-      </View>
+          <TouchableOpacity
+          onPress={()=>{
+            this.setState({imageSelectorOpen:false});
+            ImagePicker.launchCamera(ImageOptions, (response)=>{
+              if (!response.didCancel){this.state.callbackFunc(response)}
+            })
+          }}
+          activeOpacity={0.8}
+          style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
+          backgroundColor:COLORS.LESSER_LIGHT}}>
+          <View style={{height:50, justifyContent:'center'}}>
+            <Text style={{color:COLORS.LESSER_DARK,
+                fontFamily:FONTS.RALEWAY_BOLD, textAlign:'center', fontSize:16}}>
+                Camera
+            </Text>
+          </View>
+          <Icon size={72} name="camera" type="feather"
+          color={COLORS.LESSER_DARK}/>
+          <View style={{height:50, justifyContent:'center'}}>
+            <Text style={{color:COLORS.LESSER_DARK,
+              fontFamily:FONTS.PRODUCT_SANS, textAlign:'center', fontSize:12}}>
+              {`Click from\nCamera`}
+            </Text>
+          </View>
+        </TouchableOpacity>
+        </>
+      </Overlay>
     )
   }
 }

@@ -192,7 +192,7 @@ export default class InputToolbar extends React.Component {
                         />
                     </TouchableOpacity>
                     
-                ):<View/>}
+                ):null}
             </View>
         )
     }

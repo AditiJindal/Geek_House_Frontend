@@ -5,6 +5,8 @@ import Typing from '../components/Typing';
 import {Icon} from 'react-native-elements';
 import Image from 'react-native-fast-image';
 import TimeAgo from 'react-native-timeago';
+import SView from 'react-native-simple-shadow-view';
+import toMaterialStyle from 'material-color-hash';
 
 getInitials = (name) => {
   if (!name){return null}
@@ -35,7 +37,7 @@ const getBadge = (props) => {
     );
   }
   else{
-    return <View/>
+    return null
   }
 }
 
@@ -91,17 +93,22 @@ export default ChatPeople = (props) => {
   
   return(
     <TouchableOpacity activeOpacity={1} onPress={() => {props.onPress(data._id, isSelected)}}>
-      <View style={{...styles.ViewStyling, borderColor:COLORS.GRAY, 
-        paddingVertical:10, borderWidth:(isSelector)?0:0.5, 
+      <SView style={{...styles.ViewStyling, borderColor:COLORS.GRAY, 
+        shadowOpacity: (isSelector)?0:(COLORS.THEME==='light')?0.2:0.3, marginVertical:(isSelector)?0:5,
         backgroundColor:COLORS.LIGHT, borderRadius:(isSelector)?0:IMAGE_SIZE/4}}>
-        <View style={{justifyContent:'center', flexDirection:'row', alignItems:'center'}}>
+        {(props.data.isGroup)?(
+          <View style={{height:"100%", width:25, backgroundColor:toMaterialStyle(props.data.name).backgroundColor,
+          position:'absolute', alignSelf:'center', borderBottomLeftRadius:IMAGE_SIZE/4,
+          borderTopLeftRadius:IMAGE_SIZE/4}}/>
+        ):null}
+        <View style={{justifyContent:'center', flexDirection:'row', alignItems:'center',}}>
           <View>
             <Image
               source={(props.data.image_url)?
                 {uri:imageUrlCorrector(props.data.image_url, props.image_adder)}:
                 require('../../assets/icons/user.png')}
               style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE/2,
-                backgroundColor:COLORS.LIGHT, elevation:5}}
+                backgroundColor:COLORS.LIGHT, elevation:7, marginVertical:10}}
             />
             {getBadge(props)}
           </View>
@@ -131,7 +138,7 @@ export default ChatPeople = (props) => {
 
         {getAppropriateAccessory(props)}
 
-      </View>
+      </SView>
     </TouchableOpacity>
   );
 }
@@ -140,12 +147,15 @@ const styles = StyleSheet.create({
   ViewStyling:{
     alignItems:'center',
     flexDirection:'row',
-    paddingHorizontal:15,
+    paddingHorizontal:10,
     width:"90%",
     flex:1,
     justifyContent:'space-between',
     alignSelf:'center',
     overflow:'hidden',
+    shadowColor:"#000000",
+    shadowRadius:6,
+    shadowOffset:{height:4}
   },
   TextStyle:{
     fontSize:18,

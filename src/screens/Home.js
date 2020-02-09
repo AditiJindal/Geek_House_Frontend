@@ -238,7 +238,7 @@ class Home extends Component {
   renderAvatar(){
     const {COLORS, loading, overlayVisible, theme} = this.props;
     if (overlayVisible){
-      return <View/>
+      return null
     }
     else{
       return(

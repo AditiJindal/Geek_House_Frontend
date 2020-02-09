@@ -8,6 +8,7 @@ import {logEvent} from '../actions/ChatAction';
 import {FONTS,LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
 import {setAuthToken, setUserData, createGroup,
   chatPeopleSearchAction, getChatPeopleExplicitly} from '../actions/ChatAction';
+import Image from 'react-native-fast-image';
 import {Actions} from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
 import ChatPeople from '../components/ChatPeople';
@@ -16,6 +17,9 @@ import SView from 'react-native-simple-shadow-view';
 import ChatPeopleSearch from '../components/ChatPeopleSearch';
 import Loading from '../components/Loading';
 import TimedAlert from '../components/TimedAlert';
+import ImageResizer from 'react-native-image-resizer';
+import ImageEditor from '@react-native-community/image-editor';
+import ImageSelector from '../components/ImageSelector';
 import analytics from '@react-native-firebase/analytics';
 import { TextInput } from 'react-native-gesture-handler';
 
@@ -27,7 +31,8 @@ class Chat extends Component {
       showStartTime: Date.now(),
       chatPeopleSearchText:"",
       peopleSelectorVisible:false,
-      newGroupData: {name:'', users:[]}
+      newGroupData: {name:'',group_image:null, users:[]},
+      groupPeopleSelectorLoading: false
     }
   }
 
@@ -49,7 +54,7 @@ class Chat extends Component {
       <View style={{alignItems:'center'}}>
         {(title==="Chats")?<View style={{height:0.5, width:'94%', 
           backgroundColor:COLORS.GRAY, 
-        margin:10}}/>:<View/>}
+        margin:10}}/>:null}
         <View style={styles.SectionViewStyling}>
           <Text style={{...styles.SectionHeadingStyle, color:COLORS.LIGHT_GRAY}}>
             {title}
@@ -69,6 +74,96 @@ class Chat extends Component {
     else{
       this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText)
     }
+  }
+
+  imageUrlCorrector(image_url){
+    if (image_url.substring(0,4) !== 'http'){
+      image_url = this.props.image_adder + image_url
+    }
+    return image_url
+  }
+
+  getImageResize(imageSize){
+    const MAX_WIDTH = 384;
+    const MAX_HEIGHT = MAX_WIDTH;
+
+    let resize = {...imageSize}
+    let ratio = imageSize.width/imageSize.height
+    if (resize.width>MAX_WIDTH){
+      resize={width:MAX_WIDTH, height:Math.floor(MAX_WIDTH/ratio)}
+    }
+    if (resize.height>MAX_HEIGHT){
+      resize={width:Math.floor(MAX_HEIGHT*ratio), height:MAX_HEIGHT}
+    }
+    return resize
+  }
+
+  getCropCoordinates({width, height}){
+    // needs to be in 1:1 aspect ratio
+    let originX, originY, crop;
+    if (width<height){
+      const requiredHeight = width
+      const remainingHeight = height-requiredHeight;
+      originX = 0;
+      originY = Math.floor(remainingHeight/2);
+      crop = {offset:{x:originX, y:originY}, size:{width, height:requiredHeight}};
+    }
+    else{
+      const requiredWidth = height
+      const remainingWidth = width-requiredWidth;
+      originY = 0;
+      originX = Math.floor(remainingWidth/2);
+      crop = {offset:{x:originX, y:originY}, size:{width:requiredWidth, height}};
+    }
+    return crop
+  }
+
+  pickImage(image){
+    if (image.didCancel){return null;}
+
+    const imageSize = {width:image.width, height:image.height};
+    const resize = this.getImageResize(imageSize);
+    crop = this.getCropCoordinates(resize);
+
+    ImageResizer.createResizedImage(image.uri, resize.width, resize.height, "JPEG", 80).then((resized_image)=>{
+      ImageEditor.cropImage(resized_image.uri, crop).then((crop_image)=>{
+        this.setState({newGroupData:{...this.state.newGroupData, group_image: crop_image}})
+      })
+    });
+  }
+
+  renderGroupImageSelector(){
+    const {COLORS} = this.props;
+    return (
+      <View style={{flexDirection:'row', alignItems:'center', 
+        justifyContent:'space-between', paddingTop:20, paddingBottom:5}}>
+        <View>
+          <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY_BOLD, fontSize:22}}>
+            Group Icon
+          </Text>
+          <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY, fontSize:12}}>
+            Add a group icon
+          </Text>
+        </View>
+        <TouchableOpacity style={{backgroundColor:COLORS.GRAY, height:48, width:48,  
+          borderRadius:24, alignSelf:'center', justifyContent:'center', elevation:3, 
+          alignItems:'center'}} activeOpacity={1} 
+          onPress={()=>{this.imageSelector.showImageSelector(this.pickImage.bind(this))}}
+          >
+          {
+            (this.state.newGroupData.group_image)?(
+              <Image source={{uri:this.state.newGroupData.group_image}} style={{height:48, width:48, borderRadius:24}} />
+            ):(
+              <Icon type="feather" name="users" size={26} color={COLORS.LIGHT}/>
+            )
+          }
+        </TouchableOpacity>
+        <ImageSelector
+          COLORS = {this.props.COLORS}
+          onRef={ref=>this.imageSelector = ref}
+        />
+      </View>
+    )
   }
 
   renderHeader(){
@@ -112,92 +207,115 @@ class Chat extends Component {
   }
 
   onGroupDone(){
-    if (this.state.newGroupData.users.length<2) {this.timedAlert.showAlert(2000, 'You need to have atleast 2 prticipants')}
+    if (this.state.groupPeopleSelectorLoading){return null}
+    if (this.state.newGroupData.users.length<2) {this.timedAlert2.showAlert(2000, 'You need to have atleast 2 prticipants', false)}
     else{
       if (!this.state.newGroupData.name) {this.state.newGroupData.name='New Group'}
-      this.props.createGroup(this.state.newGroupData);
-      this.setState({peopleSelectorVisible:false})
+      this.props.createGroup({...this.state.newGroupData}, 
+        ()=>{this.setState({peopleSelectorVisible:false})},
+        (msg)=>{
+          this.setState({peopleSelectorVisible:false})
+          this.timedAlert2.showAlert(2000, msg, false)}
+        );
     }
   }
 
   renderChatPeopleSelector(){
     const {COLORS}= this.props;
     const DATA = this.props.chats;
+    let itemsRendered=-1;
 
     return(
       <Overlay
-        overlayStyle={{ borderRadius:25, elevation:10, paddingHorizontal:0, overflow:'hidden', 
-          paddingVertical:0, marginBottom:27, backgroundColor:COLORS.LIGHT,}}
+        overlayStyle={{backgroundColor:'transparent', padding:0}}
         isVisible={this.state.peopleSelectorVisible}
         onBackdropPress = {()=>{this.setState({peopleSelectorVisible:false})}}
-        height="auto">
+        height="100%" width="100%">
         <StatusBar 
           barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
           backgroundColor={COLORS.OVERLAY_COLOR}/>
-        <FlatList
-          contentContainerStyle={{marginTop:15, flexGrow:1}}
-          keyboardShouldPersistTaps="always"
-          data={DATA}
-          ListHeaderComponent = {
-            <View style={{marginHorizontal:20, marginVertical:5}}>
-              <TextInput
-                keyboardType={"visible-password"}
-                placeholder={"Enter name of the group..."}
-                placeholderTextColor={COLORS.GRAY}
-                value={this.state.newGroupData.name} maxLength={56}
-                onChangeText={text=>this.setState({newGroupData: {...this.state.newGroupData, name:text}})}
-                style={{fontFamily:FONTS.RALEWAY, fontSize:18, color:COLORS.DARK, 
-                  borderColor:COLORS.GRAY, padding:0, margin:0, borderBottomWidth:1}}
-              />
-              <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingTop:30, paddingBottom:5}}>
-                <View>
-                  <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY_BOLD, fontSize:18}}>
-                    Select People To Add
-                  </Text>
-                  {
-                    (this.state.newGroupData.users.length)?(
-                      <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY, fontSize:12}}>
-                      {`${this.state.newGroupData.users.length} participants selected`}
-                    </Text>
-                    ):null
-                  }
+        <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert2 = ref} COLORS = {COLORS} />
+        <TouchableOpacity style={{flexGrow:1, flexDirection:'row',alignItems:'center', justifyContent:'center'}} 
+          activeOpacity={1}
+          onPress = {()=>{this.setState({peopleSelectorVisible:false})}}>
+          <View style={{maxHeight:"70%", maxWidth:"85%", borderRadius:25, elevation:10, 
+            backgroundColor:COLORS.LIGHT,}}>
+            <FlatList
+              contentContainerStyle={{marginTop:15}}
+              keyboardShouldPersistTaps="always"
+              data={DATA}
+              ListHeaderComponent = {
+                <View style={{marginHorizontal:20, marginVertical:5}}>
+                  <TextInput
+                    keyboardType={"visible-password"}
+                    placeholder={"Enter name of the group..."}
+                    placeholderTextColor={COLORS.GRAY}
+                    value={this.state.newGroupData.name} maxLength={56}
+                    onChangeText={text=>this.setState({newGroupData: {...this.state.newGroupData, name:text}})}
+                    style={{fontFamily:FONTS.RALEWAY, fontSize:18, color:COLORS.DARK, 
+                      borderColor:COLORS.GRAY, padding:0, margin:0, borderBottomWidth:1}}
+                  />
+                  {this.renderGroupImageSelector()}
+                  <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between',
+                    paddingTop:10, paddingBottom:5}}>
+                    <View>
+                      <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY, fontSize:18}}>
+                        Select People To Add
+                      </Text>
+                      {
+                        (this.state.newGroupData.users.length)?(
+                          <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY, fontSize:12}}>
+                            {`${this.state.newGroupData.users.length} participants selected`}
+                          </Text>
+                        ):null
+                      }
+                    </View>
+                    <TouchableOpacity style={{height:48, width:48, justifyContent:'center', alignItems:'center', borderRadius:30, elevation:3,
+                      backgroundColor:(this.state.newGroupData.users.length<2)?(COLORS.GRAY):(COLORS.GREEN)}} 
+                      activeOpacity={0.8} onPress={this.onGroupDone.bind(this)}>
+                        {
+                          (this.state.groupPeopleSelectorLoading)?(
+                            <Loading size={40} white={true}/>
+                          ):(
+                            <Icon type={'feather'} name={'check'} size={26} color={(this.state.newGroupData.users.length<2)?(COLORS.LIGHT):(COLORS_LIGHT_THEME.LIGHT)}/>
+                          )
+                        }
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <TouchableOpacity style={{padding:8, borderRadius:30, elevation:3,
-                  backgroundColor:(this.state.newGroupData.users.length<2)?(COLORS.GRAY):(COLORS.GREEN)}} 
-                  activeOpacity={0.8} onPress={this.onGroupDone.bind(this)}>
-                  <Icon type={'feather'} name={'check'} size={26} color={COLORS.LIGHT}/>
-                </TouchableOpacity>
-              </View>
-            </View>
-          }
-          ListFooterComponent = {<View style={{height:8,width:1}}/>}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({item, index}) => {
-            if (!this.props.status.hasOwnProperty(item._id)){
-              this.props.status[item._id] = {online: true, typing: false, unread_messages: 0}
-            }
-            return (
-              <>
-                <ChatPeople 
-                  data={item}
-                  COLORS = {COLORS}
-                  theme={this.props.theme}
-                  image_adder = {this.props.image_adder}
-                  isSelector={true}
-                  isSelected={this.state.newGroupData.users.includes(DATA[index]._id)}
-                  onPress={(user_id, shouldRemove)=>this.getSelectedUsers(user_id, shouldRemove)}
-                />
-                {
-                  ((DATA.length-1)!==index)?(
-                    <View style={{height:0.5, width:"80%", alignSelf:'center',
-                      backgroundColor:COLORS.GRAY, margin:1}}/>
-                  ):null
+              }
+              ListFooterComponent = {<View style={{height:8,width:1}}/>}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item, index}) => {
+                if (!this.props.status.hasOwnProperty(item._id)){
+                  this.props.status[item._id] = {online: true, typing: false, unread_messages: 0}
                 }
-              </>
-              )
-            }
-          }
-        />
+                if (item.isGroup){return null}
+                itemsRendered+=1;
+                return (
+                  <>
+                    {
+                      (itemsRendered)?(
+                        <View style={{height:0.5, width:"80%", alignSelf:'center',
+                          backgroundColor:COLORS.GRAY, margin:1}}/>
+                      ):null
+                    }
+                    <ChatPeople 
+                      data={item}
+                      COLORS = {COLORS}
+                      theme={this.props.theme}
+                      image_adder = {this.props.image_adder}
+                      isSelector={true}
+                      isSelected={this.state.newGroupData.users.includes(DATA[index]._id)}
+                      onPress={(user_id, shouldRemove)=>this.getSelectedUsers(user_id, shouldRemove)}
+                    />
+                  </>
+                  )
+                }
+              }
+            />
+          </View>
+        </TouchableOpacity>
       </Overlay>
     )
   }
@@ -364,9 +482,7 @@ class Chat extends Component {
           barStyle={(this.props.theme==='light')?'dark-content':'light-content'}/>
         {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
         {this.renderChatPeopleSelector()}
-        <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} 
-          COLORS = {COLORS}
-        />
+        <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} COLORS = {COLORS}/>
         {this.renderHeader()}
         {
           (this.props.loading)?

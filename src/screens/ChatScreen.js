@@ -47,7 +47,7 @@ class ChatScreen extends Component {
 
   renderStatus(status){
     const {COLORS} = this.props;
-    let jsx = <View/>
+    let jsx = null
 
     if (this.props.other_user_data.newEntry || !status){
       return <Text/>
@@ -124,7 +124,7 @@ class ChatScreen extends Component {
             (<Text style={{...styles.InterestStyle, 
               color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
               {this.props.other_user_data.fav_category}
-            </Text>):<View/>}
+            </Text>):null}
           </View>
           {(!this.state.imageViewerSelected)?(
             <TouchableOpacity style={{height:32, width:48, justifyContent:'center', alignItems:'center'}}

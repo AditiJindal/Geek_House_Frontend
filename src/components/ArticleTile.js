@@ -83,7 +83,7 @@ export default class ArticleTile extends Component {
                   *Image could not load
                 </Text>
               ):
-              <View/>
+              null
             }
             <ArticleInfo 
               onBackdropPress={() => {

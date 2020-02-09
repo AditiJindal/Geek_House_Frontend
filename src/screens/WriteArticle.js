@@ -61,7 +61,7 @@ class WriteArticle extends Component {
       )
     }
     else{
-      return <View/>
+      return null
     }
   }
 
@@ -339,7 +339,7 @@ class WriteArticle extends Component {
         />
       )
     }
-    return (<View/>)
+    return (null)
   }
 
   render() {

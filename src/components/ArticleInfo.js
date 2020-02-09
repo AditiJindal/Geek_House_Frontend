@@ -57,7 +57,7 @@ class ArticleInfo extends Component {
                 {(i===this.state.adIndex && this.props.adsManager && this.props.canShowAdsRemote)?
                   <NativeAdsComponent theme={this.props.theme}
                   COLORS = {this.props.COLORS} adsManager={this.props.adsManager} />:
-                  <View/>
+                  null
                 }
                 <CardView 
                   theme={this.props.theme}
@@ -89,7 +89,7 @@ class ArticleInfo extends Component {
 
   showStarRating(){
     if (this.props.selectedArticleInfo.cannotComment){
-      return <View/>
+      return null
     }
     const {COLORS} = this.props
 
@@ -195,7 +195,7 @@ class ArticleInfo extends Component {
   renderComments(comments){
     const {COLORS} = this.props;
     if (this.props.selectedArticleInfo.cannotComment){
-      return <View/>
+      return null
     }
     return (
       <View style={{margin:5, marginTop:20}}>
@@ -210,7 +210,7 @@ class ArticleInfo extends Component {
               borderRadius:20, padding:10, margin:10}}>
           {
             (this.props.selectedArticleInfo.my_article)?
-            <View/>:
+            null:
             this.renderCommentBox()
           }
           
@@ -261,7 +261,7 @@ class ArticleInfo extends Component {
                       </Text>
                       {
                         (index===comments.length-1)?
-                        <View/>:
+                        null:
                         <View style={{width:"100%", height:0.5, marginTop:6, marginBottom:10,
                           backgroundColor:COLORS.LESS_LIGHT, borderRadius:1}}/>
                       }
@@ -517,7 +517,7 @@ class ArticleInfo extends Component {
                 </Animated.View>:
                 (
                   (this.props.selectedArticleInfo.cannotComment)? 
-                  <View/>:
+                  null:
                   (
                     <Animated.Text style={{marginLeft:16, fontSize:10, 
                       fontFamily:FONTS.HELVETICA_NEUE,
@@ -553,7 +553,7 @@ class ArticleInfo extends Component {
   render() {
     const {COLORS} = this.props;
     if (!this.props.isVisible){
-      return <View/>;
+      return null;
     }
     else{
       if (this.props.article_id!==-1){
