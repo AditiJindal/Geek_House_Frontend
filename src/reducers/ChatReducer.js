@@ -160,6 +160,36 @@ const saveData = async (state, recordPerf = false) => {
   }
 }
 
+const mergeChats = (new_chats, old_chats) => {
+  // old chats contain people with correct order
+  // new chats might have new people
+  let new_users = [];
+  let old_users = [];
+  if (old_chats.length<2){
+    return new_chats
+  }
+  old_chats.map((old_user)=>{
+    let isOldUser = false;
+
+    for(i=0; i<new_chats.length; i++){
+      new_user = new_chats[i];
+      if (new_user._id.toString() === old_user._id.toString()){
+        isOldUser=true;
+        break
+      }
+    }
+
+    if (isOldUser){
+      old_users.push(new_user)
+    }
+    else{
+      new_users.unshift(new_user)
+    }
+  });
+  const chats = [...new_users, ...old_users];
+  return chats; 
+}
+
 export default (state=INITIAL_STATE, action) => {
   switch (action.type){
     case ACTIONS.LOGOUT:
@@ -204,6 +234,7 @@ export default (state=INITIAL_STATE, action) => {
           total_unread_messages, status:new_status, loaded_from_storage:true,
           chats:new_chats
         }
+
         saveData(new_state)
         return new_state
       }
@@ -220,6 +251,7 @@ export default (state=INITIAL_STATE, action) => {
         COLORS = COLORS_LIGHT_THEME;
       }
       new_state = {...state, theme: action.payload, COLORS}
+
       saveData(new_state) 
       return new_state
 
@@ -280,6 +312,7 @@ export default (state=INITIAL_STATE, action) => {
         other_user_data, total_unread_messages, 
         chatScreenOpen:true,
       };
+
       saveData(new_state)
       return new_state
 
@@ -288,7 +321,8 @@ export default (state=INITIAL_STATE, action) => {
       // status: {'<other_user_id>': {online:bool, typing:bool, unread_messages:Array}}
       // messages: {'<other_user_id>': [message_objects]}
       
-      const all_users = [...action.payload.chats]
+      // const all_users = [...action.payload.chats]
+      const all_users = mergeChats(action.payload.chats, [...state.chats]);
       new_messages={...state.messages}
       duplicate_status = {...state.status};
       total_unread_messages = state.total_unread_messages;
@@ -314,7 +348,7 @@ export default (state=INITIAL_STATE, action) => {
       }
 
       let {status, total_unread_messages, new_chats} = insertUnreadMessages(action.payload.unread_messages, 
-        state.user_id, status, total_unread_messages, action.payload.chats);
+        state.user_id, status, total_unread_messages, all_users);
 
       if (total_unread_messages<0){total_unread_messages=0}
       if (action.payload.explicitly){status=duplicate_status}
@@ -323,7 +357,7 @@ export default (state=INITIAL_STATE, action) => {
         loading:false, status, total_unread_messages}
 
       // delete action.payload.chats
-
+      
       saveData(new_state)
       return new_state
 
@@ -382,6 +416,7 @@ export default (state=INITIAL_STATE, action) => {
         status: new_status, total_unread_messages, quick_replies:[],
         chatScreenState:INITIAL_CHAT_SCREEN_STATE,
       };
+
       saveData(new_state);
       return new_state
 

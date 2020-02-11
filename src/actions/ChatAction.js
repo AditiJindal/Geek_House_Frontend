@@ -78,7 +78,6 @@ export const sendMessage = (socket, message, other_user_id, image) => {
           message_to_send.text = message[0].text;
           message_to_send.to = other_user_id;
 
-          console.log("Message to send is: ", message_to_send)
           socket.emit('message', encryptMessage(message_to_send));
           message[0].image.url = decrypt(message[0].image.url)
           
@@ -231,7 +230,6 @@ export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
 }
 
 export const createGroup = (newGroupInfo, successCallback, errorCallback) => {
-  console.log("HERE ROUPINFO : ", newGroupInfo)
   if (!newGroupInfo.group_image){
     socket.emit('create_group', newGroupInfo)
     return {type:null}

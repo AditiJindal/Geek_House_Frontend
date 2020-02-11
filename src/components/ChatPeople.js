@@ -20,7 +20,7 @@ const getBadge = (props) => {
   if (props.typing){
     return (
       <View style={{
-        position:'absolute', right:0, top:0, justifyContent:'center', alignItems:'center',
+        position:'absolute', right:5, top:5, justifyContent:'center', alignItems:'center',
         borderColor:COLORS.LIGHT, borderWidth:1, elevation:5,
         height:12 , width:16, borderRadius:6, backgroundColor:COLORS.YELLOW
       }}>
@@ -31,8 +31,8 @@ const getBadge = (props) => {
   else if (props.online && !data.isGroup){
     return (
       <View style={{
-        position:'absolute', right:2, top:2, borderColor:COLORS.LIGHT, borderWidth:1,elevation:5,
-        backgroundColor:'rgb(82, 196, 27)', height:12, width:12, borderRadius:6}}>
+        position:'absolute', right:5, top:10, borderColor:COLORS.LIGHT,borderWidth:0.7,
+        backgroundColor:'rgb(82, 196, 27)', height:10, width:10, borderRadius:6, elevation:8}}>
       </View>
     );
   }

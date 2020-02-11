@@ -35,7 +35,7 @@ httpClient.defaults.timeout = HTTP_TIMEOUT;
 httpClient.defaults.baseURL = BASE_URL;
 
 PushNotification.popInitialNotification((notification) => {
-  Console.log(notification);
+  console.log(notification);
 })
 
 const setPushNotifications = async () => {
