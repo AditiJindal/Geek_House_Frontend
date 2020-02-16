@@ -625,7 +625,7 @@ export default connect(mapStateToProps, {getArticleInfo, setAuthToken, submitCom
 const styles = StyleSheet.create({
   OverlayStyle:{
     borderRadius:BORDER_RADIUS,
-    elevation:10,
+    elevation:0,
     paddingHorizontal:0,
     overflow:'hidden',
     paddingVertical:0,

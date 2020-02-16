@@ -32,7 +32,8 @@ class Chat extends Component {
       chatPeopleSearchText:"",
       peopleSelectorVisible:false,
       newGroupData: {name:'',group_image:null, users:[]},
-      groupPeopleSelectorLoading: false
+      groupPeopleSelectorLoading: false,
+      chatInfoVisible: false
     }
   }
 
@@ -84,7 +85,7 @@ class Chat extends Component {
   }
 
   getImageResize(imageSize){
-    const MAX_WIDTH = 384;
+    const MAX_WIDTH = 512;
     const MAX_HEIGHT = MAX_WIDTH;
 
     let resize = {...imageSize}
@@ -227,7 +228,7 @@ class Chat extends Component {
 
     return(
       <Overlay
-        overlayStyle={{backgroundColor:'transparent', padding:0}}
+        overlayStyle={{backgroundColor:'transparent', padding:0, elevation:0}}
         isVisible={this.state.peopleSelectorVisible}
         onBackdropPress = {()=>{this.setState({peopleSelectorVisible:false})}}
         height="100%" width="100%">

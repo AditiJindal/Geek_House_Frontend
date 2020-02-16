@@ -36,7 +36,7 @@ const INITIAL_STATE={
   user_id: "",
   theme: "light",
   animationOn:true,
-  quickRepliesEnabled: true,
+  quick_replies_enabled: true,
   chat_background:{image:null, blur:2},
   chatPeopleSearchLoading:false,
   authTokenSet: false,
@@ -44,7 +44,9 @@ const INITIAL_STATE={
   COLORS: COLORS_LIGHT_THEME,
   chatScreenState:INITIAL_CHAT_SCREEN_STATE,
   quick_replies: [],
-  currentMessages:[] // list of messages of currently loaded person
+  currentMessages:[], // list of messages of currently loaded person
+  chat_group_participants:{},
+  chatInfoLoading: false
 }
 
 const incomingMessageConverter = (item) => {
@@ -140,11 +142,13 @@ const saveData = async (state, recordPerf = false) => {
     total_unread_messages:state.total_unread_messages,
     theme: state.theme,
     animationOn: state.animationOn,
-    quickRepliesEnabled: state.quickRepliesEnabled,
+    quick_replies_enabled: state.quick_replies_enabled,
     first_login: state.first_login,
     chat_background: state.chat_background,
     chats: state.chats,
+    chat_group_participants: state.chat_group_participants
   };
+  console.log(to_save)
   
   if (recordPerf){
     t = Date.now()
@@ -204,6 +208,7 @@ export default (state=INITIAL_STATE, action) => {
     case ACTIONS.CHAT_LOAD_DATA:
       user_id = action.payload.user_id
       COLORS = COLORS_DARK_THEME
+      console.log('action.payload : ', action.payload)
 
       if (Object.keys(action.payload).length!==1){
         new_messages = {...action.payload.messages};
@@ -228,7 +233,7 @@ export default (state=INITIAL_STATE, action) => {
         new_state = {...state,
           theme: action.payload.theme,
           animationOn: action.payload.animationOn,
-          quickRepliesEnabled:action.payload.quickRepliesEnabled,
+          quick_replies_enabled:action.payload.quick_replies_enabled,
           chat_background: action.payload.chat_background,
           user_id, messages:new_messages, COLORS, 
           total_unread_messages, status:new_status, loaded_from_storage:true,
@@ -436,7 +441,7 @@ export default (state=INITIAL_STATE, action) => {
       return new_state
 
     case ACTIONS.SETTINGS_CHANGE_QUICK_REPLIES:
-      new_state = {...state, quickRepliesEnabled:!state.quickRepliesEnabled}
+      new_state = {...state, quick_replies_enabled:!state.quick_replies_enabled}
       saveData(new_state)
       return new_state
 
@@ -492,6 +497,28 @@ export default (state=INITIAL_STATE, action) => {
     case ACTIONS.CHAT_COMPOSER_TEXT_CHANGED:
       new_state = {...state, chatScreenState:{...state.chatScreenState, ...action.payload}}
       return new_state
+
+    case ACTIONS.CHAT_GROUP_PARTICIPANTS:
+
+      for(i=0; i<action.payload.users.length; i++){
+        user = action.payload.users[i];
+        if (action.payload.admins.includes(user._id)){
+          user.isAdmin = true
+        }
+        else{
+          user.isAdmin = false;
+        }
+      }
+
+      new_chat_group_participants = {...state.chat_group_participants}
+      new_chat_group_participants[action.payload.group_id] = action.payload
+
+      new_state = {...state, chat_group_participants:new_chat_group_participants, chatInfoLoading:false}
+      saveData(new_state)
+      return new_state
+
+    case ACTIONS.CHAT_GROUP_INFO_LOADING:
+      return {...state, chatInfoLoading: action.payload}
 
     default:
       return state;

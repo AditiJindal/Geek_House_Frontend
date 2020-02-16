@@ -40,7 +40,7 @@ class Settings extends Component {
   }
 
   getImageResize(imageSize){
-    const MAX_WIDTH = 384;
+    const MAX_WIDTH = 512;
     const MAX_HEIGHT = MAX_WIDTH;
 
     let resize = {...imageSize}
@@ -407,11 +407,11 @@ class Settings extends Component {
         <View style={{flexDirection:'row', alignItems:'center', marginTop:20}}>
           <Text style={{marginRight:30,fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
             color:COLORS.LESSER_DARK, }}>
-            Switch Theme
+            Drak Theme
           </Text>
           <View style={{flex:1, alignItems:'flex-end', paddingRight:15}}>
             <Switch
-              value = {theme==='light'}
+              value = {theme==='dark'}
               onValueChange = {()=>{
                 analytics().setUserProperties({Theme: oppositeTheme});
                 this.props.changeTheme((oppositeTheme));
@@ -488,7 +488,7 @@ class Settings extends Component {
           </Text>
           <View style={{flex:1, alignItems:'flex-end', paddingRight:15}}>
             <Switch
-              value = {this.props.quickRepliesEnabled}
+              value = {this.props.quick_replies_enabled}
               onValueChange = {()=>{this.props.changeQuickRepliesSettings()}}
               backgroundActive={COLORS_LIGHT_THEME.GREEN}
               backgroundInactive={COLORS.GRAY}
@@ -636,7 +636,7 @@ const mapStateToProps = (state) => {
     COLORS: state.chat.COLORS,
     animationOn: state.chat.animationOn,
     chat_background: state.chat.chat_background,
-    quickRepliesEnabled: state.chat.quickRepliesEnabled,
+    quick_replies_enabled: state.chat.quick_replies_enabled,
   }
 }
 

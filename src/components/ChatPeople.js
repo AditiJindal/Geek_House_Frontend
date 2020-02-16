@@ -21,7 +21,7 @@ const getBadge = (props) => {
     return (
       <View style={{
         position:'absolute', right:5, top:5, justifyContent:'center', alignItems:'center',
-        borderColor:COLORS.LIGHT, borderWidth:1, elevation:5,
+        borderColor:COLORS.LIGHT, borderWidth:1, elevation:8,
         height:12 , width:16, borderRadius:6, backgroundColor:COLORS.YELLOW
       }}>
         <Typing size={14}/>

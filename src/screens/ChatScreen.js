@@ -7,19 +7,22 @@ import {FONTS} from '../Constants';
 import {GiftedChat} from '../components/GiftedChat/index';
 import { Actions } from 'react-native-router-flux';
 import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData, setAuthToken,
-  getChatPeopleExplicitly, getCurrentUserMessages, onImageSelect, onComposerTextChanged
+  getChatPeopleExplicitly, getCurrentUserMessages, onImageSelect, onComposerTextChanged,
+  getChatGroupParticipants
 } from '../actions/ChatAction';
 import Image from 'react-native-fast-image';
 import TimedAlert from '../components/TimedAlert';
+import ChatInfo from '../components/ChatInfo';
+import Loading from '../components/Loading';
 
 class ChatScreen extends Component {
 
-  state={imageViewerSelected: false}
+  state={imageViewerSelected: false, chatInfoVisible: false, chatInfoLoading:false}
 
   componentDidMount(){
     this.props.setAuthToken();
     this.props.getCurrentUserMessages(this.props.other_user_data._id, 
-      this.props.user_id, this.props.quickRepliesEnabled)
+      this.props.user_id, this.props.quick_replies_enabled)
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>this.keyboardDidShow());
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', ()=>this.keyboardDidHide());
     BackHandler.addEventListener('hardwareBackPress', ()=>{
@@ -80,38 +83,56 @@ class ChatScreen extends Component {
     return image_url
   }
 
+  handleChatInfo = async () => {
+    if (this.props.other_user_data.isGroup){
+      const {chat_group_participants} = this.props;
+      const groupParticipants = chat_group_participants[this.props.other_user_data._id];
+      if (!groupParticipants){
+        this.props.getChatGroupParticipants(this.props.other_user_data._id)
+      }
+      this.setState({chatInfoVisible:true});
+    }
+  }
+
+  renderHeaderAvatar(){
+    const {COLORS} = this.props;
+
+    return (
+      <TouchableOpacity style={{marginLeft:10}} onPress={this.handleChatInfo}>
+          <Image
+            source={
+              (this.props.other_user_data.image_url)?
+              {uri:this.imageUrlCorrector(this.props.other_user_data.image_url)}:
+              require('../../assets/icons/user.png')
+            }
+            style={{height:48, width:48, borderRadius:24,
+              backgroundColor:COLORS.LIGHT, elevation:4}}
+          />
+          {
+            (!this.props.other_user_data.newEntry 
+            && this.props.status.hasOwnProperty(this.props.other_user_data._id) 
+            && this.props.status[this.props.other_user_data._id].online)?
+            (
+              <Badge
+                status="success"
+                containerStyle={{ position: 'absolute', top: 2, right: 0, elevation:7}}
+                badgeStyle={{height:12, width:12, borderRadius:6,
+                borderWidth:1.2, borderColor:COLORS.LIGHT}}
+              />
+            ):null
+          }
+      </TouchableOpacity>
+    )
+  }
+
   renderHeader(){
     const {COLORS} = this.props;
     return (
-      <View style={{paddingBottom:4,elevation:25,
+      <View style={{paddingVertical:4,elevation:25,
         alignItems:'center', flexDirection:'row', width:"100%",
-        backgroundColor:COLORS.LIGHT, 
-        paddingHorizontal:10}}>
+        backgroundColor:COLORS.LIGHT, paddingHorizontal:10}}>
         <View style={{flexDirection:'row', alignItems:'center'}}>
-          <View style={{marginLeft:10}}>
-            <Image
-              source={
-                (this.props.other_user_data.image_url)?
-                {uri:this.imageUrlCorrector(this.props.other_user_data.image_url)}:
-                require('../../assets/icons/user.png')
-              }
-              style={{height:48, width:48, borderRadius:24,
-              backgroundColor:COLORS.LIGHT, elevation:4}}
-            />
-            {
-              (!this.props.other_user_data.newEntry 
-              && this.props.status.hasOwnProperty(this.props.other_user_data._id) 
-              && this.props.status[this.props.other_user_data._id].online)?
-              (
-                <Badge
-                  status="success"
-                  containerStyle={{ position: 'absolute', top: 2, right: 0, elevation:7}}
-                  badgeStyle={{height:12, width:12, borderRadius:6,
-                  borderWidth:1.2, borderColor:COLORS.LIGHT}}
-                />
-              ):null
-            } 
-          </View>
+          {this.renderHeaderAvatar()}
           <View style={{justifyContent:'center', marginLeft:10, flex:6, alignItems:'center'}}>
             <Text style={{...styles.TextStyle, 
               color:COLORS.LESS_DARK}}>
@@ -145,8 +166,16 @@ class ChatScreen extends Component {
 
   render() {
     const {COLORS, chatScreenState} = this.props;
+
     return(
       <View style={{backgroundColor:COLORS.LIGHT}}>
+        {
+          (this.props.other_user_data.isGroup)?
+          (<ChatInfo COLORS={COLORS} isVisible={this.state.chatInfoVisible}
+            onBackdropPress = {()=>this.setState({chatInfoVisible: false})}
+            isLoading = {this.props.chatInfoLoading}
+            other_user_data = {this.props.other_user_data} image_adder={this.props.image_adder}/>):null
+        }
         <ImageBackground style={{height:"100%", width:"100%"}} blurRadius={this.props.chat_background.blur}
         source={(!!this.props.chat_background.image)?(
           {uri:this.props.chat_background.image}
@@ -221,14 +250,16 @@ const mapStateToProps = (state) => {
     currentMessages: state.chat.currentMessages,
     chat_background: state.chat.chat_background,
     quick_replies: state.chat.quick_replies,
-    quickRepliesEnabled: state.chat.quickRepliesEnabled,
-    chatScreenState: state.chat.chatScreenState
+    quick_replies_enabled: state.chat.quick_replies_enabled,
+    chatScreenState: state.chat.chatScreenState,
+    chat_group_participants: state.chat.chat_group_participants,
+    chatInfoLoading: state.chat.chatInfoLoading
   }
 }
 
 export default connect(mapStateToProps, {setAuthToken, sendMessage, getChatPeopleExplicitly,
   checkMessagesObject, sendTyping, clearOtherUserData, getCurrentUserMessages,
-  onImageSelect, onComposerTextChanged
+  onImageSelect, onComposerTextChanged, getChatGroupParticipants
 })(ChatScreen);
 
 const styles = StyleSheet.create({

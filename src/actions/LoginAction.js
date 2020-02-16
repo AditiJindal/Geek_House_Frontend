@@ -61,7 +61,7 @@ const incomingMessageConverter = (data) => {
   return new_message
 }
 
-export const makeLocalNotification = (notification) => {
+const makeLocalNotification = (notification) => {
   PushNotification.localNotification({
     autoCancel: true,
     largeIcon: "ic_launcher",
@@ -77,7 +77,7 @@ export const makeLocalNotification = (notification) => {
   });
 }
 
-export const handleNotification = (notification) => {
+const handleNotification = (notification) => {
   switch(notification.type){
     case 'article':
       analytics().logEvent('article_notification_tapped')
@@ -160,8 +160,8 @@ const makeConnection = async (json_data, dispatch, getState) => {
   socket.on('incoming_message', (data)=>{
     data = decryptMessage(data);
     const message = incomingMessageConverter(data);
-    const {chat:{currentMessages, user_id, quickRepliesEnabled}} = getState();
-    if ((currentMessages.slice(0,4)!==0) && quickRepliesEnabled){
+    const {chat:{currentMessages, user_id, quick_replies_enabled}} = getState();
+    if ((currentMessages.slice(0,4)!==0) && quick_replies_enabled){
       let temp_currentMessages = [...currentMessages.slice(0,4), ...message];
       clearTimeout(timer);
       timer = setTimeout(()=>{getQuickReplies(dispatch,temp_currentMessages, user_id);},1000)
@@ -183,6 +183,11 @@ const makeConnection = async (json_data, dispatch, getState) => {
       dispatch({type:ACTIONS.CHAT_USER_ONLINE, payload: data})
     }
   });
+
+  socket.on('chat_group_participants',(response)=>{
+    console.log("GOT THIS BACK : ", response)
+    dispatch({type:ACTIONS.CHAT_GROUP_PARTICIPANTS, payload: response});
+  })
 
   socket.on('you-are-disconnected', ()=>{
     socket.emit('not-disconnected', {id: json_data.authtoken})

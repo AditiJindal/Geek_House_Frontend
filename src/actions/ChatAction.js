@@ -164,7 +164,7 @@ const messageConverter = (item) => {
   return to_return
 }
 
-export const getCurrentUserMessages = (other_user_id, this_user_id, quickRepliesEnabled) => {
+export const getCurrentUserMessages = (other_user_id, this_user_id, quick_replies_enabled) => {
   var t = Date.now()
   trace.start()
   return (dispatch)=>{
@@ -181,7 +181,7 @@ export const getCurrentUserMessages = (other_user_id, this_user_id, quickReplies
       logEvent(LOG_EVENT.MOBILE_DB_TIME, 
         {mili_seconds: Date.now()-t,time: Date.now(), type:'mobile_db_time_get'})
       
-      if (quickRepliesEnabled){
+      if (quick_replies_enabled){
         clearTimeout(timer);
         timer = setTimeout(()=>{getQuickReplies(dispatch, new_response.slice(0,4), this_user_id)}, 1000)
       }
@@ -261,5 +261,9 @@ export const createGroup = (newGroupInfo, successCallback, errorCallback) => {
     })
 
   }
+}
 
+export const getChatGroupParticipants = (group_id) => {
+  socket.emit('chat_group_participants', group_id)
+  return {type:ACTIONS.CHAT_GROUP_INFO_LOADING, payload:true}
 }

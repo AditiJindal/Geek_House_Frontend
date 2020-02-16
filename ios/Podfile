@@ -62,6 +62,8 @@ target 'Geek_House' do
 
   pod 'RNFBCrashlytics', :path => '../node_modules/@react-native-firebase/crashlytics'
 
+  pod 'react-native-cameraroll', :path => '../node_modules/@react-native-community/cameraroll'
+
   target 'Geek_HouseTests' do
     inherit! :search_paths
     # Pods for testing
