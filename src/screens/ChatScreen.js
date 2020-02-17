@@ -165,16 +165,18 @@ class ChatScreen extends Component {
   }
 
   render() {
-    const {COLORS, chatScreenState} = this.props;
+    const {COLORS, chatScreenState, other_user_data } = this.props;
 
     return(
       <View style={{backgroundColor:COLORS.LIGHT}}>
         {
-          (this.props.other_user_data.isGroup)?
+          (other_user_data.isGroup)?
           (<ChatInfo COLORS={COLORS} isVisible={this.state.chatInfoVisible}
             onBackdropPress = {()=>this.setState({chatInfoVisible: false})}
             isLoading = {this.props.chatInfoLoading}
-            other_user_data = {this.props.other_user_data} image_adder={this.props.image_adder}/>):null
+            chat_group_participants = {this.props.chat_group_participants}
+            other_user_data = {other_user_data} 
+            image_adder={this.props.image_adder}/>):null
         }
         <ImageBackground style={{height:"100%", width:"100%"}} blurRadius={this.props.chat_background.blur}
         source={(!!this.props.chat_background.image)?(
@@ -201,8 +203,8 @@ class ChatScreen extends Component {
                     }}
                   messages={this.props.currentMessages}
                   onSend={(message) => {
-                    this.props.sendMessage(this.props.socket, [{...message[0], isGroup: this.props.other_user_data.isGroup}], 
-                    this.props.other_user_data._id, chatScreenState.selectedImage)
+                    this.props.sendMessage(this.props.socket, [{...message[0], isGroup: other_user_data.isGroup}], 
+                    other_user_data._id, chatScreenState.selectedImage)
                   }}
                   placeholder="Type to chat..."
                   renderAvatar={null}
