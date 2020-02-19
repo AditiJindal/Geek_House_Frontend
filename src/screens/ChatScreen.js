@@ -98,15 +98,16 @@ class ChatScreen extends Component {
     const {COLORS} = this.props;
 
     return (
-      <TouchableOpacity style={{marginLeft:10}} onPress={this.handleChatInfo}>
+      <TouchableOpacity style={{marginLeft:10, backgroundColor:COLORS.LIGHT, elevation:4,
+        borderRadius:24, overflow:'hidden'}} 
+        onPress={this.handleChatInfo}>
           <Image
             source={
               (this.props.other_user_data.image_url)?
               {uri:this.imageUrlCorrector(this.props.other_user_data.image_url)}:
               require('../../assets/icons/user.png')
             }
-            style={{height:48, width:48, borderRadius:24,
-              backgroundColor:COLORS.LIGHT, elevation:4}}
+            style={{height:48, width:48}}
           />
           {
             (!this.props.other_user_data.newEntry 
@@ -174,6 +175,7 @@ class ChatScreen extends Component {
           (<ChatInfo COLORS={COLORS} isVisible={this.state.chatInfoVisible}
             onBackdropPress = {()=>this.setState({chatInfoVisible: false})}
             isLoading = {this.props.chatInfoLoading}
+            currentUserId = {this.props.user_id}
             chat_group_participants = {this.props.chat_group_participants}
             other_user_data = {other_user_data} 
             image_adder={this.props.image_adder}/>):null
