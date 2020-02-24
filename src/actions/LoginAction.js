@@ -185,12 +185,19 @@ const makeConnection = async (json_data, dispatch, getState) => {
   });
 
   socket.on('chat_group_participants',(response)=>{
-    console.log("GOT THIS BACK : ", response)
     dispatch({type:ACTIONS.CHAT_GROUP_PARTICIPANTS, payload: response});
   })
 
+  socket.on('create_group', (response)=>{
+    dispatch({type: ACTIONS.CHAT_GROUP_CREATE, payload: response});
+  })
+
+  socket.on('chat_group_modiy_admins', (response)=>{
+    dispatch({type:ACTIONS.CHAT_GROUP_MODIFY_ADMINS, payload: response})
+  });
+
   socket.on('you-are-disconnected', ()=>{
-    socket.emit('not-disconnected', {id: json_data.authtoken})
+    socket.emit('not-disconnected', {id: json_data.authtoken});
   })
 
   socket.on('reconnect', ()=>{

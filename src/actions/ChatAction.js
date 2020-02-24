@@ -232,35 +232,35 @@ export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
 export const createGroup = (newGroupInfo, successCallback, errorCallback) => {
   if (!newGroupInfo.group_image){
     socket.emit('create_group', newGroupInfo)
-    return {type:null}
+    successCallback();
   }
 
   // upload image
-  return (dispatch)=>{
-
-    httpClient.get(URLS.imageupload, {params:{type:'profile_picture', image_type:'jpeg'}}).then((response)=>{
-      const preSignedURL = decrypt(response.data.url);
-      uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, newGroupInfo.group_image)
-      .then(()=>{
-        aws_image_url = decrypt(response.data.key);
-        httpClient.post(URLS.change_profile_pic, {image_url:response.data.key}) // sending encrypted url
-        .then(()=>{
-          // when everything is right, we change the image_url
-          newGroupInfo.group_image = aws_image_url;
-          socket.emit('create_group', newGroupInfo);
-          delay(2000)
-          successCallback();
-        }).catch(e=>{
-          errorCallback("Couldn't create group")
-        })
+  httpClient.get(URLS.imageupload, {params:{type:'profile_picture', image_type:'jpeg'}}).then((response)=>{
+    const preSignedURL = decrypt(response.data.url);
+    uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, newGroupInfo.group_image)
+    .then(()=>{
+      aws_image_url = decrypt(response.data.key);
+      httpClient.post(URLS.change_profile_pic, {image_url:response.data.key}) // sending encrypted url
+      .then(async ()=>{
+        // when everything is right, we change the image_url
+        newGroupInfo.group_image = aws_image_url;
+        socket.emit('create_group', newGroupInfo);
+        successCallback();
       }).catch(e=>{
-        errorCallback("Couldn't upload image, group not created")
+        errorCallback("Couldn't create group")
       })
     }).catch(e=>{
-      errorCallback("Couldn't create group")
+      errorCallback("Couldn't upload image, group not created")
     })
+  }).catch(e=>{
+    errorCallback("Couldn't create group")
+  })
+}
 
-  }
+export const modifyAdmins = async (data) => {
+  // data = {group_id:String, user_id:String, add:Boolean}
+  socket.emit('chat_group_modiy_admins', data)
 }
 
 export const getChatGroupParticipants = (group_id) => {

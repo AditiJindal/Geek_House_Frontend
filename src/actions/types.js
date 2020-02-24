@@ -69,8 +69,10 @@ export const ACTIONS={
     CHAT_COMPOSER_TEXT_CHANGED: 'chat.composer_text_changed',
     CHAT_SCREEN_IMAGE_SELECT: 'chat.image_select',
     CHAT_IMAGE_UPLOADING: 'chat.image_uploading',
+    CHAT_GROUP_CREATE: 'chat.group_create',
     CHAT_GROUP_PARTICIPANTS: 'chat.group_participants',
     CHAT_GROUP_INFO_LOADING:  'chat.group_info_loading',
+    CHAT_GROUP_MODIFY_ADMINS: 'chat.group_modify_admins',
 
     // SETTINGS
     SETTINGS_LOADING: 'settings.loading',

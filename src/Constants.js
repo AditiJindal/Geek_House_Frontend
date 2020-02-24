@@ -25,8 +25,11 @@ export const COLORS_LIGHT_THEME = {
   LIGHT_PINK: '#ff91a2',
 
   RED: '#cb2d3e',
+  LIGHT_RED: "#ff5764",
   GREEN: "#63d6a0",
   YELLOW: "#f9a602",
+  WHITE: "#FFFFFF",
+  FORCE_DARK: "#2d2d2d",
   STAR_YELLOW: "#f5af19",
   OVERLAY_COLOR: "#999999",
   SHIMMER_COLOR: ['#ebebeb', '#c5c5c5', '#ebebeb'],
@@ -61,8 +64,11 @@ export const COLORS_DARK_THEME = {
   LIGHT_PINK: '#ff91a2',
 
   RED: '#ed2939',
+  LIGHT_RED: "#ff5764",
   GREEN: "#63d6a0",
   YELLOW: "#f9a602",
+  WHITE: "#FFFFFF",
+  FORCE_DARK: "#2d2d2d",
   STAR_YELLOW: "#f3c921",
   OVERLAY_COLOR: "#181818",
   SHIMMER_COLOR: ["#323232", "#3c3c3c", "#464646"],

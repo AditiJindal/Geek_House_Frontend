@@ -217,23 +217,22 @@ class Settings extends Component {
     const {COLORS, data} = this.props;
 
     return(
-      <TouchableOpacity activeOpacity={0.8}
+      <TouchableOpacity 
           onPress={()=>{
             this.imageSelector.showImageSelector(this.pickImage.bind(this))
-          }} disabled={this.props.profile_pic_loading}>
-          <View style={{padding:10, backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
-            {
-              (this.props.profile_pic_loading)?(
-                <Loading size={64} white={(this.props.theme!=='light')}/>
-              ):(
-                <Image
-                  source={{uri:this.imageUrlCorrector(data.image_url)}}
-                  style={{height:64, width:64, borderRadius:32, elevation:7}}
-                />
-              )
-            }
-          </View>
-                       
+          }} disabled={this.props.profile_pic_loading}
+          style={{margin:10, backgroundColor:COLORS.LIGHT,
+            elevation:8, borderRadius:32, overflow:'hidden'}}>
+          {
+            (this.props.profile_pic_loading)?(
+              <Loading size={64} white={(this.props.theme!=='light')}/>
+            ):(
+              <Image
+                source={{uri:this.imageUrlCorrector(data.image_url)}}
+                style={{height:64, width:64}}
+              />
+            )
+          }                       
         </TouchableOpacity>
     )
   }

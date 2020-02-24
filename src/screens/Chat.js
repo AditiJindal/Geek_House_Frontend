@@ -149,7 +149,10 @@ class Chat extends Component {
         <TouchableOpacity style={{backgroundColor:COLORS.GRAY, height:48, width:48,  
           borderRadius:24, alignSelf:'center', justifyContent:'center', elevation:3, 
           alignItems:'center'}} activeOpacity={1} 
-          onPress={()=>{this.imageSelector.showImageSelector(this.pickImage.bind(this))}}
+          onPress={()=>{
+            if (this.state.groupPeopleSelectorLoading){return null}
+            this.imageSelector.showImageSelector(this.pickImage.bind(this))
+          }}
           >
           {
             (this.state.newGroupData.group_image)?(
@@ -211,11 +214,12 @@ class Chat extends Component {
     if (this.state.groupPeopleSelectorLoading){return null}
     if (this.state.newGroupData.users.length<2) {this.timedAlert2.showAlert(2000, 'You need to have atleast 2 prticipants', false)}
     else{
+      this.setState({groupPeopleSelectorLoading: true})
       if (!this.state.newGroupData.name) {this.state.newGroupData.name='New Group'}
-      this.props.createGroup({...this.state.newGroupData}, 
-        ()=>{this.setState({peopleSelectorVisible:false})},
+      createGroup({...this.state.newGroupData}, 
+        ()=>{this.setState({peopleSelectorVisible:false, groupPeopleSelectorLoading: false})},
         (msg)=>{
-          this.setState({peopleSelectorVisible:false})
+          this.setState({peopleSelectorVisible:false, groupPeopleSelectorLoading: false})
           this.timedAlert2.showAlert(2000, msg, false)}
         );
     }
@@ -294,23 +298,15 @@ class Chat extends Component {
                 if (item.isGroup){return null}
                 itemsRendered+=1;
                 return (
-                  <>
-                    {
-                      (itemsRendered)?(
-                        <View style={{height:0.5, width:"80%", alignSelf:'center',
-                          backgroundColor:COLORS.GRAY, margin:1}}/>
-                      ):null
-                    }
-                    <ChatPeople 
-                      data={item}
-                      COLORS = {COLORS}
-                      theme={this.props.theme}
-                      image_adder = {this.props.image_adder}
-                      isSelector={true}
-                      isSelected={this.state.newGroupData.users.includes(DATA[index]._id)}
-                      onPress={(user_id, shouldRemove)=>this.getSelectedUsers(user_id, shouldRemove)}
-                    />
-                  </>
+                  <ChatPeople 
+                    data={item}
+                    COLORS = {COLORS}
+                    theme={this.props.theme}
+                    image_adder = {this.props.image_adder}
+                    isSelector={true}
+                    isSelected={this.state.newGroupData.users.includes(DATA[index]._id)}
+                    onPress={(user_id, shouldRemove)=>this.getSelectedUsers(user_id, shouldRemove)}
+                  />
                   )
                 }
               }
@@ -512,7 +508,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {setAuthToken, setUserData, chatPeopleSearchAction,
-  getChatPeopleExplicitly, createGroup})(Chat);
+  getChatPeopleExplicitly})(Chat);
 
 const styles = StyleSheet.create({
   TextStyle:{

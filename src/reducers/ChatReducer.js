@@ -23,7 +23,6 @@ const INITIAL_CHAT_SCREEN_STATE = {
 const INITIAL_STATE={
   socket: null,
   loading:true,
-  chatPeople:{},
   chats: [],
   messages: {}, // {"user_id": [ {_id:Number, text:String, created_at: Date, user: {_id:String}} ,{}, {} ]}
   other_user_data: {},
@@ -146,9 +145,8 @@ const saveData = async (state, recordPerf = false) => {
     first_login: state.first_login,
     chat_background: state.chat_background,
     chats: state.chats,
-    chat_group_participants: state.chat_group_participants
+    // chat_group_participants: state.chat_group_participants
   };
-  console.log(to_save)
   
   if (recordPerf){
     t = Date.now()
@@ -172,11 +170,11 @@ const mergeChats = (new_chats, old_chats) => {
   if (old_chats.length<2){
     return new_chats
   }
-  old_chats.map((old_user)=>{
+  new_chats.map((new_user)=>{
     let isOldUser = false;
 
-    for(i=0; i<new_chats.length; i++){
-      new_user = new_chats[i];
+    for(i=0; i<old_chats.length; i++){
+      old_user = old_chats[i];
       if (new_user._id.toString() === old_user._id.toString()){
         isOldUser=true;
         break
@@ -190,6 +188,7 @@ const mergeChats = (new_chats, old_chats) => {
       new_users.unshift(new_user)
     }
   });
+
   const chats = [...new_users, ...old_users];
   return chats; 
 }
@@ -208,7 +207,6 @@ export default (state=INITIAL_STATE, action) => {
     case ACTIONS.CHAT_LOAD_DATA:
       user_id = action.payload.user_id
       COLORS = COLORS_DARK_THEME
-      console.log('action.payload : ', action.payload)
 
       if (Object.keys(action.payload).length!==1){
         new_messages = {...action.payload.messages};
@@ -235,6 +233,7 @@ export default (state=INITIAL_STATE, action) => {
           animationOn: action.payload.animationOn,
           quick_replies_enabled:action.payload.quick_replies_enabled,
           chat_background: action.payload.chat_background,
+          // chat_group_participants: action.payload.chat_group_participants,
           user_id, messages:new_messages, COLORS, 
           total_unread_messages, status:new_status, loaded_from_storage:true,
           chats:new_chats
@@ -358,7 +357,7 @@ export default (state=INITIAL_STATE, action) => {
       if (total_unread_messages<0){total_unread_messages=0}
       if (action.payload.explicitly){status=duplicate_status}
 
-      let new_state = {...state, chatPeople:action.payload, chats:new_chats,
+      let new_state = {...state, chats:new_chats,
         loading:false, status, total_unread_messages}
 
       // delete action.payload.chats
@@ -519,6 +518,28 @@ export default (state=INITIAL_STATE, action) => {
 
     case ACTIONS.CHAT_GROUP_INFO_LOADING:
       return {...state, chatInfoLoading: action.payload}
+
+    case ACTIONS.CHAT_GROUP_CREATE:
+      return {...state, chats: [action.payload, ...state.chats]}
+
+    case ACTIONS.CHAT_GROUP_MODIFY_ADMINS:
+      const {group_id, admins} = action.payload;
+      
+
+      const new_users = state.chat_group_participants[group_id].users.map((user)=>{
+        if (admins.includes(user._id)){
+          user.isAdmin = true
+        }
+        else{
+          user.isAdmin = false
+        }
+        return user
+      });
+
+      state.chat_group_participants[group_id].users = new_users
+      state.chat_group_participants[group_id].admins = admins
+
+      return {...state, chat_group_participants: {...state.chat_group_participants}}
 
     default:
       return state;

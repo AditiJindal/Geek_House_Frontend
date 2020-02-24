@@ -13,7 +13,6 @@ import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData, setAut
 import Image from 'react-native-fast-image';
 import TimedAlert from '../components/TimedAlert';
 import ChatInfo from '../components/ChatInfo';
-import Loading from '../components/Loading';
 
 class ChatScreen extends Component {
 
@@ -176,7 +175,6 @@ class ChatScreen extends Component {
             onBackdropPress = {()=>this.setState({chatInfoVisible: false})}
             isLoading = {this.props.chatInfoLoading}
             currentUserId = {this.props.user_id}
-            chat_group_participants = {this.props.chat_group_participants}
             other_user_data = {other_user_data} 
             image_adder={this.props.image_adder}/>):null
         }
@@ -205,7 +203,8 @@ class ChatScreen extends Component {
                     }}
                   messages={this.props.currentMessages}
                   onSend={(message) => {
-                    this.props.sendMessage(this.props.socket, [{...message[0], isGroup: other_user_data.isGroup}], 
+                    this.props.sendMessage(this.props.socket, [{...message[0], 
+                      isGroup: other_user_data.isGroup}], 
                     other_user_data._id, chatScreenState.selectedImage)
                   }}
                   placeholder="Type to chat..."
