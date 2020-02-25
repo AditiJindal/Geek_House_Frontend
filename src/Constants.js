@@ -87,6 +87,8 @@ export const KEYCODE = (__DEV__)?KEYCODE_DEBUG:KEYCODE_PROD;
 
 export const HTTP_TIMEOUT = 12000
 
+export const MESSAGE_SPECIAL_ADDER = "(#SPECIAL%)"
+
 export const LOG_EVENT = {
   SCREEN_CHANGE: 'screen_change',
   AD_CLICKED: 'ad_clicked',

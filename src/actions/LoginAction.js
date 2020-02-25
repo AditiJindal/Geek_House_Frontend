@@ -1,5 +1,5 @@
 import {ACTIONS} from './types';
-import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT, MESSAGE_SPECIAL_ADDER} from '../Constants';
 import {AppState} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
@@ -35,7 +35,7 @@ httpClient.defaults.timeout = HTTP_TIMEOUT;
 httpClient.defaults.baseURL = BASE_URL;
 
 PushNotification.popInitialNotification((notification) => {
-  console.log(notification);
+  // console.log(notification);
 })
 
 const setPushNotifications = async () => {
@@ -193,7 +193,16 @@ const makeConnection = async (json_data, dispatch, getState) => {
   })
 
   socket.on('chat_group_modiy_admins', (response)=>{
+    message = [{
+      _id: uuid(),
+      createdAt: Date.now(),
+      text: MESSAGE_SPECIAL_ADDER+response.specialMessage,
+      user: {_id: response.group_id, name: ""}
+    }]
+    special_message = {message, other_user_id: response.group_id, isIncomming:true}
     dispatch({type:ACTIONS.CHAT_GROUP_MODIFY_ADMINS, payload: response})
+    dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, 
+      payload:special_message});
   });
 
   socket.on('you-are-disconnected', ()=>{

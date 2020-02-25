@@ -16,7 +16,8 @@ const DEVICE_WIDTH = Dimensions.get('screen').width
 const MAX_WIDTH = 0.7*DEVICE_WIDTH
 
 const styles = {
-    left: StyleSheet.create({
+    left: {
+        gradientColor: ["#F4F4F4", "#F4F4F4"],
         container: {
             flex: 1,
             alignItems: 'flex-start',
@@ -24,7 +25,6 @@ const styles = {
         },
         wrapper: {
             borderRadius: 15,
-            backgroundColor: '#F4F4F4',
             marginRight: 60,
             minHeight: 20,
             justifyContent: 'flex-end',
@@ -41,8 +41,9 @@ const styles = {
             flexDirection: 'row',
             justifyContent: 'flex-start',
         },
-    }),
-    right: StyleSheet.create({
+    },
+    right: {
+        gradientColor: ["#00B4DB", "#00ccdb"],
         container: {
             flex: 1,
             alignItems: 'flex-end',
@@ -50,7 +51,6 @@ const styles = {
         },
         wrapper: {
             borderRadius: 15,
-            backgroundColor: '#00B4DB',
             // elevation:3,
             marginLeft: 60,
             minHeight: 20,
@@ -69,8 +69,8 @@ const styles = {
             flexDirection: 'row',
             justifyContent: 'flex-end',
         },
-    }),
-    content: StyleSheet.create({
+    },
+    content: {
         tick: {
             fontSize: 10,
             backgroundColor: Color.backgroundTransparent,
@@ -92,7 +92,7 @@ const styles = {
             marginHorizontal: 10,
             marginTop:5, 
         },
-    }),
+    },
 };
 const DEFAULT_OPTION_TITLES = ['Copy Text', 'Cancel'];
 export default class Bubble extends React.Component {
@@ -241,10 +241,10 @@ export default class Bubble extends React.Component {
             this.handleBubbleToNext(),
             this.handleBubbleToPrevious()
             ]} 
-            colors={(position==="right"?["#00B4DB", "#00ccdb"]:["#F4F4F4", "#F4F4F4"])} 
+            colors={styles[position].gradientColor} 
             start={{x:0, y:1}} end={{x:1, y:1}}>
             {this.renderUsername()}
-          <TouchableOpacity activeOpacity={0.8}
+          <TouchableOpacity activeOpacity={1}
             onLongPress={()=>{this.onLongPress()}} accessibilityTraits='text' {...this.props.touchableProps}>
             <View>
               {this.renderCustomView()}

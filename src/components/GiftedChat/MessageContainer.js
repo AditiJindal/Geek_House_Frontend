@@ -4,7 +4,7 @@ import { FlatList, View, StyleSheet, Keyboard, TouchableOpacity, Text, } from 'r
 import LoadEarlier from './LoadEarlier';
 import Message from './Message';
 import Color from './Color';
-import {FONTS, COLORS_LIGHT_THEME} from '../../Constants';
+import {FONTS, COLORS_LIGHT_THEME, MESSAGE_SPECIAL_ADDER} from '../../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 
 const styles = StyleSheet.create({
@@ -92,6 +92,17 @@ export default class MessageContainer extends React.PureComponent {
         this.scrollToBottom = () => {
             this.scrollTo({ offset: 0, animated: true });
         };
+        this.renderSpecialMessage = (specialMessage) => {
+            return (
+                <View style={{alignSelf:'center', margin:5, backgroundColor:COLORS.LIGHT+'86',
+                    borderRadius:15,paddingVertical:5, paddingHorizontal:10}}>
+                    <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:12, 
+                        color:COLORS_LIGHT_THEME.LIGHT}}>
+                        {specialMessage}
+                    </Text>
+                </View>
+            )
+        }
         this.renderRow = ({ item, index }) => {
             if (!item._id && item._id !== 0) {
                 console.warn('GiftedChat: `_id` is missing for message', JSON.stringify(item));
@@ -106,7 +117,12 @@ export default class MessageContainer extends React.PureComponent {
             if (messages && user) {
                 const previousMessage = messages[index + 1] || {};
                 const nextMessage = messages[index - 1] || {};
-                const messageProps = {
+
+                if (item.text && (item.text.substring(0,MESSAGE_SPECIAL_ADDER.length) === MESSAGE_SPECIAL_ADDER)){
+                    return this.renderSpecialMessage(item.text.substring(MESSAGE_SPECIAL_ADDER.length))
+                }
+
+                let messageProps = {
                     ...restProps,
                     user,
                     key: item._id,

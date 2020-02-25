@@ -78,7 +78,6 @@ const insertUnreadMessages = (unread_messages, this_user_id, status, total_unrea
 
     saveMessageInDB({message:incomingMessageConverter(item), 
       other_user_id:item.from, isIncomming:true}, this_user_id)
-
   });
 
   return {status, total_unread_messages, new_chats}

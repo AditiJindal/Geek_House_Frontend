@@ -22,12 +22,11 @@ const imageUrlCorrector = (image_url, image_adder) => {
 
 class ChatInfo extends Component {
 
-  handleModifyAdmins(user_id, isUserAdmin){
+  handleModifyAdmins(user_id,user_name, isUserAdmin){
     const group_id = this.props.other_user_data._id
     const add = !isUserAdmin
     // data = {group_id:String, user_id:String, add:Boolean}
-    const data = {group_id, user_id, add}
-    console.log("SENDING THIS : ", data)
+    const data = {group_id, user_id, add, user_name}
     modifyAdmins(data)
   }
 
@@ -106,7 +105,7 @@ class ChatInfo extends Component {
           {`Options for ${name}`}
         </Text>
         <MenuOption customStyles={{optionText:{...styles.MenuText, color:COLORS.DARK}, OptionTouchableComponent:TouchableOpacity }} 
-          onSelect={this.handleModifyAdmins.bind(this, _id, isAdmin)} text={text} />
+          onSelect={this.handleModifyAdmins.bind(this, _id, name, isAdmin)} text={text} />
         <MenuOption customStyles={{optionText:{...styles.MenuText, color:COLORS.DARK}, OptionTouchableComponent:TouchableOpacity}}
           onSelect={()=>{this.timedAlert.showAlert(2000, 'Feature coming in future update', 1)}} text='Remove from group' />
       </MenuOptions>
@@ -137,17 +136,17 @@ class ChatInfo extends Component {
 
   renderLeaveFromAdmin(admins){
     const isCurrentUserAdmin = admins.includes(this.props.currentUserId)
-    if((admins.length<2) && !isCurrentUserAdmin){return null}
+    if((admins.length<2) || !isCurrentUserAdmin){return null}
     else{
       return (
         <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple(COLORS.DARK)}
           onPress = {()=>{
-            this.handleModifyAdmins(this.props.currentUserId, true)
+            this.handleModifyAdmins(this.props.currentUserId,this.props.user_name, true)
             this.timedAlert.showAlert(2000, "You are no longer an admin", 1);
           }}>
           <View activeOpacity={0.8}
             style={{...styles.EndButton, backgroundColor: COLORS.GRAY}}
-            >
+          >
           <Text style={{fontFamily:FONTS.RALEWAY, fontSize:18, color:COLORS.LIGHT, marginRight:5}}>
             Resign from Admin
           </Text>
@@ -243,6 +242,7 @@ class ChatInfo extends Component {
 const mapStateToProps = (state) => {
   return {
     authtoken: state.login.authtoken,
+    user_name: state.login.data.name,
 
     chat_group_participants: state.chat.chat_group_participants
   }

@@ -15,7 +15,7 @@ const textStyle = {
     marginRight: 10,
 };
 const styles = {
-    left: StyleSheet.create({
+    left: {
         container: {},
         text: {
             color: COLORS_LIGHT_THEME.LESS_DARK,
@@ -27,8 +27,8 @@ const styles = {
             fontSize:16,
             textDecorationLine: 'underline',
         },
-    }),
-    right: StyleSheet.create({
+    },
+    right: {
         container: {},
         text: {
             color: COLORS_LIGHT_THEME.LIGHT,
@@ -39,7 +39,7 @@ const styles = {
             color: COLORS_LIGHT_THEME.LIGHT,
             textDecorationLine: 'underline',
         },
-    }),
+    },
 };
 
 const isEmoji = (text) => {
