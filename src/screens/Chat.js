@@ -464,7 +464,7 @@ class Chat extends Component {
   renderLoader(){
     return(
       <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-        <Loading size={128}/>
+        <Loading size={128} white={(this.props.theme!=='light')}/>
       </View>
     )
   }

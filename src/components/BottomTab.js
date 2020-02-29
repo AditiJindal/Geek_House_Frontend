@@ -8,9 +8,7 @@ import {ICON_SIZE, SELECTED_ICON_SIZE, FONTS,LOG_EVENT, COLORS_LIGHT_THEME} from
 import {Actions} from "react-native-router-flux"
 import Typing from '../components/Typing';
 import SView from 'react-native-simple-shadow-view';
-
-
-
+import Ripple from './Ripple';
 
 const COLOR_PALETE = [
   ['#FF585D','#cc2b5e'],
@@ -73,7 +71,7 @@ class BottomTab extends Component {
     const {COLORS} = this.props; 
     if (index !== this.state.selectedIcon){
       return (
-        <TouchableOpacity onPress={()=>{
+        <Ripple rippleColor={COLORS.DARK} rippleContainerBorderRadius={20} onPress={()=>{
           // NOTE: SOLVE icon tapping lag issue by making a redux state for bottombar
           // and making it independent from the scene
           this.setState({selectedIcon:index})
@@ -90,7 +88,7 @@ class BottomTab extends Component {
               color={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.DARK}/>:
             this.renderChatButton(iconName)
           }
-        </TouchableOpacity>
+        </Ripple>
       )
     }
     else{
@@ -139,12 +137,10 @@ const styles = StyleSheet.create({
     width:"92%",
     shadowOpacity: 0.25,
     shadowRadius: 2,
-    zIndex:99,
     shadowOffset: { height:2.5},
     justifyContent:'space-around',
     flexDirection:'row',
     alignItems:'center',
-    elevation:3,
     marginHorizontal:20,
     borderRadius:10,
   },

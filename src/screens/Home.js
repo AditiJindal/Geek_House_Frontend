@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { View, StyleSheet, Text, StatusBar,
-  FlatList, ScrollView, TouchableNativeFeedback,Linking,
+  FlatList, ScrollView, Linking,
   TouchableOpacity}from 'react-native';
 import {connect} from 'react-redux';
 import {
@@ -24,6 +24,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
 import BottomTab from '../components/BottomTab';
 import Loading from '../components/Loading';
+import Ripple from '../components/Ripple';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder'
 import { Actions } from 'react-native-router-flux';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
@@ -163,7 +164,7 @@ class Home extends Component {
             />):
             (
               <View style={{height:42, width:42, justifyContent:'center', alignItems:'center'}}>
-                <Loading size={42} white={(theme==='light')}/>
+                <Loading size={42} white={(theme!=='light')}/>
               </View>
             )}
             <View style={{flex:1}}>
@@ -177,19 +178,20 @@ class Home extends Component {
           </View>
           <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-around', height:120}}>
               <View style={{flex:1,}}>
-                <TouchableOpacity
+                <Ripple rippleColor={COLORS.DARK}
                   onPress={() => {this.props.toggleOverlay({overlayVisible:false});
                   Actions.jump('settings'); analytics().setCurrentScreen('Settings', 'Settings')
                   logEvent(LOG_EVENT.SCREEN_CHANGE, 'settings');}}
-                  style={{elevation:3, marginBottom:5,
+                  style={{elevation:3,
                   justifyContent:'center', alignItems:'center', flexDirection:'row', 
                   backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
                   borderRadius:10, flex:1, margin:5}}
                 >
                   <Icon name="settings" color={COLORS.DARK} size={24} type={'feather'}/>
                   <Text style={{...styles.LogoutButtonTextStyle, color:COLORS.DARK}}>settings</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                </Ripple>
+
+                <Ripple rippleColor={COLORS.DARK}
                   onPress={() => {this.props.toggleOverlay({overlayVisible:false});
                   Actions.jump('feedback'); analytics().setCurrentScreen('Feedback', 'Feedback');
                   logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');}}
@@ -201,10 +203,10 @@ class Home extends Component {
                   <Icon name="message-square" color={COLORS.DARK} size={22} type={'feather'}/>
                   <Text style={{...styles.LogoutButtonTextStyle, fontSize:14,
                     color:COLORS.DARK}}>feedback</Text>
-                </TouchableOpacity>
+                </Ripple>
               </View>
               <View style={{flex:1}}>
-                <TouchableOpacity
+                <Ripple rippleColor={COLORS.DARK}
                   onPress={() => {this.props.toggleOverlay({overlayVisible:false});
                   Actions.jump('about'); analytics().setCurrentScreen('About', 'About');
                   logEvent(LOG_EVENT.SCREEN_CHANGE, 'about');}}
@@ -215,8 +217,8 @@ class Home extends Component {
                 >
                   <Icon name="user" color={COLORS.DARK} size={24} type={'feather'}/>
                   <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>about us</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                </Ripple>
+                <Ripple rippleColor={COLORS.DARK}
                   onPress={() => {
                     analytics().logEvent('app_rating')
                     Linking.openURL(this.props.welcomeData.playStoreUrl)
@@ -230,7 +232,7 @@ class Home extends Component {
                   <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>
                     rate
                   </Text>
-                </TouchableOpacity>
+                </Ripple>
               </View>
           </View>
         </>
@@ -244,22 +246,21 @@ class Home extends Component {
       return null
     }
     else{
-      return(
-        <View style={{borderRadius:30, backgroundColor:COLORS.LIGHT, elevation:5}}>
-          <TouchableOpacity onPress={this.props.toggleOverlay.bind(this, {overlayVisible:true})}>
-            {
-              (!loading)?(
-                <Image
-                  source={{uri:this.imageUrlCorrector(this.props.data.image_url)}}
-                  style={{height:42, width:42, borderRadius:24}}/>
-              ):(
-                <View style={{height:42, width:42, justifyContent:'center', alignItems:'center'}}>
-                  <Loading size={42} white={theme==='light'}/>
-                </View>
-              )
-            }
+      if (loading){
+        return (
+          <TouchableOpacity style={{height:42, width:42, justifyContent:'center', alignItems:'center'}}
+            onPress={this.props.toggleOverlay.bind(this, {overlayVisible:true})}>
+            <Loading size={42} white={theme!=='light'}/>
           </TouchableOpacity>
-        </View>
+        )
+      }
+      return(
+        <TouchableOpacity onPress={this.props.toggleOverlay.bind(this, {overlayVisible:true})}
+          style={{borderRadius:30, backgroundColor:COLORS.LIGHT, elevation:5}}>
+          <Image
+            source={{uri:this.imageUrlCorrector(this.props.data.image_url)}}
+            style={{height:42, width:42, borderRadius:24}}/>
+        </TouchableOpacity>
       )
     }
   }
@@ -379,13 +380,13 @@ class Home extends Component {
         color:COLORS.GRAY}}>
           {this.props.error}
         </Text>
-        <TouchableNativeFeedback onPress={() => {this.props.getWelcome();}}>
+        <Ripple onPress={() => {this.props.getWelcome();}}>
           <LinearGradient style={{justifyContent:'center', alignItems:'center', 
             padding:10, elevation:7, backgroundColor:COLORS.LIGHT_BLUE, borderRadius:8, margin:15}}
             colors={[COLORS_LIGHT_THEME.LIGHT_BLUE, COLORS_LIGHT_THEME.DARK_BLUE]}>
             <Text style={{fontFamily:FONTS.HELVETICA_NEUE, fontSize:24, color:COLORS_LIGHT_THEME.LIGHT}}>{'Retry'}</Text>
           </LinearGradient>
-        </TouchableNativeFeedback>        
+        </Ripple>        
       </View>
     )
   }

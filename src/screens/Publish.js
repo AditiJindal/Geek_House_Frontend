@@ -111,7 +111,7 @@ class Publish extends Component {
         onPress={()=>{ this.props.publishArticle(data_to_send, this.animation) }}>
         {
           (this.props.loading)?
-            <Loading size={50}/>:
+            <Loading size={50} white={(this.props.theme!=='light')}/>:
           <SView style={{borderRadius:10, shadowOpacity:0.3,shadowRadius:6,height:58,width:170,
           shadowOffset: { height:7}, shadowColor:'#11998E', backgroundColor:COLORS_LIGHT_THEME.LIGHT}}>
             <LinearGradient style={{borderRadius:10,flex:1,justifyContent:'center', alignItems:"center",
