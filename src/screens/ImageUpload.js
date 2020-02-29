@@ -247,22 +247,25 @@ class ImageUpload extends Component {
   }
 
   getStatusBarColor(){
-    const {COLORS} = this.props;
+    const {COLORS, theme} = this.props;
+    let barStyle = (theme==='light')?'dark-content':'light-content'
     let statusBarColor = COLORS.LIGHT
-    if (this.state.alertVisible){
+    if (this.props.overlayVisible){
       statusBarColor = COLORS.OVERLAY_COLOR
+      barStyle='light-content'
     }
-    return statusBarColor
+    return {statusBarColor, barStyle}
   }
 
   renderAlert(){
     const {COLORS} = this.props;
+    const {statusBarColor, barStyle} = this.getStatusBarColor() 
     return (
       <View>
         <StatusBar
-          backgroundColor={this.getStatusBarColor()}
-          barStyle={(this.props.theme==='light')?'dark-content':'light-content'}/>
-        {changeNavigationBarColor(this.getStatusBarColor(), (this.props.theme==='light'))}
+          backgroundColor={statusBarColor}
+          barStyle={barStyle}/>
+        {changeNavigationBarColor(statusBarColor, (this.props.theme==='light'))}
         <CustomAlert
           theme={this.props.theme}
           COLORS = {COLORS}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Scene, Router, ActionConst} from 'react-native-router-flux';
+import { Scene, Router, ActionConst, Tabs, Drawer} from 'react-native-router-flux';
 import Login from './screens/Login';
 import Home from './screens/Home';
 import Search from './screens/Search';
@@ -15,6 +15,7 @@ import Feedback from './screens/Feedback';
 import Bookmark from './screens/Bookmark';
 import NotificationArticle from './screens/NotificationArticle';
 import Policy from './screens/Policy';
+import BottomTab from './components/BottomTab';
 
 import { COLORS_DARK_THEME } from './Constants';
 
@@ -27,10 +28,15 @@ const RouterComponent = () => {
             <Scene key="login" component={Login} hideNavBar type={ActionConst.RESET}/>
           </Scene>
           <Scene key="main" hideNavBar>
-            <Scene key="home" component={Home} hideNavBar initial/>
-            <Scene key="search" component={Search} hideNavBar/>
-            <Scene key="write" component={Write} hideNavBar/>
-            <Scene key="chat" component={Chat} hideNavBar/>
+            <Tabs key="tabBar"
+              tabBarComponent={BottomTab}
+              >
+              <Scene key="home" component={Home} hideNavBar initial drawer={true}/>
+              <Scene key="search" component={Search} hideNavBar/>
+              <Scene key="write" component={Write} hideNavBar/>
+              <Scene key="chat" component={Chat} hideNavBar/>
+            </Tabs>
+            
             <Scene key="writearticle" component={WriteArticle} hideNavBar/>
             <Scene key="imageupload" component={ImageUpload} hideNavBar/>
             <Scene key="publish" component={Publish} hideNavBar/>

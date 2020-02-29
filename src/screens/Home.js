@@ -22,7 +22,6 @@ import {Overlay, Icon} from 'react-native-elements';
 import {FONTS,COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
-import BottomTab from '../components/BottomTab';
 import Loading from '../components/Loading';
 import Ripple from '../components/Ripple';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder'
@@ -460,23 +459,26 @@ class Home extends Component {
   }
 
   getStatusBarColor(){
-    const {COLORS} = this.props;
+    const {COLORS, theme} = this.props;
+    let barStyle = (theme==='light')?'dark-content':'light-content'
     let statusBarColor = COLORS.LIGHT
     if (this.props.overlayVisible){
       statusBarColor = COLORS.OVERLAY_COLOR
+      barStyle='light-content'
     }
-    return statusBarColor
+    return {statusBarColor, barStyle}
   }
 
   render() {
     const {COLORS} = this.props;
+    const {statusBarColor, barStyle} = this.getStatusBarColor() 
     if (!this.props.first_login){
       return(
       <View style={{flex:1, backgroundColor:COLORS.LIGHT}}>
         <StatusBar 
-          barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
-          backgroundColor={this.getStatusBarColor()}/>
-        {changeNavigationBarColor(this.getStatusBarColor(), (this.props.theme==='light'))}
+          barStyle={barStyle}
+          backgroundColor={statusBarColor}/>
+        {changeNavigationBarColor(statusBarColor, (this.props.theme==='light'))}
         <ShadowView style={{...styles.GeekHouseView,
           backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
           <Text style={{...styles.TextStyle, 
@@ -487,7 +489,6 @@ class Home extends Component {
         </ShadowView>
         {this.renderOverlay()}
         {this.renderHome()}
-        <BottomTab icon_index={0}/>
       </View>
       );
     }

@@ -223,12 +223,14 @@ class WriteArticle extends Component {
   }
 
   getStatusBarColor(){
-    const {COLORS} = this.props;
+    const {COLORS, theme} = this.props;
+    let barStyle = (theme==='light')?'dark-content':'light-content'
     let statusBarColor = COLORS.LIGHT
-    if (this.props.alertVisible || this.state.backAlertVisible || this.state.childAlertVisible){
+    if (this.props.overlayVisible){
       statusBarColor = COLORS.OVERLAY_COLOR
+      barStyle='light-content'
     }
-    return statusBarColor
+    return {statusBarColor, barStyle}
   }
 
   renderAlertForBack(){
@@ -343,15 +345,16 @@ class WriteArticle extends Component {
   }
 
   render() {
+    const {statusBarColor, barStyle} = this.getStatusBarColor() 
     return(
       <View style={{flex:1, backgroundColor:this.props.COLORS.LIGHT}}>
         <StatusBar
-          backgroundColor={this.getStatusBarColor()}
-          barStyle={(this.props.theme==='light')?'dark-content':'light-content'}/>
+          backgroundColor={statusBarColor}
+          barStyle={barStyle}/>
         <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} 
           COLORS = {COLORS}
         />
-        {changeNavigationBarColor(this.getStatusBarColor(), (this.props.theme==='light'))}
+        {changeNavigationBarColor(statusBarColor, (this.props.theme==='light'))}
         {this.renderAlert()}
         {this.renderAlertForBack()}
         {this.renderHeader()}

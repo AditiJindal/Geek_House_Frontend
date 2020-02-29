@@ -6,6 +6,7 @@ import {Icon} from 'react-native-elements';
 import Image from 'react-native-fast-image';
 import TimeAgo from 'react-native-timeago';
 import SView from 'react-native-simple-shadow-view';
+import Ripple from './Ripple';
 import toMaterialStyle from 'material-color-hash';
 
 getInitials = (name) => {
@@ -20,8 +21,8 @@ const getBadge = (props) => {
   if (props.typing){
     return (
       <View style={{
-        position:'absolute', right:5, top:5, justifyContent:'center', alignItems:'center',
-        borderColor:COLORS.LIGHT, borderWidth:1, elevation:8,
+        position:'absolute', right:0, top:0, justifyContent:'center', alignItems:'center',
+        borderColor:COLORS.LIGHT, borderWidth:0.7,
         height:12 , width:16, borderRadius:6, backgroundColor:COLORS.YELLOW
       }}>
         <Typing size={14}/>
@@ -31,8 +32,8 @@ const getBadge = (props) => {
   else if (props.online && !data.isGroup){
     return (
       <View style={{
-        position:'absolute', right:5, top:10, borderColor:COLORS.LIGHT,borderWidth:0.7,
-        backgroundColor:'rgb(82, 196, 27)', height:10, width:10, borderRadius:6, elevation:8}}>
+        position:'absolute', right:3, top:0, borderColor:COLORS.LIGHT,borderWidth:0.7,
+        backgroundColor:'rgb(82, 196, 27)', height:12, width:12, borderRadius:6,}}>
       </View>
     );
   }
@@ -92,9 +93,11 @@ export default ChatPeople = (props) => {
   let IMAGE_SIZE = (isSelector)?42:56;
   
   return(
-    <TouchableOpacity activeOpacity={1} onPress={() => {props.onPress(data._id, isSelected)}}>
+    <Ripple rippleContainerBorderRadius={(isSelector)?0:IMAGE_SIZE/4}
+      onPress={() => {props.onPress(data._id, isSelected)}} 
+      style={{marginVertical:(isSelector)?0:5,marginHorizontal:15}}>
       <SView style={{...styles.ViewStyling, borderColor:COLORS.GRAY, 
-        shadowOpacity: (isSelector)?0:(COLORS.THEME==='light')?0.2:0.3, marginVertical:(isSelector)?0:5,
+        shadowOpacity: (isSelector)?0:(COLORS.THEME==='light')?0.2:0.3,
         backgroundColor:COLORS.LIGHT, borderRadius:(isSelector)?0:IMAGE_SIZE/4}}>
         {(props.data.isGroup)?(
           <View style={{height:"100%", width:25, backgroundColor:toMaterialStyle(props.data.name).backgroundColor,
@@ -102,13 +105,13 @@ export default ChatPeople = (props) => {
           borderTopLeftRadius:IMAGE_SIZE/4}}/>
         ):null}
         <View style={{justifyContent:'center', flexDirection:'row', alignItems:'center',}}>
-          <View>
+          <View style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE/2,
+                backgroundColor:COLORS.LIGHT, elevation:7, marginVertical:10}}>
             <Image
               source={(props.data.image_url)?
                 {uri:imageUrlCorrector(props.data.image_url, props.image_adder)}:
-                require('../../assets/icons/user.png')}
-              style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE/2,
-                backgroundColor:COLORS.LIGHT, elevation:7, marginVertical:10}}
+                require('../../assets/icons/user.png')} style={{borderRadius:IMAGE_SIZE/2, flex:1}}
+              
             />
             {getBadge(props)}
           </View>
@@ -139,7 +142,7 @@ export default ChatPeople = (props) => {
         {getAppropriateAccessory(props)}
 
       </SView>
-    </TouchableOpacity>
+    </Ripple>
   );
 }
 
@@ -148,11 +151,8 @@ const styles = StyleSheet.create({
     alignItems:'center',
     flexDirection:'row',
     paddingHorizontal:10,
-    width:"90%",
     flex:1,
     justifyContent:'space-between',
-    alignSelf:'center',
-    overflow:'hidden',
     shadowColor:"#000000",
     shadowRadius:6,
     shadowOffset:{height:4}

@@ -586,7 +586,7 @@ class ArticleInfo extends Component {
         >
           <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
             <StatusBar 
-              barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
+              barStyle={'light-content'}
               backgroundColor={COLORS.OVERLAY_COLOR}/>
             {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
             <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} 

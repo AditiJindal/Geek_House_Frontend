@@ -55,7 +55,7 @@ class ImageSelector extends React.Component{
         onBackdropPress={()=>{this.setState({imageSelectorOpen:false})}}>
         <>
         <StatusBar 
-          barStyle={(COLORS.THEME==='light')?'dark-content':'light-content'}
+          barStyle={'light-content'}
           backgroundColor={COLORS.OVERLAY_COLOR}/>
         <TouchableOpacity
           onPress={()=>{

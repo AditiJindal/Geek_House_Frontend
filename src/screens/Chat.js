@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import { View, Text, StyleSheet, StatusBar,FlatList,
   RefreshControl, TouchableOpacity } from 'react-native';
-import BottomTab from '../components/BottomTab';
 import {Overlay, Icon} from 'react-native-elements';
 import {logEvent} from '../actions/ChatAction';
 import {FONTS,LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
@@ -237,7 +236,7 @@ class Chat extends Component {
         onBackdropPress = {()=>{this.setState({peopleSelectorVisible:false})}}
         height="100%" width="100%">
         <StatusBar 
-          barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
+          barStyle={'light-content'}
           backgroundColor={COLORS.OVERLAY_COLOR}/>
         <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert2 = ref} COLORS = {COLORS} />
         <TouchableOpacity style={{flexGrow:1, flexDirection:'row',alignItems:'center', justifyContent:'center'}} 
@@ -486,7 +485,6 @@ class Chat extends Component {
           this.renderLoader():
           this.renderChatPeople()
         }
-        <BottomTab icon_index={3}/>
       </View>
     );
   }

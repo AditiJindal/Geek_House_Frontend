@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import { View, StyleSheet,TouchableOpacity,Text}from 'react-native';
+import { View, StyleSheet,Text, TouchableOpacity}from 'react-native';
 import {Icon} from 'react-native-elements';
 import {logEvent} from '../actions/ChatAction';
 import LinearGradient from 'react-native-linear-gradient';
@@ -8,7 +8,6 @@ import {ICON_SIZE, SELECTED_ICON_SIZE, FONTS,LOG_EVENT, COLORS_LIGHT_THEME} from
 import {Actions} from "react-native-router-flux"
 import Typing from '../components/Typing';
 import SView from 'react-native-simple-shadow-view';
-import Ripple from './Ripple';
 
 const COLOR_PALETE = [
   ['#FF585D','#cc2b5e'],
@@ -22,15 +21,8 @@ class BottomTab extends Component {
   constructor(props) {
     super(props);
     this.state={
-      selectedIcon:props.icon_index
+      selectedIcon:0,
     }
-  }
-
-  shouldComponentUpdate(nextState){
-    if(this.state===nextState){
-      return false
-    }
-    else {return true}
   }
 
   renderChatBadge(){
@@ -67,18 +59,21 @@ class BottomTab extends Component {
     )
   }
 
-  renderIcon(iconName, index){
-    const {COLORS} = this.props; 
-    if (index !== this.state.selectedIcon){
+  renderIcon(iconName, index, selectedIcon){
+    const {COLORS} = this.props;
+    
+
+
+    if (index !== selectedIcon){
       return (
-        <Ripple rippleColor={COLORS.DARK} rippleContainerBorderRadius={20} onPress={()=>{
+        <TouchableOpacity onPress={()=>{
           // NOTE: SOLVE icon tapping lag issue by making a redux state for bottombar
           // and making it independent from the scene
           this.setState({selectedIcon:index})
-          if (index===0){Actions.replace('home'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'home')}  
-          if (index===1){Actions.replace('search'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'search')}
-          if (index===2){Actions.replace('write'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'write')}
-          if (index===3){Actions.replace('chat'); logEvent(LOG_EVENT.SCREEN_CHANGE, 'chat')}
+          if (index===0){Actions['home'](); logEvent(LOG_EVENT.SCREEN_CHANGE, 'home')}  
+          if (index===1){Actions['search'](); logEvent(LOG_EVENT.SCREEN_CHANGE, 'search')}
+          if (index===2){Actions['write'](); logEvent(LOG_EVENT.SCREEN_CHANGE, 'write')}
+          if (index===3){Actions['chat'](); logEvent(LOG_EVENT.SCREEN_CHANGE, 'chat')}
         }}
         style={{height:40, width:SELECTED_ICON_SIZE+22, justifyContent:'center', alignItems:'center'}}>
           {
@@ -88,7 +83,7 @@ class BottomTab extends Component {
               color={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.DARK}/>:
             this.renderChatButton(iconName)
           }
-        </Ripple>
+        </TouchableOpacity>
       )
     }
     else{
@@ -106,13 +101,15 @@ class BottomTab extends Component {
 
   render() {
     const {COLORS} = this.props;
+    const selectedIcon = this.props.navigation.state.index;
+
     return(
       <SView style={{...styles.BottomTabStyle, shadowColor:'#202020',
         backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
-        {this.renderIcon('home',0)}
-        {this.renderIcon('search',1)}
-        {this.renderIcon('edit-2',2)}
-        {this.renderIcon('message-circle',3)}
+        {this.renderIcon('home',0, selectedIcon)}
+        {this.renderIcon('search',1, selectedIcon)}
+        {this.renderIcon('edit-2',2, selectedIcon)}
+        {this.renderIcon('message-circle',3, selectedIcon)}
       </SView>
     );
   }

@@ -12,7 +12,7 @@ export default class Ripple extends PureComponent {
     rippleDuration: 300,
     rippleSize: 0,
     rippleContainerBorderRadius: 0,
-    rippleCentered: true,
+    rippleCentered: false,
     rippleSequential: true,
     rippleFades: true,
     disabled: false,

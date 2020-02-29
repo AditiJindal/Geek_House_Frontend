@@ -209,7 +209,7 @@ class Write extends Component {
           }
         </View>
         {this.renderFloatingButton()}
-        <BottomTab icon_index={2}/>
+        {/* <BottomTab icon_index={2}/> */}
       </View>
     );
   }

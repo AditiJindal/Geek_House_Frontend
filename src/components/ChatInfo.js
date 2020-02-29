@@ -207,7 +207,7 @@ class ChatInfo extends Component {
         animationType='none'
         overlayBackgroundColor={(COLORS.THEME==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}>
         <StatusBar 
-          barStyle={(COLORS.THEME==='light')?'dark-content':'light-content'}
+          barStyle={'light-content'}
           backgroundColor={COLORS.OVERLAY_COLOR}/>
         <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} COLORS = {COLORS}/>
         {

@@ -1,6 +1,5 @@
 import {ACTIONS} from './types';
 import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
-import {OVERLAY_COLOR} from '../Constants';
 import {logEvent} from './ChatAction';
 import axios from 'axios';
 import {encrypt} from '../encryptionUtil';
@@ -58,8 +57,5 @@ export const clearSearch = () => {
 
 export const showAlert = (alertVisible, alertMessage) => {
   let statusBarColor = "#FFFFFF"
-  if (alertVisible){
-    statusBarColor = OVERLAY_COLOR
-  }
   return {type: ACTIONS.SHOW_SEARCH_ALERT, payload:{alertVisible, alertMessage, statusBarColor}}
 }

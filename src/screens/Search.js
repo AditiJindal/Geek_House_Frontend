@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, StatusBar, RefreshControl,Dimensions,
   FlatList, ScrollView, TouchableOpacity, TextInput}from 'react-native';
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
-import BottomTab from '../components/BottomTab'
 import {FONTS, ERROR_MESSAGES,COLORS_LIGHT_THEME} from '../Constants';
 import ArticleTile from '../components/ArticleTile';
 import LinearGradient from 'react-native-linear-gradient';
@@ -312,23 +311,26 @@ class Search extends Component {
   }
 
   getStatusBarColor(){
-    const {COLORS} = this.props;
+    const {COLORS, theme} = this.props;
+    let barStyle = (theme==='light')?'dark-content':'light-content'
     let statusBarColor = COLORS.LIGHT
-    if (this.props.alertVisible){
+    if (this.props.overlayVisible){
       statusBarColor = COLORS.OVERLAY_COLOR
+      barStyle='light-content'
     }
-    return statusBarColor
+    return {statusBarColor, barStyle}
   }
 
   render() {
     const {COLORS} = this.props;
+    const {statusBarColor, barStyle} = this.getStatusBarColor() 
     return(
       <View style={{flex:1,justifyContent:'space-between', 
       backgroundColor:COLORS.LIGHT}}>
         <StatusBar 
-          barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
-          backgroundColor={this.getStatusBarColor()}/>
-        {changeNavigationBarColor(this.getStatusBarColor(), (this.props.theme==='light'))}
+          barStyle={barStyle}
+          backgroundColor={statusBarColor}/>
+        {changeNavigationBarColor(statusBarColor, (this.props.theme==='light'))}
         {this.renderAlert()}
         {this.renderHeader()}
         {
@@ -339,7 +341,6 @@ class Search extends Component {
           </View>:this.renderPopularSearches()
         }
         
-        <BottomTab icon_index={1}/>
       </View>
     );
   }

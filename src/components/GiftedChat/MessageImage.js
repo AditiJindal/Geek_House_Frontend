@@ -106,7 +106,7 @@ export default class MessageImage extends Component {
                 containerStyle={{padding:0, margin:0, elevation:0}}>
                 <>
                 <StatusBar 
-                    barStyle={(this.props.theme==='light')?'dark-content':'light-content'}
+                    barStyle={'light-content'}
                     backgroundColor={COLORS.OVERLAY_COLOR}
                 />
                 <TouchableOpacity style={{flex:1, justifyContent:'center', alignItems:'center'}}
