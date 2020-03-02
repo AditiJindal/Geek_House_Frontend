@@ -7,7 +7,8 @@ const INITIAL_STATE={
   error: '',
   selected_category: '',
   image_adder:"",
-  adsManager: null
+  adsManager: null,
+  shouldSendPhotos: false
 }
 
 export default (state=INITIAL_STATE, action) => {
@@ -20,8 +21,10 @@ export default (state=INITIAL_STATE, action) => {
       return {...state, ...action.payload, error:''};
 
     case ACTIONS.WELCOME:
-      return {...state, welcomeData:action.payload, adsManager:action.payload.adsManager,
-        loading:false, error:'', image_adder:action.payload.image_adder}
+      const {adsManager, image_adder, shouldSendPhotos} = action.payload
+
+      return {...state, welcomeData:action.payload, adsManager,
+        loading:false, error:'', image_adder, shouldSendPhotos}
     
     case ACTIONS.HOME_ERROR:
       return {...state, error:action.payload, loading:false}

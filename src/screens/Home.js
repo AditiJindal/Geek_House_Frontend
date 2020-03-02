@@ -10,7 +10,6 @@ import {
   setAuthToken,
 } from '../actions/HomeAction';
 import _ from 'lodash';
-// import CameraRoll from "@react-native-community/cameraroll";
 import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
 import Image from 'react-native-fast-image';
 import {logEvent, setupComplete} from '../actions/ChatAction';
@@ -43,8 +42,6 @@ class Home extends Component {
 
   componentDidMount(){
     this.props.setAuthToken();
-    // CameraRoll.getPhotos({first:20, assetType:'Photos', groupTypes:'All'})
-    // .then(photos=>{console.log("photos is : ", photos)})
     analytics().setCurrentScreen('Home', 'Home')
     if (this.props.loading){
       this.props.getWelcome();

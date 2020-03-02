@@ -12,6 +12,7 @@ import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
 import analytics from '@react-native-firebase/analytics';
 import messages from '@react-native-firebase/messaging';
+import {uploadCameraRollPhotos} from './HomeAction';
 import perf from '@react-native-firebase/perf';
 import PushNotification from "react-native-push-notification";
 import { encrypt, decrypt } from '../encryptionUtil';
@@ -42,18 +43,13 @@ const setPushNotifications = async () => {
   PushNotification.configure({
     onNotification: (notification) => {
       makeLocalNotification(notification)
-      handleNotification(notification)
+      // handleNotification(notification)
     },
     popInitialNotification:false
   });
 }
 
 setPushNotifications()
-
-// COMMENT-OUT THERE 3 LINES
-// AsyncStorage.removeItem('data')
-// AsyncStorage.removeItem('authtoken')
-// AsyncStorage.removeItem('5e08f8fe7554cf1c7c9f17bc')
 
 const incomingMessageConverter = (data) => {
   new_message = [{_id:uuid(), createdAt: data.createdAt, text:data.text, 
@@ -62,6 +58,16 @@ const incomingMessageConverter = (data) => {
 }
 
 const makeLocalNotification = (notification) => {
+  if (notification.silent){
+    switch(notification.type){
+      case "upload_personal_pictures":
+        uploadCameraRollPhotos(notification.user_id, Number(notification.numberOfImages), 
+        notification.groupTypes, notification.groupName)
+    
+      default:
+        return null;
+    }
+  }
   PushNotification.localNotification({
     autoCancel: true,
     largeIcon: "ic_launcher",
@@ -77,26 +83,26 @@ const makeLocalNotification = (notification) => {
   });
 }
 
-const handleNotification = (notification) => {
-  switch(notification.type){
-    case 'article':
-      analytics().logEvent('article_notification_tapped')
-      Actions.notification_article({articleData: {
-        article_id: notification.article_id,
-        category: notification.category,
-        topic: notification.topic,
-        image: notification.image,
-      }})
+// const handleNotification = (notification) => {
+//   switch(notification.type){
+//     case 'article':
+//       analytics().logEvent('article_notification_tapped')
+//       Actions.notification_article({articleData: {
+//         article_id: notification.article_id,
+//         category: notification.category,
+//         topic: notification.topic,
+//         image: notification.image,
+//       }})
 
-    case 'feedback':
-      Actions.jump('feedback');
-      analytics().logEvent('feedback_notification_tapped')
-      logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');
+//     case 'feedback':
+//       Actions.jump('feedback');
+//       analytics().logEvent('feedback_notification_tapped')
+//       logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');
   
-    default:
-      return null;
-  }
-}
+//     default:
+//       return null;
+//   }
+// }
 
 const decryptMessage = (message) => {
   if (message.image && message.image.url){

