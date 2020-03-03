@@ -93,7 +93,7 @@ class Home extends Component {
                 fontSize={20}
                 labelFontSize={14}
                 itemCount={6}
-                containerStyle={{marginVertical:15, width:"100%",justifyContent:'center', alignItems:'center'}}
+                containerStyle={{marginVertical:15, width:"100%", justifyContent:'center', alignItems:'center'}}
                 itemTextStyle={{fontFamily:FONTS.PRODUCT_SANS}}
                 textColor={COLORS_LIGHT_THEME.LESS_DARK}
                 textSubColor={COLORS_LIGHT_THEME.LIGHT_GRAY}
@@ -478,8 +478,7 @@ class Home extends Component {
         {changeNavigationBarColor(statusBarColor, (this.props.theme==='light'))}
         <ShadowView style={{...styles.GeekHouseView,
           backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
-          <Text style={{...styles.TextStyle, 
-            color:COLORS.DARK}}>
+          <Text style={{...styles.TextStyle, color:COLORS.DARK}}>
             home
           </Text>
           {this.renderAvatar()}

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity }from 'react-native';
 import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import {connect} from 'react-redux';
 import {Actions} from 'react-native-router-flux';
+import Ripple from '../components/Ripple';
 import {publishArticle, getMyArticles} from '../actions/WriteAction';
 import {logEvent} from '../actions/ChatAction';
 import LottieView from 'lottie-react-native';
@@ -30,15 +31,16 @@ class Publish extends Component {
   renderBack(){
     const {COLORS} = this.props;
     return (
-      <View style={{borderRadius:10, margin:8, height:70, justifyContent:'space-between',
-        alignItems:'center', flexDirection:'row'}}>
-          <TouchableOpacity onPress={()=>{Actions.replace("imageupload");logEvent(LOG_EVENT.SCREEN_CHANGE, 'imageupload');}}
-            activeOpacity={0.75}>
+      <View style={{margin:8, height:70, justifyContent:'space-between',
+        alignItems:'center', flexDirection:'row', marginRight:15}}>
+          <Ripple onPress={()=>{Actions.replace("imageupload");
+            logEvent(LOG_EVENT.SCREEN_CHANGE, 'imageupload')}}
+            rippleContainerBorderRadius={30}>
             <SView
               style={{shadowColor:'#202020',shadowOpacity:0.2, shadowOffset:{width:0,height:7.5},shadowRadius:7, 
               borderRadius:30, padding:10, 
               backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
-              marginRight:15, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
+              justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
               <Icon name="arrow-left" type="material-community" size={26}
                 containerStyle={{height:26, width:26, justifyContent:'center', alignItems:'center'}} 
                 color={COLORS.LESS_DARK}/>
@@ -48,7 +50,7 @@ class Publish extends Component {
                 image <Text style={{fontSize:14}}>upload</Text>
               </Text>
             </SView>
-          </TouchableOpacity>
+          </Ripple>
           <Text style={{...styles.TextStyle, 
             color:COLORS.DARK}}>
             preview
@@ -102,13 +104,15 @@ class Publish extends Component {
     )
   }
 
-  renderPublishButton(){
+  renderBottomButton(text, gradient, onPress){
     const {COLORS} = this.props;
     data_to_send = {image: this.props.image.uri, topic: this.props.topic, 
       contents:this.props.contents, category:this.props.category}
     return (
-      <TouchableOpacity activeOpacity={0.5} style={{borderWidth:0, bottom:15,position:"absolute",alignSelf:'center'}}
-        onPress={()=>{ this.props.publishArticle(data_to_send, this.animation) }}>
+      <Ripple activeOpacity={0.5} style={{borderWidth:0, bottom:15,position: "absolute",alignSelf:'center'}}
+        onPress={onPress}
+        rippleContainerBorderRadius={10}
+        >
         {
           (this.props.loading)?
             <Loading size={50} white={(this.props.theme!=='light')}/>:
@@ -116,38 +120,14 @@ class Publish extends Component {
           shadowOffset: { height:7}, shadowColor:'#11998E', backgroundColor:COLORS_LIGHT_THEME.LIGHT}}>
             <LinearGradient style={{borderRadius:10,flex:1,justifyContent:'center', alignItems:"center",
               backgroundColor:COLORS.GREEN}} 
-              colors={["#11998e", "#38ef7d"]} start={{x:0, y:1}} end={{x:1, y:1}}>
+              colors={gradient} start={{x:0, y:1}} end={{x:1, y:1}}>
               <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:26, color:COLORS_LIGHT_THEME.LIGHT}}>
-                PUBLISH
-              </Text>
-              <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:12, color:COLORS_LIGHT_THEME.LIGHT}}>
-                (3/3)
+                {text}
               </Text>
             </LinearGradient>
           </SView>         
         }
-      </TouchableOpacity>
-    )
-  }
-
-  renderContinueButton(){
-    const {COLORS} = this.props;
-    data_to_send = {image: this.props.image.uri, topic: this.props.topic, 
-      contents:this.props.contents, category:this.props.category}
-    return (
-      <TouchableOpacity activeOpacity={0.5} style={{borderWidth:0, bottom:15,position:"absolute", alignSelf:'center'}}
-        onPress={()=>{this.props.getMyArticles(); Actions.pop()}}>
-        <SView style={{borderRadius:10, shadowOpacity:0.4,shadowRadius:6,height:58,width:160,
-          shadowOffset: { height:7}, shadowColor:'#FC6767', backgroundColor:COLORS_LIGHT_THEME.LIGHT}}>
-          <LinearGradient style={{borderRadius:10,flex:1,justifyContent:'center', alignItems:"center",
-            backgroundColor:COLORS.GREEN,}} 
-            colors={["#ec008c", "#fc6767"]} start={{x:0, y:1}} end={{x:1, y:1}}>
-            <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:26, color:COLORS_LIGHT_THEME.LIGHT}}>
-              CONTINUE
-            </Text>
-          </LinearGradient>
-        </SView>
-      </TouchableOpacity>
+      </Ripple>
     )
   }
   
@@ -177,8 +157,10 @@ class Publish extends Component {
         {this.renderPreview()}
         {
           (this.props.published)?
-          this.renderContinueButton():
-          this.renderPublishButton()
+          this.renderBottomButton('CONTINUE', ["#ec008c", "#fc6767"], 
+          ()=>{this.props.getMyArticles(); Actions.pop()}):
+          this.renderBottomButton('PUBLISH', ["#11998e", "#38ef7d"], 
+            ()=>{ this.props.publishArticle(data_to_send, this.animation) })
         }
       </View>
     );

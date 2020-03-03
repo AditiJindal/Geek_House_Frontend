@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import { View, Text, StyleSheet, StatusBar, 
   TouchableOpacity, TextInput, ScrollView, BackHandler} from 'react-native';
 import {connect} from 'react-redux'
-import {setContents, showAlert, clearPublish, setDraft} from '../actions/WriteAction'
+import {setContents, showAlert, clearPublish, setDraft} from '../actions/WriteAction';
+import Ripple from '../components/Ripple'
 import {FONTS, ERROR_BUTTONS, COLORS_LIGHT_THEME,LOG_EVENT} from '../Constants';
 import {Icon} from 'react-native-elements';
 import {Dropdown} from '../components/Dropdown';
@@ -32,32 +33,26 @@ class WriteArticle extends Component {
 
   componentDidMount(){
     BackHandler.addEventListener('hardwareBackPress', 
-    ()=>{
-      if (Actions.currentScene==='writearticle'){
-        this.setState({backAlertVisible:false});
-        this.props.setContents(this.state.contents, this.state.topic, 
-        this.state.category);this.props.setDraft();
-        Actions.pop();
-      }
-    });
+    ()=>{this.onBackPress()});
     if (this.props.contents){
       this.setState({contents:this.props.contents, topic:this.props.topic, category:this.props.category})
     };
   }
 
   renderFloatingButton(){
+    const {COLORS} = this.props;
     if (this.state.contents.length<=9){
       return (
-        <TouchableOpacity  style={{bottom:15, left:15, position:"absolute", backgroundColor:"#fc6767",
-          borderRadius:29}}
-          activeOpacity={0.7} onPress={()=>{this.addWriteView()}}>
+        <Ripple  style={{bottom:15, left:15,borderRadius:29,'overflow':'hidden', position:"absolute", elevation:7, backgroundColor:COLORS.LIGHT, elevation:7}}
+          rippleContainerBorderRadius={29}
+          onPress={()=>{this.addWriteView()}}>
           <LinearGradient style={{height:58,width:58, borderRadius:29, 
-          backgroundColor:"#E23636", elevation:7, justifyContent:'center', alignItems:"center",
+            justifyContent:'center', alignItems:"center",
           }} colors={["#fc6767","#ec008c"]}>
             <Icon name="plus" type="entypo" size={32} 
               color={COLORS_LIGHT_THEME.LIGHT}/>
           </LinearGradient>
-        </TouchableOpacity>
+        </Ripple>
       )
     }
     else{
@@ -124,17 +119,17 @@ class WriteArticle extends Component {
     }
     
     return (
-      <TouchableOpacity style={{borderRadius:10, height:58, paddingHorizontal:15,
+      <Ripple style={{borderRadius:10, height:58, paddingHorizontal:15,
         backgroundColor:COLORS.LIGHT, 
         elevation:7, justifyContent:'center', alignItems:"center",
-        bottom:15, right:15, position:"absolute", borderColor:color,}} 
-        activeOpacity={1} 
+        bottom:15, right:15, position:"absolute", borderColor:color}}
+        rippleContainerBorderRadius={10}
         onPress={(nextEnabled)?()=>{
           this.props.setContents(this.state.contents, this.state.topic, this.state.category);
           Actions.replace("imageupload");logEvent(LOG_EVENT.SCREEN_CHANGE, 'imageupload');}: () => {this.props.showAlert(true, error)} }>
         <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:24, color:color}}>NEXT</Text>
         <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:12, color:color}}>upload image</Text>
-      </TouchableOpacity>
+      </Ripple>
     );
   }
 
@@ -184,7 +179,7 @@ class WriteArticle extends Component {
   onBackPress(){
     (this.state.topic.length!==0 || this.state.contents.length!==0)?
     this.setState({backAlertVisible:true}):
-    Actions.replace("write");logEvent(LOG_EVENT.SCREEN_CHANGE, 'write');
+    Actions.pop();logEvent(LOG_EVENT.SCREEN_CHANGE, 'write');
   }
 
   renderWriteView(){

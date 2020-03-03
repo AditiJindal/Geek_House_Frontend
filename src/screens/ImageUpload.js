@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, StatusBar}from 'react-native'
 import {connect} from 'react-redux';
 import _ from 'lodash'
 import {setImage} from '../actions/WriteAction';
+import Ripple from '../components/Ripple';
 import {Icon} from 'react-native-elements';
 import {Actions} from 'react-native-router-flux';
 import {FONTS, ERROR_BUTTONS,COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
@@ -39,16 +40,16 @@ class ImageUpload extends Component {
   renderChangeImageButton(){
     if (this.state.image.uri){
       return (
-        <TouchableOpacity  style={{bottom:15, left:15, position:"absolute", elevation:7,
-        backgroundColor:"#fc521a", borderRadius:10}}
-          activeOpacity={0.7} onPress={()=>{this.pickImage()}}>
+        <Ripple style={{bottom:15, left:15, position:"absolute", elevation:7,
+        backgroundColor:"#fc521a", borderRadius:10}} rippleContainerBorderRadius={10}
+          onPress={()=>{this.pickImage()}}>
           <LinearGradient style={{borderRadius:10, height:58, paddingHorizontal:15, 
             justifyContent:'center', alignItems:"center"}} 
             colors={["#fc521a", "#f79c33"]} start={{x:0, y:1}} end={{x:1, y:1}}>
             <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:22, color:COLORS_LIGHT_THEME.LESSER_LIGHT}}>Change</Text>
             <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:14, color:COLORS_LIGHT_THEME.LESSER_LIGHT}}>Image</Text>
           </LinearGradient>
-        </TouchableOpacity>
+        </Ripple>
       )
     }
     else{
@@ -59,17 +60,17 @@ class ImageUpload extends Component {
   renderNextButton(){
     const {COLORS} = this.props;
     return (
-      <TouchableOpacity style={{borderRadius:10, height:58, paddingHorizontal:15,
+      <Ripple style={{borderRadius:10, height:58, paddingHorizontal:15,
         backgroundColor:COLORS.LIGHT, 
         elevation:7, justifyContent:'center', alignItems:"center",
         bottom:15, right:15, position:"absolute", 
-        borderColor:COLORS.GREEN}} activeOpacity={0.7} 
+        borderColor:COLORS.GREEN}} rippleContainerBorderRadius={10}
         onPress={()=>{(this.props.image.uri)?Actions.replace("publish"):this.setState({alertVisible:true})}}>
         <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:24, 
           color:COLORS.GREEN}}>NEXT</Text>
         <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:12, 
           color:COLORS.GREEN}}>preview</Text>
-      </TouchableOpacity>
+      </Ripple>
     )
   }
 
@@ -166,9 +167,9 @@ class ImageUpload extends Component {
   renderImagePicker(){
     const {COLORS} = this.props; 
     return (
-      <TouchableOpacity style={{backgroundColor:COLORS.LESSER_LIGHT, borderRadius:10,
+      <Ripple style={{backgroundColor:COLORS.LESSER_LIGHT, borderRadius:10,
         alignSelf:'center', height:180, width:180, borderWidth:3, 
-        borderColor:COLORS.LESSER_DARK,}} 
+        borderColor:COLORS.LESSER_DARK,}} rippleContainerBorderRadius={10}
         onPress={()=>{this.pickImage()}}>
         <View style={{flex:1,justifyContent:'center', alignItems:'center'}}>
           <Icon name="image" type="material-community" size={128} 
@@ -178,7 +179,7 @@ class ImageUpload extends Component {
             Select an Image
           </Text>
         </View>
-      </TouchableOpacity>      
+      </Ripple>      
     );
   }
 
@@ -218,15 +219,15 @@ class ImageUpload extends Component {
     const {COLORS} = this.props;
     return (
       <View style={{margin:8, height:70, justifyContent:'space-between',
-        alignItems:'center', flexDirection:'row'}}>
-          <TouchableOpacity onPress={()=>{Actions.replace("writearticle");
+        alignItems:'center', flexDirection:'row', marginRight:15}}>
+          <Ripple onPress={()=>{Actions.replace("writearticle");
             logEvent(LOG_EVENT.SCREEN_CHANGE, 'writearticle');}}
-            activeOpacity={0.75}>
+            rippleContainerBorderRadius={30}>
             <SView
               style={{shadowColor:'#202020',shadowOpacity:0.2, shadowOffset:{width:0,height:7.5},shadowRadius:7, 
               borderRadius:30, padding:10, 
               backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
-              marginRight:15, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
+              justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
               <Icon name="arrow-left" type="material-community" size={26}
                 containerStyle={{height:26, width:26, justifyContent:'center', alignItems:'center'}} 
                 color={COLORS.LESS_DARK}/>
@@ -236,7 +237,7 @@ class ImageUpload extends Component {
                 edit <Text style={{fontSize:14}}>article</Text>
               </Text>
             </SView>
-          </TouchableOpacity>
+          </Ripple>
           
           <Text style={{...styles.TextStyle, 
             color:COLORS.DARK}}>

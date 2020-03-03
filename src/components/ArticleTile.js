@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Text, StyleSheet, TouchableOpacity, View}from 'react-native';
 import Loading from './Loading'
 import ArticleInfo from './ArticleInfo';
+import Ripple from './Ripple'
 import {logEvent} from '../actions/ChatAction';
 import Image from 'react-native-fast-image';
 import {FONTS,COLOR_COMBOS, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
@@ -121,44 +122,41 @@ export default class ArticleTile extends Component {
   render() {
     const {COLORS} = this.props; 
     return(
-      <TouchableOpacity onPress={() => {
-        this.setState({infoVisible:true, showStartTime:Date.now()});
-        logEvent(LOG_EVENT.SCREEN_CHANGE, 'articleinfo');
-        }} 
-        activeOpacity={1}>
-        <View style={{...styles.TileViewStyle, height:this.state.size, width:this.state.size, 
+      <Ripple rippleContainerBorderRadius={10}
+        style={{...styles.TileViewStyle, height:this.state.size, width:this.state.size, 
           backgroundColor:COLORS.LIGHT}} 
-          renderToHardwareTextureAndroid>
-          {(this.props.data.image)?
-          (
-            <Image source={{uri:this.props.data.image, }}
-              style={{height:this.state.size, width:this.state.size,borderRadius:10}}
-              blurRadius={0.15} resizeMode="cover"
-              onLoad = {() => {this.setState({imageLoaded: true,loadSuccessful: true})}}
-              onError = {() => {this.setState({imageLoaded:true,loadSuccessful: false})}}>
-              <ArticleInfo 
-                theme={this.props.theme}
-                onBackdropPress={() => {
-                  this.setState({infoVisible:false});
-                  logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, {mili_seconds: Date.now()-this.state.showStartTime,
-                  endTime:Date.now()})
-                }}
-                isVisible = {this.state.infoVisible}
-                article_id = {this.props.data.article_id}
-                article_image = {this.props.data.image}
-                loadSuccessful = {this.state.loadSuccessful}
+        onPress={() => {
+        this.setState({infoVisible:true, showStartTime:Date.now()});
+        logEvent(LOG_EVENT.SCREEN_CHANGE, 'articleinfo')}}>
+        {(this.props.data.image)?
+        (
+          <Image source={{uri:this.props.data.image, }}
+            style={{height:this.state.size, width:this.state.size,borderRadius:10}}
+            blurRadius={0.15} resizeMode="cover"
+            onLoad = {() => {this.setState({imageLoaded: true,loadSuccessful: true})}}
+            onError = {() => {this.setState({imageLoaded:true,loadSuccessful: false})}}>
+            <ArticleInfo 
+              theme={this.props.theme}
+              onBackdropPress={() => {
+                this.setState({infoVisible:false});
+                logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, {mili_seconds: Date.now()-this.state.showStartTime,
+                endTime:Date.now()})
+              }}
+              isVisible = {this.state.infoVisible}
+              article_id = {this.props.data.article_id}
+              article_image = {this.props.data.image}
+              loadSuccessful = {this.state.loadSuccessful}
 
-                // for preview
-                preview_contents = {this.props.data.preview_contents}
-                topic = {this.props.data.topic}
-                category = {this.props.data.category}
-              />
-              {this.renderLinearGradient()}
-            </Image>
-          ):
-          this.renderLinearGradient()}
-        </View>
-      </TouchableOpacity>
+              // for preview
+              preview_contents = {this.props.data.preview_contents}
+              topic = {this.props.data.topic}
+              category = {this.props.data.category}
+            />
+            {this.renderLinearGradient()}
+          </Image>
+        ):
+        this.renderLinearGradient()}
+      </Ripple>
     );
   }
 }

@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import { View, Text, StyleSheet, StatusBar, FlatList, Dimensions,
-  TouchableOpacity, RefreshControl, ScrollView} from 'react-native';
+  RefreshControl, ScrollView} from 'react-native';
+import Ripple from '../components/Ripple';
 import ArticleTile from '../components/ArticleTile';
 import {setAuthToken, getMyArticles, clearPublish} from '../actions/WriteAction';
 import {Icon} from "react-native-elements"; 
-import BottomTab from '../components/BottomTab';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import {logEvent} from '../actions/ChatAction';
 import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
@@ -129,8 +129,8 @@ class Write extends Component {
 
   renderFloatingButton(){
     return (
-      <TouchableOpacity style={{justifyContent:'center', alignItems:"center",bottom:70, 
-        left:15, position:"absolute"}} activeOpacity={0.5} 
+      <Ripple style={{justifyContent:'center', alignItems:"center",bottom:70, 
+        left:15, position:"absolute"}} rippleContainerBorderRadius={5}
         onPress={()=>{(this.props.isDraft)?()=>{}:this.props.clearPublish();
         Actions.jump('writearticle'); analytics().setCurrentScreen('Write', 'Write');
         logEvent(LOG_EVENT.SCREEN_CHANGE, 'writearticle');}}>
@@ -157,7 +157,7 @@ class Write extends Component {
               }
           </LinearGradient>
         </SView>
-      </TouchableOpacity>
+      </Ripple>
     )
   }
 
@@ -179,7 +179,7 @@ class Write extends Component {
             <Text style={{...styles.TextStyle, color:COLORS.DARK}}>
               my articles
             </Text>
-            <TouchableOpacity activeOpacity={0.8}
+            <Ripple rippleContainerBorderRadius={6}
               onPress={()=>{Actions.bookmark()}}>
               <LinearGradient style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,
                 flexDirection:'row', alignItems:'center'}}
@@ -190,7 +190,7 @@ class Write extends Component {
                 </Text>
                 <Icon name="arrow-right" type="feather" size={20} color={COLORS_LIGHT_THEME.LIGHT}/>
               </LinearGradient>
-            </TouchableOpacity>
+            </Ripple>
         </SView>
 
 

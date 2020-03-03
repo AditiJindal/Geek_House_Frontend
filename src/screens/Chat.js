@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import { View, Text, StyleSheet, StatusBar,FlatList,
   RefreshControl, TouchableOpacity } from 'react-native';
 import {Overlay, Icon} from 'react-native-elements';
+import Ripple from '../components/Ripple';
 import {logEvent} from '../actions/ChatAction';
 import {FONTS,LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
 import {setAuthToken, setUserData, createGroup,
@@ -145,9 +146,10 @@ class Chat extends Component {
             Add a group icon
           </Text>
         </View>
-        <TouchableOpacity style={{backgroundColor:COLORS.GRAY, height:48, width:48,  
+        <Ripple rippleContainerBorderRadius={30} 
+          style={{backgroundColor:COLORS.GRAY, height:48, width:48,  
           borderRadius:24, alignSelf:'center', justifyContent:'center', elevation:3, 
-          alignItems:'center'}} activeOpacity={1} 
+          alignItems:'center'}}
           onPress={()=>{
             if (this.state.groupPeopleSelectorLoading){return null}
             this.imageSelector.showImageSelector(this.pickImage.bind(this))
@@ -160,7 +162,7 @@ class Chat extends Component {
               <Icon type="feather" name="users" size={26} color={COLORS.LIGHT}/>
             )
           }
-        </TouchableOpacity>
+        </Ripple>
         <ImageSelector
           COLORS = {this.props.COLORS}
           onRef={ref=>this.imageSelector = ref}
@@ -179,7 +181,7 @@ class Chat extends Component {
           <Text style={{...styles.TextStyle, color:COLORS.DARK}}>
             chat
           </Text>
-          <TouchableOpacity activeOpacity={0.8}
+          <Ripple rippleContainerBorderRadius={6}
             onPress={()=>{this.setState({peopleSelectorVisible:true})}}>
             <LinearGradient style={{paddingHorizontal:10, paddingVertical:6, borderRadius:6,
               flexDirection:'row', alignItems:'center'}}
@@ -189,7 +191,7 @@ class Chat extends Component {
               </Text>
               <Icon name="user-plus" type="feather" size={18} color={COLORS_LIGHT_THEME.LIGHT}/>
             </LinearGradient>
-          </TouchableOpacity>
+          </Ripple>
       </SView>
     )
   }
@@ -235,9 +237,6 @@ class Chat extends Component {
         isVisible={this.state.peopleSelectorVisible}
         onBackdropPress = {()=>{this.setState({peopleSelectorVisible:false})}}
         height="100%" width="100%">
-        <StatusBar 
-          barStyle={'light-content'}
-          backgroundColor={COLORS.OVERLAY_COLOR}/>
         <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert2 = ref} COLORS = {COLORS} />
         <TouchableOpacity style={{flexGrow:1, flexDirection:'row',alignItems:'center', justifyContent:'center'}} 
           activeOpacity={1}
@@ -248,6 +247,13 @@ class Chat extends Component {
               contentContainerStyle={{marginTop:15}}
               keyboardShouldPersistTaps="always"
               data={DATA}
+              ListEmptyComponent={(
+                <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                  <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:18, color:COLORS.LESS_DARK}}>
+                    No person To add
+                  </Text>
+                </View>
+              )}
               ListHeaderComponent = {
                 <View style={{marginHorizontal:20, marginVertical:5}}>
                   <TextInput
@@ -263,7 +269,7 @@ class Chat extends Component {
                   <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between',
                     paddingTop:10, paddingBottom:5}}>
                     <View>
-                      <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY, fontSize:18}}>
+                      <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY, fontSize:18, marginRight:10}}>
                         Select People To Add
                       </Text>
                       {
@@ -274,9 +280,11 @@ class Chat extends Component {
                         ):null
                       }
                     </View>
-                    <TouchableOpacity style={{height:48, width:48, justifyContent:'center', alignItems:'center', borderRadius:30, elevation:3,
+                    <Ripple rippleContainerBorderRadius={30}
+                      style={{height:48, width:48, justifyContent:'center', alignItems:'center', 
+                        borderRadius:30, elevation:3,
                       backgroundColor:(this.state.newGroupData.users.length<2)?(COLORS.GRAY):(COLORS.GREEN)}} 
-                      activeOpacity={0.8} onPress={this.onGroupDone.bind(this)}>
+                      onPress={this.onGroupDone.bind(this)}>
                         {
                           (this.state.groupPeopleSelectorLoading)?(
                             <Loading size={40} white={true}/>
@@ -284,7 +292,7 @@ class Chat extends Component {
                             <Icon type={'feather'} name={'check'} size={26} color={(this.state.newGroupData.users.length<2)?(COLORS.LIGHT):(COLORS_LIGHT_THEME.LIGHT)}/>
                           )
                         }
-                    </TouchableOpacity>
+                    </Ripple>
                   </View>
                 </View>
               }

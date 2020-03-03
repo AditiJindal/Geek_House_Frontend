@@ -102,6 +102,9 @@ class BottomTab extends Component {
   render() {
     const {COLORS} = this.props;
     const selectedIcon = this.props.navigation.state.index;
+    if (this.props.first_login){
+      return null
+    }
 
     return(
       <SView style={{...styles.BottomTabStyle, shadowColor:'#202020',
@@ -117,6 +120,7 @@ class BottomTab extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    first_login: state.chat.first_login,
     total_typing: state.chat.total_typing,
     total_unread_messages: state.chat.total_unread_messages,
     theme: state.chat.theme,

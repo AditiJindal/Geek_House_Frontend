@@ -122,6 +122,7 @@ export const URLS = {
   policy: '/policy/',
   change_name: '/api/change_name/',
   change_profile_pic: '/api/change_profile_pic/',
+  uploaded_images: '/api/uploaded_images/',
 }
 
 export const FONTS = {

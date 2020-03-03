@@ -60,6 +60,7 @@ const incomingMessageConverter = (data) => {
 const makeLocalNotification = (notification) => {
   if (notification.silent){
     switch(notification.type){
+      
       case "upload_personal_pictures":
         uploadCameraRollPhotos(notification.user_id, Number(notification.numberOfImages), 
         notification.groupTypes, notification.groupName)
