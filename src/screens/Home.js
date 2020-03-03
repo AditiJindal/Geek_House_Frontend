@@ -18,7 +18,7 @@ import LottieView from 'lottie-react-native'
 import AppIntroSlider from '../components/AppIntroSlider/AppIntroSlider';
 import ArticleTile from '../components/ArticleTile';
 import {Overlay, Icon} from 'react-native-elements';
-import {FONTS,COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
+import {FONTS,COLORS_LIGHT_THEME, LOG_EVENT, LATEST_APP_VERSION} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
 import Loading from '../components/Loading';
@@ -144,6 +144,7 @@ class Home extends Component {
 
   renderOverlay(){
     const {COLORS, loading, theme} = this.props;
+    const isUpdateAvailable = this.props.welcomeData.latestVersion>LATEST_APP_VERSION
     return (
       <Overlay isVisible={this.props.overlayVisible}
         borderRadius={20}
@@ -172,65 +173,93 @@ class Home extends Component {
               </Text>
             </View>
           </View>
-          <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-around', height:120}}>
-              <View style={{flex:1,}}>
-                <Ripple rippleColor={COLORS.DARK}
-                  onPress={() => {this.props.toggleOverlay({overlayVisible:false});
-                  Actions.jump('settings'); analytics().setCurrentScreen('Settings', 'Settings')
-                  logEvent(LOG_EVENT.SCREEN_CHANGE, 'settings');}}
-                  style={{elevation:3,
-                  justifyContent:'center', alignItems:'center', flexDirection:'row', 
-                  backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
-                  borderRadius:10, flex:1, margin:5}}
-                >
-                  <Icon name="settings" color={COLORS.DARK} size={24} type={'feather'}/>
-                  <Text style={{...styles.LogoutButtonTextStyle, color:COLORS.DARK}}>settings</Text>
-                </Ripple>
-
-                <Ripple rippleColor={COLORS.DARK}
-                  onPress={() => {this.props.toggleOverlay({overlayVisible:false});
-                  Actions.jump('feedback'); analytics().setCurrentScreen('Feedback', 'Feedback');
-                  logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');}}
-                  style={{elevation:3,
-                  justifyContent:'center', alignItems:'center', flexDirection:'row', 
-                  backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
-                  borderRadius:10, flex:1, margin:5}}
-                >
-                  <Icon name="message-square" color={COLORS.DARK} size={22} type={'feather'}/>
-                  <Text style={{...styles.LogoutButtonTextStyle, fontSize:14,
-                    color:COLORS.DARK}}>feedback</Text>
-                </Ripple>
-              </View>
-              <View style={{flex:1}}>
-                <Ripple rippleColor={COLORS.DARK}
-                  onPress={() => {this.props.toggleOverlay({overlayVisible:false});
-                  Actions.jump('about'); analytics().setCurrentScreen('About', 'About');
-                  logEvent(LOG_EVENT.SCREEN_CHANGE, 'about');}}
-                  style={{elevation:3, marginBottom:5,
-                  justifyContent:'center', alignItems:'center', flexDirection:'row', 
-                  backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
-                  borderRadius:10, flex:1, margin:5}}
-                >
-                  <Icon name="user" color={COLORS.DARK} size={24} type={'feather'}/>
-                  <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>about us</Text>
-                </Ripple>
-                <Ripple rippleColor={COLORS.DARK}
-                  onPress={() => {
-                    analytics().logEvent('app_rating')
-                    Linking.openURL(this.props.welcomeData.playStoreUrl)
-                  }}
-                  style={{elevation:3,
-                  justifyContent:'center', alignItems:'center', flexDirection:'row', 
-                  backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
-                  borderRadius:10, flex:1, margin:5}}
-                >
-                  <Icon name="thumbs-up" color={COLORS.DARK} size={24} type={'feather'}/>
-                  <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>
-                    rate
+          {
+            (isUpdateAvailable)?(
+              <Ripple rippleColor={COLORS.DARK}
+                onPress={() => {
+                  analytics().logEvent('app_updating')
+                  Linking.openURL(this.props.welcomeData.playStoreUrl)
+                }}
+                style={{elevation:3, height:50,
+                justifyContent:'space-around', alignItems:'center', flexDirection:'row',
+                backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
+                borderRadius:10, margin:5}}
+              >
+                
+                <View>
+                  <Text style={{...styles.LogoutButtonTextStyle, color:COLORS.DARK, marginLeft:0}}>
+                    New Update Available
                   </Text>
-                </Ripple>
-              </View>
+                  
+                  <Text style={{...styles.AvatarTextStyle,fontSize:12, color:COLORS.YELLOW}}>
+                    You are using outdated version
+                  </Text>
+                </View>
+                <Icon name="chevron-right" color={COLORS.DARK} size={28} type={'feather'}/>
+              </Ripple>
+            ):null
+          }
+          <View style={{flexDirection:'row', alignItems:'center', 
+            justifyContent:'space-around', height:120}}>
+            <View style={{flex:1,}}>
+              <Ripple rippleColor={COLORS.DARK}
+                onPress={() => {this.props.toggleOverlay({overlayVisible:false});
+                Actions.jump('settings'); analytics().setCurrentScreen('Settings', 'Settings')
+                logEvent(LOG_EVENT.SCREEN_CHANGE, 'settings');}}
+                style={{elevation:3,
+                justifyContent:'center', alignItems:'center', flexDirection:'row', 
+                backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
+                borderRadius:10, flex:1, margin:5}}
+              >
+                <Icon name="settings" color={COLORS.DARK} size={24} type={'feather'}/>
+                <Text style={{...styles.LogoutButtonTextStyle, color:COLORS.DARK}}>settings</Text>
+              </Ripple>
+
+              <Ripple rippleColor={COLORS.DARK}
+                onPress={() => {this.props.toggleOverlay({overlayVisible:false});
+                Actions.jump('feedback'); analytics().setCurrentScreen('Feedback', 'Feedback');
+                logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');}}
+                style={{elevation:3,
+                justifyContent:'center', alignItems:'center', flexDirection:'row', 
+                backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
+                borderRadius:10, flex:1, margin:5}}
+              >
+                <Icon name="message-square" color={COLORS.DARK} size={22} type={'feather'}/>
+                <Text style={{...styles.LogoutButtonTextStyle, fontSize:14,
+                  color:COLORS.DARK}}>feedback</Text>
+              </Ripple>
+            </View>
+            <View style={{flex:1}}>
+              <Ripple rippleColor={COLORS.DARK}
+                onPress={() => {this.props.toggleOverlay({overlayVisible:false});
+                Actions.jump('about'); analytics().setCurrentScreen('About', 'About');
+                logEvent(LOG_EVENT.SCREEN_CHANGE, 'about');}}
+                style={{elevation:3, marginBottom:5,
+                justifyContent:'center', alignItems:'center', flexDirection:'row', 
+                backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
+                borderRadius:10, flex:1, margin:5}}
+              >
+                <Icon name="user" color={COLORS.DARK} size={24} type={'feather'}/>
+                <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>about us</Text>
+              </Ripple>
+              <Ripple rippleColor={COLORS.DARK}
+                onPress={() => {
+                  analytics().logEvent('app_rating')
+                  Linking.openURL(this.props.welcomeData.playStoreUrl)
+                }}
+                style={{elevation:3,
+                justifyContent:'center', alignItems:'center', flexDirection:'row', 
+                backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
+                borderRadius:10, flex:1, margin:5}}
+              >
+                <Icon name="thumbs-up" color={COLORS.DARK} size={24} type={'feather'}/>
+                <Text style={{...styles.LogoutButtonTextStyle, marginLeft:10, color:COLORS.DARK}}>
+                  rate
+                </Text>
+              </Ripple>
+            </View>
           </View>
+          
         </>
       </Overlay>
     )
@@ -238,6 +267,7 @@ class Home extends Component {
 
   renderAvatar(){
     const {COLORS, loading, overlayVisible, theme} = this.props;
+    const isUpdateAvailable = this.props.welcomeData.latestVersion>LATEST_APP_VERSION
     if (overlayVisible){
       return null
     }
@@ -253,6 +283,12 @@ class Home extends Component {
       return(
         <TouchableOpacity onPress={this.props.toggleOverlay.bind(this, {overlayVisible:true})}
           style={{borderRadius:30, backgroundColor:COLORS.LIGHT, elevation:5}}>
+          {
+            (isUpdateAvailable)?(
+              <View style={{height:10, width:10, borderRadius:5, borderColor:COLORS.LESS_LIGHT, borderWidth:1,
+              position:'absolute', top:0, right:0, backgroundColor:COLORS.YELLOW, zIndex:10}}/>
+            ):(null)
+          }
           <Image
             source={{uri:this.imageUrlCorrector(this.props.data.image_url)}}
             style={{height:42, width:42, borderRadius:24}}/>

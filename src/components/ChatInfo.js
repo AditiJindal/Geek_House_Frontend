@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import {View, Text, StatusBar, Dimensions, ScrollView, 
-  StyleSheet, TouchableOpacity, TouchableNativeFeedback} from 'react-native';
+  StyleSheet, TouchableOpacity} from 'react-native';
 import {connect} from 'react-redux';
 import {Overlay, Icon} from 'react-native-elements';
+import Ripple from './Ripple';
 import Image from 'react-native-fast-image';
 import {FONTS} from '../Constants';
 import Loading from '../components/Loading';
@@ -40,7 +41,7 @@ class ChatInfo extends Component {
             <Image source={{uri:imageUrlCorrector(image_url, this.props.image_adder)}} 
               style={{flex:1}}/>
           </View>
-          <Text style={{fontFamily:FONTS.RALEWAY, color:COLORS.DARK, fontSize:20, marginLeft:10}}>
+          <Text style={{fontFamily:FONTS.PRODUCT_SANS, color:COLORS.DARK, fontSize:16, marginLeft:5}}>
             {name}
           </Text>
         </View>
@@ -139,20 +140,17 @@ class ChatInfo extends Component {
     if((admins.length<2) || !isCurrentUserAdmin){return null}
     else{
       return (
-        <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple(COLORS.DARK)}
+        <Ripple 
           onPress = {()=>{
             this.handleModifyAdmins(this.props.currentUserId,this.props.user_name, true)
             this.timedAlert.showAlert(2000, "You are no longer an admin", 1);
-          }}>
-          <View activeOpacity={0.8}
-            style={{...styles.EndButton, backgroundColor: COLORS.GRAY}}
-          >
+          }} style={{...styles.EndButton, backgroundColor: COLORS.GRAY}}>
+
           <Text style={{fontFamily:FONTS.RALEWAY, fontSize:18, color:COLORS.LIGHT, marginRight:5}}>
             Resign from Admin
           </Text>
           <Icon name="user-x" size={18} color={COLORS.LIGHT} type="feather"/>
-          </View>
-        </TouchableNativeFeedback>
+        </Ripple>
       )
     }
   }
@@ -161,16 +159,15 @@ class ChatInfo extends Component {
     const isCurrentUserAdmin = admins.includes(this.props.currentUserId)
     if (!isCurrentUserAdmin){return null}
     return (
-      <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple(COLORS.DARK)}
-        onPress={()=>{this.timedAlert.showAlert(2000, 'Feature coming in future update', 1)}}>
-        <View style={{flexDirection:'row', alignItems:'center', backgroundColor:COLORS.GRAY, 
-        padding:10, justifyContent:'center', margin:5}} activeOpacity={0.8}>
-        <Icon type={'feather'} name={'user-plus'} size={26} color={COLORS.LIGHT}/>
-        <Text style={{fontFamily:FONTS.RALEWAY, fontSize:20, color:COLORS.LIGHT, marginLeft:15}}>
+      <Ripple
+        onPress={()=>{this.timedAlert.showAlert(2000, 'Feature coming in future update', 1)}}
+        style={{flexDirection:'row', alignItems:'center', backgroundColor:COLORS.GRAY, 
+          padding:10, justifyContent:'center', margin:5}}>
+        <Text style={{fontFamily:FONTS.RALEWAY, fontSize:18, color:COLORS.LIGHT, marginLeft:15}}>
           Add a new member
         </Text>
-        </View>
-      </TouchableNativeFeedback>
+        <Icon type={'feather'} name={'user-plus'} size={18} color={COLORS.LIGHT}/>
+      </Ripple>
 
     )
   }
@@ -179,17 +176,15 @@ class ChatInfo extends Component {
     const {COLORS} = this.props;
     return (
       
-      <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple(COLORS.DARK)}
-        onPress={()=>{this.timedAlert.showAlert(2000, 'Feature coming in future update', 1)}}>
-        <View activeOpacity={0.5}
-          style={{...styles.EndButton, backgroundColor: COLORS.GRAY, borderBottomLeftRadius:15,
-          borderBottomRightRadius:15,}} >
-          <Text style={{fontFamily:FONTS.RALEWAY, fontSize:18, color:COLORS.LIGHT, marginRight:5}}>
-            Leave Group
-          </Text>
-          <Icon name="log-out" size={18} color={COLORS.LIGHT} type="feather"/>
-        </View>
-      </TouchableNativeFeedback>
+      <Ripple
+        onPress={()=>{this.timedAlert.showAlert(2000, 'Feature coming in future update', 1)}}
+        style={{...styles.EndButton, backgroundColor: COLORS.GRAY, borderBottomLeftRadius:15,
+          borderBottomRightRadius:15,}}>
+        <Text style={{fontFamily:FONTS.RALEWAY, fontSize:18, color:COLORS.LIGHT, marginRight:5}}>
+          Leave Group
+        </Text>
+        <Icon name="log-out" size={18} color={COLORS.LIGHT} type="feather"/>
+      </Ripple>
     )
   }
 
@@ -225,9 +220,10 @@ class ChatInfo extends Component {
                 <Text style={{...styles.NameText, color: COLORS.DARK}}>
                   {other_user_data.name}
                 </Text>
-                {this.renderAddParticipant(group_participants.admins)}
+                
                 {this.renderChatPeople(group_participants, image_adder)}
                 <View style={{height:20, width:1}}/>
+                {this.renderAddParticipant(group_participants.admins)}
                 {this.renderLeaveFromAdmin(group_participants.admins)}
                 {this.renderLeaveGroup()}
               </ScrollView>

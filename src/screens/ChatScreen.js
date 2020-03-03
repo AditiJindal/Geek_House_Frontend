@@ -98,7 +98,7 @@ class ChatScreen extends Component {
 
     return (
       <TouchableOpacity style={{marginLeft:10, backgroundColor:COLORS.LIGHT, elevation:4,
-        borderRadius:24, overflow:'hidden'}} 
+        borderRadius:24}} 
         onPress={this.handleChatInfo}>
           <Image
             source={
@@ -106,7 +106,7 @@ class ChatScreen extends Component {
               {uri:this.imageUrlCorrector(this.props.other_user_data.image_url)}:
               require('../../assets/icons/user.png')
             }
-            style={{height:48, width:48}}
+            style={{height:48, width:48, borderRadius:24}}
           />
           {
             (!this.props.other_user_data.newEntry 
@@ -115,9 +115,9 @@ class ChatScreen extends Component {
             (
               <Badge
                 status="success"
-                containerStyle={{ position: 'absolute', top: 2, right: 0, elevation:7}}
-                badgeStyle={{height:12, width:12, borderRadius:6,
-                borderWidth:1.2, borderColor:COLORS.LIGHT}}
+                containerStyle={{ position: 'absolute', top: 0, right: 2}}
+                badgeStyle={{height:10, width:10, borderRadius:5,
+                borderWidth:0.7, borderColor:COLORS.LIGHT}}
               />
             ):null
           }

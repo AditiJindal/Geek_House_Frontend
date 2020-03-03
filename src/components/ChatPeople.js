@@ -1,6 +1,6 @@
 import React from 'react';
-import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
-import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
+import { Text, StyleSheet, View } from 'react-native';
+import {FONTS, COLORS_LIGHT_THEME, MESSAGE_SPECIAL_ADDER} from '../Constants';
 import Typing from '../components/Typing';
 import {Icon} from 'react-native-elements';
 import Image from 'react-native-fast-image';
@@ -43,18 +43,24 @@ const getBadge = (props) => {
 }
 
 const getRecentTime = (time) => {
+  const new_date = new Date(time)
   return (
     <Text style={{color:COLORS_LIGHT_THEME.THEME1, fontSize:10, 
       fontFamily:FONTS.PRODUCT_SANS_BOLD}}>
-      <TimeAgo time={Date.parse(time)} interval={20000}/>
+      <TimeAgo time={Date.parse(new_date)} interval={20000}/>
     </Text>
   )
 }
 
 const getRecentMessage = (message) => {
+  if (message && (message.substring(0,MESSAGE_SPECIAL_ADDER.length) === MESSAGE_SPECIAL_ADDER)){
+    message = message.substring(MESSAGE_SPECIAL_ADDER.length);
+  }
+
   if (message.length>30){
     message = message.substring(0,28) + "..."
   }
+
   return message
 }
 
@@ -89,7 +95,7 @@ const getAppropriateAccessory = (props) => {
 }
 
 export default ChatPeople = (props) => {
-  const {COLORS, isSelector, isSelected, data} = props;
+  const {COLORS, isSelector, isSelected, data, recentMessage, recentActivity} = props;
   let IMAGE_SIZE = (isSelector)?42:56;
   
   return(
@@ -127,14 +133,14 @@ export default ChatPeople = (props) => {
                 {props.data.email}
               </Text>
             ):null}
-            {(props.recentMessage && props.recentActivity)?(
+            {(recentMessage && recentActivity)?(
               <Text style={{...styles.InterestStyle, fontSize:14, 
                 color:COLORS.DARK_GRAY}}>
-                {getRecentMessage(props.recentMessage)}
+                {getRecentMessage(recentMessage)}
             </Text>
             ):null}
-            {(props.recentMessage && props.recentActivity)?(
-              getRecentTime(props.recentActivity)
+            {(recentMessage && recentActivity)?(
+              getRecentTime(recentActivity)
             ):null}
           </View>
         </View>

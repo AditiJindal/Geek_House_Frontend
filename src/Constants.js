@@ -179,6 +179,7 @@ export const COLOR_COMBOS = [
 ]
 
 export const ICON_SIZE = 18
+
 export const SELECTED_ICON_SIZE = 28
 
 export const ERROR_BUTTONS={
@@ -217,3 +218,5 @@ export const ERROR_MESSAGES = {
     ]
   }
 }
+
+export const LATEST_APP_VERSION = 21;

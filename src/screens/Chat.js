@@ -257,7 +257,6 @@ class Chat extends Component {
               ListHeaderComponent = {
                 <View style={{marginHorizontal:20, marginVertical:5}}>
                   <TextInput
-                    keyboardType={"visible-password"}
                     placeholder={"Enter name of the group..."}
                     placeholderTextColor={COLORS.GRAY}
                     value={this.state.newGroupData.name} maxLength={56}
@@ -297,7 +296,10 @@ class Chat extends Component {
                 </View>
               }
               ListFooterComponent = {<View style={{height:8,width:1}}/>}
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={(item, index) => {
+                if (!item._id.toString()){return index.toString()}
+                else{ return item._id.toString()}
+              }}
               renderItem={({item, index}) => {
                 if (!this.props.status.hasOwnProperty(item._id)){
                   this.props.status[item._id] = {online: true, typing: false, unread_messages: 0}
@@ -363,7 +365,10 @@ class Chat extends Component {
             </Text>
           </View>
         }
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item, index) => {
+          if (!item._id.toString()){return index.toString()}
+          else{ return item._id.toString()}
+        }}
         renderItem={({ item, index }) => {
         if (!this.props.status.hasOwnProperty(item._id)){
           this.props.status[item._id] = {online: true, typing: false, unread_messages: 0}
@@ -399,7 +404,10 @@ class Chat extends Component {
       <FlatList
         data={this.props.chatPeopleSearch}
         contentContainerStyle={{marginTop:15, flexGrow:1}}
-        keyExtractor={(item, index)=>index.toString()}
+        keyExtractor={(item, index) => {
+          if (!item._id.toString()){return index.toString()}
+          else{ return item._id.toString()}
+        }}
         ListHeaderComponent = {
           <View>
             <View style={{height:70, width:1}}/>
