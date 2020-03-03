@@ -199,25 +199,15 @@ class Search extends Component {
         ]})
       }
 
-      if (category_list.length===0){
-        return (
-          <View style={{height:Dimensions.get('window').height, width:"100%",paddingBottom:70, justifyContent:'center', alignItems:'center'}}>
-            <Text style={{textAlign:'center', fontFamily: FONTS.PRODUCT_SANS_BOLD, fontSize:18, 
-            color:COLORS.LESS_DARK}}>
-              No results found
-            </Text>
-          </View>
-        )
-      }
       return (
         <FlatList
           data={category_list}
-          contentContainerStyle={{width:"100%", flexGrow:1}}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{flexGrow:1}}
           ListHeaderComponent = {
             <View>
               <View style={{height:70, width:1}}/>
-              {jsx}
+                {jsx}
               {this.renderSearchSettings()}
             </View>
           }
@@ -227,6 +217,14 @@ class Search extends Component {
               colors={["rgb(0,181, 213)"]}
               refreshing={false}
             />
+          }
+          ListEmptyComponent={
+            <View style={{flex:1, justifyContent:'center', alignItems:'center', marginTop:100}}>
+              <Text style={{textAlign:'center', fontFamily: FONTS.PRODUCT_SANS_BOLD, fontSize:18, 
+              color:COLORS.LESS_DARK}}>
+                No results found
+              </Text>
+            </View>
           }
           keyExtractor={(item, index) => index.toString()}
           renderItem = {({item, index}) => {  // item here is the category

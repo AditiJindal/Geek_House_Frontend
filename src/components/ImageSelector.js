@@ -2,6 +2,7 @@ import React from 'react';
 import {View, TouchableOpacity, Text, StatusBar} from 'react-native';
 import {Overlay, Icon} from 'react-native-elements';
 import {FONTS} from '../Constants';
+import Ripple from './Ripple';
 import ImagePicker from 'react-native-image-picker';
 
 
@@ -57,16 +58,15 @@ class ImageSelector extends React.Component{
         <StatusBar 
           barStyle={'light-content'}
           backgroundColor={COLORS.OVERLAY_COLOR}/>
-        <TouchableOpacity
+        <Ripple rippleContainerBorderRadius={15}
           onPress={()=>{
             this.setState({imageSelectorOpen:false});
             ImagePicker.launchImageLibrary(ImageOptions, (response)=>{
               if (!response.didCancel){this.state.callbackFunc(response)}
             })
           }}
-          activeOpacity={0.8} 
-          style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
-          backgroundColor:COLORS.LESSER_LIGHT, marginRight:15}}>
+          style={{height:180, width:120, justifyContent:'space-around', alignItems:'center',
+          backgroundColor:COLORS.LESSER_LIGHT, marginRight:15, borderRadius:15, elevation:20,}}>
           <View style={{height:50, justifyContent:'center'}}>
             <Text style={{color:COLORS.LESSER_DARK,
               fontFamily:FONTS.RALEWAY_BOLD, textAlign:'center', fontSize:16}}>
@@ -81,17 +81,17 @@ class ImageSelector extends React.Component{
                 {`Select from\nGallery`}
               </Text>
             </View>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Ripple>
+          <Ripple
           onPress={()=>{
             this.setState({imageSelectorOpen:false});
             ImagePicker.launchCamera(ImageOptions, (response)=>{
               if (!response.didCancel){this.state.callbackFunc(response)}
             })
           }}
-          activeOpacity={0.8}
-          style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', elevation:20,borderRadius:15,
-          backgroundColor:COLORS.LESSER_LIGHT}}>
+          rippleContainerBorderRadius={15}
+          style={{height:180, width:120, justifyContent:'space-around', alignItems:'center', 
+          borderRadius:15, elevation:20, backgroundColor:COLORS.LESSER_LIGHT}}>
           <View style={{height:50, justifyContent:'center'}}>
             <Text style={{color:COLORS.LESSER_DARK,
                 fontFamily:FONTS.RALEWAY_BOLD, textAlign:'center', fontSize:16}}>
@@ -106,7 +106,7 @@ class ImageSelector extends React.Component{
               {`Click from\nCamera`}
             </Text>
           </View>
-        </TouchableOpacity>
+        </Ripple>
         </>
       </Overlay>
     )

@@ -10,6 +10,7 @@ import {setAuthToken, getSettingsData, settingsChangeFavouriteCategory,
   } from '../actions/SettingsAction';
 import { Actions } from 'react-native-router-flux';
 import Image from 'react-native-fast-image';
+import Ripple from '../components/Ripple';
 import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import { Icon } from 'react-native-elements';
@@ -145,8 +146,8 @@ class Settings extends Component {
   renderLogoutButton(){
     return (
       <SView style={{flex:1}}>
-        <TouchableOpacity
-          activeOpacity={1} style={{alignSelf:'flex-start', marginTop:50}}
+        <Ripple rippleContainerBorderRadius={10}
+          style={{alignSelf:'flex-start', marginTop:50, elevation:6, backgroundColor:'#ef473a',borderRadius:10}}
           onPress={()=>{
             if (this.props.internetReachable){
               this.props.logout()
@@ -157,9 +158,9 @@ class Settings extends Component {
           }}>
           <LinearGradient
             colors={(this.props.internetReachable)?["#ef473a","#cb2d3e"]:[COLORS.GRAY, COLORS.GRAY]} 
-            style={{elevation:6, justifyContent:'space-evenly',
+            style={{justifyContent:'space-evenly',
             alignItems:'center', flexDirection:'row', paddingVertical:7,
-            alignSelf:'flex-start', paddingHorizontal:10, borderRadius:8}}>
+            alignSelf:'flex-start', paddingHorizontal:10, borderRadius:10}}>
             <Text style={{...styles.LogoutButtonTextStyle, 
               color:(this.props.internetReachable)?COLORS_LIGHT_THEME.LIGHT:COLORS.LIGHT}}>
               Logout
@@ -168,7 +169,7 @@ class Settings extends Component {
               color={(this.props.internetReachable)?COLORS_LIGHT_THEME.LIGHT:COLORS.LIGHT}/>
           </LinearGradient>
           
-        </TouchableOpacity>
+        </Ripple>
       </SView>
     )
   }
@@ -533,8 +534,9 @@ class Settings extends Component {
           color:COLORS.LESSER_DARK, }}>
           Change your chat wallpaper
         </Text>
-        <TouchableOpacity style={{backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
-          paddingHorizontal:12, paddingVertical:6, elevation:8, borderRadius:8, 
+        <Ripple rippleContainerBorderRadius={10}
+          style={{backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
+          paddingHorizontal:12, paddingVertical:6, elevation:8, borderRadius:10, 
           alignSelf:'flex-start', marginVertical:10,flexDirection:'row', 
           justifyContent:'space-between', width:195, alignItems:'center'}}
           onPress={()=>{this.imageSelector.showImageSelector(
@@ -549,7 +551,7 @@ class Settings extends Component {
           <Text style={{fontFamily:FONTS.PRODUCT_SANS, color:COLORS.LESSER_DARK, fontSize:18}}>
             Choose an Image
           </Text>
-        </TouchableOpacity>
+        </Ripple>
         <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
           <Text style={{fontSize:16, fontFamily:FONTS.PRODUCT_SANS,color:COLORS.LESSER_DARK,marginRight:20}}>
             Wallpaper blur effect

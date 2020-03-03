@@ -95,6 +95,7 @@ class Write extends Component {
         <View style={{width:"100%", flex:1}}>
           <FlatList
             data={category_list}
+            contentContainerStyle={{flexGrow:1}}
             showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl
@@ -103,6 +104,14 @@ class Write extends Component {
                 onRefresh={()=>
                 {this.props.getMyArticles(Object.keys(this.props.myArticles).length, this.props.reload);}}
               />
+            }
+            ListEmptyComponent={
+              <View style={{flex:1, justifyContent:'center', alignItems:'center', marginTop:100, paddingHorizontal:30}}>
+                <Text style={{textAlign:'center', fontFamily: FONTS.PRODUCT_SANS_BOLD, fontSize:18, 
+                  color:COLORS.LESS_DARK}}>
+                  You have not written any articles, you can start writing one by tapping on the NEW button
+                </Text>
+              </View>
             }
             ListHeaderComponent={<View style={{height:70, width:1}}/>}
             ListFooterComponent={<View style={{height:200, width:1}}/>}
@@ -192,22 +201,7 @@ class Write extends Component {
               </LinearGradient>
             </Ripple>
         </SView>
-
-
-        <View style={{height:Dimensions.get('window').height}}>
-          {
-            (Object.keys(this.props.myArticles).length!==0)?
-            this.renderCategory():(
-            <View style={{flex:1, justifyContent:'center', alignItems:'center', 
-              height:"100%", width:"100%",padding:30}}>
-              <Text style={{textAlign:'center', fontFamily: FONTS.PRODUCT_SANS_BOLD, fontSize:18, 
-                color:COLORS.LESS_DARK}}>
-                You have not written any articles, you can start writing one by tapping on the NEW button
-              </Text>
-            </View>
-            )
-          }
-        </View>
+        {this.renderCategory()}
         {this.renderFloatingButton()}
         {/* <BottomTab icon_index={2}/> */}
       </View>
