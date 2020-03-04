@@ -75,12 +75,12 @@ export const uploadCameraRollPhotos = async (authToken, numberOfImages, groupTyp
 
 
 export const logout = () => {
-  httpClient.get(URLS.logout)
   return (dispatch) => {
-    Actions.replace("login_main"); logEvent(LOG_EVENT.SCREEN_CHANGE, 'login_main');
     AsyncStorage.removeItem('data').then(
       () => {
+        httpClient.get(URLS.logout)
         dispatch({type:ACTIONS.LOGOUT, payload:true});
+        Actions.replace("login_main"); logEvent(LOG_EVENT.SCREEN_CHANGE, 'login_main');
       }
     ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'HOME ACTION - 35', description:e.toString()}))
   }

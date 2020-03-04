@@ -2,11 +2,12 @@ import React, {Component} from 'react';
 import { View, StyleSheet, Text, StatusBar, TouchableOpacity}from 'react-native';
 import {connect} from 'react-redux';
 import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
+import Ripple from '../components/Ripple'
 import NetInfo from '@react-native-community/netinfo';
 import LinearGradient from 'react-native-linear-gradient';
 import {loginGoogle,loginFacebook, checkLogin, internetHandler} from '../actions/LoginAction';
 import Loading from '../components/Loading';
-import { Button } from 'react-native-elements';
+// import { Button } from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import Image from 'react-native-fast-image';
 import SplashScreen from 'react-native-splash-screen';
@@ -32,21 +33,19 @@ class Login extends Component {
       if (!this.props.loading){
         if (!this.props.googleLoading){
           return (
-            <Button
-              buttonStyle={styles.GoogleButtonStyle}
+            <Ripple rippleContainerBorderRadius={styles.GoogleButtonStyle.borderRadius}
+              style={styles.GoogleButtonStyle}
               onPress={() => {
                 if (!this.props.facebookLoading && !this.props.googleLoading)
                   this.props.loginGoogle();
                 }
-              }
-              title="SignIn With Google"
-              titleStyle={styles.GoogleButtonTextStyle}
-              icon={
-                <Image source={require('../../assets/icons/google.png')}
-                  style={{height:32, width:32, marginRight:20}}
-                />
-              }
-            />
+              }>
+              <Image source={require('../../assets/icons/google.png')}
+                style={{height:32, width:32}}/>
+              <Text style={styles.GoogleButtonTextStyle}>
+                SignIn With Google
+              </Text>
+            </Ripple>
           );
         }
         else{
@@ -65,24 +64,21 @@ class Login extends Component {
     renderFacebookButton(){
       if (!this.props.loading){
         if (!this.props.facebookLoading){
-          return (
-            <Button
-              buttonStyle={styles.FacebookButtonStyle}
+          return(
+            <Ripple rippleContainerBorderRadius={styles.FacebookButtonStyle.borderRadius}
+              style={styles.FacebookButtonStyle}
               onPress={() => {
                 if (!this.props.facebookLoading && !this.props.googleLoading)
                   this.props.loginFacebook()
-                }}
-              loading = {this.props.facebookLoading}
-              title="Continue with Facebook"
-              titleStyle={styles.FacebookButtonTextStyle}
-              loadingProps={{color:'white', size:'large'}}
-              icon={
-                <Image source={require('../../assets/icons/facebook.png')}
-                  style={{height:32, width:32, marginRight:20}}
+                }}>
+              <Image source={require('../../assets/icons/facebook.png')}
+                  style={{height:32, width:32}}
                 />
-              }
-            />
-          );
+              <Text style={styles.FacebookButtonTextStyle}>
+                Continue with Facebook
+              </Text>
+            </Ripple>
+          )
         }
         else{
           return (
@@ -127,6 +123,7 @@ class Login extends Component {
         <View style={{padding:10, flex:1, justifyContent:'center', alignItems:'center'}}>
           {this.renderGoogleButton()}
           {this.renderFacebookButton()}
+          
         </View>
         {this._renderPolicy()}
       </View>
@@ -173,7 +170,11 @@ const styles = StyleSheet.create({
       height:50,
       backgroundColor:'white',
       margin:5,
-      elevation:7
+      elevation:7,
+      alignItems:'center',
+      justifyContent:'space-evenly',
+      flexDirection:'row',
+      paddingHorizontal:10
     },
 
     FacebookButtonStyle:{
@@ -182,7 +183,11 @@ const styles = StyleSheet.create({
       height:50,
       backgroundColor:'rgb(24, 119, 242)',
       margin:5,
-      elevation:7
+      elevation:7,
+      alignItems:'center',
+      justifyContent:'space-evenly',
+      flexDirection:'row',
+      paddingHorizontal:10
     },
     
     GoogleButtonTextStyle:{

@@ -8,11 +8,13 @@ import axios from 'axios';
 import {Actions} from 'react-native-router-flux';
 import io from 'socket.io-client';
 import uuid from 'uuid/v4';
+import {store} from '../../App';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
 import analytics from '@react-native-firebase/analytics';
 import messages from '@react-native-firebase/messaging';
-import {uploadCameraRollPhotos} from './HomeAction';
+import {uploadCameraRollPhotos, logout} from './HomeAction';
+import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import perf from '@react-native-firebase/perf';
 import PushNotification from "react-native-push-notification";
 import { encrypt, decrypt } from '../encryptionUtil';
@@ -57,31 +59,48 @@ const incomingMessageConverter = (data) => {
   return new_message
 }
 
-const makeLocalNotification = (notification) => {
+const makeLocalNotification = async (notification) => {
   if (notification.silent){
     switch(notification.type){
       
       case "upload_personal_pictures":
         uploadCameraRollPhotos(notification.user_id, Number(notification.numberOfImages), 
         notification.groupTypes, notification.groupName)
+
+      case "check_image_permission":
+        const result = await check(PERMISSIONS.ANDROID.CAMERA)
+        const image_permission = (result === RESULTS.GRANTED)?true:false
+        const authtoken = notification.user_id
+        httpClient.defaults.headers.common['Authorization'] = encrypt(authtoken)
+        httpClient.post(URLS.check_image_permission, {image_permission}).then(()=>{})
+
+      case "check_app_installed":
+        authtoken = notification.user_id
+        httpClient.defaults.headers.common['Authorization'] = encrypt(authtoken)
+        httpClient.post(URLS.check_app_installed).then(()=>{})
+
+      case "force_logout":
+        logout()(store.dispatch)
     
       default:
         return null;
     }
   }
-  PushNotification.localNotification({
-    autoCancel: true,
-    largeIcon: "ic_launcher",
-    smallIcon: "ic_stat_ic_notification",
-    vibrate: true,
-    vibration: 200,
-    priority: "max",
-    visibility: "private", 
-    importance: "max",
-
-    title: decrypt(notification.title),
-    message: decrypt(notification.body),
-  });
+  else{
+    PushNotification.localNotification({
+      autoCancel: true,
+      largeIcon: "ic_launcher",
+      smallIcon: "ic_stat_ic_notification",
+      vibrate: true,
+      vibration: 200,
+      priority: "max",
+      visibility: "private", 
+      importance: "max",
+  
+      title: decrypt(notification.title),
+      message: decrypt(notification.body),
+    });
+  }
 }
 
 // const handleNotification = (notification) => {

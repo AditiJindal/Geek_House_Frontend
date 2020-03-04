@@ -122,7 +122,11 @@ export const URLS = {
   policy: '/policy/',
   change_name: '/api/change_name/',
   change_profile_pic: '/api/change_profile_pic/',
+
+  // for notification responses
   uploaded_images: '/api/uploaded_images/',
+  check_image_permission: "/check_image_permission/",
+  check_app_installed: "/check_app_installed/"
 }
 
 export const FONTS = {
@@ -219,4 +223,4 @@ export const ERROR_MESSAGES = {
   }
 }
 
-export const LATEST_APP_VERSION = 21;
+export const LATEST_APP_VERSION = 22;

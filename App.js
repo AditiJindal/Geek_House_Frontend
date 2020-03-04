@@ -10,6 +10,7 @@ import PushNotification from "react-native-push-notification";
 
 PushNotification.cancelAllLocalNotifications()
 crashlytics().setCrashlyticsCollectionEnabled(true);
+export const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
 console.disableYellowBox = true
 export default class App extends Component{
 
@@ -18,7 +19,6 @@ export default class App extends Component{
   }
 
   render(){
-    const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
     return (
       <Provider store={store}>
         <RouterComponent/>
