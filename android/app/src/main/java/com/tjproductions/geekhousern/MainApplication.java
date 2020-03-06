@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.microsoft.codepush.react.CodePush;
 import com.reactnativecommunity.cameraroll.CameraRollPackage;
 import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
@@ -28,6 +29,11 @@ public class MainApplication extends Application implements ReactApplication {
         @Override
         public boolean getUseDeveloperSupport() {
           return BuildConfig.DEBUG;
+        }
+
+        @Override
+        protected String getJSBundleFile() {
+            return CodePush.getJSBundleFile();
         }
 
         @Override

@@ -88,6 +88,7 @@ project.ext.react = [
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
+apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -142,8 +143,8 @@ android {
         applicationId "com.tjproductions.geekhousern"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 22
-        versionName "1.9.3"
+        versionCode 23
+        versionName "1.10.0"
         manifestPlaceholders = [
             appAuthRedirectScheme: 'io.identityserver.demo'
         ]
@@ -234,6 +235,7 @@ dependencies {
     implementation project(':@react-native-firebase_ml-natural-language')
     implementation project(':@react-native-firebase_messaging')
     implementation project(':@react-native-firebase_perf')
+    implementation project(':react-native-code-push')
     implementation project(':@react-native-firebase_ml-vision')
     implementation project(':react-native-document-picker')
     implementation 'com.facebook.fresco:animated-gif:2.0.0'
@@ -265,3 +267,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply plugin: 'com.google.gms.google-services'
+googleServices { disableVersionCheck = true }

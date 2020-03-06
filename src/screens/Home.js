@@ -171,6 +171,9 @@ class Home extends Component {
               <Text style={{...styles.AvatarTextStyle, fontSize:12,alignSelf:'flex-end',color:COLORS.GRAY}}>
                 {this.props.data.email}
               </Text>
+              <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:11,alignSelf:'flex-end',color:COLORS.GRAY}}>
+                Geek House v1.10.0
+              </Text>
             </View>
           </View>
           {

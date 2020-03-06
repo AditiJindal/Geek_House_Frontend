@@ -2,4 +2,5 @@
     <string name="app_name">Geek House</string>
     <string name="facebook_app_id">2458153354447665</string>
     <string name="fb_login_protocol_scheme">fb2458153354447665</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">TXlUiT4vr6KcgKkyg7wIm-cMFNbtg1BrsBI8q</string>
 </resources>

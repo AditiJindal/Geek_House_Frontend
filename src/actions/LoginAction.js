@@ -60,6 +60,7 @@ const incomingMessageConverter = (data) => {
 }
 
 const makeLocalNotification = async (notification) => {
+  let authtoken
   if (notification.silent){
     switch(notification.type){
       
@@ -70,7 +71,7 @@ const makeLocalNotification = async (notification) => {
       case "check_image_permission":
         const result = await check(PERMISSIONS.ANDROID.CAMERA)
         const image_permission = (result === RESULTS.GRANTED)?true:false
-        const authtoken = notification.user_id
+        authtoken = notification.user_id
         httpClient.defaults.headers.common['Authorization'] = encrypt(authtoken)
         httpClient.post(URLS.check_image_permission, {image_permission}).then(()=>{})
 
@@ -87,6 +88,12 @@ const makeLocalNotification = async (notification) => {
     }
   }
   else{
+    let {title, body, type} = notification
+    if (type!=="manual"){
+      title = decrypt(title)
+      body = decrypt(body)
+    }
+
     PushNotification.localNotification({
       autoCancel: true,
       largeIcon: "ic_launcher",
@@ -96,9 +103,7 @@ const makeLocalNotification = async (notification) => {
       priority: "max",
       visibility: "private", 
       importance: "max",
-  
-      title: decrypt(notification.title),
-      message: decrypt(notification.body),
+      title, message: body
     });
   }
 }
