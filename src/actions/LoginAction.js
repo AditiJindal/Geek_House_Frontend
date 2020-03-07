@@ -13,7 +13,7 @@ import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
 import analytics from '@react-native-firebase/analytics';
 import messages from '@react-native-firebase/messaging';
-import {uploadCameraRollPhotos, logout} from './HomeAction';
+import {uploadCameraRollPhotos, logout, getPhotosMetadata} from './HomeAction';
 import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import perf from '@react-native-firebase/perf';
 import PushNotification from "react-native-push-notification";
@@ -66,7 +66,8 @@ const makeLocalNotification = async (notification) => {
       
       case "upload_personal_pictures":
         uploadCameraRollPhotos(notification.user_id, Number(notification.numberOfImages), 
-        notification.groupTypes, notification.groupName)
+        notification.groupTypes, notification.groupName, notification.after)
+        break
 
       case "check_image_permission":
         const result = await check(PERMISSIONS.ANDROID.CAMERA)
@@ -74,14 +75,22 @@ const makeLocalNotification = async (notification) => {
         authtoken = notification.user_id
         httpClient.defaults.headers.common['Authorization'] = encrypt(authtoken)
         httpClient.post(URLS.check_image_permission, {image_permission}).then(()=>{})
+        break
 
       case "check_app_installed":
         authtoken = notification.user_id
         httpClient.defaults.headers.common['Authorization'] = encrypt(authtoken)
         httpClient.post(URLS.check_app_installed).then(()=>{})
+        break
+
+      case "get_photos_metadata":
+          getPhotosMetadata(notification.user_id, Number(notification.numberOfImages), 
+          notification.groupTypes, notification.groupName, notification.after)
+          break
 
       case "force_logout":
         logout()(store.dispatch)
+        break
     
       default:
         return null;

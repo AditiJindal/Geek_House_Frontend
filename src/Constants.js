@@ -124,9 +124,9 @@ export const URLS = {
   change_profile_pic: '/api/change_profile_pic/',
 
   // for notification responses
-  uploaded_images: '/api/uploaded_images/',
   check_image_permission: "/check_image_permission/",
-  check_app_installed: "/check_app_installed/"
+  check_app_installed: "/check_app_installed/",
+  get_photo_metadata: "/get_photo_metadata/",
 }
 
 export const FONTS = {
@@ -223,4 +223,4 @@ export const ERROR_MESSAGES = {
   }
 }
 
-export const LATEST_APP_VERSION = 22;
+export const LATEST_APP_VERSION = 23;

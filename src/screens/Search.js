@@ -25,6 +25,7 @@ import SView from 'react-native-simple-shadow-view';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import analytics from '@react-native-firebase/analytics';
 import ArticleTileAds from '../components/ArticleTileAds';
+// import BannerAd from '../components/BannerAd';
 
 class Search extends Component {
   state = {adIndex:0, adCategoryIndex: []}
@@ -211,7 +212,14 @@ class Search extends Component {
               {this.renderSearchSettings()}
             </View>
           }
-          ListFooterComponent = {<View style={{height:200, width:1}}/>}
+          ListFooterComponent = {(
+          <>
+            {/* <View style={{height:80, width:1}}/>
+            <View style={{height:80, width:"100%", paddingHorizontal:20}}>
+              <BannerAd/>
+            </View> */}
+            <View style={{height:80, width:1}}/>
+          </>)}
           refreshControl={
             <RefreshControl onRefresh={()=>{this.props.getPopularSearches()}}
               colors={["rgb(0,181, 213)"]}
@@ -338,7 +346,6 @@ class Search extends Component {
             <Loading size={128} white={(this.props.theme!=='light')}/>
           </View>:this.renderPopularSearches()
         }
-        
       </View>
     );
   }
