@@ -45,7 +45,8 @@ const INITIAL_STATE={
   quick_replies: [],
   currentMessages:[], // list of messages of currently loaded person
   chat_group_participants:{},
-  chatInfoLoading: false
+  chatInfoLoading: false,
+  chatGroupsLeft: []
 }
 
 const incomingMessageConverter = (item) => {
@@ -193,6 +194,8 @@ const mergeChats = (new_chats, old_chats) => {
 }
 
 export default (state=INITIAL_STATE, action) => {
+  let new_users, new_admins, other_user_data, all_users, new_state, recentMessage;
+
   switch (action.type){
     case ACTIONS.LOGOUT:
       if (action.payload){
@@ -293,7 +296,7 @@ export default (state=INITIAL_STATE, action) => {
       return {...state, loading:true}
 
     case ACTIONS.SET_CHAT_USER_DATA:
-      let other_user_data = action.payload;
+      other_user_data = action.payload;
       new_status = {...state.status};
 
 
@@ -325,7 +328,8 @@ export default (state=INITIAL_STATE, action) => {
       // messages: {'<other_user_id>': [message_objects]}
       
       // const all_users = [...action.payload.chats]
-      const all_users = mergeChats(action.payload.chats, [...state.chats]);
+      console.log("ACTION.PAYLOAD : ", action.payload)
+      all_users = mergeChats(action.payload.chats, [...state.chats]);
       new_messages={...state.messages}
       duplicate_status = {...state.status};
       total_unread_messages = state.total_unread_messages;
@@ -356,7 +360,7 @@ export default (state=INITIAL_STATE, action) => {
       if (total_unread_messages<0){total_unread_messages=0}
       if (action.payload.explicitly){status=duplicate_status}
 
-      let new_state = {...state, chats:new_chats,
+      new_state = {...state, chats:new_chats,chatGroupsLeft: action.payload.chatGroupsLeft,
         loading:false, status, total_unread_messages}
 
       // delete action.payload.chats
@@ -371,7 +375,7 @@ export default (state=INITIAL_STATE, action) => {
       total_unread_messages = state.total_unread_messages;
       new_currentMessages = [];
       payload_message = action.payload.message
-      let recentMessage = payload_message[0].text
+      recentMessage = payload_message[0].text
 
       // action.payload.message is [ { ... } ], is an array containing one object
       state.chats = reorderChatsList(state.chats, action.payload.other_user_id)
@@ -528,12 +532,39 @@ export default (state=INITIAL_STATE, action) => {
     case ACTIONS.CHAT_GROUP_CREATE:
       return {...state, chats: [action.payload, ...state.chats]}
 
-    case ACTIONS.CHAT_GROUP_MODIFY_ADMINS:
-      const {group_id, admins} = action.payload;
-      
+    case ACTIONS.CHAT_LEAVE_GROUP:
+      // const {group_id, user_id, specialMessage} = action.payload
+      if (state.user_id === action.payload.user_id){
+        state.chatGroupsLeft.push(action.payload.group_id)
+      }
 
-      const new_users = state.chat_group_participants[group_id].users.map((user)=>{
-        if (admins.includes(user._id)){
+      // remove user_id from users and admins in chat_group_participants
+      new_users = [];
+      if (state.chat_group_participants[action.payload.group_id]){
+        state.chat_group_participants[action.payload.group_id].users.map((item)=>{
+          if (item._id!==user_id){
+            new_users.push(item)
+          }
+        });
+        state.chat_group_participants[action.payload.group_id].users = new_users
+  
+        new_admins = [];
+        state.chat_group_participants[action.payload.group_id].admins.map((item)=>{
+          if (item!==user_id){
+            new_admins.push(item)
+          }
+        });
+        state.chat_group_participants[action.payload.group_id].admins = new_admins
+      }
+
+      new_state = {...state, chatGroupsLeft: [...state.chatGroupsLeft], 
+        chat_group_participants: {...state.chat_group_participants}}
+      return new_state
+
+    case ACTIONS.CHAT_GROUP_MODIFY_ADMINS:
+
+      new_users = state.chat_group_participants[action.payload.group_id].users.map((user)=>{
+        if (action.payload.admins.includes(user._id)){
           user.isAdmin = true
         }
         else{
@@ -542,8 +573,8 @@ export default (state=INITIAL_STATE, action) => {
         return user
       });
 
-      state.chat_group_participants[group_id].users = new_users
-      state.chat_group_participants[group_id].admins = admins
+      state.chat_group_participants[action.payload.group_id].users = new_users
+      state.chat_group_participants[action.payload.group_id].admins = action.payload.admins
 
       return {...state, chat_group_participants: {...state.chat_group_participants}}
 

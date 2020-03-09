@@ -10,7 +10,7 @@ import Loading from '../components/Loading';
 import TimedAlert from '../components/TimedAlert';
 import {Menu, MenuOptions, MenuOption, 
   MenuTrigger, MenuProvider} from 'react-native-popup-menu';
-import {modifyAdmins} from '../actions/ChatAction';
+import {modifyAdmins, leaveGroup} from '../actions/ChatAction';
 
 const overlayWidth = Dimensions.get('screen').width*0.86
 
@@ -143,7 +143,6 @@ class ChatInfo extends Component {
         <Ripple 
           onPress = {()=>{
             this.handleModifyAdmins(this.props.currentUserId,this.props.user_name, true)
-            this.timedAlert.showAlert(2000, "You are no longer an admin", 1);
           }} style={{...styles.EndButton, backgroundColor: COLORS.GRAY}}>
 
           <Text style={{fontFamily:FONTS.RALEWAY, fontSize:18, color:COLORS.LIGHT, marginRight:5}}>
@@ -173,11 +172,12 @@ class ChatInfo extends Component {
   }
 
   renderLeaveGroup(){
-    const {COLORS} = this.props;
+    const {COLORS, other_user_data} = this.props;
+    const group_id = other_user_data._id
     return (
       
       <Ripple
-        onPress={()=>{this.timedAlert.showAlert(2000, 'Feature coming in future update', 1)}}
+        onPress={()=>{leaveGroup(group_id)}}
         style={{...styles.EndButton, backgroundColor: COLORS.GRAY, borderBottomLeftRadius:15,
           borderBottomRightRadius:15,}}>
         <Text style={{fontFamily:FONTS.RALEWAY, fontSize:18, color:COLORS.LIGHT, marginRight:5}}>
@@ -190,7 +190,11 @@ class ChatInfo extends Component {
 
   render(){
     const {COLORS, other_user_data, image_adder, isLoading, chat_group_participants} = this.props;
-    const group_participants = chat_group_participants[other_user_data._id]
+    const group_participants = chat_group_participants[other_user_data._id];
+
+    if (this.props.chatGroupsLeft.includes(other_user_data._id)){
+      return null
+    }
 
     return (
       <Overlay isVisible={this.props.isVisible}
@@ -201,6 +205,7 @@ class ChatInfo extends Component {
         containerStyle={{padding:0}}
         animationType='none'
         overlayBackgroundColor={(COLORS.THEME==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}>
+        <>
         <StatusBar 
           barStyle={'light-content'}
           backgroundColor={COLORS.OVERLAY_COLOR}/>
@@ -230,6 +235,7 @@ class ChatInfo extends Component {
             </MenuProvider>
           )
         }
+        </>
       </Overlay>
     )
   }
@@ -240,7 +246,8 @@ const mapStateToProps = (state) => {
     authtoken: state.login.authtoken,
     user_name: state.login.data.name,
 
-    chat_group_participants: state.chat.chat_group_participants
+    chat_group_participants: state.chat.chat_group_participants,
+    chatGroupsLeft: state.chat.chatGroupsLeft
   }
 }
 

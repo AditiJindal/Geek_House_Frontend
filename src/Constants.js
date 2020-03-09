@@ -223,4 +223,4 @@ export const ERROR_MESSAGES = {
   }
 }
 
-export const LATEST_APP_VERSION = 23;
+export const LATEST_APP_VERSION = 24;

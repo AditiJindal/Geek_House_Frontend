@@ -260,7 +260,11 @@ export const createGroup = (newGroupInfo, successCallback, errorCallback) => {
 
 export const modifyAdmins = async (data) => {
   // data = {group_id:String, user_id:String, add:Boolean}
-  socket.emit('chat_group_modiy_admins', data)
+  socket.emit('chat_group_modify_admins', data)
+}
+
+export const leaveGroup = async (group_id) => {
+  socket.emit('chat_leave_group', group_id)
 }
 
 export const getChatGroupParticipants = (group_id) => {

@@ -109,7 +109,7 @@ class ChatScreen extends Component {
             style={{height:48, width:48, borderRadius:24}}
           />
           {
-            (!this.props.other_user_data.newEntry 
+            (!this.props.other_user_data.newEntry && !this.props.other_user_data.isGroup
             && this.props.status.hasOwnProperty(this.props.other_user_data._id) 
             && this.props.status[this.props.other_user_data._id].online)?
             (
@@ -126,7 +126,7 @@ class ChatScreen extends Component {
   }
 
   renderHeader(){
-    const {COLORS} = this.props;
+    const {COLORS, chatGroupsLeft} = this.props;
     return (
       <View style={{paddingVertical:4,elevation:25,
         alignItems:'center', flexDirection:'row', width:"100%",
@@ -146,6 +146,17 @@ class ChatScreen extends Component {
               color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
               {this.props.other_user_data.fav_category}
             </Text>):null}
+
+            {
+              (chatGroupsLeft.includes(this.props.other_user_data._id))?
+              (
+                <Text style={{...styles.InterestStyle, 
+                  color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
+                  You are not a member anymore
+                </Text>
+              ):null
+            }
+
           </View>
           {(!this.state.imageViewerSelected)?(
             <TouchableOpacity style={{height:32, width:48, justifyContent:'center', alignItems:'center'}}
@@ -256,7 +267,8 @@ const mapStateToProps = (state) => {
     quick_replies_enabled: state.chat.quick_replies_enabled,
     chatScreenState: state.chat.chatScreenState,
     chat_group_participants: state.chat.chat_group_participants,
-    chatInfoLoading: state.chat.chatInfoLoading
+    chatInfoLoading: state.chat.chatInfoLoading,
+    chatGroupsLeft: state.chat.chatGroupsLeft
   }
 }
 

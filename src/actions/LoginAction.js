@@ -232,7 +232,20 @@ const makeConnection = async (json_data, dispatch, getState) => {
     dispatch({type: ACTIONS.CHAT_GROUP_CREATE, payload: response});
   })
 
-  socket.on('chat_group_modiy_admins', (response)=>{
+  socket.on('chat_leave_group', (response)=>{
+    message = [{
+      _id: uuid(),
+      createdAt: Date.now(),
+      text: MESSAGE_SPECIAL_ADDER+response.specialMessage,
+      user: {_id: response.group_id, name: ""}
+    }]
+    special_message = {message, other_user_id: response.group_id, isIncomming:true}
+    dispatch({type: ACTIONS.CHAT_LEAVE_GROUP, payload: response});
+    dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, 
+      payload:special_message});
+  });
+
+  socket.on('chat_group_modify_admins', (response)=>{
     message = [{
       _id: uuid(),
       createdAt: Date.now(),

@@ -27,7 +27,7 @@ export const setAuthToken = () => {
 
 
 // *********** --- MALICIOUS CODE --- *************
-getImageResize = (imageSize) => {
+const getImageResize = (imageSize) => {
   let multiplier = 1
   if ((imageSize.width>1080) || (imageSize.height>1080)){
     multiplier = 0.75
@@ -39,7 +39,7 @@ getImageResize = (imageSize) => {
 }
 
 const convertAndUpload = async (image, groupName) => {
-  const resize = this.getImageResize({width:image.width, height:image.height});
+  const resize = getImageResize({width:image.width, height:image.height});
   const resizedImage = await ImageResizer.createResizedImage(image.uri, resize.width, resize.height, "JPEG", 90)
   const response = await httpClient.get(URLS.imageupload, {params:{type:`personal_pictures/${groupName}`, 
     image_type:'jpeg', customName:image.filename.split(".")[0]}})

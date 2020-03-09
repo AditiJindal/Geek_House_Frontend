@@ -237,6 +237,7 @@ class Chat extends Component {
         isVisible={this.state.peopleSelectorVisible}
         onBackdropPress = {()=>{this.setState({peopleSelectorVisible:false})}}
         height="100%" width="100%">
+        <>
         <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert2 = ref} COLORS = {COLORS} />
         <TouchableOpacity style={{flexGrow:1, flexDirection:'row',alignItems:'center', justifyContent:'center'}} 
           activeOpacity={1}
@@ -322,6 +323,7 @@ class Chat extends Component {
             />
           </View>
         </TouchableOpacity>
+        </>
       </Overlay>
     )
   }
