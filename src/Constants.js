@@ -77,7 +77,8 @@ export const COLORS_DARK_THEME = {
   SHADOW_COLOR:"#000000",
   IS_LIGHT_THEME: false
 };
-export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
+// export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
+export const BASE_URL_PROD = "http://13.233.117.233:8000"
 export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
 export const BASE_URL = (__DEV__)?BASE_URL_DEBUG:BASE_URL_PROD
 

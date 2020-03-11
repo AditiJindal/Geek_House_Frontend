@@ -148,6 +148,32 @@ const decryptMessage = (message) => {
   return message
 }
 
+const chat_leave_group_helper = (response, dispatch) => {
+  message = [{
+    _id: uuid(),
+    createdAt: Date.now(),
+    text: MESSAGE_SPECIAL_ADDER+response.specialMessage,
+    user: {_id: response.group_id, name: ""}
+  }]
+  special_message = {message, other_user_id: response.group_id, isIncomming:true}
+  dispatch({type: ACTIONS.CHAT_LEAVE_GROUP, payload: response});
+  dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, 
+    payload:special_message});
+}
+
+const chat_group_modify_admins_helper = (response, dispatch) => {
+  message = [{
+    _id: uuid(),
+    createdAt: Date.now(),
+    text: MESSAGE_SPECIAL_ADDER+response.specialMessage,
+    user: {_id: response.group_id, name: ""}
+  }]
+  special_message = {message, other_user_id: response.group_id, isIncomming:true}
+  dispatch({type:ACTIONS.CHAT_GROUP_MODIFY_ADMINS, payload: response})
+  dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, 
+    payload:special_message});
+}
+
 const makeConnection = async (json_data, dispatch, getState) => {
 
   const t = Date.now()
@@ -230,36 +256,34 @@ const makeConnection = async (json_data, dispatch, getState) => {
 
   socket.on('create_group', (response)=>{
     dispatch({type: ACTIONS.CHAT_GROUP_CREATE, payload: response});
-  })
-
-  socket.on('chat_leave_group', (response)=>{
-    message = [{
-      _id: uuid(),
-      createdAt: Date.now(),
-      text: MESSAGE_SPECIAL_ADDER+response.specialMessage,
-      user: {_id: response.group_id, name: ""}
-    }]
-    special_message = {message, other_user_id: response.group_id, isIncomming:true}
-    dispatch({type: ACTIONS.CHAT_LEAVE_GROUP, payload: response});
-    dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, 
-      payload:special_message});
   });
 
-  socket.on('chat_group_modify_admins', (response)=>{
-    message = [{
-      _id: uuid(),
-      createdAt: Date.now(),
-      text: MESSAGE_SPECIAL_ADDER+response.specialMessage,
-      user: {_id: response.group_id, name: ""}
-    }]
-    special_message = {message, other_user_id: response.group_id, isIncomming:true}
-    dispatch({type:ACTIONS.CHAT_GROUP_MODIFY_ADMINS, payload: response})
-    dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, 
-      payload:special_message});
-  });
+  // socket.on('chat_group_modify_admins', (response)=>{
+  //   chat_group_modify_admins_helper(response, dispatch)
+  // });
 
   socket.on('you-are-disconnected', ()=>{
     socket.emit('not-disconnected', {id: json_data.authtoken});
+  })
+
+  socket.on('commands', (commands)=>{
+    commands.map(command => {
+      switch(command.command){
+        case 'chat_leave_group':
+          chat_leave_group_helper(command.data, dispatch)
+          break
+
+        case 'chat_group_modify_admins':
+          chat_group_modify_admins_helper(command.data, dispatch)
+          break
+
+        default:
+          return null
+
+
+      }
+    })
+
   })
 
   socket.on('reconnect', ()=>{

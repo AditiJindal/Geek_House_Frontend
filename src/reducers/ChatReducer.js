@@ -328,7 +328,6 @@ export default (state=INITIAL_STATE, action) => {
       // messages: {'<other_user_id>': [message_objects]}
       
       // const all_users = [...action.payload.chats]
-      console.log("ACTION.PAYLOAD : ", action.payload)
       all_users = mergeChats(action.payload.chats, [...state.chats]);
       new_messages={...state.messages}
       duplicate_status = {...state.status};
@@ -394,13 +393,12 @@ export default (state=INITIAL_STATE, action) => {
       
       saveMessageInDB(action.payload, state.user_id);
 
-      new_currentMessages = state.currentMessages
-      if (state.other_user_data._id.toString()===action.payload.other_user_id.toString()){
+      new_currentMessages = state.currentMessages;
+      if (state.other_user_data._id && (state.other_user_data._id.toString()===action.payload.other_user_id.toString())){
         // means the user has opened a chat which is diffenenr and the message he received is
         // from the same user
         new_currentMessages = [...payload_message, ...state.currentMessages]
       }
-      
       
       if (!state.status.hasOwnProperty(action.payload.other_user_id)){
         new_messages[action.payload.other_user_id] = payload_message;
