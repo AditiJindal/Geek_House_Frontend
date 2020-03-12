@@ -1,6 +1,6 @@
 import {ACTIONS} from './types';
 import {URLS, BASE_URL, HTTP_TIMEOUT} from '../Constants';
-import uuid from 'uuid';
+import uuid from 'uuid/v4';
 import axios from 'axios';
 import RNFileSystem from 'react-native-fs';
 import {encrypt, decrypt} from '../encryptionUtil';
@@ -101,11 +101,11 @@ export const revertName = () => {
 
 export const changeImageUrl = (image_url, callback) => {
   // this goes into LoginReducer as image_url remains with LoginReducer
-
   return (dispatch) => {
     dispatch({type:ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING, payload:true})
     httpClient.get(URLS.imageupload, {params:{type:'profile_picture', image_type:'jpeg'}}).then((response)=>{
       const preSignedURL = decrypt(response.data.url);
+
       uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, image_url)
       .then(()=>{
         aws_image_url = decrypt(response.data.key);

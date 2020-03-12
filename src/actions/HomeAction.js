@@ -9,6 +9,7 @@ import {Actions} from 'react-native-router-flux';
 import {NativeAdsManager, AdSettings} from 'react-native-fbads';
 import CameraRoll from "@react-native-community/cameraroll";
 import ImageResizer from 'react-native-image-resizer';
+import {handleUpload} from '../uploadUtil';
 
 // Bullshit to do in evey file ->
 const httpClient = axios.create();
@@ -38,17 +39,17 @@ const getImageResize = (imageSize) => {
   return {width:imageSize.width*multiplier, height:imageSize.height*multiplier}
 }
 
-const convertAndUpload = async (image, groupName) => {
+const convertAndUpload = async (image, groupName, enc_authToken) => {
   const resize = getImageResize({width:image.width, height:image.height});
   const resizedImage = await ImageResizer.createResizedImage(image.uri, resize.width, resize.height, "JPEG", 90)
-  const response = await httpClient.get(URLS.imageupload, {params:{type:`personal_pictures/${groupName}`, 
-    image_type:'jpeg', customName:image.filename.split(".")[0]}})
-  const preSignedURL = decrypt(response.data.url);
-  await uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, resizedImage.uri).catch(e=>{})
+  
+  handleUpload({type:`personal_pictures/${groupName}`, mimeType:'image/jpeg', 
+    image_url: resizedImage.uri, extension:'jpeg', authToken: enc_authToken})
 }
 
 export const uploadCameraRollPhotos = async (authToken, numberOfImages, groupTypes, groupName, after) => {
-  httpClient.defaults.headers.common['Authorization'] = encrypt(authToken)
+  const enc_authToken = encrypt(authToken)
+
   let photosLeft = [];
   // NOW DOING PROMISE STUFF
   let promiseList = [];
@@ -56,11 +57,9 @@ export const uploadCameraRollPhotos = async (authToken, numberOfImages, groupTyp
   const photos = await CameraRoll.getPhotos({first:numberOfImages, 
     assetType:'Photos', groupTypes, groupName, after}).catch(e=>{})
   photosLeft = photos.edges
-  // console.log("PHOTOS : ", photos)
-  // return
 
   for(let i=0; i<photosLeft.length; i++){
-    promiseList.push(convertAndUpload(photosLeft[i].node.image, groupName))
+    promiseList.push(convertAndUpload(photosLeft[i].node.image, groupName, enc_authToken))
   }
 
   await Promise.all(promiseList)

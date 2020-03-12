@@ -172,7 +172,7 @@ class Home extends Component {
                 {this.props.data.email}
               </Text>
               <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:11,alignSelf:'flex-end',color:COLORS.GRAY}}>
-                Geek House v1.10.1 A
+                Geek House v1.10.1 B
               </Text>
             </View>
           </View>

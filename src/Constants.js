@@ -114,6 +114,7 @@ export const URLS = {
   publish: '/api/publish/',
   chatpeople: '/api/chatpeople/',
   imageupload: '/api/article/image_upload/',
+  upload_server: '/upload_server/',
   comment: '/api/comment/',
   logevent: '/api/logevent/',
   chatpeoplesearch: '/api/chatpeoplesearch/',
