@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Linking, StyleSheet, View, ViewPropTypes, } from 'react-native';
+import { Linking, View, ViewPropTypes, } from 'react-native';
 // @ts-ignore
 import ParsedText from 'react-native-parsed-text';
 import Communications from 'react-native-communications';
@@ -9,8 +9,8 @@ const WWW_URL_PATTERN = /^www\./i;
 const textStyle = {
     fontSize: 16,
     fontFamily:FONTS.PRODUCT_SANS,
-    marginTop: 5,
-    marginBottom: 5,
+    marginTop: 2,
+    marginBottom: 3,
     marginLeft: 10,
     marginRight: 10,
 };
@@ -32,7 +32,7 @@ const styles = {
         container: {},
         text: {
             color: COLORS_LIGHT_THEME.LIGHT,
-            ...textStyle,
+            ...textStyle,marginTop:5,
         },
         link: {
             fontFamily:FONTS.PRODUCT_SANS_BOLD,

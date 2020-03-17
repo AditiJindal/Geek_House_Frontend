@@ -78,7 +78,7 @@ export const COLORS_DARK_THEME = {
   IS_LIGHT_THEME: false
 };
 // export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
-export const BASE_URL_PROD = "http://13.233.117.233:8000"
+export const BASE_URL_PROD = "http://13.235.176.50:8000"
 export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
 export const BASE_URL = (__DEV__)?BASE_URL_DEBUG:BASE_URL_PROD
 
@@ -161,7 +161,6 @@ export const FONTS = {
   LECKERLIONE: 'LeckerliOne-Regular'
 }
 
-
 export const COLOR_COMBOS = [
   ['rgb(72, 76, 75)', 'rgb(14, 150, 162)'],
   ['rgb(50, 93, 127)', 'rgb(103, 93, 121)'],
@@ -226,3 +225,5 @@ export const ERROR_MESSAGES = {
 }
 
 export const LATEST_APP_VERSION = 24;
+
+export const MAX_USERS_IN_A_GROUP = 20

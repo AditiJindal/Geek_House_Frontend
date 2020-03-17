@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
-import {View, Text, StatusBar, Dimensions, ScrollView, 
+import {View, Text, FlatList, Dimensions, ScrollView,
   StyleSheet, TouchableOpacity} from 'react-native';
 import {connect} from 'react-redux';
 import {Overlay, Icon} from 'react-native-elements';
 import Ripple from './Ripple';
 import Image from 'react-native-fast-image';
-import {FONTS} from '../Constants';
+import ChatPeople from './ChatPeople';
+import {FONTS, MAX_USERS_IN_A_GROUP, COLORS_LIGHT_THEME} from '../Constants';
 import Loading from '../components/Loading';
 import TimedAlert from '../components/TimedAlert';
 import {Menu, MenuOptions, MenuOption, 
   MenuTrigger, MenuProvider} from 'react-native-popup-menu';
-import {modifyAdmins, leaveGroup} from '../actions/ChatAction';
+import {modifyAdmins, leaveGroup, addGroupParticipants} from '../actions/ChatAction';
 
 const overlayWidth = Dimensions.get('screen').width*0.86
 
@@ -22,6 +23,7 @@ const imageUrlCorrector = (image_url, image_adder) => {
 }
 
 class ChatInfo extends Component {
+  state={peopleSelectorVisible:false, peopleToAdd: []}
 
   handleModifyAdmins(user_id,user_name, isUserAdmin){
     const group_id = this.props.other_user_data._id
@@ -37,7 +39,7 @@ class ChatInfo extends Component {
       <View style={{flex:1, flexDirection:'row', alignItems:'center', justifyContent:'space-between',
         paddingHorizontal:15}}>
         <View style={{flexDirection:'row', alignItems:'center'}}>
-          <View style={{height:48, width:48, borderRadius:24, overflow:'hidden', elevation:7}}>
+          <View style={{height:48, width:48, borderRadius:24, overflow:'hidden', elevation:7, backgroundColor:COLORS.LIGHT}}>
             <Image source={{uri:imageUrlCorrector(image_url, this.props.image_adder)}} 
               style={{flex:1}}/>
           </View>
@@ -108,8 +110,129 @@ class ChatInfo extends Component {
         <MenuOption customStyles={{optionText:{...styles.MenuText, color:COLORS.DARK}, OptionTouchableComponent:TouchableOpacity }} 
           onSelect={this.handleModifyAdmins.bind(this, _id, name, isAdmin)} text={text} />
         <MenuOption customStyles={{optionText:{...styles.MenuText, color:COLORS.DARK}, OptionTouchableComponent:TouchableOpacity}}
-          onSelect={()=>{this.timedAlert.showAlert(2000, 'Feature coming in future update', 1)}} text='Remove from group' />
+          onSelect={()=>{leaveGroup(this.props.other_user_data._id, _id)}} text='Remove from group' />
       </MenuOptions>
+    );
+  }
+
+  getSelectedUsers(user_id, shouldRemove){
+    if (shouldRemove){
+      new_users = [];
+      this.state.peopleToAdd.map((item)=>{
+        if (item!==user_id){
+          new_users.push(item)
+        }
+      })
+    }
+    else if(this.state.peopleToAdd.length<MAX_USERS_IN_A_GROUP) {new_users = [...this.state.peopleToAdd, user_id]}
+    else {this.timedAlert.showAlert(2000, 'Maximum limit of 128 reached')}
+    
+    this.setState({peopleToAdd :new_users});
+  }
+
+  onPressAdd(){
+    if (this.state.peopleToAdd.length){
+      addGroupParticipants(this.props.other_user_data._id, this.state.peopleToAdd)
+      this.setState({peopleSelectorVisible:false})
+    }
+  }
+
+  renderChatPeopleSelector(){
+    const {COLORS, chat_group_participants, other_user_data}= this.props;
+    const group_participants = chat_group_participants[other_user_data._id];
+    let group_participants_user_ids = [];
+
+    if (!group_participants){
+      return
+    }
+
+    group_participants.users.map(item=>{
+      group_participants_user_ids.push(item._id)
+    });
+
+    const DATA = this.props.chats;
+    let itemsRendered=-1;
+
+    return(
+      <Overlay
+        overlayStyle={{backgroundColor:'transparent', padding:0, elevation:0}}
+        isVisible={this.state.peopleSelectorVisible}
+        onBackdropPress = {()=>{this.setState({peopleSelectorVisible:false})}}
+        height="100%" width="100%">
+        <>
+        <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert2 = ref} COLORS = {COLORS} />
+        <TouchableOpacity style={{flexGrow:1, flexDirection:'row',alignItems:'center', justifyContent:'center'}} 
+          activeOpacity={1}
+          onPress = {()=>{this.setState({peopleSelectorVisible:false})}}>
+          <View style={{maxHeight:"70%", width:"75%", borderRadius:20, elevation:10, 
+            backgroundColor:COLORS.LIGHT,}}>
+            <FlatList
+              contentContainerStyle={{marginTop:15}}
+              keyboardShouldPersistTaps="always"
+              data={DATA}
+              ListEmptyComponent={(
+                <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                  <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:18, color:COLORS.LESS_DARK}}>
+                    No person To add
+                  </Text>
+                </View>
+              )}
+              ListHeaderComponent = {
+                <View style={{marginHorizontal:20, marginVertical:5}}>
+                  <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between',
+                    paddingTop:10, paddingBottom:5}}>
+                    <View>
+                      <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY, fontSize:18, marginRight:10}}>
+                        Select People To Add
+                      </Text>
+                      {
+                        (this.state.peopleToAdd.length)?(
+                          <Text style={{color:COLORS.LESS_DARK, fontFamily:FONTS.RALEWAY, fontSize:12}}>
+                            {`${this.state.peopleToAdd.length} participants selected`}
+                          </Text>
+                        ):null
+                      }
+                    </View>
+                    <Ripple rippleContainerBorderRadius={30}
+                      style={{height:42, width:42, justifyContent:'center', alignItems:'center', 
+                        borderRadius:30, elevation:3,
+                        backgroundColor:(!this.state.peopleToAdd.length)?(COLORS.GRAY):(COLORS.GREEN)}} 
+                      onPress={this.onPressAdd.bind(this)}>
+                        <Icon type={'feather'} name={'check'} size={22} color={(!this.state.peopleToAdd.length)?(COLORS.LIGHT):(COLORS_LIGHT_THEME.LIGHT)}/>
+                    </Ripple>
+                  </View>
+                </View>
+              }
+              ListFooterComponent = {<View style={{height:8,width:1}}/>}
+              keyExtractor={(item, index) => {
+                if (!item._id.toString()){return index.toString()}
+                else{ return item._id.toString()}
+              }}
+              renderItem={({item, index}) => {
+                if (!this.props.status.hasOwnProperty(item._id)){
+                  this.props.status[item._id] = {online: true, typing: false, unread_messages: 0}
+                }
+                if (item.isGroup){return null}
+                itemsRendered+=1;
+                return (
+                  <ChatPeople 
+                    data={item}
+                    COLORS = {COLORS}
+                    theme={this.props.theme}
+                    image_adder = {this.props.image_adder}
+                    isSelector={true}
+                    isSelected={this.state.peopleToAdd.includes(DATA[index]._id)}
+                    isAddedToGroup={group_participants_user_ids.includes(DATA[index]._id)}
+                    onPress={(user_id, shouldRemove)=>this.getSelectedUsers(user_id, shouldRemove)}
+                  />
+                  )
+                }
+              }
+            />
+          </View>
+        </TouchableOpacity>
+        </>
+      </Overlay>
     )
   }
 
@@ -159,7 +282,7 @@ class ChatInfo extends Component {
     if (!isCurrentUserAdmin){return null}
     return (
       <Ripple
-        onPress={()=>{this.timedAlert.showAlert(2000, 'Feature coming in future update', 1)}}
+        onPress={()=>{this.setState({peopleSelectorVisible:true})}}
         style={{flexDirection:'row', alignItems:'center', backgroundColor:COLORS.GRAY, 
           padding:10, justifyContent:'center', margin:5}}>
         <Text style={{fontFamily:FONTS.RALEWAY, fontSize:18, color:COLORS.LIGHT, marginLeft:15}}>
@@ -172,12 +295,12 @@ class ChatInfo extends Component {
   }
 
   renderLeaveGroup(){
-    const {COLORS, other_user_data} = this.props;
+    const {COLORS, other_user_data, authtoken} = this.props;
     const group_id = other_user_data._id
     return (
       
       <Ripple
-        onPress={()=>{leaveGroup(group_id)}}
+        onPress={()=>{leaveGroup(group_id, authtoken)}}
         style={{...styles.EndButton, backgroundColor: COLORS.GRAY, borderBottomLeftRadius:15,
           borderBottomRightRadius:15,}}>
         <Text style={{fontFamily:FONTS.RALEWAY, fontSize:18, color:COLORS.LIGHT, marginRight:5}}>
@@ -200,15 +323,13 @@ class ChatInfo extends Component {
       <Overlay isVisible={this.props.isVisible}
         borderRadius={20}
         onBackdropPress={this.props.onBackdropPress}
-        overlayStyle={{marginBottom:25, elevation:0, padding:0, 
+        overlayStyle={{marginBottom:25, elevation:0, padding:0,
           overflow:'hidden', width:overlayWidth, height:"82%"}}
         containerStyle={{padding:0}}
         animationType='none'
         overlayBackgroundColor={(COLORS.THEME==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}>
         <>
-        <StatusBar 
-          barStyle={'light-content'}
-          backgroundColor={COLORS.OVERLAY_COLOR}/>
+        {this.renderChatPeopleSelector()}
         <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} COLORS = {COLORS}/>
         {
           (isLoading || !group_participants)?
@@ -247,7 +368,9 @@ const mapStateToProps = (state) => {
     user_name: state.login.data.name,
 
     chat_group_participants: state.chat.chat_group_participants,
-    chatGroupsLeft: state.chat.chatGroupsLeft
+    chatGroupsLeft: state.chat.chatGroupsLeft,
+    chats: state.chat.chats,
+    status: state.chat.status,
   }
 }
 

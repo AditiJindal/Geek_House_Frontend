@@ -220,10 +220,10 @@ export default class MessageContainer extends React.PureComponent {
             ListFooterComponent={
             <View style={{backgroundColor:COLORS.LIGHT+'86', borderRadius:10,paddingVertical:5,
             paddingHorizontal:10, alignSelf:'center', margin:20}}>
-                <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:10.6,color:COLORS.DARK}}>
-                    {`* Long press on an image to save it in gallery\n\
-* Long press on text to copy it to clipboard\n\
-* Your chat is encrypted and secure`}
+                <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:10.6,color:COLORS_LIGHT_THEME.LIGHT}}>
+                    {`* Long press on an `}<Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD}}>image</Text>{` to save it in gallery\n\
+* Long press on `}<Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD}}>text</Text>{` to copy it to clipboard\n\
+* Your chat is `}<Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD}}>encrypted and secure</Text>
                 </Text>
             </View>
             }

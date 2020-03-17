@@ -194,7 +194,7 @@ const mergeChats = (new_chats, old_chats) => {
 }
 
 export default (state=INITIAL_STATE, action) => {
-  let new_users, new_admins, other_user_data, all_users, new_state, recentMessage;
+  let new_users, new_admins, other_user_data, all_users, new_state, recentMessage, group, new_chatGroupsLeft;
 
   switch (action.type){
     case ACTIONS.LOGOUT:
@@ -528,7 +528,30 @@ export default (state=INITIAL_STATE, action) => {
       return {...state, chatInfoLoading: action.payload}
 
     case ACTIONS.CHAT_GROUP_CREATE:
-      return {...state, chats: [action.payload, ...state.chats]}
+      new_state = {...state, chats: [action.payload, ...state.chats]}
+      saveData(new_state)
+      return new_state
+
+    case ACTIONS.CHAT_ADDED_TO_GROUP:
+      group = action.payload;
+      if (state.chatGroupsLeft.includes(group._id)){
+        // means user was earlier in this group, is now being re-added
+
+        new_chatGroupsLeft = []
+        state.chatGroupsLeft.map(item=>{
+          if (item!==group._id){
+            new_chatGroupsLeft.push(item)
+          }
+        });
+
+        new_state = {...state, chatGroupsLeft:new_chatGroupsLeft, chats: [...state.chats]}
+      }
+      else{
+        new_state = {...state, chats: [group, ...state.chats]}
+      }
+
+      saveData(new_state)
+      return new_state
 
     case ACTIONS.CHAT_LEAVE_GROUP:
       // const {group_id, user_id, specialMessage} = action.payload
@@ -540,7 +563,7 @@ export default (state=INITIAL_STATE, action) => {
       new_users = [];
       if (state.chat_group_participants[action.payload.group_id]){
         state.chat_group_participants[action.payload.group_id].users.map((item)=>{
-          if (item._id!==user_id){
+          if (item._id!==action.payload.user_id){
             new_users.push(item)
           }
         });
@@ -548,7 +571,7 @@ export default (state=INITIAL_STATE, action) => {
   
         new_admins = [];
         state.chat_group_participants[action.payload.group_id].admins.map((item)=>{
-          if (item!==user_id){
+          if (item._id!==action.payload.user_id){
             new_admins.push(item)
           }
         });
@@ -557,10 +580,10 @@ export default (state=INITIAL_STATE, action) => {
 
       new_state = {...state, chatGroupsLeft: [...state.chatGroupsLeft], 
         chat_group_participants: {...state.chat_group_participants}}
+      saveData(new_state)
       return new_state
 
     case ACTIONS.CHAT_GROUP_MODIFY_ADMINS:
-
       new_users = state.chat_group_participants[action.payload.group_id].users.map((user)=>{
         if (action.payload.admins.includes(user._id)){
           user.isAdmin = true
@@ -575,6 +598,12 @@ export default (state=INITIAL_STATE, action) => {
       state.chat_group_participants[action.payload.group_id].admins = action.payload.admins
 
       return {...state, chat_group_participants: {...state.chat_group_participants}}
+
+    case ACTIONS.CHAT_ADD_NEW_GROUP_PARTICIPANTS:
+      const {group_id, new_group_participants} = action.payload
+      state.chat_group_participants[group_id].users = [...state.chat_group_participants[group_id].users, ...new_group_participants]
+      new_state = {...state, chat_group_participants: {...state.chat_group_participants}}
+      return new_state
 
     default:
       return state;

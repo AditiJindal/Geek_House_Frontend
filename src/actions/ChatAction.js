@@ -263,8 +263,12 @@ export const modifyAdmins = async (data) => {
   socket.emit('chat_group_modify_admins', data)
 }
 
-export const leaveGroup = async (group_id) => {
-  socket.emit('chat_leave_group', group_id)
+export const leaveGroup = async (group_id, user_id) => {
+  socket.emit('chat_leave_group', {group_id, user_id_to_remove: user_id})
+}
+
+export const addGroupParticipants = async (group_id, user_id_list) => {
+  socket.emit('chat_add_participants', {group_id, user_id_list})
 }
 
 export const getChatGroupParticipants = (group_id) => {

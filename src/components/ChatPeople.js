@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, View } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 import {FONTS, COLORS_LIGHT_THEME, MESSAGE_SPECIAL_ADDER} from '../Constants';
 import Typing from '../components/Typing';
 import {Icon} from 'react-native-elements';
@@ -72,7 +72,7 @@ const imageUrlCorrector = (image_url, image_adder) => {
 }
 
 const getAppropriateAccessory = (props) => {
-  const {COLORS, isSelector, isSelected} = props;
+  const {COLORS, isSelector, isSelected, isAddedToGroup} = props;
 
   if (!isSelector && props.unread_messages){
     return (
@@ -86,7 +86,7 @@ const getAppropriateAccessory = (props) => {
     )
   }
   
-  if (isSelector){
+  if (isSelector && !isAddedToGroup){
     return (isSelected)?
     (<Icon type={'feather'} name={'check-square'} color={COLORS.GREEN} size={20} />):
     (<Icon type={'feather'} name={'square'} color={COLORS.GRAY} size={20} />)
@@ -95,12 +95,13 @@ const getAppropriateAccessory = (props) => {
 }
 
 export default ChatPeople = (props) => {
-  const {COLORS, isSelector, isSelected, data, recentMessage, recentActivity} = props;
+  const {COLORS, isSelector, isSelected, data, recentMessage, recentActivity, isAddedToGroup} = props;
   let IMAGE_SIZE = (isSelector)?42:56;
+  const OutmostView = (isAddedToGroup)?TouchableOpacity:Ripple
   
   return(
-    <Ripple rippleContainerBorderRadius={(isSelector)?0:IMAGE_SIZE/4}
-      onPress={() => {props.onPress(data._id, isSelected)}} 
+    <OutmostView rippleContainerBorderRadius={(isSelector)?0:IMAGE_SIZE/4}
+      onPress={() => {(isAddedToGroup)?null:props.onPress(data._id, isSelected)}} activeOpacity={1}
       style={{marginVertical:(isSelector)?0:5,marginHorizontal:15}}>
       <SView style={{...styles.ViewStyling, borderColor:COLORS.GRAY, 
         shadowOpacity: (isSelector)?0:(COLORS.THEME==='light')?0.2:0.3,
@@ -127,6 +128,13 @@ export default ChatPeople = (props) => {
               color:COLORS.LESS_DARK}}>
               {props.data.name}
             </Text>
+            {
+              (isAddedToGroup)?(
+                <Text style={{color:COLORS.DARK_GRAY, fontSize:11, fontFamily:FONTS.RALEWAY, fontStyle:'italic'}}>
+                  Already Added
+                </Text>
+              ):null
+            }
             {(props.data.email)?(
               <Text style={{...styles.InterestStyle, fontSize:12,
               color:(props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
@@ -148,7 +156,7 @@ export default ChatPeople = (props) => {
         {getAppropriateAccessory(props)}
 
       </SView>
-    </Ripple>
+    </OutmostView>
   );
 }
 

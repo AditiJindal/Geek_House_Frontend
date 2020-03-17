@@ -74,6 +74,8 @@ export const ACTIONS={
     CHAT_GROUP_INFO_LOADING:  'chat.group_info_loading',
     CHAT_GROUP_MODIFY_ADMINS: 'chat.group_modify_admins',
     CHAT_LEAVE_GROUP: 'chat.leave_group',
+    CHAT_ADDED_TO_GROUP: 'chat.added_to_group',
+    CHAT_ADD_NEW_GROUP_PARTICIPANTS:'chat.add_new_group_participants',
 
     // SETTINGS
     SETTINGS_LOADING: 'settings.loading',

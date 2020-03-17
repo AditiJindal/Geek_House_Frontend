@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, StatusBar,FlatList,
 import {Overlay, Icon} from 'react-native-elements';
 import Ripple from '../components/Ripple';
 import {logEvent} from '../actions/ChatAction';
-import {FONTS,LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
+import {FONTS,LOG_EVENT, COLORS_LIGHT_THEME, MAX_USERS_IN_A_GROUP} from '../Constants';
 import {setAuthToken, setUserData, createGroup,
   chatPeopleSearchAction, getChatPeopleExplicitly} from '../actions/ChatAction';
 import Image from 'react-native-fast-image';
@@ -205,7 +205,7 @@ class Chat extends Component {
         }
       })
     }
-    else if(this.state.newGroupData.users.length<129) {new_users = [...this.state.newGroupData.users, user_id]}
+    else if(this.state.newGroupData.users.length<MAX_USERS_IN_A_GROUP) {new_users = [...this.state.newGroupData.users, user_id]}
     else {this.timedAlert.showAlert(2000, 'Maximum limit of 128 reached')}
     
     this.setState({newGroupData:{...this.state.newGroupData, users:new_users}});
@@ -242,7 +242,7 @@ class Chat extends Component {
         <TouchableOpacity style={{flexGrow:1, flexDirection:'row',alignItems:'center', justifyContent:'center'}} 
           activeOpacity={1}
           onPress = {()=>{this.setState({peopleSelectorVisible:false})}}>
-          <View style={{maxHeight:"70%", maxWidth:"85%", borderRadius:25, elevation:10, 
+          <View style={{maxHeight:"70%", width:"85%", borderRadius:20, elevation:10, 
             backgroundColor:COLORS.LIGHT,}}>
             <FlatList
               contentContainerStyle={{marginTop:15}}

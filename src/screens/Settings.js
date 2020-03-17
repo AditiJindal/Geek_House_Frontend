@@ -407,7 +407,7 @@ class Settings extends Component {
         <View style={{flexDirection:'row', alignItems:'center', marginTop:20}}>
           <Text style={{marginRight:30,fontSize:22, fontFamily:FONTS.PRODUCT_SANS_BOLD,
             color:COLORS.LESSER_DARK, }}>
-            Drak Theme
+            Switch Theme
           </Text>
           <View style={{flex:1, alignItems:'flex-end', paddingRight:15}}>
             <Switch
@@ -471,7 +471,7 @@ class Settings extends Component {
         </View>
         <Text style={{fontSize:13, fontFamily:FONTS.RALEWAY, marginLeft:10,marginTop:5,
           color:COLORS.GRAY}}>
-          {`Enable random animations and gestures\nwhich will occur from nowhere`}
+          {`Enable random animations and gestures\nwhich will occur from no-where`}
         </Text>
       </View>
     )
@@ -582,10 +582,10 @@ class Settings extends Component {
         {this.renderArticlesYouViewedStats()}
         {this.renderYourArticlesStats()}
         {/* {this.renderThemeButton()} */}
+        {this.renderCategorySelector()}
         {this.renderThemeChangeSwitch()}
         {this.renderAnimationSwitch()}
         {this.renderQuickRepliesSwitch()}
-        {this.renderCategorySelector()}
         {this.changeChatWallpaper()}
         {this.renderLogoutButton()}
         <View style={{height:20, width:1}}/>

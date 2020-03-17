@@ -81,11 +81,8 @@ const styles = {
             marginRight: 10,
         },
         username: {
-            left: 0,
-            fontSize: 13,
-            fontFamily:FONTS.PRODUCT_SANS_BOLD,
-            backgroundColor: 'transparent',
-            color: '#aaa',
+            fontSize: 12,
+            fontFamily:FONTS.PRODUCT_SANS,
         },
         usernameView: {
             flexDirection: 'row',
@@ -214,7 +211,8 @@ export default class Bubble extends React.Component {
             }
             return (
             <View style={styles.content.usernameView}>
-                <Text style={[styles.content.username, this.props.usernameStyle, {color:toMaterialStyle(currentMessage.user.name, '400').backgroundColor}]}>
+                <Text style={[styles.content.username, this.props.usernameStyle, 
+                    {color:toMaterialStyle(currentMessage.user.name, '400').backgroundColor}]}>
                     {currentMessage.user.name}
                 </Text>
             </View>
