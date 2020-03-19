@@ -62,7 +62,7 @@ export const ACTIONS={
     CHAT_AUTH_TOKEN_SET:'chat.auth_token.set',
     CHAT_PEOPLE_SEARCH: 'chat.people_search',
     CHAT_SOCKET_CHANGE_CATEGORY: 'chat_socket_change_category',
-    CHAT_FIRST_LOGIN: 'CHAT.first_login',
+    CHAT_FIRST_LOGIN: 'chat.first_login',
     CHAT_SETUP_COMPLETE: 'chat.setup_complete',
     CHAT_GET_USER_MESSAGES: 'chat.get_user_messages',
     CHAT_QUICK_REPLIES: 'chat.quick_replies',
@@ -75,6 +75,10 @@ export const ACTIONS={
     CHAT_GROUP_MODIFY_ADMINS: 'chat.group_modify_admins',
     CHAT_LEAVE_GROUP: 'chat.leave_group',
     CHAT_ADDED_TO_GROUP: 'chat.added_to_group',
+    CHAT_GROUP_CHANGE_DETAILS: 'chat.group_change_details',
+
+    CHAT_INFO_GROUP_DETAILS_UPDATE: 'chat.info_group_details_update',
+    CHAT_INFO_GROUP_ICON_UPLOADING: 'chat.info_group_icon_uploading',
     CHAT_ADD_NEW_GROUP_PARTICIPANTS:'chat.add_new_group_participants',
 
     // SETTINGS

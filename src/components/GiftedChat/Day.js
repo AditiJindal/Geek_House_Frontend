@@ -30,8 +30,8 @@ export default class Day extends PureComponent {
             return (<View style={[styles.container, containerStyle]}>
           <View style={{backgroundColor:COLORS.LIGHT+'86', borderRadius:10,paddingVertical:3,
             paddingHorizontal:7}}>
-            <Text style={[styles.text, textStyle,{fontFamily:FONTS.HELVETICA_NEUE, 
-            color:COLORS.LESS_DARK, fontSize:16}]}>
+            <Text style={[styles.text, textStyle,{fontFamily:FONTS.PRODUCT_SANS_BOLD, 
+            color:COLORS_LIGHT_THEME.LIGHT, fontSize:20}]}>
               {moment(currentMessage.createdAt)
                 .locale(this.context.getLocale())
                 .format(dateFormat)

@@ -264,24 +264,11 @@ class WriteArticle extends Component {
     return (
       <View style={{marginHorizontal:25}}>
         <Dropdown
-          theme={this.props.theme}
           COLORS = {COLORS}
           data = {new_data}
           label = "Select a Category"
-          itemColor={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.LESSER_DARK}
-          value={this.props.category}
-          fontSize={20}
-          labelFontSize={14}
-          itemCount={6}
-          containerStyle={{marginVertical:15}}
-          itemTextStyle={{fontFamily:FONTS.PRODUCT_SANS}}
-          textColor={(this.props.theme==='light')?COLORS.LESS_DARK:COLORS.LESSER_DARK}
-          textSubColor={COLORS.LIGHT_GRAY}
-          itemPadding={6}
-          pickerStyle={{elevation:20, borderRadius:25, flex:1, paddingHorizontal:10,
-            backgroundColor:COLORS.LIGHT,
-            borderWidth:2,
-            borderColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.GRAY}}
+          value={this.props.category || "Select One"}
+          itemCount={7}
           onChangeText={(category)=>{this.setState({category})}}
         />
       </View>

@@ -81,29 +81,16 @@ class Home extends Component {
         customSource:true,
         text: 'Select your favourite category of topic from the given ones, you can change this easily in the settings later',
         source: (
-          <View style={{width:256, height:256}}>
-            <View style={{width:"100%", height:80, justifyContent:'center'}}>
-              <Dropdown
-                theme={this.props.theme}
-                COLORS = {COLORS_LIGHT_THEME}
-                data = {new_data}
-                label = "Category Selection"
-                itemColor={COLORS_LIGHT_THEME.LESS_DARK}
-                value="Categories"
-                fontSize={20}
-                labelFontSize={14}
-                itemCount={6}
-                containerStyle={{marginVertical:15, width:"100%", justifyContent:'center', alignItems:'center'}}
-                itemTextStyle={{fontFamily:FONTS.PRODUCT_SANS}}
-                textColor={COLORS_LIGHT_THEME.LESS_DARK}
-                textSubColor={COLORS_LIGHT_THEME.LIGHT_GRAY}
-                itemPadding={6}
-                pickerStyle={{elevation:20, borderRadius:25, flex:1, paddingHorizontal:10,
-                  backgroundColor:COLORS_LIGHT_THEME.LIGHT}}
-                onChangeText={(selected_category) => {
-                  this.props.settingsChangeFavouriteCategory(selected_category)}}
-              />
-            </View>
+          <View style={{width:"100%", height:256, paddingHorizontal:20, justifyContent:'center'}}>
+            <Dropdown
+              COLORS = {COLORS_LIGHT_THEME}
+              data = {new_data}
+              label = "Category Selection"
+              value="Select One"
+              itemCount={6}
+              onChangeText={(selected_category) => {
+                this.props.settingsChangeFavouriteCategory(selected_category)}}
+            />
           </View>
         ),
         color:COLORS_LIGHT_THEME.LIGHT,
@@ -172,7 +159,7 @@ class Home extends Component {
                 {this.props.data.email}
               </Text>
               <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:11,alignSelf:'flex-end',color:COLORS.GRAY}}>
-                Geek House v1.11.0 A
+                Geek House v1.12.0 A
               </Text>
             </View>
           </View>

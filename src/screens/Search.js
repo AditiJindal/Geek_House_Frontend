@@ -266,24 +266,11 @@ class Search extends Component {
         return (
           <View style={{marginHorizontal:25}}>
             <Dropdown
-              theme={this.props.theme}
               COLORS = {COLORS}
               data = {new_data}
               label = "Category Selection"
-              itemColor={COLORS.LESS_DARK}
               value="All Categories"
-              fontSize={20}
-              labelFontSize={14}
               itemCount={6}
-              containerStyle={{marginVertical:15}}
-              itemTextStyle={{fontFamily:FONTS.PRODUCT_SANS}}
-              textColor={COLORS.LESS_DARK}
-              textSubColor={COLORS.LIGHT_GRAY}
-              itemPadding={6}
-              pickerStyle={{elevation:20, borderRadius:25, flex:1, paddingHorizontal:10,
-                backgroundColor:COLORS.LIGHT,
-                borderWidth:2,
-                borderColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.GRAY}}
               onChangeText={(category)=>{this.props.selectCategory(category)}}
             />
           </View>

@@ -46,7 +46,10 @@ const INITIAL_STATE={
   currentMessages:[], // list of messages of currently loaded person
   chat_group_participants:{},
   chatInfoLoading: false,
-  chatGroupsLeft: []
+  chatGroupsLeft: [],
+
+  chatInfoGroupDetails: {groupName:'', groupImage:''},
+  chatInfoGroupIconUploading: false
 }
 
 const incomingMessageConverter = (item) => {
@@ -194,7 +197,8 @@ const mergeChats = (new_chats, old_chats) => {
 }
 
 export default (state=INITIAL_STATE, action) => {
-  let new_users, new_admins, other_user_data, all_users, new_state, recentMessage, group, new_chatGroupsLeft;
+  let new_users, new_admins, other_user_data, all_users;
+  let new_state, recentMessage, group, new_chatGroupsLeft;
 
   switch (action.type){
     case ACTIONS.LOGOUT:
@@ -536,7 +540,6 @@ export default (state=INITIAL_STATE, action) => {
       group = action.payload;
       if (state.chatGroupsLeft.includes(group._id)){
         // means user was earlier in this group, is now being re-added
-
         new_chatGroupsLeft = []
         state.chatGroupsLeft.map(item=>{
           if (item!==group._id){
@@ -600,9 +603,36 @@ export default (state=INITIAL_STATE, action) => {
       return {...state, chat_group_participants: {...state.chat_group_participants}}
 
     case ACTIONS.CHAT_ADD_NEW_GROUP_PARTICIPANTS:
-      const {group_id, new_group_participants} = action.payload
-      state.chat_group_participants[group_id].users = [...state.chat_group_participants[group_id].users, ...new_group_participants]
+      const {new_group_participants} = action.payload
+      state.chat_group_participants[action.payload.group_id].users = [...state.chat_group_participants[action.payload.group_id].users, ...new_group_participants]
       new_state = {...state, chat_group_participants: {...state.chat_group_participants}}
+      return new_state
+
+    case ACTIONS.CHAT_INFO_GROUP_ICON_UPLOADING:
+      return {...state, chatInfoGroupIconUploading: action.payload}
+
+    case ACTIONS.CHAT_INFO_GROUP_DETAILS_UPDATE:
+      return {...state, chatInfoGroupDetails: action.payload}
+
+    case ACTIONS.CHAT_GROUP_CHANGE_DETAILS:
+      const {groupName, groupImage} = action.payload;
+
+      let new_chatInfoGroupDetails = state.chatInfoGroupDetails
+      if (state.other_user_data._id===action.payload.group_id){
+        // means user has this group currently open
+        state.other_user_data.name = groupName;
+        state.other_user_data.image_url = groupImage;
+        new_chatInfoGroupDetails = action.payload
+      }
+
+      state.chats.map((chat, index) => {
+        if (chat._id===action.payload.group_id){
+          state.chats[index] = {...chat, name:groupName, image_url:groupImage}
+        }
+      })
+
+      new_state = {...state, chats:[...state.chats], other_user_data:{...state.other_user_data}, 
+        chatInfoGroupDetails: new_chatInfoGroupDetails}
       return new_state
 
     default:

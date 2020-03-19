@@ -229,33 +229,46 @@ export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
   ))
 }
 
-export const createGroup = (newGroupInfo, successCallback, errorCallback) => {
+export const uploadGroupImage = async (local_image_uri) => {
+  try{
+    const response = await httpClient.get(URLS.imageupload, {params:{type:'group_icon', image_type:'jpeg'}})
+    const preSignedURL = decrypt(response.data.url);
+    await uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, local_image_uri);
+    return decrypt(response.data.key);
+  }
+  catch(e){
+    return {error:e}
+  }
+}
+
+export const createGroup = async (newGroupInfo, successCallback, errorCallback) => {
   if (!newGroupInfo.group_image){
     socket.emit('create_group', newGroupInfo)
     successCallback();
   }
 
   // upload image
-  httpClient.get(URLS.imageupload, {params:{type:'profile_picture', image_type:'jpeg'}}).then((response)=>{
-    const preSignedURL = decrypt(response.data.url);
-    uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, newGroupInfo.group_image)
-    .then(()=>{
-      aws_image_url = decrypt(response.data.key);
-      httpClient.post(URLS.change_profile_pic, {image_url:response.data.key}) // sending encrypted url
-      .then(async ()=>{
-        // when everything is right, we change the image_url
-        newGroupInfo.group_image = aws_image_url;
-        socket.emit('create_group', newGroupInfo);
-        successCallback();
-      }).catch(e=>{
-        errorCallback("Couldn't create group")
-      })
-    }).catch(e=>{
-      errorCallback("Couldn't upload image, group not created")
-    })
-  }).catch(e=>{
-    errorCallback("Couldn't create group")
-  })
+  const aws_image = await uploadGroupImage(newGroupInfo.group_image);
+  if (aws_image.error){
+    errorCallback('Could not upload image, group not created')
+    return
+  }
+  newGroupInfo.group_image = aws_image;
+  socket.emit('create_group', newGroupInfo);
+  successCallback();
+}
+
+export const getChatGroupParticipants = (group_id) => {
+  socket.emit('chat_group_participants', group_id)
+  return {type:ACTIONS.CHAT_GROUP_INFO_LOADING, payload:true}
+}
+
+export const chatInfoGroupDetailsUpdateAction = (data) =>{
+  return {type:ACTIONS.CHAT_INFO_GROUP_DETAILS_UPDATE, payload:data}
+}
+
+export const chatInfoGroupIconUploadingAction = (value) =>{
+  return {type:ACTIONS.CHAT_INFO_GROUP_ICON_UPLOADING, payload:value}
 }
 
 export const modifyAdmins = async (data) => {
@@ -271,7 +284,6 @@ export const addGroupParticipants = async (group_id, user_id_list) => {
   socket.emit('chat_add_participants', {group_id, user_id_list})
 }
 
-export const getChatGroupParticipants = (group_id) => {
-  socket.emit('chat_group_participants', group_id)
-  return {type:ACTIONS.CHAT_GROUP_INFO_LOADING, payload:true}
+export const groupDetailsChange = async (group_id, data) => {
+  socket.emit('group_change_details', {group_id, ...data})
 }

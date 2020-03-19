@@ -94,24 +94,27 @@ class ChatScreen extends Component {
   }
 
   renderHeaderAvatar(){
-    const {COLORS} = this.props;
+    if (this.state.chatInfoVisible){
+      return <View style={{height:48, width:48, marginLeft:10}}/>
+    }
 
+    const {COLORS, other_user_data} = this.props;
     return (
       <TouchableOpacity style={{marginLeft:10, backgroundColor:COLORS.LIGHT, elevation:4,
         borderRadius:24}} 
         onPress={this.handleChatInfo}>
           <Image
             source={
-              (this.props.other_user_data.image_url)?
-              {uri:this.imageUrlCorrector(this.props.other_user_data.image_url)}:
+              (other_user_data.image_url)?
+              {uri:this.imageUrlCorrector(other_user_data.image_url)}:
               require('../../assets/icons/user.png')
             }
             style={{height:48, width:48, borderRadius:24}}
           />
           {
-            (!this.props.other_user_data.newEntry && !this.props.other_user_data.isGroup
-            && this.props.status.hasOwnProperty(this.props.other_user_data._id) 
-            && this.props.status[this.props.other_user_data._id].online)?
+            (!other_user_data.newEntry && !other_user_data.isGroup
+            && this.props.status.hasOwnProperty(other_user_data._id) 
+            && this.props.status[other_user_data._id].online)?
             (
               <Badge
                 status="success"
@@ -126,7 +129,7 @@ class ChatScreen extends Component {
   }
 
   renderHeader(){
-    const {COLORS, chatGroupsLeft} = this.props;
+    const {COLORS, chatGroupsLeft, other_user_data} = this.props;
     return (
       <View style={{paddingVertical:4,elevation:25,
         alignItems:'center', flexDirection:'row', width:"100%",
@@ -136,19 +139,19 @@ class ChatScreen extends Component {
           <View style={{justifyContent:'center', marginLeft:10, flex:6, alignItems:'center'}}>
             <Text style={{...styles.TextStyle, 
               color:COLORS.LESS_DARK}}>
-              {this.props.other_user_data.name}
-              {(!this.props.other_user_data.isGroup)?
-                this.renderStatus(this.props.status[this.props.other_user_data._id]):
+              {other_user_data.name}
+              {(!other_user_data.isGroup)?
+                this.renderStatus(this.props.status[other_user_data._id]):
                 null}
             </Text>
-            {(this.props.other_user_data.fav_category)?
+            {(other_user_data.fav_category)?
             (<Text style={{...styles.InterestStyle, 
               color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
-              {this.props.other_user_data.fav_category}
+              {other_user_data.fav_category}
             </Text>):null}
 
             {
-              (chatGroupsLeft.includes(this.props.other_user_data._id))?
+              (chatGroupsLeft.includes(other_user_data._id))?
               (
                 <Text style={{...styles.InterestStyle, 
                   color:(this.props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
@@ -161,7 +164,7 @@ class ChatScreen extends Component {
           {(!this.state.imageViewerSelected)?(
             <TouchableOpacity style={{height:32, width:48, justifyContent:'center', alignItems:'center'}}
             onPress={() => {
-              if (this.props.other_user_data.newEntry){
+              if (other_user_data.newEntry){
                 this.props.getChatPeopleExplicitly()
               }
               Actions.pop()

@@ -376,24 +376,13 @@ class Settings extends Component {
           Change Favourite Category
         </Text>
         <Dropdown
-          theme={this.props.theme}
           COLORS = {COLORS}
           data = {new_data}
           label = "Select a Category"
           value={this.props.fav_category}
-          itemColor={COLORS.LESS_DARK}
-          fontSize={20}
-          labelFontSize={14}
-          itemCount={6}
-          textColor={COLORS.LESS_DARK}
-          textSubColor={COLORS.LIGHT_GRAY}
-          itemTextStyle={{fontFamily:FONTS.PRODUCT_SANS}}
-          itemPadding={6}
-          pickerStyle={{elevation:20, borderRadius:25, flex:1, paddingHorizontal:10, 
-            backgroundColor:COLORS.LIGHT, 
-            borderWidth:2, 
-            borderColor:COLORS.GRAY}}
-          onChangeText={(selected_category) => {this.props.settingsChangeFavouriteCategory(selected_category)}}
+          itemCount = {7}
+          onChangeText={(selected_category) => 
+            {this.props.settingsChangeFavouriteCategory(selected_category)}}
         />
       </View>
     )

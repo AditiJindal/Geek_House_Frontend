@@ -97,7 +97,7 @@ export default class MessageContainer extends React.PureComponent {
                 <View style={{alignSelf:'center', margin:5, backgroundColor:COLORS.LIGHT+'86',
                     borderRadius:15,paddingVertical:5, paddingHorizontal:10}}>
                     <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:12, 
-                        color:COLORS_LIGHT_THEME.LIGHT}}>
+                        color:COLORS_LIGHT_THEME.LIGHT, textAlign:'center'}}>
                         {specialMessage}
                     </Text>
                 </View>

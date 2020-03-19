@@ -50,8 +50,8 @@ const isEmoji = (text) => {
 const getAppropriateSize = (text) => {
     let length = Number(text.length);
 
-    if (isEmoji(text)){return 30}
-    else if(length===1){return 20}
+    if (isEmoji(text)){return 34}
+    else if(length<3){return 22}
     else if(20>length){return 16}
     return 14
 }

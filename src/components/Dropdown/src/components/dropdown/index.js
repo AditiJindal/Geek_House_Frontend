@@ -57,8 +57,8 @@ export default class Dropdown extends PureComponent {
     itemColor: 'rgba(0, 0, 0, .54)',
     baseColor: 'rgba(0, 0, 0, .38)',
 
-    itemCount: 4,
-    itemPadding: 8,
+    itemCount: 7,
+    itemPadding: 5,
 
     supportedOrientations: [
       'portrait',
@@ -459,12 +459,12 @@ export default class Dropdown extends PureComponent {
     props.tintColor = COLORS.GRAY
     props.animationDuration = 0
     return (
-      <View style={{flex:1, borderBottomWidth:0.5, padding:5, borderBottomColor:this.props.textSubColor}}>
-        <Text style={{fontFamily:FONTS.RALEWAY, color:this.props.textSubColor, fontSize:12}}>
+      <View style={{borderBottomWidth:0.5, padding:5, borderBottomColor:COLORS.LESS_DARK}}>
+        <Text style={{fontFamily:FONTS.RALEWAY, color:COLORS.LESS_DARK, fontSize:12}}>
           {this.props.label}
         </Text>
         <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
-          <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, color:this.props.textColor, fontSize:18}}>
+          <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, color:COLORS.LESS_DARK, fontSize:18}}>
             {value}
           </Text>
           {renderAccessory()}
@@ -504,6 +504,7 @@ export default class Dropdown extends PureComponent {
       fontSize,
       itemTextStyle,
       shadeOpacity,
+      COLORS
     } = this.props;
 
     let props = propsExtractor(item, index);
@@ -527,15 +528,7 @@ export default class Dropdown extends PureComponent {
       value:
       label;
 
-    let color = disabled?
-      disabledItemColor:
-      ~selected?
-        index === selected?
-          selectedItemColor:
-          itemColor:
-        selectedItemColor;
-
-    let textStyle = { color, fontSize };
+    let textStyle = { color:COLORS.LESS_DARK, fontSize };
 
     props.style = [
       style,
@@ -553,7 +546,7 @@ export default class Dropdown extends PureComponent {
 
     return (
       <DropdownItem index={index} {...props}>
-        <Text style={[styles.item, itemTextStyle, textStyle]} numberOfLines={1}>
+        <Text style={[styles.item, {fontFamily:FONTS.PRODUCT_SANS}, textStyle]} numberOfLines={1}>
           {title}
         </Text>
       </DropdownItem>
@@ -563,10 +556,9 @@ export default class Dropdown extends PureComponent {
   renderSearch(){
     const {COLORS} = this.props;
     return (
-      <SView style={{width:"100%", height:35, justifyContent:'center', paddingHorizontal:10,
-      borderRadius:15, backgroundColor:COLORS.LESSER_LIGHT, top:10, alignSelf:'center',
-      position:'absolute', zIndex:10, flexDirection:'row', alignItems:'center',
-      shadowColor:'#202020',shadowOpacity:0.1, shadowOffset:{width:0,height:7},shadowRadius:6}}>
+      <View style={{width:"100%", height:40, justifyContent:'center', paddingHorizontal:10,
+      borderRadius:10, backgroundColor:COLORS.LESSER_LIGHT, top:5, alignSelf:'center',
+      position:'absolute', flexDirection:'row', alignItems:'center', elevation:5}}>
         <Icon name="search" style={{marginBottom:3, marginHorizontal:2}} 
         color={COLORS.LESS_DARK} size={16} type={'feather'}/>
         <TextInput
@@ -577,9 +569,9 @@ export default class Dropdown extends PureComponent {
           onChangeText = {(text)=>{
             LayoutAnimation.configureNext(
               LayoutAnimation.create(
-                400,
-                LayoutAnimation.Types.easeInEaseOut,
-                LayoutAnimation.Properties.opacity,
+                300,
+                LayoutAnimation.Types.linear,
+                LayoutAnimation.Properties.scaleXY,
               ),
             );
             this.setState({searchValue:text})
@@ -594,7 +586,7 @@ export default class Dropdown extends PureComponent {
             </TouchableOpacity>
           ):(null)
         }
-      </SView>
+      </View>
     )
   }
 
@@ -683,11 +675,8 @@ export default class Dropdown extends PureComponent {
     return (
       <View onLayout={this.onLayout} ref={this.updateContainerRef} style={containerStyle}>
         <TouchableOpacity {...touchableProps} activeOpacity={0.8}>
-          <View pointerEvents='box-only'>
-            {this.renderBase(props)}
-          </View>
+          {this.renderBase(props)}
         </TouchableOpacity>
-        {/* from here, i'll start disbling animatinos */}
         <Modal
           visible={modal}
           transparent={true}
@@ -699,7 +688,8 @@ export default class Dropdown extends PureComponent {
             onResponderRelease={this.blur}
           >
             <View
-              style={[styles.picker, pickerStyle, pickerStyleOverrides]}
+              style={[styles.picker, pickerStyle, {elevation:15, borderRadius:15, paddingHorizontal:5, 
+              backgroundColor:COLORS.LIGHT}]}
               onStartShouldSetResponder={() => true}
             >
               {this.renderSearch()}
@@ -708,13 +698,11 @@ export default class Dropdown extends PureComponent {
                 data={data}
                 keyboardShouldPersistTaps="always"
                 showsVerticalScrollIndicator={false}
-                ListHeaderComponent={<View style={{height:40, width:1}}/>}
-                ListFooterComponent={<View style={{height:60, width:1}}/>}
-                scrollEnabled={false}
+                ListHeaderComponent={<View style={{height:45, width:1}}/>}
+                ListFooterComponent={<View style={{height:20, width:1}}/>}
                 style={styles.scroll}
                 renderItem={(item)=>this.renderItem(item)}
                 keyExtractor={this.keyExtractor}
-                scrollEnabled={visibleItemCount < itemCount}
                 contentContainerStyle={styles.scrollContainer}
               />
             </View>

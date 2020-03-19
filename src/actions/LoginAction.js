@@ -188,6 +188,21 @@ const chat_add_new_group_participants = (response, dispatch) => {
     payload:special_message});
 }
 
+const group_change_details = (response, dispatch) => {
+  message = [{
+    _id: uuid(),
+    createdAt: Date.now(),
+    text: MESSAGE_SPECIAL_ADDER+response.specialMessage,
+    user: {_id: response.group_id, name: ""}
+  }]
+  dispatch({type:ACTIONS.CHAT_GROUP_CHANGE_DETAILS, payload: response});
+  dispatch({type:ACTIONS.CHAT_INFO_GROUP_ICON_UPLOADING, payload: false})
+
+  special_message = {message, other_user_id: response.group_id, isIncomming:true}
+  dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, 
+    payload:special_message});
+}
+
 const makeConnection = async (json_data, dispatch, getState) => {
 
   const t = Date.now()
@@ -299,6 +314,9 @@ const makeConnection = async (json_data, dispatch, getState) => {
           chat_add_new_group_participants(command.data, dispatch)
           break
 
+        case 'group_change_details':
+          group_change_details(command.data, dispatch)
+          break
 
         default:
           return null

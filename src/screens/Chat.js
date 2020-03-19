@@ -147,8 +147,8 @@ class Chat extends Component {
           </Text>
         </View>
         <Ripple rippleContainerBorderRadius={30} 
-          style={{backgroundColor:COLORS.GRAY, height:48, width:48,  
-          borderRadius:24, alignSelf:'center', justifyContent:'center', elevation:3, 
+          style={{backgroundColor:COLORS.GRAY, height:42, width:42,  
+          borderRadius:21, alignSelf:'center', justifyContent:'center', elevation:3, 
           alignItems:'center'}}
           onPress={()=>{
             if (this.state.groupPeopleSelectorLoading){return null}
@@ -157,9 +157,9 @@ class Chat extends Component {
           >
           {
             (this.state.newGroupData.group_image)?(
-              <Image source={{uri:this.state.newGroupData.group_image}} style={{height:48, width:48, borderRadius:24}} />
+              <Image source={{uri:this.state.newGroupData.group_image}} style={{height:42, width:42, borderRadius:21}} />
             ):(
-              <Icon type="feather" name="users" size={26} color={COLORS.LIGHT}/>
+              <Icon type="feather" name="users" size={22} color={COLORS.LIGHT}/>
             )
           }
         </Ripple>
@@ -218,7 +218,7 @@ class Chat extends Component {
       this.setState({groupPeopleSelectorLoading: true})
       if (!this.state.newGroupData.name) {this.state.newGroupData.name='New Group'}
       createGroup({...this.state.newGroupData}, 
-        ()=>{this.setState({peopleSelectorVisible:false, groupPeopleSelectorLoading: false})},
+        ()=>{this.setState({peopleSelectorVisible:false, groupPeopleSelectorLoading: false, newGroupData:{name:'',group_image:null, users:[]}})},
         (msg)=>{
           this.setState({peopleSelectorVisible:false, groupPeopleSelectorLoading: false})
           this.timedAlert2.showAlert(2000, msg, false)}
@@ -258,7 +258,7 @@ class Chat extends Component {
               ListHeaderComponent = {
                 <View style={{marginHorizontal:20, marginVertical:5}}>
                   <TextInput
-                    placeholder={"Enter name of the group..."}
+                    placeholder={"Enter group name"}
                     placeholderTextColor={COLORS.GRAY}
                     value={this.state.newGroupData.name} maxLength={56}
                     onChangeText={text=>this.setState({newGroupData: {...this.state.newGroupData, name:text}})}
@@ -280,16 +280,16 @@ class Chat extends Component {
                         ):null
                       }
                     </View>
-                    <Ripple rippleContainerBorderRadius={30}
-                      style={{height:48, width:48, justifyContent:'center', alignItems:'center', 
-                        borderRadius:30, elevation:3,
+                    <Ripple rippleContainerBorderRadius={21}
+                      style={{height:42, width:42, justifyContent:'center', alignItems:'center', 
+                        borderRadius:21, elevation:3,
                       backgroundColor:(this.state.newGroupData.users.length<2)?(COLORS.GRAY):(COLORS.GREEN)}} 
                       onPress={this.onGroupDone.bind(this)}>
                         {
                           (this.state.groupPeopleSelectorLoading)?(
                             <Loading size={40} white={true}/>
                           ):(
-                            <Icon type={'feather'} name={'check'} size={26} color={(this.state.newGroupData.users.length<2)?(COLORS.LIGHT):(COLORS_LIGHT_THEME.LIGHT)}/>
+                            <Icon type={'feather'} name={'check'} size={22} color={(this.state.newGroupData.users.length<2)?(COLORS.LIGHT):(COLORS_LIGHT_THEME.LIGHT)}/>
                           )
                         }
                     </Ripple>

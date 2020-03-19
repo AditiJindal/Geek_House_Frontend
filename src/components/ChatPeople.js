@@ -118,7 +118,6 @@ export default ChatPeople = (props) => {
               source={(props.data.image_url)?
                 {uri:imageUrlCorrector(props.data.image_url, props.image_adder)}:
                 require('../../assets/icons/user.png')} style={{borderRadius:IMAGE_SIZE/2, flex:1}}
-              
             />
             {getBadge(props)}
           </View>

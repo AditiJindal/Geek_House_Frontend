@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {View, Text, FlatList, Dimensions, ScrollView,
-  StyleSheet, TouchableOpacity} from 'react-native';
+  StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 import {connect} from 'react-redux';
 import {Overlay, Icon} from 'react-native-elements';
 import Ripple from './Ripple';
@@ -9,9 +9,14 @@ import ChatPeople from './ChatPeople';
 import {FONTS, MAX_USERS_IN_A_GROUP, COLORS_LIGHT_THEME} from '../Constants';
 import Loading from '../components/Loading';
 import TimedAlert from '../components/TimedAlert';
+import ImageResizer from 'react-native-image-resizer';
+import ImageEditor from '@react-native-community/image-editor';
+import ImageSelector from './ImageSelector';
 import {Menu, MenuOptions, MenuOption, 
   MenuTrigger, MenuProvider} from 'react-native-popup-menu';
-import {modifyAdmins, leaveGroup, addGroupParticipants} from '../actions/ChatAction';
+import {modifyAdmins, leaveGroup, uploadGroupImage, chatInfoGroupDetailsUpdateAction,
+  addGroupParticipants, groupDetailsChange, chatInfoGroupIconUploadingAction
+} from '../actions/ChatAction';
 
 const overlayWidth = Dimensions.get('screen').width*0.86
 
@@ -23,7 +28,75 @@ const imageUrlCorrector = (image_url, image_adder) => {
 }
 
 class ChatInfo extends Component {
-  state={peopleSelectorVisible:false, peopleToAdd: []}
+  state={peopleSelectorVisible:false, peopleToAdd: [], editMode:false}
+
+  componentDidMount(){
+    const {other_user_data, chatInfoGroupDetailsUpdateAction} = this.props
+    chatInfoGroupDetailsUpdateAction({
+      groupName: other_user_data.name,
+      groupImage: other_user_data.image_url
+    })
+  }
+
+  getImageResize(imageSize){
+    const MAX_WIDTH = 512;
+    const MAX_HEIGHT = MAX_WIDTH;
+
+    let resize = {...imageSize}
+    let ratio = imageSize.width/imageSize.height
+    if (resize.width>MAX_WIDTH){
+      resize={width:MAX_WIDTH, height:Math.floor(MAX_WIDTH/ratio)}
+    }
+    if (resize.height>MAX_HEIGHT){
+      resize={width:Math.floor(MAX_HEIGHT*ratio), height:MAX_HEIGHT}
+    }
+    return resize
+  }
+
+  getCropCoordinates({width, height}){
+    // needs to be in 1:1 aspect ratio
+
+    let originX, originY, crop;
+    if (width<height){
+      const requiredHeight = width
+      const remainingHeight = height-requiredHeight;
+      originX = 0;
+      originY = Math.floor(remainingHeight/2);
+      crop = {offset:{x:originX, y:originY}, size:{width, height:requiredHeight}};
+    }
+    else{
+      const requiredWidth = height
+      const remainingWidth = width-requiredWidth;
+      originY = 0;
+      originX = Math.floor(remainingWidth/2);
+      crop = {offset:{x:originX, y:originY}, size:{width:requiredWidth, height}};
+    }
+    return crop
+  }
+
+  pickImage = async (image) => {
+    if (image.didCancel){return null;}
+    const {chatInfoGroupDetails, chatInfoGroupIconUploadingAction} = this.props;
+    chatInfoGroupIconUploadingAction(true)
+
+    const imageSize = {width:image.width, height:image.height};
+    const resize = this.getImageResize(imageSize);
+    const crop = this.getCropCoordinates(resize);
+    const resized_image = await ImageResizer.createResizedImage(image.uri, 
+        resize.width, resize.height, "JPEG", 80)
+    const crop_image = await ImageEditor.cropImage(resized_image.uri, crop)
+
+    // now upload this image to the server
+    const aws_image = await uploadGroupImage(crop_image)
+    if(aws_image.error){
+      // means upload fail
+      return
+    }
+
+    this.setState({groupImage:aws_image});
+    groupDetailsChange(this.props.other_user_data._id, {...chatInfoGroupDetails, groupImage:aws_image})
+    return
+  }
 
   handleModifyAdmins(user_id,user_name, isUserAdmin){
     const group_id = this.props.other_user_data._id
@@ -31,6 +104,18 @@ class ChatInfo extends Component {
     // data = {group_id:String, user_id:String, add:Boolean}
     const data = {group_id, user_id, add, user_name}
     modifyAdmins(data)
+  }
+
+  handleOnNameDone(){
+    const {other_user_data, chatInfoGroupDetails} = this.props
+    chatInfoGroupDetails.groupName = chatInfoGroupDetails.groupName.trim();
+    if (chatInfoGroupDetails.groupName.length<1){
+      this.timedAlert.showAlert(2000, "Enter more characters", 10)
+      return
+    }
+
+    groupDetailsChange(other_user_data._id, chatInfoGroupDetails)
+    this.setState({editMode:false}, ()=>this.textInput.focus())
   }
 
   chatPeopleComponentHelper(user){
@@ -51,9 +136,9 @@ class ChatInfo extends Component {
         <View style={{flexDirection:'row', alignItems:'center'}}>
           {(isAdmin)?
             (
-              <View style={{paddingVertical:5,paddingHorizontal:8, borderWidth:1.5, 
-                borderColor:COLORS.GREEN, borderRadius:8, }}>
-                <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:10, color:COLORS.GREEN}}>
+              <View style={{paddingVertical:4,paddingHorizontal:6, borderWidth:1.2, 
+                borderColor:COLORS.GREEN, borderRadius:6, }}>
+                <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:8, color:COLORS.GREEN}}>
                   ADMIN
                 </Text>
               </View>
@@ -62,10 +147,10 @@ class ChatInfo extends Component {
           }
           {
             (this.props.currentUserId === _id)?(
-              <View style={{paddingVertical:5,paddingHorizontal:8, borderWidth:1.5, 
-                borderColor:COLORS.YELLOW, borderRadius:8, marginLeft:5}}>
-                <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:10, color:COLORS.YELLOW}}>
-                  ME
+              <View style={{paddingVertical:4,paddingHorizontal:6, borderWidth:1.2, 
+                borderColor:COLORS.YELLOW, borderRadius:6, marginLeft:5}}>
+                <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:8, color:COLORS.YELLOW}}>
+                  YOU
                 </Text>
               </View>
             ):null
@@ -277,6 +362,69 @@ class ChatInfo extends Component {
     }
   }
 
+  renderEditButton(){
+    const {COLORS, other_user_data} = this.props
+
+    if (this.state.editMode){
+      return(
+        <View style={{flex:1, flexDirection:'row', marginRight:5}}>
+          <Ripple onPress={this.handleOnNameDone.bind(this)}
+            style={{flexDirection:'row', alignItems:'center', backgroundColor:COLORS.GREEN,
+              justifyContent:'center',flex:1, height:40, marginRight:5}}>
+            <Icon type={'feather'} name={'check'} size={18} color={COLORS_LIGHT_THEME.LIGHT}/>
+          </Ripple>
+          <Ripple onPress={()=>{
+            this.setState({editMode:false, groupName:other_user_data.name}, 
+              ()=>this.textInput.focus())
+            }}
+            style={{flexDirection:'row', alignItems:'center', backgroundColor:COLORS.RED,
+              justifyContent:'center',flex:1, height:40}}>
+            <Icon type={'feather'} name={'x'} size={18} color={COLORS_LIGHT_THEME.LIGHT}/>
+          </Ripple>
+        </View>
+      )
+    }
+    return(
+      <Ripple onPress={()=>{
+        this.setState({editMode:true}, ()=>this.textInput.focus())
+      }}
+        style={{flexDirection:'row', alignItems:'center', backgroundColor:COLORS.GRAY, marginRight:5,
+          justifyContent:'center',flex:1, height:40}}>
+        <Text style={{fontFamily:FONTS.RALEWAY, fontSize:12, color:COLORS.LIGHT, marginRight:5}}>
+          Edit Group Name
+        </Text>
+        <Icon type={'feather'} name={'edit-2'} size={12} color={COLORS.LIGHT}/>
+      </Ripple>
+    )
+  }
+
+  renderGroupOptions(){
+    const {COLORS, chatInfoGroupIconUploading} = this.props;
+    return (
+      <View style={{flexDirection:'row', alignItems:'center', flex:1, margin:5}}>
+        {this.renderEditButton()}
+        {
+          (!chatInfoGroupIconUploading)?(
+            <Ripple onPress={()=>{
+              this.imageSelector.showImageSelector(this.pickImage)
+            }}
+              style={{flexDirection:'row', alignItems:'center', backgroundColor:COLORS.GRAY, 
+              justifyContent:'center', marginLeft:0, flex:1, height:40}}>
+              <Text style={{fontFamily:FONTS.RALEWAY, fontSize:12, color:COLORS.LIGHT, marginRight:5}}>
+                Change Group Icon
+              </Text>
+              <Icon type={'feather'} name={'image'} size={13} color={COLORS.LIGHT}/>
+            </Ripple>
+          ):(
+            <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+              <Loading white={COLORS.THEME!=='light'} size={36}/>
+            </View>
+          )
+        }
+      </View>
+    )
+  }
+
   renderAddParticipant(admins){
     const isCurrentUserAdmin = admins.includes(this.props.currentUserId)
     if (!isCurrentUserAdmin){return null}
@@ -290,7 +438,6 @@ class ChatInfo extends Component {
         </Text>
         <Icon type={'feather'} name={'user-plus'} size={18} color={COLORS.LIGHT}/>
       </Ripple>
-
     )
   }
 
@@ -312,7 +459,8 @@ class ChatInfo extends Component {
   }
 
   render(){
-    const {COLORS, other_user_data, image_adder, isLoading, chat_group_participants} = this.props;
+    const {COLORS, other_user_data, image_adder, isLoading, 
+      chat_group_participants, chatInfoGroupDetails, chatInfoGroupDetailsUpdateAction} = this.props;
     const group_participants = chat_group_participants[other_user_data._id];
 
     if (this.props.chatGroupsLeft.includes(other_user_data._id)){
@@ -331,6 +479,10 @@ class ChatInfo extends Component {
         <>
         {this.renderChatPeopleSelector()}
         <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} COLORS = {COLORS}/>
+        <ImageSelector
+          COLORS = {this.props.COLORS}
+          onRef={ref=>this.imageSelector = ref}
+        />
         {
           (isLoading || !group_participants)?
           <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
@@ -338,15 +490,29 @@ class ChatInfo extends Component {
           </View>:
           (
             <MenuProvider>
-              <ScrollView showsVerticalScrollIndicator={false}>
+              <ScrollView showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="always">
                 <Image
-                  style={{height:overlayWidth, width:overlayWidth}}
-                  source={{uri: imageUrlCorrector(other_user_data.image_url, image_adder)}}
+                  style={{height:overlayWidth, width:overlayWidth, justifyContent:'flex-end'}}
+                  source={{uri: imageUrlCorrector(chatInfoGroupDetails.groupImage, image_adder)}}
+                >
+                <TextInput style={{...styles.NameText, color: COLORS.DARK, 
+                  backgroundColor:COLORS.LIGHT_GRAY+'72'}}
+                  value={chatInfoGroupDetails.groupName}
+                  placeholder={"Groue Name"}
+                  placeholderTextColor={COLORS.GRAY}
+                  multiline
+                  editable={this.state.editMode}
+                  onChangeText={text=>{
+                    chatInfoGroupDetailsUpdateAction({
+                      ...chatInfoGroupDetails, groupName:text
+                    })
+                  }}
+                  ref={ref=>this.textInput=ref}
                 />
-                <Text style={{...styles.NameText, color: COLORS.DARK}}>
-                  {other_user_data.name}
-                </Text>
+                </Image>
                 
+                {this.renderGroupOptions()}                
                 {this.renderChatPeople(group_participants, image_adder)}
                 <View style={{height:20, width:1}}/>
                 {this.renderAddParticipant(group_participants.admins)}
@@ -371,16 +537,22 @@ const mapStateToProps = (state) => {
     chatGroupsLeft: state.chat.chatGroupsLeft,
     chats: state.chat.chats,
     status: state.chat.status,
+    chatInfoGroupDetails: state.chat.chatInfoGroupDetails,
+    chatInfoGroupIconUploading: state.chat.chatInfoGroupIconUploading
   }
 }
 
-export default connect(mapStateToProps, {})(ChatInfo);
+export default connect(mapStateToProps, {chatInfoGroupIconUploadingAction,
+  chatInfoGroupDetailsUpdateAction})(ChatInfo);
 
 const styles = StyleSheet.create({
   NameText: {
-    fontFamily: FONTS.PRODUCT_SANS_BOLD,
-    fontSize:24,
-    margin:10
+    fontFamily: FONTS.PRODUCT_SANS,
+    fontSize:18,
+    margin:5,
+    paddingHorizontal:10,
+    paddingVertical:5,
+    borderRadius:7,
   },
   MenuText: {
     fontFamily:FONTS.PRODUCT_SANS,
