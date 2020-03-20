@@ -242,10 +242,9 @@ class Chat extends Component {
         <TouchableOpacity style={{flexGrow:1, flexDirection:'row',alignItems:'center', justifyContent:'center'}} 
           activeOpacity={1}
           onPress = {()=>{this.setState({peopleSelectorVisible:false})}}>
-          <View style={{maxHeight:"70%", width:"85%", borderRadius:20, elevation:10, 
-            backgroundColor:COLORS.LIGHT,}}>
+          <TouchableOpacity style={{maxHeight:"70%", width:"85%", borderRadius:20, elevation:10, 
+            backgroundColor:COLORS.LIGHT,overflow:'hidden'}} activeOpacity={1}>
             <FlatList
-              contentContainerStyle={{marginTop:15}}
               keyboardShouldPersistTaps="always"
               data={DATA}
               ListEmptyComponent={(
@@ -256,7 +255,15 @@ class Chat extends Component {
                 </View>
               )}
               ListHeaderComponent = {
-                <View style={{marginHorizontal:20, marginVertical:5}}>
+                <>
+                <View style={{width:"100%", padding:10, backgroundColor:COLORS.GRAY}}>
+                  <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:20,
+                    color:COLORS.LIGHT, alignSelf:'center', marginLeft:10}}>
+                    CREATE NEW GROUP
+                  </Text>
+                </View>
+                <View style={{marginHorizontal:20, marginBottom:10}}>
+                  
                   <TextInput
                     placeholder={"Enter group name"}
                     placeholderTextColor={COLORS.GRAY}
@@ -295,6 +302,7 @@ class Chat extends Component {
                     </Ripple>
                   </View>
                 </View>
+                </>
               }
               ListFooterComponent = {<View style={{height:8,width:1}}/>}
               keyExtractor={(item, index) => {
@@ -321,7 +329,7 @@ class Chat extends Component {
                 }
               }
             />
-          </View>
+          </TouchableOpacity>
         </TouchableOpacity>
         </>
       </Overlay>

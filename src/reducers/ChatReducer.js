@@ -166,34 +166,23 @@ const saveData = async (state, recordPerf = false) => {
 }
 
 const mergeChats = (new_chats, old_chats) => {
-  // old chats contain people with correct order
-  // new chats might have new people
-  let new_users = [];
-  let old_users = [];
-  if (old_chats.length<2){
-    return new_chats
-  }
-  new_chats.map((new_user)=>{
-    let isOldUser = false;
+  let final_result = []
 
-    for(i=0; i<old_chats.length; i++){
-      old_user = old_chats[i];
-      if (new_user._id.toString() === old_user._id.toString()){
-        isOldUser=true;
-        break
-      }
-    }
+  let old_chat_ids = [];
 
-    if (isOldUser){
-      old_users.push(new_user)
-    }
-    else{
-      new_users.unshift(new_user)
+  old_chats.map(chat => {
+    final_result.push(chat);
+    old_chat_ids.push(chat._id);
+  });
+
+  new_chats.map(chat=>{
+    if (!old_chat_ids.includes(chat._id)){
+      final_result.unshift(chat)
     }
   });
 
-  const chats = [...new_users, ...old_users];
-  return chats; 
+  return final_result
+
 }
 
 export default (state=INITIAL_STATE, action) => {

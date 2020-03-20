@@ -249,10 +249,9 @@ class ChatInfo extends Component {
         <TouchableOpacity style={{flexGrow:1, flexDirection:'row',alignItems:'center', justifyContent:'center'}} 
           activeOpacity={1}
           onPress = {()=>{this.setState({peopleSelectorVisible:false})}}>
-          <View style={{maxHeight:"70%", width:"75%", borderRadius:20, elevation:10, 
-            backgroundColor:COLORS.LIGHT,}}>
+          <TouchableOpacity style={{maxHeight:"70%", width:"75%", borderRadius:20, elevation:10, 
+            backgroundColor:COLORS.LIGHT, overflow:'hidden'}} activeOpacity={1}>
             <FlatList
-              contentContainerStyle={{marginTop:15}}
               keyboardShouldPersistTaps="always"
               data={DATA}
               ListEmptyComponent={(
@@ -263,6 +262,13 @@ class ChatInfo extends Component {
                 </View>
               )}
               ListHeaderComponent = {
+                <>
+                <View style={{width:"100%", padding:10, backgroundColor:COLORS.GRAY}}>
+                  <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:20,
+                    color:COLORS.LIGHT, alignSelf:'center', marginLeft:10}}>
+                    ADD PARTICIPANTS
+                  </Text>
+                </View>
                 <View style={{marginHorizontal:20, marginVertical:5}}>
                   <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between',
                     paddingTop:10, paddingBottom:5}}>
@@ -287,6 +293,7 @@ class ChatInfo extends Component {
                     </Ripple>
                   </View>
                 </View>
+                </>
               }
               ListFooterComponent = {<View style={{height:8,width:1}}/>}
               keyExtractor={(item, index) => {
@@ -314,7 +321,7 @@ class ChatInfo extends Component {
                 }
               }
             />
-          </View>
+          </TouchableOpacity>
         </TouchableOpacity>
         </>
       </Overlay>

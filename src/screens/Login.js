@@ -7,7 +7,7 @@ import NetInfo from '@react-native-community/netinfo';
 import LinearGradient from 'react-native-linear-gradient';
 import {loginGoogle,loginFacebook, checkLogin, internetHandler} from '../actions/LoginAction';
 import Loading from '../components/Loading';
-// import { Button } from 'react-native-elements';
+import codePush from 'react-native-code-push'
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import Image from 'react-native-fast-image';
 import SplashScreen from 'react-native-splash-screen';
@@ -16,14 +16,18 @@ import { Actions } from 'react-native-router-flux';
 
 class Login extends Component {
 
-  state={
-    googleLoading:false,
-    facebookLoading:false,
-  }
+  state = {updateAvailble: false}
 
   componentDidMount = async () => {
+    const result = await codePush.checkForUpdate();
+    if (result){
+      this.setState({updateAvailble: true})
+      await codePush.sync();
+      this.setState({updateAvailble: false})
+    }
+
     this.props.checkLogin();
-    SplashScreen.hide();
+    SplashScreen.hide()
     analytics().logAppOpen();
     NetInfo.fetch().then(state=>this.props.internetHandler(state.isInternetReachable));
     NetInfo.addEventListener(state=>this.props.internetHandler(state.isInternetReachable));
@@ -143,6 +147,9 @@ class Login extends Component {
           (this.props.loading)?
           <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
             <Loading white size={128}/>
+            <Text style={styles.UpdateText}>{
+              (this.state.updateAvailble)?'Installing Updates':'Please Wait'
+            }</Text>
           </View>:
           this._renderLogin()
         }
@@ -164,50 +171,54 @@ export default connect(mapStateToProps, {loginGoogle,loginFacebook, checkLogin,
 
 
 const styles = StyleSheet.create({
-    GoogleButtonStyle:{
-      borderRadius:12,
-      width:250,
-      height:50,
-      backgroundColor:'white',
-      margin:5,
-      elevation:7,
-      alignItems:'center',
-      justifyContent:'space-evenly',
-      flexDirection:'row',
-      paddingHorizontal:10
-    },
+  UpdateText: {
+    fontFamily: FONTS.RALEWAY,
+    fontSize: 14,
+    color: COLORS_LIGHT_THEME.LIGHT
+  },
+  GoogleButtonStyle:{
+    borderRadius:12,
+    width:250,
+    height:50,
+    backgroundColor:'white',
+    margin:5,
+    elevation:7,
+    alignItems:'center',
+    justifyContent:'space-evenly',
+    flexDirection:'row',
+    paddingHorizontal:10
+  },
 
-    FacebookButtonStyle:{
-      borderRadius:12,
-      width:250,
-      height:50,
-      backgroundColor:'rgb(24, 119, 242)',
-      margin:5,
-      elevation:7,
-      alignItems:'center',
-      justifyContent:'space-evenly',
-      flexDirection:'row',
-      paddingHorizontal:10
-    },
-    
-    GoogleButtonTextStyle:{
-      color:'rgb(100,100,100)',
-      fontFamily:FONTS.PRODUCT_SANS,
-      marginHorizontal:5,
-      fontSize:18
-    },
-    FacebookButtonTextStyle:{
-      color:'white',
-      fontFamily:FONTS.HELVETICA_NEUE,
-      marginHorizontal:5,
-      fontSize:15
-    },
-    InfoTextStyle:{
-      color:'white',
-      fontSize:16,
-      fontFamily:FONTS.ROBOTO_BOLD,
-      flexWrap:'wrap',
-      textAlign:'center'
-    }
- 
+  FacebookButtonStyle:{
+    borderRadius:12,
+    width:250,
+    height:50,
+    backgroundColor:'rgb(24, 119, 242)',
+    margin:5,
+    elevation:7,
+    alignItems:'center',
+    justifyContent:'space-evenly',
+    flexDirection:'row',
+    paddingHorizontal:10
+  },
+  
+  GoogleButtonTextStyle:{
+    color:'rgb(100,100,100)',
+    fontFamily:FONTS.PRODUCT_SANS,
+    marginHorizontal:5,
+    fontSize:18
+  },
+  FacebookButtonTextStyle:{
+    color:'white',
+    fontFamily:FONTS.HELVETICA_NEUE,
+    marginHorizontal:5,
+    fontSize:15
+  },
+  InfoTextStyle:{
+    color:'white',
+    fontSize:16,
+    fontFamily:FONTS.ROBOTO_BOLD,
+    flexWrap:'wrap',
+    textAlign:'center'
+  }
 })

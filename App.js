@@ -29,7 +29,7 @@ class App extends Component{
 }
 
 const codePushOptions = {
-  checkFrequency: codePush.CheckFrequency.ON_APP_START
+  checkFrequency: codePush.CheckFrequency.MANUAL,
 };
 
 export default codePush(codePushOptions)(App);
