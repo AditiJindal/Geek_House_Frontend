@@ -475,7 +475,7 @@ class ArticleInfo extends Component {
               by <Text style={{fontFamily:FONTS.LATO_BOLD, fontSize:18}}>{author}</Text>
             </Animated.Text>
             <Animated.Text style={{ fontSize: 28, marginLeft: 15, 
-              fontFamily:FONTS.GOTHAM_BLACK, color:COLORS.LESS_DARK, opacity:bigImageOpacity,
+              fontFamily:FONTS.NOE_DISPLAY, color:COLORS.LESS_DARK, opacity:bigImageOpacity, 
               transform:[{translateX:textAnim2} ]}}>
               {topic}
             </Animated.Text>

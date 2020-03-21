@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     padding:15
   },
   SubHeadingStyle:{
-    fontFamily:FONTS.RALEWAY_BOLD,
+    fontFamily:FONTS.NOE_DISPLAY,
     fontSize:20,
     marginBottom:5,
     borderBottomWidth:0.5,
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   },
   ContentStyle:{
     textAlign:'justify',
-    fontFamily:FONTS.MERRIWEATHER,
+    fontFamily:FONTS.LATO,
     fontSize:14
   }
 })

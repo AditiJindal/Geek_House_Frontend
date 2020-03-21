@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     overflow:'hidden'
   },
   TextStyle:{
-    fontFamily:FONTS.HELVETICA_NEUE,
+    fontFamily:FONTS.NOE_DISPLAY,
   },
   TextStyleFail:{
     fontFamily:FONTS.HELVETICA_NEUE,

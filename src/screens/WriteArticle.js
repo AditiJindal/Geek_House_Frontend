@@ -377,6 +377,6 @@ const styles = StyleSheet.create({
     fontSize:24,
     marginTop:6,
     flex:1,
-    fontFamily:FONTS.RALEWAY,
+    fontFamily:FONTS.NOE_DISPLAY,
   }, 
 })

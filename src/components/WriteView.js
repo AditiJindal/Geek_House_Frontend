@@ -100,7 +100,6 @@ export default class WriteView extends Component {
             placeholderTextColor={COLORS.LESSER_DARK}
             value={this.props.obj.sub_heading}
             maxLength={128}
-            
             onChangeText={(value)=>{this.props.onSubHeadingChange(value, this.props.index)}}
             textBreakStrategy="highQuality"
             multiline={false}
@@ -140,14 +139,14 @@ const styles = StyleSheet.create({
     borderRadius:15,
   },
   SubHeadingStyle:{
-    fontFamily:FONTS.RALEWAY,
-    fontSize:20,
+    fontFamily:FONTS.NOE_DISPLAY,
+    fontSize:22,
     marginBottom:5,
-    paddingBottom:3,
+    paddingBottom:5,
   },
   ContentStyle:{
     textAlign:'justify',
-    fontFamily:FONTS.MERRIWEATHER,
+    fontFamily:FONTS.LATO,
     fontSize:14,
     marginHorizontal:10,
     marginBottom:5,

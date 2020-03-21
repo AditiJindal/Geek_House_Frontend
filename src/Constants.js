@@ -157,6 +157,9 @@ export const FONTS = {
   MERRIWEATHER_BOLD: 'Merriweather-Bold',
   MERRIWEATHER_LIGHT: 'Merriweather-Light',
 
+  // Readable Sans Serif font
+  NOE_DISPLAY: 'NoeDisplay',
+
   // STYLISH FONT
   LECKERLIONE: 'LeckerliOne-Regular'
 }
