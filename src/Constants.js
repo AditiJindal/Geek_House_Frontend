@@ -1,5 +1,4 @@
 import {KEYCODE_PROD} from '../prod_keys';
-__DEV__=false
 
 export const COLORS_LIGHT_THEME = {
   THEME1:'#00b0f0',
@@ -80,7 +79,7 @@ export const COLORS_DARK_THEME = {
 };
 // export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
 export const BASE_URL_PROD = "http://13.235.176.50:8000"
-export const BASE_URL_DEBUG = "http://192.168.137.143:8000" // "http://192.168.0.103:8000"
+export const BASE_URL_DEBUG = "http://192.168.0.103:8000"
 export const BASE_URL = (__DEV__)?BASE_URL_DEBUG:BASE_URL_PROD
 
 
@@ -228,6 +227,6 @@ export const ERROR_MESSAGES = {
   }
 }
 
-export const LATEST_APP_VERSION = 27;
+export const LATEST_APP_VERSION = 28;
 
 export const MAX_USERS_IN_A_GROUP = 20
