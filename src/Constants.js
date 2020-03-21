@@ -227,6 +227,6 @@ export const ERROR_MESSAGES = {
   }
 }
 
-export const LATEST_APP_VERSION = 24;
+export const LATEST_APP_VERSION = 27;
 
 export const MAX_USERS_IN_A_GROUP = 20
