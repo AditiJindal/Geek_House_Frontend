@@ -7,7 +7,6 @@ import NetInfo from '@react-native-community/netinfo';
 import LinearGradient from 'react-native-linear-gradient';
 import {loginGoogle,loginFacebook, checkLogin, internetHandler} from '../actions/LoginAction';
 import Loading from '../components/Loading';
-import codePush from 'react-native-code-push'
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import Image from 'react-native-fast-image';
 import SplashScreen from 'react-native-splash-screen';
@@ -16,16 +15,7 @@ import { Actions } from 'react-native-router-flux';
 
 class Login extends Component {
 
-  state = {updateAvailble: false}
-
   componentDidMount = async () => {
-    const result = await codePush.checkForUpdate();
-    if (result){
-      this.setState({updateAvailble: true})
-      await codePush.sync();
-      this.setState({updateAvailble: false})
-    }
-
     this.props.checkLogin();
     SplashScreen.hide()
     analytics().logAppOpen();
@@ -147,9 +137,6 @@ class Login extends Component {
           (this.props.loading)?
           <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
             <Loading white size={128}/>
-            <Text style={styles.UpdateText}>{
-              (this.state.updateAvailble)?'Installing Updates':'Please Wait'
-            }</Text>
           </View>:
           this._renderLogin()
         }

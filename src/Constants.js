@@ -1,4 +1,5 @@
 import {KEYCODE_PROD} from '../prod_keys';
+__DEV__=false
 
 export const COLORS_LIGHT_THEME = {
   THEME1:'#00b0f0',

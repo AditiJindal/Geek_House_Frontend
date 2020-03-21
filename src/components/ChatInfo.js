@@ -252,8 +252,9 @@ class ChatInfo extends Component {
           <TouchableOpacity style={{maxHeight:"70%", width:"75%", borderRadius:20, elevation:10, 
             backgroundColor:COLORS.LIGHT, overflow:'hidden'}} activeOpacity={1}>
             <FlatList
-              keyboardShouldPersistTaps="always"
               data={DATA}
+              keyboardShouldPersistTaps="always"
+              showsVerticalScrollIndicator={false}
               ListEmptyComponent={(
                 <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
                   <Text style={{fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:18, color:COLORS.LESS_DARK}}>

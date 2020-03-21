@@ -1,13 +1,15 @@
 import React from 'react';
-import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity, Dimensions } from 'react-native';
 import {FONTS, COLORS_LIGHT_THEME, MESSAGE_SPECIAL_ADDER} from '../Constants';
 import Typing from '../components/Typing';
 import {Icon} from 'react-native-elements';
 import Image from 'react-native-fast-image';
 import TimeAgo from 'react-native-timeago';
 import SView from 'react-native-simple-shadow-view';
-import Ripple from './Ripple';
 import toMaterialStyle from 'material-color-hash';
+import ImageViewer from './ImageViewer';
+
+const screenWidth = Dimensions.get('screen').width
 
 getInitials = (name) => {
   if (!name){return null}
@@ -17,8 +19,8 @@ getInitials = (name) => {
 }
 
 const getBadge = (props) => {
-  const {COLORS, data} = props;
-  if (props.typing){
+  const {COLORS, data, typing, online} = props;
+  if (typing){
     return (
       <View style={{
         position:'absolute', right:0, top:0, justifyContent:'center', alignItems:'center',
@@ -29,7 +31,7 @@ const getBadge = (props) => {
       </View>
     );
   }
-  else if (props.online && !data.isGroup){
+  else if (online && !data.isGroup){
     return (
       <View style={{
         position:'absolute', right:3, top:0, borderColor:COLORS.LIGHT,borderWidth:0.7,
@@ -72,15 +74,16 @@ const imageUrlCorrector = (image_url, image_adder) => {
 }
 
 const getAppropriateAccessory = (props) => {
-  const {COLORS, isSelector, isSelected, isAddedToGroup} = props;
+  const {COLORS, isSelector, isSelected, isAddedToGroup,
+    unread_messages} = props;
 
-  if (!isSelector && props.unread_messages){
+  if (!isSelector && unread_messages){
     return (
       <View style={{...styles.BadgeViewStyle,
-        backgroundColor:(props.theme==='light')?COLORS.RED:COLORS.GREEN}}>
+        backgroundColor:(COLORS.THEME==='light')?COLORS.RED:COLORS.GREEN}}>
         <Text style={{...styles.BadgeTextStyle, 
           color:COLORS.LIGHT}}>
-          {props.unread_messages}
+          {unread_messages}
         </Text>
       </View>
     )
@@ -94,69 +97,83 @@ const getAppropriateAccessory = (props) => {
   return null
 }
 
-export default ChatPeople = (props) => {
-  const {COLORS, isSelector, isSelected, data, recentMessage, recentActivity, isAddedToGroup} = props;
-  let IMAGE_SIZE = (isSelector)?42:56;
-  const OutmostView = (isAddedToGroup)?TouchableOpacity:Ripple
-  
-  return(
-    <OutmostView rippleContainerBorderRadius={(isSelector)?0:IMAGE_SIZE/4}
-      onPress={() => {(isAddedToGroup)?null:props.onPress(data._id, isSelected)}} activeOpacity={1}
-      style={{marginVertical:(isSelector)?0:5,marginHorizontal:15}}>
-      <SView style={{...styles.ViewStyling, borderColor:COLORS.GRAY, 
-        shadowOpacity: (isSelector)?0:(COLORS.THEME==='light')?0.2:0.3,
-        backgroundColor:COLORS.LIGHT, borderRadius:(isSelector)?0:IMAGE_SIZE/4}}>
-        {(props.data.isGroup)?(
-          <View style={{height:"100%", width:25, backgroundColor:toMaterialStyle(props.data.name).backgroundColor,
-          position:'absolute', alignSelf:'center', borderBottomLeftRadius:IMAGE_SIZE/4,
-          borderTopLeftRadius:IMAGE_SIZE/4}}/>
-        ):null}
-        <View style={{justifyContent:'center', flexDirection:'row', alignItems:'center',}}>
-          <View style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE/2,
-                backgroundColor:COLORS.LIGHT, elevation:7, marginVertical:10}}>
-            <Image
-              source={(props.data.image_url)?
-                {uri:imageUrlCorrector(props.data.image_url, props.image_adder)}:
-                require('../../assets/icons/user.png')} style={{borderRadius:IMAGE_SIZE/2, flex:1}}
-            />
-            {getBadge(props)}
-          </View>
-          
-          <View style={{marginHorizontal:10, justifyContent:'center', alignItems:'flex-start'}}>
-            <Text style={{...styles.TextStyle, 
-              color:COLORS.LESS_DARK}}>
-              {props.data.name}
-            </Text>
-            {
-              (isAddedToGroup)?(
-                <Text style={{color:COLORS.DARK_GRAY, fontSize:11, fontFamily:FONTS.RALEWAY, fontStyle:'italic'}}>
-                  Already Added
-                </Text>
-              ):null
-            }
-            {(props.data.email)?(
-              <Text style={{...styles.InterestStyle, fontSize:12,
-              color:(props.theme==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
-                {props.data.email}
+export default class ChatPeople extends React.Component{
+  state={imageViewerActive: false}
+
+  render(){
+    const {COLORS, isSelector, isSelected, data, onPress, image_adder,
+      recentMessage, recentActivity, isAddedToGroup} = this.props;
+    let IMAGE_SIZE = (isSelector)?42:56;
+    const OutmostView = TouchableOpacity//(isAddedToGroup)?TouchableOpacity:Ripple
+    
+    return(
+      <TouchableOpacity
+        onPress={() => {(isAddedToGroup)?null:onPress(data._id, isSelected)}} activeOpacity={0.65}
+        style={{marginVertical:(isSelector)?0:5,marginHorizontal:15}}>  
+        <ImageViewer
+          isVisible={this.state.imageViewerActive}
+          COLORS={COLORS}
+          onClose={()=>this.setState({imageViewerActive:false})}
+          imageHeight={screenWidth*0.92}
+          imageWidth={screenWidth*0.92}
+          source={{uri:imageUrlCorrector(data.image_url, image_adder)}}
+        />
+        <SView style={{...styles.ViewStyling, borderColor:COLORS.GRAY, 
+          shadowOpacity: (isSelector)?0:(COLORS.THEME==='light')?0.2:0.3,
+          backgroundColor:COLORS.LIGHT, borderRadius:(isSelector)?0:IMAGE_SIZE/4}}>
+          {(data.isGroup)?(
+            <View style={{height:"100%", width:25, backgroundColor:toMaterialStyle(data.name).backgroundColor,
+            position:'absolute', alignSelf:'center', borderBottomLeftRadius:IMAGE_SIZE/4,
+            borderTopLeftRadius:IMAGE_SIZE/4}}/>
+          ):null}
+          <View style={{justifyContent:'center', flexDirection:'row', alignItems:'center',}}>
+            <TouchableOpacity style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE/2,
+                backgroundColor:COLORS.LIGHT, elevation:7, marginVertical:10}}
+                onPress={()=>this.setState({imageViewerActive:true})} activeOpacity={0.65}>
+              <Image
+                source={(data.image_url)?
+                  {uri:imageUrlCorrector(data.image_url, image_adder)}:
+                  require('../../assets/icons/user.png')} style={{borderRadius:IMAGE_SIZE/2, flex:1}}
+              />
+              {getBadge(this.props)}
+            </TouchableOpacity>
+            
+            <View style={{marginHorizontal:10, justifyContent:'center', alignItems:'flex-start'}}>
+              <Text style={{...styles.TextStyle, 
+                color:COLORS.LESS_DARK}}>
+                {data.name}
               </Text>
-            ):null}
-            {(recentMessage && recentActivity)?(
-              <Text style={{...styles.InterestStyle, fontSize:14, 
-                color:COLORS.DARK_GRAY}}>
-                {getRecentMessage(recentMessage)}
-            </Text>
-            ):null}
-            {(recentMessage && recentActivity)?(
-              getRecentTime(recentActivity)
-            ):null}
+              {
+                (isAddedToGroup)?(
+                  <Text style={{color:COLORS.DARK_GRAY, fontSize:11, fontFamily:FONTS.RALEWAY, fontStyle:'italic'}}>
+                    Already Added
+                  </Text>
+                ):null
+              }
+              {(data.email)?(
+                <Text style={{...styles.InterestStyle, fontSize:12,
+                color:(COLORS.THEME==='light')?COLORS.LIGHT_GRAY:COLORS.LESS_DARK}}>
+                  {data.email}
+                </Text>
+              ):null}
+              {(recentMessage && recentActivity)?(
+                <Text style={{...styles.InterestStyle, fontSize:14, 
+                  color:COLORS.DARK_GRAY}}>
+                  {getRecentMessage(recentMessage)}
+              </Text>
+              ):null}
+              {(recentMessage && recentActivity)?(
+                getRecentTime(recentActivity)
+              ):null}
+            </View>
           </View>
-        </View>
-
-        {getAppropriateAccessory(props)}
-
-      </SView>
-    </OutmostView>
-  );
+  
+          {getAppropriateAccessory(this.props)}
+  
+        </SView>
+      </TouchableOpacity>
+    );
+  }
 }
 
 const styles = StyleSheet.create({

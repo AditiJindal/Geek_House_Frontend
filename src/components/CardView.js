@@ -26,14 +26,14 @@ const styles = StyleSheet.create({
   CardViewStyle:{
     shadowColor:'#202020',shadowOpacity:0.25,
     shadowOffset:{width:0,height:8},shadowRadius:6,
-    margin:15,
-    marginVertical:10,
-    borderRadius:20,
-    padding:15
+    margin:10,
+    marginBottom:0,
+    borderRadius:15,
+    padding:10,
   },
   SubHeadingStyle:{
     fontFamily:FONTS.NOE_DISPLAY,
-    fontSize:20,
+    fontSize:22,
     marginBottom:5,
     borderBottomWidth:0.5,
     paddingBottom:3,
@@ -41,6 +41,6 @@ const styles = StyleSheet.create({
   ContentStyle:{
     textAlign:'justify',
     fontFamily:FONTS.LATO,
-    fontSize:14
+    fontSize:15
   }
 })

@@ -19,7 +19,7 @@ class NativeAdsComponent extends Component {
       <SView style={{
         shadowColor:'#202020',shadowOpacity:0.25,shadowOffset:{width:0,height:8},shadowRadius:6,
         backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
-        borderRadius:20, margin:15, padding:10}}>
+        borderRadius:15, margin:10, padding:7, marginBottom:0}}>
         <View style={{flexDirection:'row', justifyContent:'space-between', paddingHorizontal:5, paddingVertical:3}}>
           <View style={{flexDirection:'row'}}>
             <AdIconView style={{height:32, width:32}}/>

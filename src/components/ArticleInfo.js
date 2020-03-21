@@ -15,13 +15,14 @@ import Image from 'react-native-fast-image';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import TimedAlert from './TimedAlert';
 
-
+const screenWidth = Dimensions.get('screen').width
 const OVERLAY_WIDTH_PERCENT=88
-const HEADER_MAX_HEIGHT = Math.floor(Dimensions.get('window').width * (OVERLAY_WIDTH_PERCENT/100)) *0.75;
+const HEADER_MAX_HEIGHT = Math.floor(screenWidth * (OVERLAY_WIDTH_PERCENT/100)) *0.75;
 const HEADER_MIN_HEIGHT = 70;
 const PROFILE_IMAGE_MAX_HEIGHT = 76;
-const BORDER_RADIUS=PROFILE_IMAGE_MAX_HEIGHT/2;
+const BORDER_RADIUS=25 // PROFILE_IMAGE_MAX_HEIGHT/2;
 const TOPIC_SMALL_SIZE=18
+const ATouchable = Animated.createAnimatedComponent(TouchableOpacity)
 
 class ArticleInfo extends Component {
 
@@ -31,7 +32,8 @@ class ArticleInfo extends Component {
       scrollY: new Animated.Value(0),
       userCommentRating:-1,
       commentText:"",
-      adIndex: 0
+      adIndex: 0,
+      imageViewerActive: false
     };
   }
 
@@ -119,7 +121,7 @@ class ArticleInfo extends Component {
       <View>
         <View style={{
           backgroundColor:COLORS.LESSER_LIGHT, 
-          padding:10, borderRadius:15, marginBottom:15}}>
+          padding:10, borderRadius:10, marginBottom:15}}>
           <TextInput
             value={this.state.commentText}
             onChangeText={(text)=>{this.setState({commentText:text})}}
@@ -198,16 +200,16 @@ class ArticleInfo extends Component {
       return null
     }
     return (
-      <View style={{margin:5, marginTop:20}}>
+      <View style={{marginTop:20}}>
         <Text style={{fontSize:32, 
           fontFamily:FONTS.GOTHAM_BLACK, 
           color:COLORS.LESS_DARK, 
           marginLeft:15}}>Comments</Text>
 
         <View style={{
-              backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
-              borderColor:COLORS_DARK_THEME.GRAY, borderWidth:2,elevation:3,
-              borderRadius:20, padding:10, margin:10}}>
+            backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
+            borderColor:COLORS_DARK_THEME.GRAY, borderWidth:2,elevation:3,
+            borderRadius:15, padding:10, margin:10}}>
           {
             (this.props.selectedArticleInfo.my_article)?
             null:
@@ -317,30 +319,41 @@ class ArticleInfo extends Component {
       outputRange: [0, -HEADER_MAX_HEIGHT+HEADER_MIN_HEIGHT],
       extrapolate: 'clamp'
     });
+    const imageAnim = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_MAX_HEIGHT],
+      outputRange: [0,-HEADER_MAX_HEIGHT],
+      // extrapolate:'clamp'
+    });
     const textAnim = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
-      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*2],
-      extrapolate:'clamp'
+      inputRange: [0, HEADER_MAX_HEIGHT],
+      outputRange: [0,(HEADER_MAX_HEIGHT-HEADER_MIN_HEIGHT)/2],
+      // extrapolate:'clamp'
     });
     const textAnim2 = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT +20],
-      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*2.865],
-      extrapolate:'clamp'
+      inputRange: [0, HEADER_MAX_HEIGHT],
+      outputRange: [0,(HEADER_MAX_HEIGHT-HEADER_MIN_HEIGHT)/2],
+      // extrapolate:'clamp'
     });
     const textAnim3 = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT +60],
-      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*1.23],
-      extrapolate:'clamp'
+      inputRange: [0, HEADER_MAX_HEIGHT],
+      outputRange: [0,(HEADER_MAX_HEIGHT-HEADER_MIN_HEIGHT)/2],
+      // extrapolate:'clamp'
     });
     const textAnim4 = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT +100],
-      outputRange: [0,-PROFILE_IMAGE_MAX_HEIGHT*2],
-      extrapolate:'clamp'
+      inputRange: [0, HEADER_MAX_HEIGHT],
+      outputRange: [0,(HEADER_MAX_HEIGHT-HEADER_MIN_HEIGHT)/2],
+      // extrapolate:'clamp'
     });
 
     const scaleToZero = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
       outputRange: [1,0.4],
+      extrapolate:'clamp'
+    });
+
+    const opacityChange = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_MAX_HEIGHT*1.2],
+      outputRange: [1,0],
       extrapolate:'clamp'
     });
 
@@ -350,7 +363,7 @@ class ArticleInfo extends Component {
       extrapolate:'clamp'
     });
 
-    const bigImageBlur = this.state.scrollY.interpolate({
+    const bigImageScale = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
       outputRange: [1, 1.1],
       extrapolate:'clamp'
@@ -363,7 +376,7 @@ class ArticleInfo extends Component {
     });
     const headerTextTranslate = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
-      outputRange: [HEADER_MAX_HEIGHT, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT + HEADER_MIN_HEIGHT/2 -18],
+      outputRange: [HEADER_MAX_HEIGHT, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT/2 - 10],
       extrapolate:'clamp'
     });
 
@@ -389,9 +402,7 @@ class ArticleInfo extends Component {
               ["rgb(200,200,200)", "rgb(240,240,240)"]}>
             <Animated.Image
               style={{flex:1,
-              borderTopLeftRadius:BORDER_RADIUS,
-              borderTopRightRadius:BORDER_RADIUS,
-              transform: [{scale:bigImageBlur}],
+              transform: [{scale:bigImageScale}],
               opacity:bigImageOpacity}}
               source={
                 (this.props.loadSuccessful)?
@@ -401,60 +412,40 @@ class ArticleInfo extends Component {
             />
           </LinearGradient>
           <Animated.View
-              style={{ position: 'absolute',
+              style={{ position: 'absolute', 
               transform:[{translateY:headerTextTranslate}],
-              padding:10 }}
+              alignItems:'center', justifyContent:'center' }}
             >
               <Text style={{ 
                 color: COLORS.LIGHT, 
                 fontSize:TOPIC_SMALL_SIZE, textAlign:'center',
-                fontFamily:FONTS.HELVETICA_NEUE}}>
-                {this.convertTopic(topic)}
+                fontFamily:FONTS.NOE_DISPLAY}}>
+                {this.convertTopic(topic)}                
               </Text>
             </Animated.View>
-            <Animated.View
-            style={{
-              height: PROFILE_IMAGE_MAX_HEIGHT,
-              width: PROFILE_IMAGE_MAX_HEIGHT,
-              borderRadius: BORDER_RADIUS,
-              backgroundColor: COLORS.LIGHT,
-              overflow: 'hidden',
-              alignSelf:'flex-start',
-              top:-PROFILE_IMAGE_MAX_HEIGHT/2,
-              marginLeft: 16,
-              transform:[{translateX:textAnim},{scaleX:scaleToZero},{scaleY:scaleToZero}],
-            }}
-          >
-            <Animated.Image
-              source={{uri:author_image}}
-              style={{height:PROFILE_IMAGE_MAX_HEIGHT,
-              zIndex:20,
-              transform: [{rotate:pictureRotate}],resizeMode:'contain',
-              width:PROFILE_IMAGE_MAX_HEIGHT,
-              backgroundColor:COLORS.LIGHT,
-              borderRadius:BORDER_RADIUS}}
-            />
-
-          </Animated.View>
-          
+              <Animated.View
+                onPress={()=>this.setState({imageViewerActive:true})}
+                  style={{
+                    height: PROFILE_IMAGE_MAX_HEIGHT,
+                    width: PROFILE_IMAGE_MAX_HEIGHT,
+                    borderRadius: PROFILE_IMAGE_MAX_HEIGHT/2,
+                    marginLeft: 16,
+                    transform:[{translateX:imageAnim},{scaleX:scaleToZero},{scaleY:scaleToZero}],
+                  }}
+                >
+                <Animated.Image
+                  source={{uri:author_image}}
+                  style={{height:PROFILE_IMAGE_MAX_HEIGHT,
+                  zIndex:20,
+                  transform: [{rotate:pictureRotate}],resizeMode:'contain',
+                  width:PROFILE_IMAGE_MAX_HEIGHT,
+                  backgroundColor:COLORS.LIGHT,
+                  borderRadius:BORDER_RADIUS}}
+                />
+              </Animated.View>
         </Animated.View>
 
         <Animated.ScrollView
-          // refreshControl={
-          //   (this.props.article_id!==-1)?
-          //   (
-          //     <RefreshControl
-          //       tintColor={'black'}
-          //       style={{zIndex:100, position:'absolute', height:HEADER_MAX_HEIGHT}}
-          //       onRefresh={()=>{
-          //       this.props.getArticleInfo(this.props.article_id, false, true)
-          //       }}
-          //         refreshing={this.props.loading}
-          //         colors={["rgb(0,181, 213)"]}
-          //     />
-          //   ):
-          //   null
-          // }
           nestedScrollEnabled={true}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="always"
@@ -470,13 +461,13 @@ class ArticleInfo extends Component {
           <View style={{height:HEADER_MAX_HEIGHT + PROFILE_IMAGE_MAX_HEIGHT}}/>
           <View >
             <Animated.Text style={{marginLeft:16, marginVertical:2, fontFamily:FONTS.LATO,
-            fontSize:14, color:COLORS.GRAY,opacity:bigImageOpacity, 
-            transform:[{translateX:textAnim}]}}>
+            fontSize:14, color:COLORS.GRAY,opacity:opacityChange, 
+            transform:[{translateY:textAnim}]}}>
               by <Text style={{fontFamily:FONTS.LATO_BOLD, fontSize:18}}>{author}</Text>
             </Animated.Text>
             <Animated.Text style={{ fontSize: 28, marginLeft: 15, 
-              fontFamily:FONTS.NOE_DISPLAY, color:COLORS.LESS_DARK, opacity:bigImageOpacity, 
-              transform:[{translateX:textAnim2} ]}}>
+              fontFamily:FONTS.NOE_DISPLAY, color:COLORS.LESS_DARK, opacity:opacityChange, 
+              transform:[{translateY:textAnim2} ]}}>
               {topic}
             </Animated.Text>
 
@@ -485,14 +476,14 @@ class ArticleInfo extends Component {
                 fontSize:12,
                 marginLeft:16,
                 color:COLORS.GRAY,
-                transform:[{translateX: textAnim3} ],
-                opacity:bigImageOpacity}}>
+                transform:[{translateY: textAnim3} ],
+                opacity:opacityChange}}>
                   {`${category}\n${views} View${(views!==1)?'s':''}`}
               </Animated.Text>
               {
                 (rating)?
                 <Animated.View style={{flexDirection:'row', alignItems:"center",
-                  transform:[{translateX: textAnim4}],opacity:bigImageOpacity
+                  transform:[{translateY: textAnim4}],opacity:opacityChange
                 }}>
                   <StarRating
                     activeOpacity={0.8}
@@ -521,7 +512,7 @@ class ArticleInfo extends Component {
                   (
                     <Animated.Text style={{marginLeft:16, fontSize:10, 
                       fontFamily:FONTS.HELVETICA_NEUE,
-                      transform:[{translateX: textAnim4}],opacity:bigImageOpacity,
+                      transform:[{translateY: textAnim4}],opacity:opacityChange,
                       color:COLORS.LIGHT_GRAY}}>
                       {(this.props.article_id!==-1)?"*Not yet rated":"*In preview mode"}
                     </Animated.Text>
@@ -544,7 +535,7 @@ class ArticleInfo extends Component {
               </Text>
             </View>
           }
-          <View style={{height:300}}/>
+          <View style={{height:250}}/>
         </Animated.ScrollView>
       </View>
     );
@@ -584,7 +575,7 @@ class ArticleInfo extends Component {
           width={`${OVERLAY_WIDTH_PERCENT}%`}
           height="90%"
         >
-          <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+          <>
             <StatusBar 
               barStyle={'light-content'}
               backgroundColor={COLORS.OVERLAY_COLOR}/>
@@ -594,10 +585,12 @@ class ArticleInfo extends Component {
             />
             {
               (this.props.loading)?
-              <Loading size={128} white={(this.props.theme!=='light')}/>:
+              <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+              <Loading size={128} white={(this.props.theme!=='light')}/>
+              </View>:
               this.renderArticle()
             }
-          </View>
+          </>
         </Overlay>
       );
     }

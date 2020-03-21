@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { View, StyleSheet, Text, StatusBar,
-  FlatList, ScrollView, Linking,
+  FlatList, ScrollView, Linking, Dimensions,
   TouchableOpacity}from 'react-native';
 import {connect} from 'react-redux';
 import {
@@ -29,7 +29,9 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 import ArticleTileAds from '../components/ArticleTileAds';
+import ImageViewer from '../components/ImageViewer';
 
+const screenWidth = Dimensions.get('screen').width
 
 const OVERLAY_WIDTH_PERCENT=75
 class Home extends Component {
@@ -37,6 +39,7 @@ class Home extends Component {
 
   constructor() {
     super();
+    this.state={imageViewerActive: false}
     this.slides = [];
   }
 
@@ -123,6 +126,7 @@ class Home extends Component {
   }
 
   imageUrlCorrector(image_url){
+    if (!this.props.image_adder){return ''}
     if (image_url.substring(0,4) !== 'http'){
       image_url = this.props.image_adder + image_url
     }
@@ -131,6 +135,7 @@ class Home extends Component {
 
   renderOverlay(){
     const {COLORS, loading, theme} = this.props;
+    const {imageViewerActive} = this.state
     const isUpdateAvailable = this.props.welcomeData.latestVersion>LATEST_APP_VERSION
     return (
       <Overlay isVisible={this.props.overlayVisible}
@@ -140,12 +145,25 @@ class Home extends Component {
         width={`${OVERLAY_WIDTH_PERCENT}%`}
         height="auto">
         <>
+          <ImageViewer
+            isVisible={imageViewerActive}
+            onClose = {()=>this.setState({imageViewerActive:false})}
+            COLORS={COLORS}
+            imageWidth={screenWidth*0.92}
+            imageHeight={screenWidth*0.92}
+            source={{uri:this.imageUrlCorrector(this.props.data.image_url)}}
+          />
           <View style={{justifyContent:'space-around', alignItems:'center', flexDirection:'row', 
             backgroundColor:COLORS.LIGHT}}>
-            {(!loading)?(<Image
-              source={{uri:this.imageUrlCorrector(this.props.data.image_url)}}
-              style={{marginRight:10, marginBottom:15, height:64, width:64, borderRadius:32,elevation:7}}
-            />):
+            {(!loading)?(
+            <TouchableOpacity
+              onPress={()=>this.setState({imageViewerActive:true})}>
+              <Image
+                source={{uri:this.imageUrlCorrector(this.props.data.image_url)}}
+                style={{marginRight:10, marginBottom:15, height:64, width:64, borderRadius:32,elevation:7}}
+              />
+            </TouchableOpacity>
+            ):
             (
               <View style={{height:42, width:42, justifyContent:'center', alignItems:'center'}}>
                 <Loading size={42} white={(theme!=='light')}/>
@@ -256,23 +274,23 @@ class Home extends Component {
   }
 
   renderAvatar(){
-    const {COLORS, loading, overlayVisible, theme} = this.props;
+    const {COLORS, loading, overlayVisible, theme, image_adder} = this.props;
     const isUpdateAvailable = this.props.welcomeData.latestVersion>LATEST_APP_VERSION
-    if (overlayVisible){
+    if (overlayVisible || !image_adder){
       return null
     }
     else{
       if (loading){
         return (
           <TouchableOpacity style={{height:42, width:42, justifyContent:'center', alignItems:'center'}}
-            onPress={this.props.toggleOverlay.bind(this, {overlayVisible:true})}>
+            onPress={()=>this.props.toggleOverlay({overlayVisible:true})}>
             <Loading size={42} white={theme!=='light'}/>
           </TouchableOpacity>
         )
       }
       return(
-        <TouchableOpacity onPress={this.props.toggleOverlay.bind(this, {overlayVisible:true})}
-          style={{borderRadius:30, backgroundColor:COLORS.LIGHT, elevation:5}}>
+        <TouchableOpacity onPress={()=>this.props.toggleOverlay({overlayVisible:true})}
+          style={{borderRadius:30, backgroundColor:COLORS.LESS_LIGHT, elevation:5}}>
           {
             (isUpdateAvailable)?(
               <View style={{height:10, width:10, borderRadius:5, borderColor:COLORS.LESS_LIGHT, borderWidth:1,

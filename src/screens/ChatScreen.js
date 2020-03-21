@@ -94,9 +94,6 @@ class ChatScreen extends Component {
   }
 
   renderHeaderAvatar(){
-    if (this.state.chatInfoVisible){
-      return <View style={{height:48, width:48, marginLeft:10}}/>
-    }
 
     const {COLORS, other_user_data} = this.props;
     return (

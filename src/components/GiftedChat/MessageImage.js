@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { StyleSheet, View, ViewPropTypes, Dimensions,
-    TouchableOpacity,StatusBar} from 'react-native';
+import { StyleSheet, View, ViewPropTypes, Dimensions, TouchableOpacity} from 'react-native';
 import Image from 'react-native-fast-image';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import RNFileSystem from 'react-native-fs';
-import { Overlay,Icon} from 'react-native-elements';
-import ImageZoom from 'react-native-image-pan-zoom';
+import ImageViewer from '../ImageViewer';
 
 const DEVICE_WIDTH = Dimensions.get('screen').width
 const IMAGE_WIDTH = 0.7*DEVICE_WIDTH
@@ -100,38 +98,14 @@ export default class MessageImage extends Component {
                     height:IMAGE_WIDTH/currentMessage.image.aspectRatio}} 
                     source={{ uri: image_url, cache:'immutable'}}/>
             </TouchableOpacity>
-            <Overlay isVisible={this.state.imageViewerActive} height="100%" width="100%"
-                onRequestClose={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
-                overlayBackgroundColor={"rgba(0,0,0,0)"}
-                containerStyle={{padding:0, margin:0, elevation:0}}>
-                <>
-                <StatusBar 
-                    barStyle={'light-content'}
-                    backgroundColor={COLORS.OVERLAY_COLOR}
-                />
-                <TouchableOpacity style={{flex:1, justifyContent:'center', alignItems:'center'}}
-                    onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}} activeOpacity={1}>
-                    <View style={{height:showHeight, width:showWidth}}>
-                        <TouchableOpacity
-                        onPress={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
-                        style={{padding:10, zIndex:10, top:-5, right:-3, position:'absolute'}}>
-                            <Icon name="x-circle" size={22} 
-                                color={COLORS.RED} type={'feather'}/>
-                        </TouchableOpacity>
-                        <ImageZoom  imageHeight={showHeight} imageWidth={showWidth}
-                            cropHeight={showHeight} cropWidth={showWidth}  
-                            style={{backgroundColor:'rgba(0,0,0,0.4)', borderRadius:15, overflow:'hidden'}}
-                            enableSwipeDown={true}
-                            onSwipeDown ={()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}>
-                            <View style={{borderRadius:15, overflow:'hidden'}}>
-                                <Image source={{uri:image_url}} 
-                                style={{height:showHeight, width:showWidth}}/>
-                            </View>
-                        </ImageZoom>
-                    </View>
-                </TouchableOpacity>
-                </>
-            </Overlay>
+            <ImageViewer
+                isVisible={this.state.imageViewerActive}
+                onClose = {()=>{this.props.onViewerSelect(false);this.setState({imageViewerActive:false})}}
+                COLORS = {COLORS}
+                imageHeight = {showHeight}
+                imageWidth = {showWidth}
+                source = {{uri:image_url}}
+            />
         </View>
             );
         }
