@@ -60,8 +60,6 @@ target 'Geek_House' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
-  pod 'RNFBCrashlytics', :path => '../node_modules/@react-native-firebase/crashlytics'
-
   pod 'react-native-cameraroll', :path => '../node_modules/@react-native-community/cameraroll'
 
 

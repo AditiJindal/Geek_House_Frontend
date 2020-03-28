@@ -1,11 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: 'kotlin-android'
 apply plugin: "com.google.firebase.firebase-perf"
-apply plugin: 'io.fabric'
-
-crashlytics {
-  enableNdk true
-}
 
 import com.android.build.OutputFile
 
@@ -229,7 +224,6 @@ android {
 
 dependencies {
     implementation project(':@react-native-community_cameraroll')
-    implementation project(':@react-native-firebase_crashlytics')
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-push-notification')
     implementation project(':@react-native-firebase_ml-natural-language')
