@@ -68,6 +68,35 @@ export const uploadImage = async (resourceData, file) => {
   })
 }
 
+export const uploadArticleImages = async (article) => {
+  let promises = []
+  let contents = article.contents
+  let new_contents = []
+  let i, card, response, preSignedURL, pathToImage, promise;
+
+  for (i=0; i<contents.length; i++){
+    card = contents[i];
+    if (!card.image){
+      new_contents.push(card)
+    }
+    else{
+      response = await httpClient.get(URLS.imageupload, 
+        {params:{type:'article', image_type:'jpeg'}})
+      preSignedURL = decrypt(response.data.url)
+      pathToImage = card.image.uri
+      card.image.uri = decrypt(response.data.key)
+      promise = uploadImage({contentType: "image/jpeg", uploadUrl: preSignedURL}, pathToImage);
+      promises.push(promise);
+      new_contents.push(card)
+    }
+  }
+
+  await Promise.all(promises)
+
+  article.contents = new_contents;
+  return article
+}
+
 export const publishArticle = (article, success_animation) => {
   return (dispatch) => {
     dispatch({type:ACTIONS.WRITE_LOADING})
@@ -80,7 +109,7 @@ export const publishArticle = (article, success_animation) => {
           .then(() => {
             article.image = decrypt(response.data.key)
             httpClient.post(URLS.publish, article).then(
-              () => {       
+              () => {
                 dispatch({type:ACTIONS.PUBLISH_SUCCESS});
               }
             );

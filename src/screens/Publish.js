@@ -4,7 +4,7 @@ import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
 import {connect} from 'react-redux';
 import {Actions} from 'react-native-router-flux';
 import Ripple from '../components/Ripple';
-import {publishArticle, getMyArticles} from '../actions/WriteAction';
+import {publishArticle, getMyArticles, uploadArticleImages} from '../actions/WriteAction';
 import {logEvent} from '../actions/ChatAction';
 import LottieView from 'lottie-react-native';
 import {Icon} from 'react-native-elements';
@@ -110,7 +110,7 @@ class Publish extends Component {
       contents:this.props.contents, category:this.props.category}
     return (
       <Ripple activeOpacity={0.5} style={{borderWidth:0, bottom:15,position: "absolute",alignSelf:'center'}}
-        onPress={onPress}
+        onPress={() => onPress(data_to_send)}
         rippleContainerBorderRadius={10}
         >
         {
@@ -160,7 +160,10 @@ class Publish extends Component {
           this.renderBottomButton('CONTINUE', ["#ec008c", "#fc6767"], 
           ()=>{this.props.getMyArticles(); Actions.pop()}):
           this.renderBottomButton('PUBLISH', ["#11998e", "#38ef7d"], 
-            ()=>{ this.props.publishArticle(data_to_send, this.animation) })
+            async (data_to_send)=>{
+              const article = await uploadArticleImages(data_to_send)
+              this.props.publishArticle(article, this.animation)
+            })
         }
       </View>
     );

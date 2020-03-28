@@ -65,7 +65,9 @@ class ArticleInfo extends Component {
                   theme={this.props.theme}
                   COLORS = {COLORS}
                   key={item.sub_heading}
-                  cardData={item}/>
+                  cardData={item}
+                  image_adder={this.props.image_adder}
+                />
               </View>
               )
             }
@@ -311,7 +313,7 @@ class ArticleInfo extends Component {
 
   renderArticle(){
     const {COLORS} = this.props;
-    const {author, cards, views, category, comments,author_image,
+    const {author, cards, views, category, comments, author_image,
       rating, topic} = this.props.selectedArticleInfo;
     
     const headerHeight = this.state.scrollY.interpolate({

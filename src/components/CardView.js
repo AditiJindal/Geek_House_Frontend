@@ -5,10 +5,15 @@ import {FONTS} from '../Constants';
 import SView from 'react-native-simple-shadow-view';
 // import console = require('console');
 
-
-
 export default class CardView extends React.Component {
   state={cardWidth:0}
+
+  imageUrlCorrector(image_url){
+    if (image_url.substring(0,4) !== 'http'){
+      image_url = this.props.image_adder + image_url
+    }
+    return image_url
+  }
 
   renderCardImage(){
     const {image} = this.props.cardData
@@ -18,7 +23,8 @@ export default class CardView extends React.Component {
     const height = image.height*width/image.width
     return (
       <View style={{width:"100%", height, marginBottom:10}}>
-        <Image source={{uri:image.uri}} style={{flex:1, elevation:5, borderRadius:4}}/>
+        <Image source={{uri:this.imageUrlCorrector(image.uri)}} 
+          style={{flex:1, elevation:5, borderRadius:4}}/>
       </View>
     )
   }
