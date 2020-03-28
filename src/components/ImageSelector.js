@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, TouchableOpacity, Text, StatusBar} from 'react-native';
+import {View, Keyboard, Text, StatusBar} from 'react-native';
 import {Overlay, Icon} from 'react-native-elements';
 import {FONTS} from '../Constants';
 import Ripple from './Ripple';
@@ -28,6 +28,7 @@ class ImageSelector extends React.Component{
   }
 
   componentDidMount(){
+    Keyboard.dismiss()
     this.props.onRef(this)
   }
 

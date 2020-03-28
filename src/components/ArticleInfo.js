@@ -423,26 +423,21 @@ class ArticleInfo extends Component {
                 {this.convertTopic(topic)}                
               </Text>
             </Animated.View>
-              <Animated.View
-                onPress={()=>this.setState({imageViewerActive:true})}
-                  style={{
-                    height: PROFILE_IMAGE_MAX_HEIGHT,
-                    width: PROFILE_IMAGE_MAX_HEIGHT,
-                    borderRadius: PROFILE_IMAGE_MAX_HEIGHT/2,
-                    marginLeft: 16,
-                    transform:[{translateX:imageAnim},{scaleX:scaleToZero},{scaleY:scaleToZero}],
-                  }}
-                >
-                <Animated.Image
-                  source={{uri:author_image}}
-                  style={{height:PROFILE_IMAGE_MAX_HEIGHT,
-                  zIndex:20,
-                  transform: [{rotate:pictureRotate}],resizeMode:'contain',
-                  width:PROFILE_IMAGE_MAX_HEIGHT,
-                  backgroundColor:COLORS.LIGHT,
-                  borderRadius:BORDER_RADIUS}}
-                />
-              </Animated.View>
+            <Animated.View
+              onPress={()=>this.setState({imageViewerActive:true})}
+              style={{
+                top:-PROFILE_IMAGE_MAX_HEIGHT/2, alignSelf:'flex-start',
+                height: PROFILE_IMAGE_MAX_HEIGHT,
+                width: PROFILE_IMAGE_MAX_HEIGHT,
+                borderRadius: PROFILE_IMAGE_MAX_HEIGHT/2,
+                marginLeft: 16, overflow:'hidden', zIndex:20,
+                transform:[{translateX:imageAnim},{scaleX:scaleToZero},{scaleY:scaleToZero}],
+              }}>
+              <Animated.Image
+                source={{uri:author_image}}
+                style={{flex:1, transform: [{rotate:pictureRotate}],resizeMode:'contain'}}
+              />
+            </Animated.View>
         </Animated.View>
 
         <Animated.ScrollView

@@ -117,7 +117,7 @@ class Publish extends Component {
           (this.props.loading)?
             <Loading size={50} white={(this.props.theme!=='light')}/>:
           <SView style={{borderRadius:10, shadowOpacity:0.3,shadowRadius:6,height:58,width:170,
-          shadowOffset: { height:7}, shadowColor:'#11998E', backgroundColor:COLORS_LIGHT_THEME.LIGHT}}>
+          shadowOffset: { height:7}, shadowColor:'#202020', backgroundColor:COLORS_LIGHT_THEME.LIGHT}}>
             <LinearGradient style={{borderRadius:10,flex:1,justifyContent:'center', alignItems:"center",
               backgroundColor:COLORS.GREEN}} 
               colors={gradient} start={{x:0, y:1}} end={{x:1, y:1}}>

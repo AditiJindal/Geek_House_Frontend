@@ -1,25 +1,52 @@
 import React from 'react';
-import {Text, StyleSheet}from 'react-native';
+import {Text, StyleSheet, View}from 'react-native';
+import Image from 'react-native-fast-image';
 import {FONTS} from '../Constants';
 import SView from 'react-native-simple-shadow-view';
 // import console = require('console');
 
-export default CardView = (props) => {
-  const {COLORS} = props;
-  return(
-    <SView style={{...styles.CardViewStyle, 
-      backgroundColor:(COLORS.THEME==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
-      <Text style={{...styles.SubHeadingStyle,
-        borderColor:COLORS.GRAY,
-        color:COLORS.DARK}}>
-        {props.cardData.sub_heading}
-      </Text>
-      <Text style={{...styles.ContentStyle,
-        color:COLORS.DARK}}>
-        {props.cardData.content}
-      </Text>
-    </SView>
-  );
+
+
+export default class CardView extends React.Component {
+  state={cardWidth:0}
+
+  renderCardImage(){
+    const {image} = this.props.cardData
+    if (!image){return null}
+
+    const width = this.state.cardWidth
+    const height = image.height*width/image.width
+    return (
+      <View style={{width:"100%", height, marginBottom:10}}>
+        <Image source={{uri:image.uri}} style={{flex:1, elevation:5, borderRadius:4}}/>
+      </View>
+    )
+  }
+
+  render(){
+    const {COLORS, cardData} = this.props;
+    return(
+      <SView style={{...styles.CardViewStyle, 
+        backgroundColor:(COLORS.THEME==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}
+        onLayout={(event) => {
+          if (!this.state.cardWidth){
+            this.setState({cardWidth:event.nativeEvent.layout.width})
+          }
+        }}>
+        <Text style={{...styles.SubHeadingStyle,
+          borderColor:COLORS.GRAY,
+          borderBottomWidth:(cardData.image)?0:0.5,
+          color:COLORS.DARK}}>
+          {cardData.sub_heading}
+        </Text>
+        {this.renderCardImage()}
+        <Text style={{...styles.ContentStyle,
+          color:COLORS.DARK}}>
+          {cardData.content}
+        </Text>
+      </SView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -35,7 +62,6 @@ const styles = StyleSheet.create({
     fontFamily:FONTS.NOE_DISPLAY,
     fontSize:22,
     marginBottom:5,
-    borderBottomWidth:0.5,
     paddingBottom:3,
   },
   ContentStyle:{

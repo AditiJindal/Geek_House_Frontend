@@ -144,7 +144,7 @@ class Write extends Component {
         Actions.jump('writearticle'); analytics().setCurrentScreen('Write', 'Write');
         logEvent(LOG_EVENT.SCREEN_CHANGE, 'writearticle');}}>
         <SView style={{borderRadius:10, shadowOpacity:0.4,shadowRadius:6,
-          shadowOffset: { height:7}, shadowColor:'#f12711', 
+          shadowOffset: { height:7}, shadowColor:'#202020', 
           backgroundColor:COLORS_LIGHT_THEME.LIGHT}}>
           <LinearGradient style={{flex:1,paddingHorizontal:15, paddingVertical:10, borderRadius:10}}
             colors={(this.props.isDraft)?["#f12711","#f5af19"]:["#fc6767","#ec008c"]} start={{x:0, y:1}} end={{x:1, y:1}}>

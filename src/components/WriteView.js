@@ -1,12 +1,15 @@
 import React, {Component} from 'react';
 import { View, StyleSheet, TextInput, TouchableOpacity, Text}from 'react-native';
-import {Icon} from 'react-native-elements'
-import CustomAlert from '../components/CustomAlert';
-import {FONTS, ERROR_MESSAGES, LOG_EVENT} from '../Constants';
-import {logEvent} from '../actions/ChatAction';
+import {Icon} from 'react-native-elements';
 import SView from 'react-native-simple-shadow-view';
+import Image from 'react-native-fast-image';
 import vision from '@react-native-firebase/ml-vision';
+import ImageResizer from 'react-native-image-resizer';
+import CustomAlert from '../components/CustomAlert';
+import {FONTS, ERROR_MESSAGES, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
+import {logEvent} from '../actions/ChatAction';
 import ImageSelector from './ImageSelector';
+import Ripple from './Ripple'
 import Loading from './Loading';
 
 
@@ -19,6 +22,7 @@ export default class WriteView extends Component {
       isVisible:false,
       imageSelectorOpen:false,
       visionLoading: false,
+      cardWidth:0
     }
   }
 
@@ -39,7 +43,86 @@ export default class WriteView extends Component {
       this.props.onContentChange(response.text, this.props.index);
       this.setState({visionLoading:false})
     }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'WRITE VIEW - 42', description:e.toString()}))
+  }
 
+  getImageResize(response){
+    const MAX_WIDTH = 512;
+    const MAX_HEIGHT = 1024;
+
+    if (response.originalRotation){
+      // means height and width are interchanged, we have to swap them
+      let temp = response.height;
+      response.height = response.width;
+      response.width = temp; 
+    }
+
+    let resize = {width:response.width, height:response.height}
+    let ratio = response.width/response.height
+    if (resize.width>MAX_WIDTH){
+      resize={width:MAX_WIDTH, height:Math.floor(MAX_WIDTH/ratio)}
+    }
+    if (resize.height>MAX_HEIGHT){
+      resize={width:Math.floor(MAX_HEIGHT*ratio), height:MAX_HEIGHT}
+    }
+    return resize
+  }
+
+  handleOnClose(){
+    const {obj, onClosePressed} = this.props
+    if (obj.content || obj.sub_heading || obj.image){
+      this.setState({isVisible:true});
+    }
+    this.props.onClose(this.props.index)
+    onClosePressed();
+  }
+
+  handleAddCardImage(){
+    const {index, onCardImageChange} = this.props
+    this.imageSelector.showImageSelector(async (response)=>{
+      const resize = this.getImageResize(response);
+      const resized_image = await ImageResizer.createResizedImage(response.uri, resize.width, 
+        resize.height, "JPEG",80)
+      onCardImageChange(resized_image, index)
+    })
+  }
+
+  renderRemoveImageButton(){
+    const {onCardImageChange, index} = this.props
+    return(
+      <TouchableOpacity style={styles.RemoveImageButton}
+        activeOpacity={0.8} onPress={()=>onCardImageChange(null, index)}>
+        <Icon type="feather" name="x" size={16} color={COLORS_LIGHT_THEME.LIGHT}/>
+        <Text style={styles.RemoveImageText}>Remove Image</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  renderCardImage(){
+    const {COLORS, obj} = this.props
+
+    if (obj.image){
+      const width = this.state.cardWidth
+      const height = obj.image.height*width/obj.image.width
+
+      return (
+        <View style={{width:"100%", height, paddingHorizontal:5,}}>
+          <Image source={{uri:obj.image.uri}} style={{flex:1, elevation:5, borderRadius:4}}>
+            {this.renderRemoveImageButton()}
+          </Image>
+        </View>
+      )
+    }
+    return(
+      <Ripple style={{padding:10, flexDirection:'row', alignItems:'center',elevation:3, 
+        backgroundColor:COLORS.LESSER_LIGHT, marginHorizontal:5, borderRadius:7}} 
+        rippleContainerBorderRadius={7}
+        onPress={this.handleAddCardImage.bind(this)}>
+        <Icon type="feather" name="image" size={14} color={COLORS.LESS_DARK}/>
+        <Text style={{...styles.CardImageText, color:COLORS.LESS_DARK}}>
+          Optionally add an image for this card
+        </Text>
+      </Ripple>
+    )
   }
 
   renderTextInput(){
@@ -77,7 +160,12 @@ export default class WriteView extends Component {
     const {COLORS} = this.props;
     return(
       <SView style={{...styles.CardViewStyle, 
-        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
+        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}
+        onLayout={(event) => {
+          if (!this.state.cardWidth){
+            this.setState({cardWidth:event.nativeEvent.layout.width})
+          }
+        }}>
         <ImageSelector
           COLORS = {this.props.COLORS}
           onRef={ref=>this.imageSelector = ref}
@@ -93,8 +181,7 @@ export default class WriteView extends Component {
           message = {ERROR_MESSAGES.CONFIRM_WRITE_VIEW_DELETE}
         />
         <View style={{justifyContent:'space-between', flexDirection:'row', alignItems:'center',
-          borderColor:(this.props.theme==='light')?COLORS.LESS_LIGHT:COLORS.LIGHT_GRAY,
-          borderBottomWidth:0.6, marginHorizontal:10}}>
+          marginHorizontal:10}}>
           <TextInput style={{...styles.SubHeadingStyle, flex:1,
             color:COLORS.DARK,}}
             placeholderTextColor={COLORS.LESSER_DARK}
@@ -107,11 +194,12 @@ export default class WriteView extends Component {
             multiline={true}
             placeholder={'Enter a heading'}/>
           <TouchableOpacity 
-            onPress={() => {this.setState({isVisible:true}); this.props.onClosePressed()}}>
+            onPress={this.handleOnClose.bind(this)}>
             <Icon size={24} name='close-circle' type='material-community'
               color={COLORS.RED}/>          
           </TouchableOpacity>
         </View>
+        {this.renderCardImage()}
         {
           (this.state.visionLoading)?(
             <View style={{justifyContent:'center', alignItems:'center',
@@ -123,7 +211,7 @@ export default class WriteView extends Component {
         }
         <Text style={{bottom:10, right:10, position:'absolute', fontFamily:FONTS.PRODUCT_SANS, fontSize:10,
           color:(this.props.theme==='light')?COLORS.LESS_LIGHT:COLORS.LIGHT_GRAY}}>
-          Card {this.props.index}
+          Card {this.props.obj.key}
         </Text>
       </SView>
     );
@@ -144,6 +232,27 @@ const styles = StyleSheet.create({
     marginBottom:5,
     paddingBottom:5,
   },
+  RemoveImageButton:{
+    backgroundColor:"rgba(50,50,50,0.6)",
+    paddingVertical:5,
+    paddingHorizontal:8,
+    borderTopRightRadius:20,borderBottomRightRadius:20,
+    marginTop:15,
+    flexDirection:'row',
+    alignItems:'flex-end',
+    alignSelf:'flex-start'
+  },
+  RemoveImageText:{
+    fontFamily:FONTS.PRODUCT_SANS,
+    fontSize:14,
+    color:COLORS_LIGHT_THEME.LIGHT,
+    marginLeft:5,
+  },
+  CardImageText:{
+    fontFamily:FONTS.RALEWAY,
+    fontSize:14,
+    marginLeft:10
+  },
   ContentStyle:{
     textAlign:'justify',
     fontFamily:FONTS.LATO,
@@ -151,5 +260,5 @@ const styles = StyleSheet.create({
     marginHorizontal:10,
     marginBottom:5,
     minHeight:MIN_TI_HEIGHT
-  }
+  },
 })

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet, StatusBar, 
-  TouchableOpacity, TextInput, ScrollView, BackHandler} from 'react-native';
+  TouchableOpacity, TextInput, ScrollView, BackHandler, FlatList} from 'react-native';
 import {connect} from 'react-redux'
 import {setContents, showAlert, clearPublish, setDraft} from '../actions/WriteAction';
 import Ripple from '../components/Ripple'
@@ -26,6 +26,7 @@ class WriteArticle extends Component {
       contents:[],
       topic:'',
       category:'',
+      keys:0,
       childAlertVisible:false,
       backAlertVisible:false,
     }
@@ -33,9 +34,15 @@ class WriteArticle extends Component {
 
   componentDidMount(){
     BackHandler.addEventListener('hardwareBackPress', 
-    ()=>{this.onBackPress()});
+    ()=>{
+      if (this.state.topic.length!==0 || this.state.contents.length!==0){
+        this.props.setContents(this.state.contents, this.state.topic, this.state.category);
+        this.props.setDraft();
+      }
+    });
     if (this.props.contents){
-      this.setState({contents:this.props.contents, topic:this.props.topic, category:this.props.category})
+      this.setState({contents:this.props.contents,
+        topic:this.props.topic, category:this.props.category})
     };
   }
 
@@ -89,31 +96,30 @@ class WriteArticle extends Component {
     }
 
     else{
-      this.state.contents.map((item, i) => {
-        i=i+1;
+      this.state.contents.map(item => {
         if (item.sub_heading.length===0){
           nextEnabled=false;
           color = COLORS.GRAY
           error.title = "No heading of card";
-          error.content = "You have not provided the heading for card "+i+", please provide it.";
+          error.content = `You have not provided the heading for card ${item.key}, please provide it.`;
         }
         else if (item.sub_heading.length<2){
           nextEnabled=false;
           color = COLORS.GRAY
           error.title = "Very short heading";
-          error.content = "Please elaborate the heading for card "+i;
+          error.content = `Please elaborate the heading for card ${item.key}`;
         }
         else if (item.content.length===0){
           nextEnabled=false;
           color = COLORS.GRAY
           error.title = "No text in card";
-          error.content = "Please add some text in card "+i;
+          error.content = `Please add some text in card ${item.key}`;
         }
         else if (item.content.length<5){
           nextEnabled=false;
           color = COLORS.GRAY
           error.title = "Little text in card";
-          error.content = "Please add some more text in card "+i;
+          error.content = `Please add some more text in card ${item.key}`;
         }
       })
     }
@@ -134,21 +140,18 @@ class WriteArticle extends Component {
   }
 
   onContentChange(value, i){
-    new_contents = this.state.contents;
-    const obj = this.state.contents[i];
-    const new_content = value;
-    const new_obj = {sub_heading: obj.sub_heading, content:new_content};
-    new_contents[i] = new_obj;
-    this.setState({contents:new_contents});
+    this.state.contents[i].content = value
+    this.setState({contents:this.state.contents});
   }
 
   onSubHeadingChange(value, i){
-    new_contents = this.state.contents;
-    const obj = this.state.contents[i];
-    const new_sub_heading = value;
-    const new_obj = {sub_heading: new_sub_heading, content:obj.content};
-    new_contents[i] = new_obj;
-    this.setState({contents:new_contents});
+    this.state.contents[i].sub_heading = value
+    this.setState({contents:this.state.contents});
+  }
+
+  onCardImageChange(value, i){
+    this.state.contents[i].image = value
+    this.setState({contents:this.state.contents});
   }
 
   onClosePressed(remove_index){
@@ -183,35 +186,42 @@ class WriteArticle extends Component {
   }
 
   renderWriteView(){
+    const {COLORS, theme} = this.props
     return (
-      <ScrollView ref={(scrollView)=> this.scrollView = scrollView}
-        keyboardShouldPersistTaps="always">
-        <View style={{height:70, width:1}}/>
-        {this.renderCategoryDropdown()}
-        {this.state.contents.map((obj, i)=>{
-          return (
-          <WriteView key={i}
-            theme={this.props.theme}
-            COLORS = {this.props.COLORS}
-            obj={obj} index={i}
+      <FlatList
+        ref={(scrollView)=> this.scrollView = scrollView}
+        keyboardShouldPersistTaps="always"
+        data={this.state.contents}
+        ListHeaderComponent={(
+          <>
+            <View style={{height:70, width:1}}/>
+            {this.renderCategoryDropdown()}
+          </>
+        )}
+        ListFooterComponent={<View style={{height:70, width:1}}/>}
+        keyExtractor={(item)=>item.key.toString()}
+        renderItem={({item, index})=>(
+          <WriteView key={index}
+            theme={theme}
+            COLORS = {COLORS}
+            obj={item} index={index}
             timedAlert = {this.timedAlert}
-            onClose={(i)=>{this.onClosePressed(i);}}
+            onClose={this.onClosePressed.bind(this)}
             onClosePressed = {()=>{this.setState({childAlertVisible:true})}}
-            onContentChange={(value, i)=>{this.onContentChange(value, i)}}
-            onSubHeadingChange={(value, i) => {this.onSubHeadingChange(value, i)}}
+            onContentChange={this.onContentChange.bind(this)}
+            onSubHeadingChange={this.onSubHeadingChange.bind(this)}
+            onCardImageChange={this.onCardImageChange.bind(this)}
             onBackdropPress = {()=>{this.setState({childAlertVisible:false})}}
           />
-          )
-        })}
-        <View style={{height:180}}/>
-      </ScrollView>
-    );
+        )}
+      />
+    )
   }
 
   addWriteView(){
-    new_contents = this.state.contents;
-    new_contents.push({sub_heading:'', content:''})
-    this.setState({contents: new_contents})
+    contents = this.state.contents;
+    contents.push({sub_heading:'', content:'', key:this.state.keys, image:null})
+    this.setState({contents: contents, keys: this.state.keys+1})
     if (this.scrollView){
       this.scrollView.scrollToEnd({animated:true})
     }
@@ -327,7 +337,7 @@ class WriteArticle extends Component {
   }
 
   render() {
-    const {statusBarColor, barStyle} = this.getStatusBarColor() 
+    const {statusBarColor, barStyle} = this.getStatusBarColor()
     return(
       <View style={{flex:1, backgroundColor:this.props.COLORS.LIGHT}}>
         <StatusBar
@@ -346,7 +356,7 @@ class WriteArticle extends Component {
           this.renderWriteView()
         }
         {this.renderFloatingButton()}
-        {this.renderNextButton(() => {})}
+        {this.renderNextButton()}
 
       </View>
     );
