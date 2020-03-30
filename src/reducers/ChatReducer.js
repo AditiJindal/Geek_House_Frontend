@@ -49,7 +49,10 @@ const INITIAL_STATE={
   chatGroupsLeft: [],
 
   chatInfoGroupDetails: {groupName:'', groupImage:''},
-  chatInfoGroupIconUploading: false
+  chatInfoGroupIconUploading: false,
+
+  gifs: {search:'', data:null},
+  gifs_loading: false,
 }
 
 const incomingMessageConverter = (item) => {
@@ -368,9 +371,14 @@ export default (state=INITIAL_STATE, action) => {
       new_currentMessages = [];
       payload_message = action.payload.message
       recentMessage = payload_message[0].text
+      isGif = (payload_message[0].image)?payload_message[0].image.isGif:false
 
       // action.payload.message is [ { ... } ], is an array containing one object
       state.chats = reorderChatsList(state.chats, action.payload.other_user_id)
+
+      if (isGif){
+        recentMessage = "Sent a GIF 🌈"
+      }
 
       if (!recentMessage){
         recentMessage = "Sent a photo 📷"
@@ -622,6 +630,18 @@ export default (state=INITIAL_STATE, action) => {
 
       new_state = {...state, chats:[...state.chats], other_user_data:{...state.other_user_data}, 
         chatInfoGroupDetails: new_chatInfoGroupDetails}
+      return new_state
+
+    case ACTIONS.CHAT_GIFS_LOADING:
+      new_state = {...state, gifs_loading:action.payload}
+      return new_state
+
+    case ACTIONS.CHAT_GET_GIFS:
+      new_state = {...state, gifs:{...state.gifs, data:action.payload}}
+      return new_state
+
+    case ACTIONS.CHAT_GIF_SEARCH:
+      new_state = {...state, gifs:{...state.gifs, search:action.payload}}
       return new_state
 
     default:

@@ -1,5 +1,5 @@
 import {ACTIONS} from './types';
-import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
+import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT, GIPHY_KEY} from '../Constants';
 import axios from 'axios';
 import _ from 'lodash';
 import {uploadImage} from './WriteAction';
@@ -8,6 +8,7 @@ import { Q } from '@nozbe/watermelondb';
 import naturalLanguage from '@react-native-firebase/ml-natural-language';
 import perf from '@react-native-firebase/perf';
 import {encrypt, decrypt} from '../encryptionUtil';
+import { handleUpload } from '../uploadUtil';
 
 const MessagesCollection =  database.collections.get('messages');
 const trace = perf().newTrace("mobile_db_time_get");
@@ -59,31 +60,30 @@ const encryptMessage = (message) => {
 
 export const sendMessage = (socket, message, other_user_id, image) => {
   return (dispatch) => {
-    let message_to_send = {text:"", to:"", image, ...message[0]}
+    let message_to_send = {text:"", to:"", image: null, ...message[0]}
 
     dispatch({type:ACTIONS.CHAT_IMAGE_UPLOADING, payload:{imageUploading:true}});
     if (image){
-      httpClient.get(URLS.imageupload, {params:{type:'chat', image_type:'jpeg'}}).then((response)=>{
-        response.data.url = decrypt(response.data.url)
-        response.data.key = decrypt(response.data.key)
+      handleUpload({
+        type:'chat',
+        mimeType:'image/jpeg',
+        image_url: image.url,
+        extension:'jpeg', 
+        authToken: httpClient.defaults.headers.common['Authorization'],
+        shouldUpload: !image.isGif
+      }).then(image_url=>{
+        image.url = image_url;
+        image.name = image.name
+        message_to_send.text = message[0].text;
+        message_to_send.to = other_user_id;
+        message_to_send = {...message_to_send, image}
+
+        socket.emit('message', encryptMessage(message_to_send));
+        message[0].image.url = decrypt(message[0].image.url)
         
-
-        const psu = response.data.url;
-        const pathToImage = image.url;
-        const options = {contentType: "image/jpeg", uploadUrl: psu}
-        uploadImage(options, pathToImage)
-        .then(()=>{
-          image.url = response.data.key;
-          image.name = response.data.file_name
-          message_to_send.text = message[0].text;
-          message_to_send.to = other_user_id;
-
-          socket.emit('message', encryptMessage(message_to_send));
-          message[0].image.url = decrypt(message[0].image.url)
-          
-          dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id, isIncomming:false}})
-        }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'CHAT ACTION - 83, Upload to AWS S3', description:e.toString()}))
-      }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'CHAT ACTION - 84, Image Upload', description:e.toString()}))
+        dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id, isIncomming:false}})
+      }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'CHAT ACTION - 83, Server chat image upload error', 
+        description:e.toString()}))
     }
     else{
       dispatch({type:ACTIONS.CHAT_MESSAGE_HANDLER, payload:{message, other_user_id}})
@@ -286,4 +286,19 @@ export const addGroupParticipants = async (group_id, user_id_list) => {
 
 export const groupDetailsChange = async (group_id, data) => {
   socket.emit('group_change_details', {group_id, ...data})
+}
+
+export const getGifs = (search) => {
+  if (!search){search=''}
+  return (dispatch)=>{
+    dispatch({type:ACTIONS.CHAT_GIFS_LOADING, payload:true})
+    httpClient.get(URLS.get_gifs, {params:{search}}).then(({data})=>{
+      dispatch({type:ACTIONS.CHAT_GET_GIFS, payload: data})
+      dispatch({type:ACTIONS.CHAT_GIFS_LOADING, payload:false})
+    })
+  }
+}
+
+export const gifSearch = (text) => {
+  return {type:ACTIONS.CHAT_GIF_SEARCH, payload:text}
 }

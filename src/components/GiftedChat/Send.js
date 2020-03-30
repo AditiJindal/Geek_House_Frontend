@@ -39,7 +39,7 @@ export default class Send extends Component {
                 }
             start={{x:0.75, y:0.75}} end={{x:0.25, y:0.25}}>
                 <View>
-                    {children || <Text style={[styles.text, textStyle]}>{'SEND'}</Text>}
+                    {children || <Text style={[styles.text, textStyle]}>SEND</Text>}
                 </View>
             </LinearGradient>
         </TouchableOpacity>

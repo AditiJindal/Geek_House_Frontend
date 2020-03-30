@@ -81,6 +81,10 @@ export const ACTIONS={
     CHAT_INFO_GROUP_ICON_UPLOADING: 'chat.info_group_icon_uploading',
     CHAT_ADD_NEW_GROUP_PARTICIPANTS:'chat.add_new_group_participants',
 
+    CHAT_GIFS_LOADING: 'chat.gifs_loading',
+    CHAT_GET_GIFS: 'chat.get_gifs',
+    CHAT_GIF_SEARCH: 'chat.gif_search',
+
     // SETTINGS
     SETTINGS_LOADING: 'settings.loading',
     GET_SETTINGS_DATA: 'settings.get_data',

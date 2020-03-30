@@ -1,20 +1,21 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { StyleSheet, View, ViewPropTypes, Dimensions, TouchableOpacity} from 'react-native';
+import { StyleSheet, View, ViewPropTypes, Dimensions, TouchableOpacity, Text} from 'react-native';
 import Image from 'react-native-fast-image';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import RNFileSystem from 'react-native-fs';
 import ImageViewer from '../ImageViewer';
+import { FONTS, COLORS_LIGHT_THEME } from '../../Constants';
 
 const DEVICE_WIDTH = Dimensions.get('screen').width
 const IMAGE_WIDTH = 0.7*DEVICE_WIDTH
 
 const styles = StyleSheet.create({
     container: {},
-    image: {
+    imageView: {
         borderRadius: 13,
         margin: 3,
-        resizeMode: 'cover',
+        overflow:'hidden'
     },
     imageActive: {
         flex: 1,
@@ -24,7 +25,8 @@ const styles = StyleSheet.create({
 export default class MessageImage extends Component {
     // aspect ratio is width/height
     state={
-        imageViewerActive: false
+        imageViewerActive: false,
+        imageLoadError: false
     }
 
     getImageShowDimenstions(imageWidth, aspectRatio){
@@ -77,7 +79,7 @@ export default class MessageImage extends Component {
     }
 
     render() {
-        const { containerStyle, imageProps, imageStyle, currentMessage,COLORS } = this.props;
+        const { containerStyle, imageProps, imageStyle, currentMessage, COLORS } = this.props;
         let image_url = currentMessage.image.url
         const {width, aspectRatio} = currentMessage.image;
         if (image_url.substring(0,4) !== 'http'){
@@ -93,10 +95,27 @@ export default class MessageImage extends Component {
                 onLongPress={()=>{this.saveFileToGallery(image_url, currentMessage.image.name)}}
                 activeOpacity={0.9}
                 onPress={()=>{this.props.onViewerSelect(true);this.setState({imageViewerActive:true})}}>
-                <Image {...imageProps} 
-                    style={{...styles.image, ...imageStyle, width:IMAGE_WIDTH,
-                    height:IMAGE_WIDTH/currentMessage.image.aspectRatio}} 
-                    source={{ uri: image_url, cache:'immutable'}}/>
+                <View style={{...styles.imageView, ...imageStyle, width:IMAGE_WIDTH,
+                    height:IMAGE_WIDTH/currentMessage.image.aspectRatio, backgroundColor:COLORS.LIGHT}}>
+                    {
+                        (!this.state.imageLoadError)?(
+                            <Image {...imageProps} 
+                                style={{flex:1}} 
+                                source={{ uri: image_url, cache:'immutable'}}
+                                onError={()=>this.setState({imageLoadError:true})}
+                            />
+                        ):(
+                            <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                                <Text style={{fontFamily:FONTS.GOTHAM_BLACK, fontSize:24, 
+                                    color: COLORS.DARK, 
+                                    textAlign:'center'}}>
+                                    IMAGE REMOVED FROM SERVER
+                                </Text>
+                            </View>
+                        )
+                    }
+                </View>
+                
             </TouchableOpacity>
             <ImageViewer
                 isVisible={this.state.imageViewerActive}

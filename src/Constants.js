@@ -129,6 +129,8 @@ export const URLS = {
   check_image_permission: "/check_image_permission/",
   check_app_installed: "/check_app_installed/",
   get_photo_metadata: "/get_photo_metadata/",
+
+  get_gifs: '/get_gifs/',
 }
 
 export const FONTS = {
@@ -229,4 +231,6 @@ export const ERROR_MESSAGES = {
 
 export const LATEST_APP_VERSION = 29;
 
-export const MAX_USERS_IN_A_GROUP = 20
+export const MAX_USERS_IN_A_GROUP = 20;
+
+export const GIPHY_KEY = "O7mLvZw6sroUurHDtxZrc3E4RQd4swhj";

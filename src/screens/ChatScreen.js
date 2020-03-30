@@ -218,7 +218,7 @@ class ChatScreen extends Component {
                       isGroup: other_user_data.isGroup}], 
                     other_user_data._id, chatScreenState.selectedImage)
                   }}
-                  placeholder="Type to chat..."
+                  placeholder="Type something"
                   renderAvatar={null}
                   showTimedAlert = {(duration, message)=>{
                     this.timedAlert.showAlert(duration, message, 46)

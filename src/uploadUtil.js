@@ -22,8 +22,11 @@ const getFileMetadata = ({type, extension}) => {
 }
 
 export const handleUpload = async (data) => {
+  if (!data.shouldUpload){
+    return data.image_url
+  }
   // {type:'profile_picture', mimeType:'image/jpeg', image_url, extension:'jpeg', authToken}
-  const image_url = fetch(BASE_URL + URLS.upload_server, {
+  const response = await fetch(BASE_URL + URLS.upload_server, {
     method: "post",
     headers: {
       authorization:data.authToken,
@@ -31,5 +34,6 @@ export const handleUpload = async (data) => {
     },
     body: createFormData(data)
   });
-  return image_url
+  const json = await response.json();
+  return json.image_url
 };

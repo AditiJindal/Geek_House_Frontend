@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View, Keyboard, ViewPropTypes, Text, 
-    TouchableOpacity,ImageBackground} from 'react-native';
+    TouchableOpacity, ImageBackground} from 'react-native';
 import Composer from './Composer';
+import Image from 'react-native-fast-image';
 import Send from './Send';
 import Actions from './Actions';
 import {COLORS_DARK_THEME, FONTS} from '../../Constants';
@@ -11,6 +12,7 @@ import {Overlay, Icon} from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import prettysize from 'prettysize';
+import GiphyView from '../GiphyView';
 
 
 const styles = StyleSheet.create({
@@ -36,12 +38,13 @@ export default class InputToolbar extends React.Component {
         super(...arguments);
         this.state = {
             imageSelectorOpen: false,
+            isKeyboardVisible:false,
+            giphyViewVisible: false
         };
-        
     }
     componentDidMount() {
-        this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
-        this.keyboardWillHideListener = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
+        this.keyboardWillShowListener = Keyboard.addListener('keyboardDidShow', ()=>{this.setState({isKeyboardVisible:true})});
+        this.keyboardWillHideListener = Keyboard.addListener('keyboardDidHide', ()=>{this.setState({isKeyboardVisible:false})});
     }
     componentWillUnmount() {
         if (this.keyboardWillShowListener) {
@@ -106,7 +109,7 @@ export default class InputToolbar extends React.Component {
                     height:resize.height, 
                     width: resize.width, aspectRatio
                 }
-                imageMetaData = {newSize:resizedImage.size, name: image.fileName}
+                const imageMetaData = {newSize:resizedImage.size, name: image.fileName}
                 this.props.onImageSelect(to_send, imageMetaData)
             })
         }
@@ -126,7 +129,7 @@ export default class InputToolbar extends React.Component {
             }
           }
         return (
-            <View style={{paddingHorizontal:10}}>
+            <View style={{marginHorizontal:5}}>
                 <Overlay isVisible={this.state.imageSelectorOpen}
                     height="auto" width="auto"
                     overlayStyle={{flexDirection:'row',backgroundColor:'rgba(0,0,0,0)', elevation:0}}
@@ -185,25 +188,49 @@ export default class InputToolbar extends React.Component {
                     </>
                 </Overlay>
                 {(!this.state.imageSelectorOpen)?(
-                    <TouchableOpacity activeOpacity={1}
+                    <TouchableOpacity activeOpacity={0.8}
                     onPress={()=>{this.setState({imageSelectorOpen:true})}}>
-                        <Icon size={22} name="image" type={'feather'}
-                        color={COLORS.LESSER_DARK}
-                        />
+                        <Icon size={22} name="image" type={'feather'} color={COLORS.LESSER_DARK} />
                     </TouchableOpacity>
                     
                 ):null}
             </View>
         )
     }
+    renderGifButton(){
+        const {COLORS} = this.props
+
+        if (this.state.giphyViewVisible){
+            return(
+                <TouchableOpacity activeOpacity={0.8} style={{marginRight:5}}
+                    onPress={()=>{this.setState({giphyViewVisible:false})}}>
+                    <Icon size={26} name="chevron-down" type={'material-community'} color={COLORS.LESSER_DARK} />
+                </TouchableOpacity>
+            )
+        }
+
+        return(
+            <TouchableOpacity activeOpacity={0.8} style={{marginRight:5}}
+                onPress={()=>{this.setState({giphyViewVisible:true})}}>
+                <Icon size={30} name="gif" type={'material-community'} color={COLORS.LESSER_DARK} />
+            </TouchableOpacity>
+        )
+    }
     renderSelectedImage(){
-        const {COLORS, imageUploading} = this.props;
+        const {COLORS, imageUploading, imageMetaData} = this.props;
         const image = this.props.selectedImage;
+
         if (image){
             return (
                 <View style={{flex:1, borderRadius:10, overflow:'hidden', height:100, marginBottom:5}}>
-                    <ImageBackground blurRadius={1.5}
+                    <ImageBackground blurRadius={(!imageMetaData.isGif)?1.5:0}
                         source={{uri:image.url}} style={{flex:1, alignItems:'flex-end'}}>
+                        {
+                            (imageMetaData.isGif)?(
+                                <View style={{height:100,width:"100%",zIndex:10,
+                                    backgroundColor:'rgba(150,150,150,0.3)', position:'absolute'}}/>
+                            ):null
+                        }
                         {
                             (imageUploading)?(
                                 <View style={{alignItems:'center',right:0, left:0, justifyContent:'center',
@@ -219,26 +246,27 @@ export default class InputToolbar extends React.Component {
                             borderBottomLeftRadius:15, paddingLeft:2.5, paddingBottom:2.5}}
                             color={COLORS.LIGHT_GRAY}
                         />
-                        <View style={{position:'absolute',bottom:5, left:5, 
-                            backgroundColor:"rgba(50,50,50,0.3)",
-                            borderRadius:7.5, paddingVertical:5, paddingHorizontal:10}}>
-                            <Text style={{color:COLORS_DARK_THEME.LESS_DARK,
-                                fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:8}}>
-                                {this.props.imageMetaData.name}
-                            </Text>
-                            <Text style={{color:COLORS_DARK_THEME.LESSER_DARK,
-                                fontFamily:FONTS.PRODUCT_SANS, fontSize:8}}>
-                                Image size: {prettysize(this.props.imageMetaData.newSize)}
-                            </Text>
-                        </View>
+                        {
+                            (!imageMetaData.isGif)?(
+                                <View style={{position:'absolute',bottom:5, left:5, 
+                                    backgroundColor:"rgba(50,50,50,0.3)",
+                                    borderRadius:7.5, paddingVertical:5, paddingHorizontal:10}}>
+                                    <Text style={{color:COLORS_DARK_THEME.LESS_DARK,
+                                        fontFamily:FONTS.PRODUCT_SANS_BOLD, fontSize:8}}>
+                                        {imageMetaData.name}
+                                    </Text>
+                                    <Text style={{color:COLORS_DARK_THEME.LESSER_DARK,
+                                        fontFamily:FONTS.PRODUCT_SANS, fontSize:8}}>
+                                        Image size: {prettysize(imageMetaData.newSize)}
+                                    </Text>
+                                </View>
+                            ):null
+                        }
                     </ImageBackground>
                 </View>
             )
         }
     }
-
-
-    
 
     render() {
         return (<View style={[
@@ -251,8 +279,20 @@ export default class InputToolbar extends React.Component {
                 {this.renderActions()}
                 {this.renderComposer()}
                 {this.renderPhotoSelector()}
+                {this.renderGifButton()}
                 {this.renderSend()}
             </View>
+            {
+                (this.state.giphyViewVisible)?(
+                    <GiphyView 
+                        onSelect = {(gif) => {
+                            this.setState({giphyViewVisible:false})
+                            this.props.onImageSelect(gif, {isGif:true});
+                            Keyboard.dismiss();
+                        }}
+                        isKeyboardVisible={this.state.isKeyboardVisible}/>
+                ):null
+            }
         </View>
         {this.renderAccessory()}
       </View>);
