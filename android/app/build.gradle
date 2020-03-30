@@ -129,6 +129,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    configurations.all {
+        resolutionStrategy {
+            force "com.facebook.soloader:soloader:0.8.0"
+        }
+    }
 
     aaptOptions {
         noCompress "tflite"
@@ -138,8 +143,8 @@ android {
         applicationId "com.tjproductions.geekhousern"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 29
-        versionName "1.13.0"
+        versionCode 30
+        versionName "1.13.1"
         manifestPlaceholders = [
             appAuthRedirectScheme: 'io.identityserver.demo'
         ]
