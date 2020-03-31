@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { StyleSheet, View, ViewPropTypes, Dimensions, TouchableOpacity, Text} from 'react-native';
 import Image from 'react-native-fast-image';
+import uuid from 'uuid';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import RNFileSystem from 'react-native-fs';
 import ImageViewer from '../ImageViewer';
-import { FONTS, COLORS_LIGHT_THEME } from '../../Constants';
+import { FONTS} from '../../Constants';
 
 const DEVICE_WIDTH = Dimensions.get('screen').width
 const IMAGE_WIDTH = 0.7*DEVICE_WIDTH
@@ -44,13 +45,20 @@ export default class MessageImage extends Component {
         return {showHeight, showWidth}
     }
 
-    async saveFileToGallery(image_url, name){
+    async saveFileToGallery(image_url, name, isGif){
+        console.log("HERE YO")
+        if (!name){
+            name = uuid.v4()
+        }
+
+        
         const folder = RNFileSystem.ExternalStorageDirectoryPath+"/GeekHouse/";
-        const file_path = `${folder}${name}.jpg`
+        const file_path = `${folder}${name}.${(isGif)?"gif":"jpg"}`
+        console.log("FILE PATH : ", file_path)
         const exists = await RNFileSystem.exists(file_path)
         
+        
         this.props.showTimedAlert(10000, 'Saving image...');
-
 
         const permission = await check(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
         if (permission!==RESULTS.GRANTED){
@@ -92,7 +100,7 @@ export default class MessageImage extends Component {
             return (
         <View style={[styles.container, containerStyle]}>
             <TouchableOpacity
-                onLongPress={()=>{this.saveFileToGallery(image_url, currentMessage.image.name)}}
+                onLongPress={()=>{this.saveFileToGallery(image_url, currentMessage.image.name, currentMessage.image.isGif)}}
                 activeOpacity={0.9}
                 onPress={()=>{this.props.onViewerSelect(true);this.setState({imageViewerActive:true})}}>
                 <View style={{...styles.imageView, ...imageStyle, width:IMAGE_WIDTH,

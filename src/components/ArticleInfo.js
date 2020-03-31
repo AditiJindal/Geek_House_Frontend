@@ -117,7 +117,7 @@ class ArticleInfo extends Component {
   }
 
   renderCommentBox(){
-    const {COLORS} = this.props
+    const {COLORS,  userData} = this.props
 
     return (
       <View>
@@ -130,7 +130,7 @@ class ArticleInfo extends Component {
             textAlignVertical='top'
             keyboardAppearance="light"
             placeholderTextColor={COLORS.GRAY}
-            numberOfLines={6}
+            numberOfLines={4}
             maxLength={2048}
             spellCheck={true}
             autoCapitalize="sentences"
@@ -149,12 +149,11 @@ class ArticleInfo extends Component {
               alignSelf:'flex-end', padding:10, borderRadius:30,elevation:7, margin:15}}
             onPress={()=>{
               if (this.state.userCommentRating!==-1 || this.state.commentText){
-                this.setState({scrollY: new Animated.Value(0), commentText:'', userCommentRating:-1});
                 this.props.submitComment({
                   rating:this.state.userCommentRating,
                   comment: this.state.commentText,
                   article_id: this.props.article_id
-                })
+                }, userData.name, userData.image_url)
               }
               else{
                 this.timedAlert.showAlert(2000,"Please provide a rating or comment")
@@ -242,13 +241,13 @@ class ArticleInfo extends Component {
                             (item.rating)?(
                               <StarRating
                                 activeOpacity={0.8}
-                                maxStars={5}
+                                maxStars={item.rating}
                                 disabled={true}
                                 showRating={true}
                                 rating={item.rating}
-                                emptyStarColor={'#FFFFFF'}
-                                halfStarColor={'#f5af19'}
-                                fullStarColor={'#f5af19'}
+                                emptyStarColor={(this.props.theme==='light')?COLORS.LESS_LIGHT:COLORS.GRAY}
+                                halfStarColor={COLORS.STAR_YELLOW}
+                                fullStarColor={COLORS.STAR_YELLOW}
                                 starSize={14}
                                 emptyStar={'star'}
                                 fullStar={'star'}
@@ -488,9 +487,9 @@ class ArticleInfo extends Component {
                     disabled={true}
                     showRating={true}
                     rating={rating}
-                    emptyStarColor={'#FFFFFF'}
-                    halfStarColor={'#f5af19'}
-                    fullStarColor={'#f5af19'}
+                    emptyStarColor={(this.props.theme==='light')?COLORS.LESS_LIGHT:COLORS.GRAY}
+                    halfStarColor={COLORS.STAR_YELLOW}
+                    fullStarColor={COLORS.STAR_YELLOW}
                     starSize={20}
                     containerStyle={{marginLeft:10, marginTop:5}}
                     emptyStar={'star'}
@@ -610,7 +609,8 @@ const mapStateToProps =(state) => {
   }
 }
 
-export default connect(mapStateToProps, {getArticleInfo, setAuthToken, submitComment, bookmarkArticle})(ArticleInfo)
+export default connect(mapStateToProps, {getArticleInfo, setAuthToken, submitComment, 
+  bookmarkArticle})(ArticleInfo)
 
 const styles = StyleSheet.create({
   OverlayStyle:{

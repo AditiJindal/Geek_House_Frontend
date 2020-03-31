@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { Text, StyleSheet, TouchableOpacity, View}from 'react-native';
 import Loading from './Loading'
 import ArticleInfo from './ArticleInfo';
-import Ripple from './Ripple'
 import {logEvent} from '../actions/ChatAction';
 import Image from 'react-native-fast-image';
 import {FONTS,COLOR_COMBOS, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
@@ -122,8 +121,8 @@ export default class ArticleTile extends Component {
   render() {
     const {COLORS} = this.props; 
     return(
-      <Ripple rippleContainerBorderRadius={10}
-        style={{...styles.TileViewStyle, height:this.state.size, width:this.state.size, 
+      <TouchableOpacity activeOpacity={0.8}
+        style={{...styles.TileViewStyle, height:this.state.size, width:this.state.size*4/3, 
           backgroundColor:COLORS.LIGHT}} 
         onPress={() => {
         this.setState({infoVisible:true, showStartTime:Date.now()});
@@ -131,8 +130,7 @@ export default class ArticleTile extends Component {
         {(this.props.data.image)?
         (
           <Image source={{uri:this.props.data.image, }}
-            style={{height:this.state.size, width:this.state.size,borderRadius:10}}
-            blurRadius={0.15} resizeMode="cover"
+            style={{flex:1}}
             onLoad = {() => {this.setState({imageLoaded: true,loadSuccessful: true})}}
             onError = {() => {this.setState({imageLoaded:true,loadSuccessful: false})}}>
             <ArticleInfo 
@@ -156,7 +154,7 @@ export default class ArticleTile extends Component {
           </Image>
         ):
         this.renderLinearGradient()}
-      </Ripple>
+      </TouchableOpacity>
     );
   }
 }

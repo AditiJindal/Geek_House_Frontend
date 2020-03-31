@@ -5,8 +5,8 @@ import {logout} from '../actions/HomeAction';
 import {logEvent} from '../actions/ChatAction';
 import Loading from '../components/Loading';
 import {setAuthToken, getSettingsData, settingsChangeFavouriteCategory, 
-  changeTheme, changeAnimationSettings, changeQuickRepliesSettings, 
-  changeChatWallpaper, changeBlurRadius, changeName, revertName, changeImageUrl
+  changeTheme, changeAnimationSettings, changeQuickRepliesSettings, submitName,
+  changeChatWallpaper, changeBlurRadius, changeName, revertName, changeImageUrl,
   } from '../actions/SettingsAction';
 import { Actions } from 'react-native-router-flux';
 import Image from 'react-native-fast-image';
@@ -239,15 +239,15 @@ class Settings extends Component {
   }
 
   renderNameInput(){
-    const {COLORS, data} = this.props;
+    const {COLORS, data, submitName, changeName} = this.props;
     
     return (
       <TextInput
         value={data.name}
-        onChangeText = {name=>this.props.changeName(name, (msg)=>{
+        onChangeText = {name => changeName(name)}
+        onSubmitEditing = {()=>submitName(data.name, (msg)=>{
           this.timedAlert.showAlert(3000,msg, false)
         })}
-        multiline={true}
         maxLength={36}
         style={{...styles.AvatarTextStyle, margin:0, padding:0, flexWrap:'wrap',
           color:COLORS.DARK, textDecorationLine:'underline', borderColor:COLORS.DARK,
@@ -632,7 +632,7 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
   logout, setAuthToken, getSettingsData, settingsChangeFavouriteCategory, 
-  changeTheme, changeAnimationSettings, changeQuickRepliesSettings,
+  changeTheme, changeAnimationSettings, changeQuickRepliesSettings, submitName,
   changeChatWallpaper, changeBlurRadius, changeName, revertName, changeImageUrl})(Settings);
 
 const styles = StyleSheet.create({

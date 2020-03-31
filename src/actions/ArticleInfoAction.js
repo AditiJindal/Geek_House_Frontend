@@ -54,12 +54,15 @@ export const getArticleInfo = (article_id, preview_article, forceUpdate) => {
     articleHandler(dispatch, getState, article_id, preview_article, forceUpdate)}
 }
 
-export const submitComment = (to_send) => {
+export const submitComment = (to_send, author, author_image) => {
   return (dispatch, getState) => {
     if (to_send.rating<0){to_send.rating=0}
-    httpClient.post(URLS.comment, to_send).then((response) => {
+
+    httpClient.post(URLS.comment, to_send).then(({data}) => {
       // dispatch({type:ACTIONS.ARTICLE_ADD_COMMENT, payload:to_send});
-      articleHandler(dispatch, getState, to_send.article_id, false, true)
+      // articleHandler(dispatch, getState, to_send.article_id, false, true)
+      dispatch({type:ACTIONS.ARTICLE_ADD_COMMENT, payload:
+        {...to_send, _id:data.comment_id, author, author_image}})
     }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'ARTICLE INFO ACTION - 62', description:e.toString()}))
   }
 }

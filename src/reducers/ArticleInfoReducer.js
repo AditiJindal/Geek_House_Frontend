@@ -9,7 +9,32 @@ const INITIAL_STATE = {
 	bookmarks_error: false,
 }
 
+const insertCommentInArticle = (article, new_comment) => {
+	const {comments} = article;
+	let commentFound = false;
+	let new_comments = []
+
+	comments.map(comment=>{
+		if (comment._id.toString()===new_comment._id.toString()){
+			new_comment.comment = new_comment.comment || comment.comment
+			new_comment.rating = new_comment.rating || comment.rating
+			new_comments.push(new_comment);
+			commentFound=true;
+		}
+		else{
+			new_comments.push(comment)
+		}
+	})
+
+	if (!commentFound){
+		new_comments.unshift(new_comment);
+	}
+	article.comments=new_comments
+	return {...article}
+}
+
 export default (state=INITIAL_STATE, action) => {
+	let new_state, new_selectedArticleInfo;
 	
 	switch (action.type){
 		case ACTIONS.LOGOUT:
@@ -32,8 +57,15 @@ export default (state=INITIAL_STATE, action) => {
 			}
 			else if(action.payload.add){
 				new_articles.push(action.payload.article);
-      }
-      return {...state, articles: new_articles, selectedArticleInfo:action.payload.article, loading:false}
+			}
+			new_state={...state, articles: new_articles, 
+				selectedArticleInfo:action.payload.article, loading:false}
+			return new_state
+			
+		case ACTIONS.ARTICLE_ADD_COMMENT:
+			new_selectedArticleInfo = insertCommentInArticle(state.selectedArticleInfo, action.payload)
+			new_state = {...state, selectedArticleInfo:new_selectedArticleInfo};
+			return new_state
 
 		case ACTIONS.ARTICLE_BOOKMARK:
 			selectedArticleInfo = {...state.selectedArticleInfo};
@@ -49,7 +81,8 @@ export default (state=INITIAL_STATE, action) => {
 				}
 			})
 
-			return {...state, selectedArticleInfo, articles:new_articles};
+			new_state = {...state, selectedArticleInfo, articles:new_articles};
+			return new_state
 
 		case ACTIONS.BOOKMARKS_LOADING:
 			return {...state, bookmarks_loading:true}

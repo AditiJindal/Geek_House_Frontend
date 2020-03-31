@@ -73,26 +73,24 @@ const nameValidator = (name) => {
   else {return {error:false}}
 }
 
-export const changeName = (name, callback) => {
+export const changeName = (name) => {
   // this goes into LoginReducer as name remains with LoginReducer
-  return (dispatch) => {
-    dispatch({type:ACTIONS.SETTINGS_CHANGE_NAME, payload:{name, confirmChange:false}});
+  return {type:ACTIONS.SETTINGS_CHANGE_NAME, payload:{name, confirmChange:false}} 
+}
 
-    name = name.trim();
-    clearTimeout(timer);
-    timer = setTimeout(()=>{
-      const {error} = nameValidator(name);
-      if (!error){
-        httpClient.post(URLS.change_name, {name}).then(()=>{
-          dispatch({type:ACTIONS.SETTINGS_CHANGE_NAME, payload:{name, confirmChange:true}});
-          callback('Name changed successfully')
-        });
-      }
-      else{
-        callback(error);
-      }
-    },500);
-  } 
+export const submitName = (name, callback) => {
+  return (dispatch)=>{
+    const {error} = nameValidator(name);
+    if (!error){
+      httpClient.post(URLS.change_name, {name}).then(()=>{
+        dispatch({type:ACTIONS.SETTINGS_CHANGE_NAME, payload:{name, confirmChange:true}});
+        callback('Name changed successfully')
+      });
+    }
+    else{
+      callback(error);
+    }
+  }
 }
 
 export const revertName = () => {
