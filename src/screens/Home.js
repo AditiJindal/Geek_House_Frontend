@@ -180,7 +180,7 @@ class Home extends Component {
                 {this.props.data.email}
               </Text>
               <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:11,alignSelf:'flex-end',color:COLORS.GRAY}}>
-                Geek House v1.14.0 A
+                Geek House v1.14.0 B
               </Text>
             </View>
           </View>
@@ -351,27 +351,29 @@ class Home extends Component {
       this.setState({adIndex: _.random(2, data_list.length-1)})
     }
     return(
-      <FlatList data={data_list}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        ListFooterComponent={<View style={{width:1, height:100}}/>}
-        keyExtractor={(item) => item.article_id.toString()}
-        renderItem = {({item, index}) => {
-          return (
-            <View style={{marginVertical:15, marginHorizontal:5, flexDirection:'row', alignItems:'center'}}>
-              {
-                (index===this.state.adIndex && adsManager && canShowAdsRemote)?(
-                  <View style={{marginRight:10}}>
-                    <ArticleTileAds theme={theme} size={180}
-                      COLORS = {COLORS} adsManager={adsManager}/>
-                  </View>
-                ):null
-              }
-              <ArticleTile data={item} size={180} theme={theme} COLORS={COLORS}/>
-            </View>
-          )
-        }}
-      />
+      <>
+        <FlatList data={data_list}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.article_id.toString()}
+          renderItem = {({item, index}) => {
+            return (
+              <View style={{marginVertical:15, marginHorizontal:5, flexDirection:'row', alignItems:'center'}}>
+                {
+                  (index===this.state.adIndex && adsManager && canShowAdsRemote)?(
+                    <View style={{marginRight:10}}>
+                      <ArticleTileAds theme={theme} size={180}
+                        COLORS = {COLORS} adsManager={adsManager}/>
+                    </View>
+                  ):null
+                }
+                <ArticleTile data={item} size={180} theme={theme} COLORS={COLORS}/>
+              </View>
+            )
+          }}
+        />
+        <View style={{width:1, height:100}}/>
+      </>
     )
   }
 
