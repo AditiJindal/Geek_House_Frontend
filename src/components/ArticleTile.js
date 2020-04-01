@@ -3,10 +3,13 @@ import { Text, StyleSheet, TouchableOpacity, View}from 'react-native';
 import Loading from './Loading'
 import ArticleInfo from './ArticleInfo';
 import {logEvent} from '../actions/ChatAction';
+import {Icon} from 'react-native-elements';
 import Image from 'react-native-fast-image';
-import {FONTS,COLOR_COMBOS, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
+import {FONTS,COLOR_COMBOS, LOG_EVENT, COLORS_LIGHT_THEME,
+  CATEGORY_IMAGES, COLORS_DARK_THEME} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import analytics from '@react-native-firebase/analytics';
+
 
 
 const LG_SUCCESS = [
@@ -48,8 +51,28 @@ export default class ArticleTile extends Component {
     }
   }
 
-  renderLinearGradient(){
+  renderStarRating(rating, size=12){
     const {COLORS} = this.props;
+    if (!rating){return null}
+    return(
+      <View style={{flexDirection:'row', alignItems:'center'}}>
+        <Text style={{fontFamily:FONTS.PRODUCT_SANS, color:COLORS_LIGHT_THEME.LIGHT,
+          fontSize:size+1, marginRight:3, marginTop:2}}>
+          {rating}
+        </Text>
+        <Icon
+          type="font-awesome"
+          name="star"
+          color={COLORS_DARK_THEME.STAR_YELLOW}
+          size={size}
+        />
+      </View>
+    )
+  }
+
+  renderLinearGradient(){
+    const {COLORS, data} = this.props;
+
     if (!this.state.imageLoaded){
       return (
         <View style={{flex:1, justifyContent:'center', alignItems:'center', borderRadius:10, 
@@ -59,13 +82,14 @@ export default class ArticleTile extends Component {
         </View>
       );
     }
-    if ((this.state.imageLoaded && !this.state.loadSuccessful) || !this.props.data.image){
+    if ((this.state.imageLoaded && !this.state.loadSuccessful) || !data.image){
+      const imageSource = CATEGORY_IMAGES[data.category]
       return (
         <TouchableOpacity onPress={() => {
           analytics().logViewItem({
-            item_id:this.props.data.article_id.toString(),
-            item_category:this.props.data.category,
-            item_name:this.props.data.topic
+            item_id:data.article_id.toString(),
+            item_category:data.category,
+            item_name:data.topic
           })
           this.setState({infoVisible:true, showStartTime:Date.now()});
           logEvent(LOG_EVENT.SCREEN_CHANGE, 'articleinfo');
@@ -73,11 +97,14 @@ export default class ArticleTile extends Component {
           activeOpacity={1} style={{flex:1}}>
           <LinearGradient style={{flex:1,justifyContent:'space-between',padding:10, borderRadius:10}}
             colors={this.getLoadingFailColors()}>
-            <Text style={{...styles.TextStyleFail, color:COLORS_LIGHT_THEME.LIGHT}}>
-              {this.props.data.topic}
-            </Text>
+            <View style={{ justifyContent:'space-between', flex:1}}>
+              <Text style={{...styles.TextStyleFail, color:COLORS_LIGHT_THEME.LIGHT}}>
+                {data.topic}
+              </Text>
+              {this.renderStarRating(data.rating, 18)}
+            </View>
             {
-              (this.props.data.image)?
+              (data.image)?
               (
                 <Text style={{...styles.TextStyleImageFail, color:COLORS_LIGHT_THEME.LIGHT}}>
                   *Image could not load
@@ -92,14 +119,14 @@ export default class ArticleTile extends Component {
                 endTime:Date.now()})
               }}
               isVisible = {this.state.infoVisible}
-              article_id = {this.props.data.article_id}
-              article_image = {this.props.data.image}
+              article_id = {data.article_id}
+              imageSource = {imageSource}
               loadSuccessful = {this.state.loadSuccessful}
 
               // for preview
-              preview_contents = {this.props.data.preview_contents}
-              topic = {this.props.data.topic}
-              category = {this.props.data.category}
+              preview_contents = {data.preview_contents}
+              topic = {data.topic}
+              category = {data.category}
             />
           </LinearGradient>
         </TouchableOpacity>
@@ -110,16 +137,22 @@ export default class ArticleTile extends Component {
         <LinearGradient style={{flex:1, justifyContent:'flex-end' ,padding:10, borderRadius:10}} 
           colors={LG_SUCCESS}
           start={{x:1, y:0}} end={{x:1, y:1}}>
-          <Text style={{...styles.TextStyle, color:COLORS_LIGHT_THEME.LIGHT}}>
-            {this.props.data.topic}
-          </Text>
+          <View style={{alignItems:'flex-start', flexDirection:'row', justifyContent:'space-between'}}>
+            <Text style={{...styles.TextStyle, color:COLORS_LIGHT_THEME.LIGHT}}>
+              {data.topic}
+            </Text>
+            {this.renderStarRating(data.rating)}
+          </View>
         </LinearGradient>
       );
     }
   }
 
   render() {
-    const {COLORS} = this.props; 
+    const {COLORS, data} = this.props;
+    
+    const imageSource = (data.image)?{uri:data.image}:CATEGORY_IMAGES[data.category]
+
     return(
       <TouchableOpacity activeOpacity={0.8}
         style={{...styles.TileViewStyle, height:this.state.size, width:this.state.size*4/3, 
@@ -127,33 +160,30 @@ export default class ArticleTile extends Component {
         onPress={() => {
         this.setState({infoVisible:true, showStartTime:Date.now()});
         logEvent(LOG_EVENT.SCREEN_CHANGE, 'articleinfo')}}>
-        {(this.props.data.image)?
-        (
-          <Image source={{uri:this.props.data.image, }}
-            style={{flex:1}}
-            onLoad = {() => {this.setState({imageLoaded: true,loadSuccessful: true})}}
-            onError = {() => {this.setState({imageLoaded:true,loadSuccessful: false})}}>
-            <ArticleInfo 
-              theme={this.props.theme}
-              onBackdropPress={() => {
-                this.setState({infoVisible:false});
-                logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, {mili_seconds: Date.now()-this.state.showStartTime,
-                endTime:Date.now()})
-              }}
-              isVisible = {this.state.infoVisible}
-              article_id = {this.props.data.article_id}
-              article_image = {this.props.data.image}
-              loadSuccessful = {this.state.loadSuccessful}
 
-              // for preview
-              preview_contents = {this.props.data.preview_contents}
-              topic = {this.props.data.topic}
-              category = {this.props.data.category}
-            />
-            {this.renderLinearGradient()}
-          </Image>
-        ):
-        this.renderLinearGradient()}
+        <Image source={imageSource}
+          style={{flex:1}}
+          onLoad = {() => {this.setState({imageLoaded: true,loadSuccessful: true})}}
+          onError = {() => {this.setState({imageLoaded:true,loadSuccessful: false})}}>
+          <ArticleInfo 
+            theme={this.props.theme}
+            onBackdropPress={() => {
+              this.setState({infoVisible:false});
+              logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, {mili_seconds: Date.now()-this.state.showStartTime,
+              endTime:Date.now()})
+            }}
+            isVisible = {this.state.infoVisible}
+            article_id = {data.article_id}
+            imageSource = {imageSource}
+            loadSuccessful = {this.state.loadSuccessful}
+
+            // for preview
+            preview_contents = {data.preview_contents}
+            topic = {data.topic}
+            category = {data.category}
+          />
+          {this.renderLinearGradient()}
+        </Image>
       </TouchableOpacity>
     );
   }

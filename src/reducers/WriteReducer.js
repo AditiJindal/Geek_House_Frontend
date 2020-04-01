@@ -12,7 +12,6 @@ const INITIAL_STATE = {
   alertVisible: false,
   alertMessage: {},
   isDraft: false,
-  all_categories:[]
 }
 
 export default (state=INITIAL_STATE, action) => {
@@ -25,8 +24,7 @@ export default (state=INITIAL_STATE, action) => {
       return {...state, loading:true}
 
     case ACTIONS.GET_MY_ARTICLES:
-      return {...state, loading:false, myArticles: action.payload.response, reload:false,
-        all_categories:action.payload.all_categories}
+      return {...state, loading:false, myArticles: action.payload, reload:false}
 
     case ACTIONS.SET_CONTENTS:      
       return {...state, contents:action.payload.contents, 
@@ -36,7 +34,10 @@ export default (state=INITIAL_STATE, action) => {
       return {...state, image:action.payload}
 
     case ACTIONS.PUBLISH_SUCCESS:
-      return {...state, published:true, loading:false, isDraft:false, reload:true}
+      state.myArticles[action.payload.category].unshift(action.payload)
+
+      return {...state, published:true, loading:false, 
+        isDraft:false, reload:true, myArticles:{...state.myArticles}}
 
     case ACTIONS.CLEAR_WRITE:
       return {...state, loading:false, contents:[], category:'',

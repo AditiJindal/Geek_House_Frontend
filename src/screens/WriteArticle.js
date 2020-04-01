@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet, StatusBar, 
-  TouchableOpacity, TextInput, ScrollView, BackHandler, FlatList} from 'react-native';
+  TouchableOpacity, TextInput, BackHandler, FlatList} from 'react-native';
 import {connect} from 'react-redux'
 import {setContents, showAlert, clearPublish, setDraft} from '../actions/WriteAction';
 import Ripple from '../components/Ripple'
-import {FONTS, ERROR_BUTTONS, COLORS_LIGHT_THEME,LOG_EVENT} from '../Constants';
+import {FONTS, ERROR_BUTTONS, COLORS_LIGHT_THEME,LOG_EVENT, ALL_CATEGORIES} from '../Constants';
 import {Icon} from 'react-native-elements';
 import {Dropdown} from '../components/Dropdown';
 import {logEvent} from '../actions/ChatAction';
@@ -269,7 +269,7 @@ class WriteArticle extends Component {
   renderCategoryDropdown(){
     const {COLORS} = this.props;
     let new_data=[];
-    this.props.all_categories.map((item) => {new_data.push({value:item})})
+    ALL_CATEGORIES.map((item) => {new_data.push({value:item})})
 
     return (
       <View style={{marginHorizontal:25}}>
@@ -372,7 +372,6 @@ const mapStateToProps = (state) => {
     category: state.write.category,
     alertVisible: state.write.alertVisible,
     alertMessage: state.write.alertMessage,
-    all_categories: state.write.all_categories,
 
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,

@@ -229,7 +229,71 @@ export const ERROR_MESSAGES = {
   }
 }
 
-export const LATEST_APP_VERSION = 30;
+export const ALL_CATEGORIES = [
+  "Software Development", "Computer Hardware", "Software","Food & Drinks",
+  "Countries", "History", "Politics", "Technology", "Gaming",
+  "Art","Music", "Sports",  "Movies & TV", "Cars", "Transport",
+  "Books & Comics", "Plants & Animals", "Board Games", "Video Games", "Spiritual", "Religious",
+  "Current Affairs", "Geography", "Economics & Finance", "General Knowledge", 
+  "Business", "Household", "Navigation", "Pharma & Medical", "Productivity & Tools",
+  "Travel", "Lifestyle", "Personal Skills", "Nature", "Architecture", "General Science",
+  "Astronomy", "Chemistry", "Biology", "Mathematics", "Physics", "Cultural", "Puzzles",
+  "People", "Profession", "Institution", "Emotions"
+].sort()
+
+export const CATEGORY_IMAGES = {
+  Architecture: require('../assets/images/category/architecture.jpg'),
+  Art: require('../assets/images/category/art.jpg'),
+  Astronomy: require('../assets/images/category/astronomy.jpg'),
+  Biology: require('../assets/images/category/biology.jpg'),
+  'Board Games': require('../assets/images/category/board_games.jpg'),
+  'Books & Comics': require('../assets/images/category/books_comics.jpg'),
+  Business: require('../assets/images/category/business.jpg'),
+  Cars: require('../assets/images/category/cars.jpg'),
+  Chemistry: require('../assets/images/category/chemistry.jpg'),
+  'Computer Hardware': require('../assets/images/category/computer_hardware.jpg'),
+  Countries: require('../assets/images/category/countries.jpg'),
+  Cultural: require('../assets/images/category/cultural.jpg'),
+  'Current Affairs': require('../assets/images/category/current_affairs.jpg'),
+  'Economics & Finance': require('../assets/images/category/economics_finance.jpg'),
+  Emotions: require('../assets/images/category/emotions.jpg'),
+  'Food & Drinks': require('../assets/images/category/food_drinks.jpg'),
+  Gaming: require('../assets/images/category/gaming.jpg'),
+  'General Knowledge': require('../assets/images/category/general_knowledge.jpg'),
+  'General Science': require('../assets/images/category/general_science.jpg'),
+  Geography: require('../assets/images/category/geography.jpg'),
+  History: require('../assets/images/category/history.jpg'),
+  Household: require('../assets/images/category/household.jpg'),
+  Institution: require('../assets/images/category/institution.jpg'),
+  Lifestyle: require('../assets/images/category/lifestyle.jpg'),
+  Mathematics: require('../assets/images/category/mathematics.jpg'),
+  'Movies & TV': require('../assets/images/category/movies_tv.jpg'),
+  Music: require('../assets/images/category/music.jpg'),
+  Nature: require('../assets/images/category/nature.jpg'),
+  Navigation: require('../assets/images/category/navigation.jpg'),
+  People: require('../assets/images/category/people.jpg'),
+  'Personal Skills': require('../assets/images/category/personal_skills.jpg'),
+  'Pharma & Medical': require('../assets/images/category/pharma_medical.jpg'),
+  Physics: require('../assets/images/category/physics.jpg'),
+  'Plants & Animals': require('../assets/images/category/plants_animals.jpg'),
+  Politics: require('../assets/images/category/politics.jpg'),
+  'Productivity & Tools': require('../assets/images/category/productivity_tools.jpg'),
+  Profession: require('../assets/images/category/profession.jpg'),
+  Puzzles: require('../assets/images/category/puzzles.jpg'),
+  Religious: require('../assets/images/category/religious.jpg'),
+  Software: require('../assets/images/category/software.jpg'),
+  'Software Development': require('../assets/images/category/software_development.jpg'),
+  Spiritual: require('../assets/images/category/spiritual.jpg'),
+  Sports: require('../assets/images/category/sports.jpg'),
+  Technology: require('../assets/images/category/technology.jpg'),
+  Transport: require('../assets/images/category/transport.jpg'),
+  Travel: require('../assets/images/category/travel.jpg'),
+  'Video Games': require('../assets/images/category/video_games.jpg'),
+};
+
+
+
+export const LATEST_APP_VERSION = 31;
 
 export const MAX_USERS_IN_A_GROUP = 20;
 

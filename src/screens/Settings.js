@@ -11,7 +11,7 @@ import {setAuthToken, getSettingsData, settingsChangeFavouriteCategory,
 import { Actions } from 'react-native-router-flux';
 import Image from 'react-native-fast-image';
 import Ripple from '../components/Ripple';
-import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT,ALL_CATEGORIES } from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import { Icon } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
@@ -366,7 +366,7 @@ class Settings extends Component {
 
   renderCategorySelector(){
     let new_data=[];
-    this.props.categories.map((item) => {new_data.push({value:item})})
+    ALL_CATEGORIES.map((item) => {new_data.push({value:item})})
     const {COLORS} = this.props;
 
     return (
@@ -612,7 +612,6 @@ class Settings extends Component {
 const mapStateToProps = (state) => {
   return {
     data: state.login.data,
-    categories: state.login.categories,
     internetReachable: state.login.internetReachable,
 
     image_adder: state.home.image_adder,

@@ -153,3 +153,16 @@ export const submitFeedback = (feedback_obj) => {
     }
   }
 }
+
+export const doSearch = (search, category) => {
+
+  return (dispatch) => {
+    dispatch({type:ACTIONS.DOING_SEARCH_LOADING})
+    httpClient.post(URLS.search, {search, category}).then(
+      ({data}) => {
+        console.log("DATA IS : ", data)
+        dispatch({type:ACTIONS.DO_SEARCH, payload:data})
+      }
+    ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'SEARCH ACTION - 452', description:e.toString()}))
+  }
+}

@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import { View, Text, StyleSheet, StatusBar, RefreshControl,Dimensions,
+import { View, Text, StyleSheet, StatusBar, RefreshControl,
   FlatList, ScrollView, TouchableOpacity, TextInput}from 'react-native';
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
-import {FONTS, ERROR_MESSAGES,COLORS_LIGHT_THEME} from '../Constants';
+import {FONTS, ERROR_MESSAGES,COLORS_LIGHT_THEME, ALL_CATEGORIES} from '../Constants';
 import ArticleTile from '../components/ArticleTile';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
@@ -31,7 +31,7 @@ class Search extends Component {
   state = {adIndex:0, adCategoryIndex: []}
 
   componentDidMount(){
-    if (!this.props.popularSearchesData.response){
+    if (!this.props.popularSearchesData){
       this.props.setAuthToken();
       analytics().setCurrentScreen('Search', 'Search')
       this.props.getPopularSearches();
@@ -143,7 +143,7 @@ class Search extends Component {
           theme={this.props.theme} secondaryText={'नई खोज करें'} COLORS = {COLORS} />
       </View>)
 
-    let response = this.props.popularSearchesData.response
+    let response = this.props.popularSearchesData
 
     if (this.props.searchResults){
       response = this.props.searchResults;
@@ -257,32 +257,28 @@ class Search extends Component {
 
   renderSearchSettings(){
     const {COLORS} = this.props;
-    const {all_categories} = this.props.popularSearchesData;
     let new_data = [{value: "All Categories"}];
-    if (all_categories){
-      all_categories.map((item) => {new_data.push({value:item})})
-      if(this.props.searchValue.length>1){
-        
-        return (
-          <View style={{marginHorizontal:25}}>
-            <Dropdown
-              COLORS = {COLORS}
-              data = {new_data}
-              label = "Category Selection"
-              value="All Categories"
-              itemCount={6}
-              onChangeText={(category)=>{this.props.selectCategory(category)}}
-            />
-          </View>
-        )
-      }
-      else{
-        return null
-      }
+
+    ALL_CATEGORIES .map((item) => {new_data.push({value:item})})
+    if(this.props.searchValue.length>1){
+      
+      return (
+        <View style={{marginHorizontal:25}}>
+          <Dropdown
+            COLORS = {COLORS}
+            data = {new_data}
+            label = "Category Selection"
+            value="All Categories"
+            itemCount={6}
+            onChangeText={(category)=>{this.props.selectCategory(category)}}
+          />
+        </View>
+      )
     }
     else{
       return null
     }
+   
   }
 
   renderAlert(){

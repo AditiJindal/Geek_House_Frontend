@@ -8,6 +8,7 @@ import {
   toggleOverlay,
   getWelcome,
   setAuthToken,
+  doSearch
 } from '../actions/HomeAction';
 import _ from 'lodash';
 import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
@@ -18,7 +19,8 @@ import LottieView from 'lottie-react-native'
 import AppIntroSlider from '../components/AppIntroSlider/AppIntroSlider';
 import ArticleTile from '../components/ArticleTile';
 import {Overlay, Icon} from 'react-native-elements';
-import {FONTS,COLORS_LIGHT_THEME, LOG_EVENT, LATEST_APP_VERSION} from '../Constants';
+import {FONTS,COLORS_LIGHT_THEME, LOG_EVENT, CATEGORY_IMAGES,
+  LATEST_APP_VERSION, ALL_CATEGORIES} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
 import Loading from '../components/Loading';
@@ -45,13 +47,14 @@ class Home extends Component {
 
   componentDidMount(){
     this.props.setAuthToken();
+    setAuthToken();
     analytics().setCurrentScreen('Home', 'Home')
     if (this.props.loading){
       this.props.getWelcome();
       analytics().logTutorialBegin();
     }
     let new_data=[];
-    this.props.categories.map((item) => {new_data.push({value:item})})
+    ALL_CATEGORIES.map((item) => {new_data.push({value:item})})
     this.slides = [
       {
         fullyCustom:true,
@@ -177,7 +180,7 @@ class Home extends Component {
                 {this.props.data.email}
               </Text>
               <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:11,alignSelf:'flex-end',color:COLORS.GRAY}}>
-                Geek House v1.13.1 B
+                Geek House v1.14.0 A
               </Text>
             </View>
           </View>
@@ -351,6 +354,7 @@ class Home extends Component {
       <FlatList data={data_list}
         horizontal
         showsHorizontalScrollIndicator={false}
+        ListFooterComponent={<View style={{width:1, height:100}}/>}
         keyExtractor={(item) => item.article_id.toString()}
         renderItem = {({item, index}) => {
           return (
@@ -372,26 +376,29 @@ class Home extends Component {
   }
 
   renderPopularArticles(){
-    const {COLORS} = this.props;
-    return(
-      <View style={{justifyContent:'flex-start', alignItems:'flex-end',paddingTop:0, flex:1}}>
-        <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} autoRun={true} visible={!this.props.loading}
-          style={{height:50, borderRadius:6, elevation:6,
-          marginRight:25, marginTop:5}} duration={750}>
-          <RaisedText text={"Popular Articles"} animationEnabled = {this.props.animationOn} 
-            theme={this.props.theme} secondaryText={'लोकप्रिय लेख'} COLORS = {COLORS} />
-        </ShimmerPlaceHolder>
-        {
-          (this.props.loading)?
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:175, height:175, borderRadius:8,margin:15, marginHorizontal:5, elevation:3}}/>
-            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:175, height:175, borderRadius:8,margin:15, marginHorizontal:5, elevation:3}}/>
-            <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:175, height:175, borderRadius:8,margin:15, marginHorizontal:5, elevation:3}}/>
-          </ScrollView>:
-          this.renderArticleTiles()
-        }
-      </View>
-    )
+    const {COLORS, theme, animationOn, loading} = this.props;
+    data_list = this.props.welcomeData.popular_topics;
+    if (loading || data_list.length){
+      return(
+        <View style={{justifyContent:'flex-start', alignItems:'flex-end',paddingTop:0, flex:1}}>
+          <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} autoRun={true} visible={!loading}
+            style={{height:50, borderRadius:6, elevation:6,
+            marginRight:25, marginTop:5}} duration={750}>
+            <RaisedText text={"Popular Articles"} animationEnabled = {animationOn} 
+              theme={theme} secondaryText={'लोकप्रिय लेख'} COLORS = {COLORS} />
+          </ShimmerPlaceHolder>
+          {
+            (loading)?
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+              <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:175, height:175, borderRadius:8,margin:15, marginHorizontal:5, elevation:3}}/>
+              <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:175, height:175, borderRadius:8,margin:15, marginHorizontal:5, elevation:3}}/>
+              <ShimmerPlaceHolder colorShimmer={COLORS.SHIMMER_COLOR} visible={false} style={{width:175, height:175, borderRadius:8,margin:15, marginHorizontal:5, elevation:3}}/>
+            </ScrollView>:
+            this.renderArticleTiles()
+          }
+        </View>
+      )
+    }
   }
 
   renderHome(){
@@ -403,9 +410,10 @@ class Home extends Component {
     return (
      <View style={{flex:1,}}>
         <ScrollView showsVerticalScrollIndicator={false}
-        contentContainerStyle={{flexGrow:1}}>
+          contentContainerStyle={{flexGrow:1}}>
           <View style={{height:70, width:1}}/>
           {this.renderWelcome()}
+          {this.renderExploreCategory()}
           {this.renderPopularArticles()}
         </ScrollView>
      </View>
@@ -510,6 +518,45 @@ class Home extends Component {
     return {statusBarColor, barStyle}
   }
 
+  renderExploreCategory(){
+    const {COLORS, loading, animationOn, theme} = this.props;
+    if (loading){return null}
+    return (
+      <View style={{alignItems:'flex-end'}}>
+        <RaisedText text={"Explore"} animationEnabled = {animationOn} 
+          theme={theme} secondaryText={'Categories'} COLORS = {COLORS} />
+        <FlatList
+          data={ALL_CATEGORIES}
+          keyExtractor={item=>item}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{paddingHorizontal:5}}
+          renderItem = {({item})=>{
+            return (
+            <View style={{padding:5, paddingBottom:15}}>
+              <Ripple style={{height:130, width:160, elevation:8,
+                backgroundColor:COLORS.DARK_GRAY, borderRadius:7, overflow:'hidden'}}
+                onPress={()=>{
+                  this.props.doSearch("", item)
+                  Actions.search()
+                }}>
+                <Image
+                  source={CATEGORY_IMAGES[item]}
+                  style={{flex:1}}
+                />
+                <Text style={{color:COLORS.DARK, fontSize:10, alignSelf:'center',
+                  color:COLORS.LIGHT, fontFamily:FONTS.HELVETICA_NEUE, marginVertical:3}}>
+                  {item}
+                </Text>
+              </Ripple>
+            </View>
+          )
+          }}
+        />
+      </View>
+    )
+  }
+
   render() {
     const {COLORS} = this.props;
     const {statusBarColor, barStyle} = this.getStatusBarColor() 
@@ -529,6 +576,7 @@ class Home extends Component {
         </ShadowView>
         {this.renderOverlay()}
         {this.renderHome()}
+        
       </View>
       );
     }
@@ -542,7 +590,6 @@ const mapStateToProps = (state) => {
   return {
     data: state.login.data,
     authtoken: state.login.authtoken,
-    categories: state.login.categories,
     first_login: state.chat.first_login,
 
     error: state.home.error,
@@ -566,7 +613,8 @@ export default connect(mapStateToProps, {
   getWelcome, 
   setAuthToken, 
   settingsChangeFavouriteCategory,
-  setupComplete
+  setupComplete,
+  doSearch
 })(Home);
 
 const styles = StyleSheet.create({

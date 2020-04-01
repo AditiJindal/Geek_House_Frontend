@@ -9,7 +9,6 @@ const INITIAL_STATE={
   facebookLoading:false,
   loading: true,
   authtoken:'',
-  categories:[],
   policy: null,
   policyLoading:true,
   internetReachable:false
@@ -21,7 +20,6 @@ const saveLoginData = (state) => {
   const final_data = {
     data: state.data,
     authtoken: state.authtoken,
-    categories: state.categories,
   }
   to_save = JSON.stringify(final_data)
   AsyncStorage.setItem('data', to_save)
@@ -52,7 +50,6 @@ export default (state=INITIAL_STATE, action) => {
         googleLoading:false,
         authtoken:action.payload.authtoken, 
         loading:false, 
-        categories:action.payload.categories,
       };
 
     case ACTIONS.LOGIN_POLICY:

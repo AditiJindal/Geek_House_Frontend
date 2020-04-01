@@ -220,8 +220,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
     dispatch({type:ACTIONS.CHAT_LOAD_DATA, 
       payload: {...response, user_id: json_data.authtoken.toString()}})
   }).catch(()=>{})
-  dispatch({type:ACTIONS.LOGIN_DATA, payload:{data:json_data.data,
-    authtoken:json_data.authtoken, categories:json_data.categories}})
+  dispatch({type:ACTIONS.LOGIN_DATA, payload:{data:json_data.data, authtoken:json_data.authtoken}})
   const socket = io.connect(BASE_URL, {
     timeout: HTTP_TIMEOUT,
     forceNew:true,
@@ -429,8 +428,7 @@ export const loginGoogle = () => {
           new_data.image_url = response.data.image_url
 
           authtoken = response.data.token
-          final_data = {data:new_data, authtoken:authtoken, 
-            categories:response.data.categories}
+          final_data = {data:new_data, authtoken:authtoken}
           analytics().setUserId(authtoken);
           to_save = JSON.stringify(final_data);
           AsyncStorage.setItem('data', to_save)
@@ -490,8 +488,7 @@ export const loginFacebook = () => {
                       new_data.image_url = response.data.image_url
                       
                       authtoken = response.data.token
-                      final_data = {data:new_data, authtoken:authtoken, 
-                        categories:response.data.categories}
+                      final_data = {data:new_data, authtoken:authtoken}
                       analytics().setUserId(authtoken);
                       
                       to_save = JSON.stringify(final_data)

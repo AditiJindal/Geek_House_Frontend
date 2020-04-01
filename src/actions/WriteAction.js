@@ -24,9 +24,9 @@ export const getMyArticles = (myArticlesLength, reload) => {
     return (dispatch) => {
       dispatch({type:ACTIONS.WRITE_LOADING});
       httpClient.get(URLS.myarticles).then(
-        (response)=>{
+        ({data})=>{
           dispatch({type:ACTIONS.GET_MY_ARTICLES,
-          payload:{response:response.data.response, all_categories:response.data.all_categories}})
+          payload:data})
         }
       ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'WRITE ACTION - 32', description:e.toString()}))
     }
@@ -109,8 +109,8 @@ export const publishArticle = (article, success_animation) => {
           .then(() => {
             article.image = decrypt(response.data.key)
             httpClient.post(URLS.publish, article).then(
-              () => {
-                dispatch({type:ACTIONS.PUBLISH_SUCCESS});
+              ({data}) => {
+                dispatch({type:ACTIONS.PUBLISH_SUCCESS, payload:{...article, ...data}});
               }
             );
           }).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'WRITE ACTION - 88', description:e.toString()}))
@@ -118,8 +118,8 @@ export const publishArticle = (article, success_animation) => {
       }
     else{
       httpClient.post(URLS.publish, article).then(
-        () => {       
-          dispatch({type:ACTIONS.PUBLISH_SUCCESS});
+        ({data}) => {
+          dispatch({type:ACTIONS.PUBLISH_SUCCESS, payload:{...article, ...data}});
           success_animation.play()
         }
       ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'WRITE ACTION - 97', description:e.toString()}))

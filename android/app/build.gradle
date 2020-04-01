@@ -143,8 +143,8 @@ android {
         applicationId "com.tjproductions.geekhousern"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 30
-        versionName "1.13.1"
+        versionCode 31
+        versionName "1.14.0"
         manifestPlaceholders = [
             appAuthRedirectScheme: 'io.identityserver.demo'
         ]

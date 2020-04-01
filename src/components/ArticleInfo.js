@@ -402,14 +402,9 @@ class ArticleInfo extends Component {
               ["rgb(20,20,20)", "rgb(50,50,50)"]:
               ["rgb(200,200,200)", "rgb(240,240,240)"]}>
             <Animated.Image
-              style={{flex:1,
-              transform: [{scale:bigImageScale}],
-              opacity:bigImageOpacity}}
-              source={
-                (this.props.loadSuccessful)?
-                {uri:this.props.article_image}:
-                require("../../assets/images/placeholder/placeholder.jpg")
-              }
+              style={{transform: [{scale:bigImageScale}], opacity:bigImageOpacity, 
+                height:"100%", width:"100%"}}
+              source={this.props.imageSource}
             />
           </LinearGradient>
           <Animated.View
@@ -432,11 +427,12 @@ class ArticleInfo extends Component {
                 width: PROFILE_IMAGE_MAX_HEIGHT,
                 borderRadius: PROFILE_IMAGE_MAX_HEIGHT/2,
                 marginLeft: 16, overflow:'hidden', zIndex:20,
+                backgroundColor:COLORS.LIGHT,
                 transform:[{translateX:imageAnim},{scaleX:scaleToZero},{scaleY:scaleToZero}],
               }}>
               <Animated.Image
                 source={{uri:author_image}}
-                style={{flex:1, transform: [{rotate:pictureRotate}],resizeMode:'contain'}}
+                style={{flex:1, transform: [{rotate:pictureRotate}],resizeMode:'cover'}}
               />
             </Animated.View>
         </Animated.View>

@@ -23,8 +23,8 @@ export const setAuthToken = () => {
 export const getPopularSearches = () => {
   return (dispatch) => {
     dispatch({type:ACTIONS.SEARCH_LOADING})
-    httpClient.get(URLS.popularsearches).then((response) => {
-      dispatch({type:ACTIONS.POPULAR_SEARCHES_SUCCESS, payload:response.data})
+    httpClient.get(URLS.popularsearches).then(({data}) => {
+      dispatch({type:ACTIONS.POPULAR_SEARCHES_SUCCESS, payload:data})
     }).catch(() => {
       logEvent(LOG_EVENT.ERROR, {errorLine: 'SEARCH ACTION - 31', description:e.toString()})
       showAlert(true, {})})
@@ -44,8 +44,9 @@ export const doSearch = (search, category) => {
   return (dispatch) => {
     dispatch({type:ACTIONS.DOING_SEARCH_LOADING})
     httpClient.post(URLS.search, {search, category}).then(
-      (response) => {
-        dispatch({type:ACTIONS.DO_SEARCH, payload:response.data})
+      ({data}) => {
+        console.log("DATA IS : ", data)
+        dispatch({type:ACTIONS.DO_SEARCH, payload:data})
       }
     ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'SEARCH ACTION - 452', description:e.toString()}))
   }

@@ -2,7 +2,7 @@ import {ACTIONS} from '../actions/types'
 
 
 const INITIAL_STATE={
-  popularSearchesData:{},
+  popularSearchesData:null,
   loading:true,
   searchValue:'',
   categorySelected:'All Categories',
