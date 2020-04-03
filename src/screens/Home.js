@@ -8,7 +8,7 @@ import {
   toggleOverlay,
   getWelcome,
   setAuthToken,
-  doSearch
+  exploreSearch
 } from '../actions/HomeAction';
 import _ from 'lodash';
 import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
@@ -180,7 +180,7 @@ class Home extends Component {
                 {this.props.data.email}
               </Text>
               <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:11,alignSelf:'flex-end',color:COLORS.GRAY}}>
-                Geek House v1.14.0 B
+                Geek House v1.15.0 A
               </Text>
             </View>
           </View>
@@ -539,8 +539,8 @@ class Home extends Component {
               <Ripple style={{height:130, width:160, elevation:8,
                 backgroundColor:COLORS.DARK_GRAY, borderRadius:7, overflow:'hidden'}}
                 onPress={()=>{
-                  this.props.doSearch("", item)
-                  Actions.search()
+                  this.props.exploreSearch(item)
+                  Actions.explore()
                 }}>
                 <Image
                   source={CATEGORY_IMAGES[item]}
@@ -616,7 +616,7 @@ export default connect(mapStateToProps, {
   setAuthToken, 
   settingsChangeFavouriteCategory,
   setupComplete,
-  doSearch
+  exploreSearch
 })(Home);
 
 const styles = StyleSheet.create({

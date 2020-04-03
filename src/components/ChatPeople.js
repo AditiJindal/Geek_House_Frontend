@@ -67,6 +67,7 @@ const getRecentMessage = (message) => {
 }
 
 const imageUrlCorrector = (image_url, image_adder) => {
+  if (!this.props.image_adder){return ''}
   if (image_url.substring(0,4) !== 'http'){
     image_url = image_adder + image_url
   }

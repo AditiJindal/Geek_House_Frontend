@@ -63,6 +63,8 @@ target 'Geek_House' do
   pod 'react-native-cameraroll', :path => '../node_modules/@react-native-community/cameraroll'
 
 
+  pod 'RNFBAuth', :path => '../node_modules/@react-native-firebase/auth'
+
   target 'Geek_HouseTests' do
     inherit! :search_paths
     # Pods for testing

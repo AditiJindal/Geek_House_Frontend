@@ -52,7 +52,6 @@ export default class ArticleTile extends Component {
   }
 
   renderStarRating(rating, size=12){
-    const {COLORS} = this.props;
     if (!rating){return null}
     return(
       <View style={{flexDirection:'row', alignItems:'center'}}>
@@ -75,7 +74,7 @@ export default class ArticleTile extends Component {
 
     if (!this.state.imageLoaded){
       return (
-        <View style={{flex:1, justifyContent:'center', alignItems:'center', borderRadius:10, 
+        <View style={{flex:1, justifyContent:'center', alignItems:'center',
           backgroundColor:COLORS.LIGHT, 
           zIndex:100, height:this.state.size, width:this.state.size}}>
           <Loading size={64} white={(this.props.theme!=='light')}/>
@@ -95,7 +94,7 @@ export default class ArticleTile extends Component {
           logEvent(LOG_EVENT.SCREEN_CHANGE, 'articleinfo');
           }} 
           activeOpacity={1} style={{flex:1}}>
-          <LinearGradient style={{flex:1,justifyContent:'space-between',padding:10, borderRadius:10}}
+          <LinearGradient style={{flex:1,justifyContent:'space-between',padding:10,}}
             colors={this.getLoadingFailColors()}>
             <View style={{ justifyContent:'space-between', flex:1}}>
               <Text style={{...styles.TextStyleFail, color:COLORS_LIGHT_THEME.LIGHT}}>
@@ -134,7 +133,7 @@ export default class ArticleTile extends Component {
     }
     if (this.state.imageLoaded && this.state.loadSuccessful){
       return (
-        <LinearGradient style={{flex:1, justifyContent:'flex-end' ,padding:10, borderRadius:10}} 
+        <LinearGradient style={{flex:1, justifyContent:'flex-end' ,padding:10}} 
           colors={LG_SUCCESS}
           start={{x:1, y:0}} end={{x:1, y:1}}>
           <View style={{alignItems:'flex-start', flexDirection:'row', justifyContent:'space-between'}}>
@@ -150,13 +149,12 @@ export default class ArticleTile extends Component {
 
   render() {
     const {COLORS, data} = this.props;
-    
     const imageSource = (data.image)?{uri:data.image}:CATEGORY_IMAGES[data.category]
 
     return(
       <TouchableOpacity activeOpacity={0.8}
-        style={{...styles.TileViewStyle, height:this.state.size, width:this.state.size*4/3, 
-          backgroundColor:COLORS.LIGHT}} 
+        style={{overflow:'hidden',elevation:4, height:this.state.size, width:this.state.size*4/3, 
+          backgroundColor:COLORS.LIGHT, borderRadius:10}} 
         onPress={() => {
         this.setState({infoVisible:true, showStartTime:Date.now()});
         logEvent(LOG_EVENT.SCREEN_CHANGE, 'articleinfo')}}>
@@ -191,7 +189,6 @@ export default class ArticleTile extends Component {
 
 const styles = StyleSheet.create({
   TileViewStyle:{
-    elevation:4,
     borderRadius:10,
     overflow:'hidden'
   },

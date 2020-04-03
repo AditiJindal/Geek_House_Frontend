@@ -43,7 +43,8 @@ export default (state=INITIAL_STATE, action) => {
       return {...state, categorySelected:action.payload}
 
     case ACTIONS.DO_SEARCH:
-      return {...state, searchResults: action.payload, showPopularSearches:false, loading:false, doingSearch:false}
+      return {...state, searchResults: action.payload, showPopularSearches:false,
+        loading:false, doingSearch:false, categoryInfo:action.payload.categoryInfo}
 
     case ACTIONS.CLEAR_SEARCH:
       return {...state, searchResults:false, searchValue:''}

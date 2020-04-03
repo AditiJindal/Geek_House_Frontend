@@ -6,7 +6,7 @@ import {URLS, BASE_URL, HTTP_TIMEOUT, LOG_EVENT} from '../Constants';
 import axios from 'axios';
 import {encrypt, decrypt} from '../encryptionUtil';
 import {Actions} from 'react-native-router-flux';
-import {NativeAdsManager, AdSettings} from 'react-native-fbads';
+import {NativeAdsManager} from 'react-native-fbads';
 import CameraRoll from "@react-native-community/cameraroll";
 import ImageResizer from 'react-native-image-resizer';
 import {handleUpload} from '../uploadUtil';
@@ -154,15 +154,16 @@ export const submitFeedback = (feedback_obj) => {
   }
 }
 
-export const doSearch = (search, category) => {
-
+export const exploreSearch = (category) => {
   return (dispatch) => {
-    dispatch({type:ACTIONS.DOING_SEARCH_LOADING})
-    httpClient.post(URLS.search, {search, category}).then(
-      ({data}) => {
-        console.log("DATA IS : ", data)
-        dispatch({type:ACTIONS.DO_SEARCH, payload:data})
-      }
-    ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'SEARCH ACTION - 452', description:e.toString()}))
+    {
+      dispatch({type:ACTIONS.EXPLORE_SEARCH_LOADING})
+      httpClient.post(URLS.search, {search:"", category}).then(
+        ({data}) => {
+
+          dispatch({type:ACTIONS.EXPLORE_SEARCH, payload:{data, exploreCategory:category}})
+        }
+      ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'HOME ACTION - 165', description:e.toString()}))
+    }
   }
 }

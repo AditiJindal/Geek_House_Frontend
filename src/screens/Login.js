@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import { View, StyleSheet, Text, StatusBar, TouchableOpacity}from 'react-native';
 import {connect} from 'react-redux';
 import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
-import Ripple from '../components/Ripple'
 import NetInfo from '@react-native-community/netinfo';
 import LinearGradient from 'react-native-linear-gradient';
-import {loginGoogle,loginFacebook, checkLogin, internetHandler} from '../actions/LoginAction';
+import {loginGoogle, loginFacebook, checkLogin, 
+  internetHandler} from '../actions/LoginAction';
 import Loading from '../components/Loading';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import Image from 'react-native-fast-image';
@@ -24,68 +24,110 @@ class Login extends Component {
     }
 
   renderGoogleButton(){
-      if (!this.props.loading){
-        if (!this.props.googleLoading){
-          return (
-            <Ripple rippleContainerBorderRadius={styles.GoogleButtonStyle.borderRadius}
-              style={styles.GoogleButtonStyle}
-              onPress={() => {
-                if (!this.props.facebookLoading && !this.props.googleLoading)
-                  this.props.loginGoogle();
-                }
-              }>
-              <Image source={require('../../assets/icons/google.png')}
-                style={{height:32, width:32}}/>
-              <Text style={styles.GoogleButtonTextStyle}>
-                SignIn With Google
-              </Text>
-            </Ripple>
-          );
-        }
-        else{
-          return (
-            <View style={{...styles.GoogleButtonStyle, justifyContent:'center', alignItems:'center'}}>
+    return (
+      <TouchableOpacity activeOpacity={1}
+        style={styles.GoogleButtonStyle}
+        onPress={() => {
+          if (!this.props.facebookLoading && !this.props.googleLoading)
+            this.props.loginGoogle();
+          }
+        }>
+
+        <View style={{height:40,paddingHorizontal:20,
+          alignItems:'center', justifyContent:'center',margin:5,
+          elevation:5, borderRadius:7, backgroundColor:COLORS_LIGHT_THEME.LIGHT}}>
+          <Image source={require('../../assets/icons/google.png')}
+            style={{height:28, width:28}}
+          />
+        </View>
+        <View style={{flex:3, alignItems:'center', justifyContent:'center'}}>
+          {
+            (this.props.googleLoading)?(
               <Loading size={48}/>
-            </View>
-          );
+            ):(
+              <Text style={styles.GoogleButtonTextStyle}>
+                Sign in with Google
+              </Text>
+            )
+          }
+        </View>
+        {
+          (this.props.googleLoading)?(
+            <View style={{height:1, width:28+20*2}}/>
+          ):(null)
         }
-      }
-      else{
-        return null
-      }
-    }
+      </TouchableOpacity>
+    )}
 
     renderFacebookButton(){
-      if (!this.props.loading){
-        if (!this.props.facebookLoading){
-          return(
-            <Ripple rippleContainerBorderRadius={styles.FacebookButtonStyle.borderRadius}
-              style={styles.FacebookButtonStyle}
-              onPress={() => {
-                if (!this.props.facebookLoading && !this.props.googleLoading)
-                  this.props.loginFacebook()
-                }}>
-              <Image source={require('../../assets/icons/facebook.png')}
-                  style={{height:32, width:32}}
-                />
-              <Text style={styles.FacebookButtonTextStyle}>
-                Continue with Facebook
-              </Text>
-            </Ripple>
-          )
-        }
-        else{
-          return (
-            <View style={{...styles.FacebookButtonStyle, justifyContent:'center', alignItems:'center'}}>
-              <Loading size={48} white/>
-            </View>
-          );
-        }
-      }
-      else{
-        return null
-      }
+      return(
+        <TouchableOpacity activeOpacity={1}
+          style={styles.FacebookButtonStyle}
+          onPress={() => {
+            if (!this.props.facebookLoading && !this.props.googleLoading)
+              this.props.loginFacebook()
+            }}>
+          <View style={{height:40, paddingHorizontal:20, 
+            alignItems:'center', margin:5, borderRadius:7, elevation:5,
+            backgroundColor:COLORS_LIGHT_THEME.FACEBOOK_BLUE, justifyContent:'center'}}>
+            <Image source={require('../../assets/icons/facebook.png')}
+              style={{height:28, width:28}}
+            />
+          </View>
+          <View style={{flex:3, alignItems:'center', justifyContent:'center'}}>
+            {
+              (this.props.facebookLoading)?(
+                <Loading size={48} white={false}/>
+              ):(
+                <Text style={styles.FacebookButtonTextStyle}>
+                  Continue with Facebook
+                </Text>
+              )
+            }            
+          </View>
+          {
+            (this.props.facebookLoading)?(
+              <View style={{height:1, width:28+20*2}}/>
+            ):(null)
+          }
+        </TouchableOpacity>
+      );
     }
+
+    // renderTwitterButton(){
+    //   return(
+    //     <Ripple rippleContainerBorderRadius={styles.TwitterButtonStyle.borderRadius}
+    //       style={styles.TwitterButtonStyle}
+    //       onPress={() => {
+    //         if (!this.props.facebookLoading && !this.props.googleLoading)
+    //           this.props.loginFacebook()
+    //         }}>
+    //       <View style={{height:40, paddingHorizontal:14, 
+    //         alignItems:'center', margin:5, borderRadius:7, elevation:5,
+    //         backgroundColor:COLORS_LIGHT_THEME.TWITTER_BLUE, justifyContent:'center'}}>
+    //         <Image source={require('../../assets/icons/twitter.png')}
+    //           style={{height:40, width:40}}
+    //         />
+    //       </View>
+    //       <View style={{flex:3, alignItems:'center', justifyContent:'center'}}>
+    //         {
+    //           (this.props.facebookLoading)?(
+    //             <Loading size={48} white={false}/>
+    //           ):(
+    //             <Text style={styles.TwitterButtonTextStyle}>
+    //               Sign in with Twitter
+    //             </Text>
+    //           )
+    //         }            
+    //       </View>
+    //       {
+    //         (this.props.googleLoading)?(
+    //           <View style={{height:1, width:40+8*2}}/>
+    //         ):(null)
+    //       }
+    //     </Ripple>
+    //   );
+    // }
 
   _renderPolicy(){
     return(
@@ -117,7 +159,7 @@ class Login extends Component {
         <View style={{padding:10, flex:1, justifyContent:'center', alignItems:'center'}}>
           {this.renderGoogleButton()}
           {this.renderFacebookButton()}
-          
+          {/* {this.renderTwitterButton()} */}
         </View>
         {this._renderPolicy()}
       </View>
@@ -165,44 +207,50 @@ const styles = StyleSheet.create({
   },
   GoogleButtonStyle:{
     borderRadius:12,
-    width:250,
+    width:"75%",
     height:50,
-    backgroundColor:'white',
+    backgroundColor: COLORS_LIGHT_THEME.LIGHT,
     margin:5,
     elevation:7,
-    alignItems:'center',
-    justifyContent:'space-evenly',
     flexDirection:'row',
-    paddingHorizontal:10
   },
-
   FacebookButtonStyle:{
     borderRadius:12,
-    width:250,
+    width:"75%",
     height:50,
-    backgroundColor:'rgb(24, 119, 242)',
+    backgroundColor: COLORS_LIGHT_THEME.LIGHT,
     margin:5,
     elevation:7,
-    alignItems:'center',
-    justifyContent:'space-evenly',
     flexDirection:'row',
-    paddingHorizontal:10
   },
-  
+  // TwitterButtonStyle:{
+  //   borderRadius:12,
+  //   width:"75%",
+  //   height:50,
+  //   backgroundColor: COLORS_LIGHT_THEME.LIGHT,
+  //   margin:5,
+  //   elevation:7,
+  //   flexDirection:'row',
+  // },
   GoogleButtonTextStyle:{
-    color:'rgb(100,100,100)',
+    color: COLORS_LIGHT_THEME.LESS_DARK,
     fontFamily:FONTS.PRODUCT_SANS,
     marginHorizontal:5,
-    fontSize:18
+    fontSize:17
   },
   FacebookButtonTextStyle:{
-    color:'white',
-    fontFamily:FONTS.HELVETICA_NEUE,
-    marginHorizontal:5,
-    fontSize:15
+    color:COLORS_LIGHT_THEME.LESS_DARK,
+    fontFamily:FONTS.PRODUCT_SANS,
+    fontSize:16
   },
+  // TwitterButtonTextStyle:{
+  //   color: COLORS_LIGHT_THEME.LESS_DARK,
+  //   fontFamily:FONTS.PRODUCT_SANS,
+  //   marginHorizontal:5,
+  //   fontSize:16
+  // },
   InfoTextStyle:{
-    color:'white',
+    color:COLORS_LIGHT_THEME.LIGHT,
     fontSize:16,
     fontFamily:FONTS.ROBOTO_BOLD,
     flexWrap:'wrap',

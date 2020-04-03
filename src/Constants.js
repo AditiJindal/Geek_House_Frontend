@@ -20,6 +20,8 @@ export const COLORS_LIGHT_THEME = {
   LIGHT_BLUE: '#6cd4ec',
   DARK_BLUE: '#2395b1',
   MIGHTNIGHT_BLUE: '#191970',
+  TWITTER_BLUE:'#1da1f2',
+  FACEBOOK_BLUE:'rgb(24, 119, 242)',
 
   VERY_LIGHT_PINK: '#ffb6c1',
   LIGHT_PINK: '#ff91a2',
@@ -59,6 +61,8 @@ export const COLORS_DARK_THEME = {
   LIGHT_BLUE: '#6cd4ec',
   DARK_BLUE: '#2395b1',
   MIGHTNIGHT_BLUE: '#191970',
+  TWITTER_BLUE:'#1da1f2',
+  FACEBOOK_BLUE:'rgb(24, 119, 242)',
 
   VERY_LIGHT_PINK: '#ffb6c1',
   LIGHT_PINK: '#ff91a2',
@@ -293,8 +297,10 @@ export const CATEGORY_IMAGES = {
 
 
 
-export const LATEST_APP_VERSION = 31;
+export const LATEST_APP_VERSION = 32;
 
 export const MAX_USERS_IN_A_GROUP = 20;
 
 export const GIPHY_KEY = "O7mLvZw6sroUurHDtxZrc3E4RQd4swhj";
+
+export const TWITTER_KEYS = {key:"8vk8ljGu7eT1ctIZGSx3CjAQw", skey:"d7ZsF3zPWnYUGFo1MTJ2IMJoWk0QJlQWsmTWYP9RXBEPVPZR6O"}

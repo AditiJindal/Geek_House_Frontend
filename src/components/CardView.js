@@ -9,6 +9,7 @@ export default class CardView extends React.Component {
   state={cardWidth:0}
 
   imageUrlCorrector(image_url){
+    if (!this.props.image_adder){return ''}
     if (image_url.substring(0,4) !== 'http'){
       image_url = this.props.image_adder + image_url
     }

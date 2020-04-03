@@ -326,7 +326,7 @@ class Search extends Component {
           
           (this.props.doingSearch)?
           <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-            <Loading size={128} white={(this.props.theme!=='light')}/>
+            <Loading size={128} white={(COLORS.THEME!=='light')}/>
           </View>:this.renderPopularSearches()
         }
       </View>

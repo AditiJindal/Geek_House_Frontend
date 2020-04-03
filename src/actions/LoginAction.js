@@ -21,6 +21,7 @@ import { encrypt, decrypt } from '../encryptionUtil';
 import {setJSExceptionHandler, 
   setNativeExceptionHandler} from 'react-native-exception-handler';
 import APP_INFO from '../../package.json';
+import auth from '@react-native-firebase/auth';
 
 const trace = perf().newTrace("get_data_async_storage");
 var timer = null;
@@ -409,12 +410,17 @@ export const loginGoogle = () => {
       forceConsentPrompt: true
     });
     GoogleSignin.signIn().then(async (response)=>{
+      const {idToken, accessToken} = await GoogleSignin.getTokens();
+      const credential = auth.GoogleAuthProvider.credential(idToken, accessToken)
+      auth().signInWithCredential(credential)
+      
       pushToken = await getFCMToken()
       let new_data = {
-        id: response.user.id+'google',
+        id: response.user.id,
+        provider: credential.providerId,
         name: response.user.name, 
         email: response.user.email,
-        image_url: response.user.photo,//response.user.photoURL,
+        image_url: response.user.photo, //response.user.photoURL,
         pushToken: pushToken
       };
 
@@ -447,7 +453,8 @@ export const loginGoogle = () => {
         }
       ).catch(e=>{
         dispatch({type:ACTIONS.LOADING_GOOGLE, payload:false})})
-    }).catch(e=>{
+        // console.log("RESPONE : ", response)
+      }).catch(e=>{
       dispatch({type:ACTIONS.LOADING_GOOGLE, payload:false})})
   }
 }
@@ -467,11 +474,16 @@ export const loginFacebook = () => {
 
           fetch(`https://graph.facebook.com/${userId}?fields=email,picture.type(large),name&access_token=${token}`).then(
             (response) => {
+
+              const credential = auth.FacebookAuthProvider.credential(token);
+              auth().signInWithCredential(credential).catch(()=>{});
+
               response.json().then(
                 async (data) => {
                   pushToken = await getFCMToken()
                   let new_data = {
-                    id: data.id+'facebook', 
+                    id: data.id,
+                    provider: credential.providerId,
                     name:data.name, 
                     email:data.email, 
                     image_url:data.picture.data.url,

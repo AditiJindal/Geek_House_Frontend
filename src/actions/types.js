@@ -16,6 +16,8 @@ export const ACTIONS={
     HOME_ERROR: 'home.error',
     HOME_LOADING: 'home.loading',
     HOME_CHANGE_CATEGORY: 'home.change_category',
+    EXPLORE_SEARCH_LOADING: 'home.explore_search_loading',
+    EXPLORE_SEARCH: 'home.explore_search',
 
     // SEARCH
     SEARCH_LOADING: 'search.loading',
@@ -26,6 +28,7 @@ export const ACTIONS={
     DO_SEARCH: 'search.do_search',
     SHOW_SEARCH_ALERT: 'search.show_alert',
     CLEAR_SEARCH: 'search.clear_search',
+    CATEGORY_SEARCH: 'search.category_search',
 
     // ARTICLE_INFO
     GET_ARTICLE_INFO: 'articleInfo.get',

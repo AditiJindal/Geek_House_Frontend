@@ -8,7 +8,11 @@ const INITIAL_STATE={
   selected_category: '',
   image_adder:"",
   adsManager: null,
-  shouldSendPhotos: false
+  shouldSendPhotos: false,
+
+  exploreLoading: true,
+  exploreCategory: null,
+  exploreData: {},
 }
 
 export default (state=INITIAL_STATE, action) => {
@@ -34,6 +38,13 @@ export default (state=INITIAL_STATE, action) => {
 
     case ACTIONS.CHAT_SOCKET_CHANGE_CATEGORY:
       return {...state, selected_category:action.payload}
+
+    case ACTIONS.EXPLORE_SEARCH_LOADING:
+      return {...state, exploreLoading:true}
+    
+    case ACTIONS.EXPLORE_SEARCH:
+      return {...state, exploreData:action.payload.data, 
+        exploreCategory:action.payload.exploreCategory, exploreLoading:false}
 
     default:
       return state;
