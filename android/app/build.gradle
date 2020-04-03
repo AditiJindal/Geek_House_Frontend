@@ -143,8 +143,8 @@ android {
         applicationId "com.tjproductions.geekhousern"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 31
-        versionName "1.14.0"
+        versionCode 32
+        versionName "1.15.0"
         manifestPlaceholders = [
             appAuthRedirectScheme: 'io.identityserver.demo'
         ]
@@ -228,6 +228,7 @@ android {
 }
 
 dependencies {
+    implementation project(':@react-native-firebase_auth')
     implementation project(':@react-native-community_cameraroll')
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-push-notification')

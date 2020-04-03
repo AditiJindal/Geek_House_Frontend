@@ -4,8 +4,10 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
 import com.microsoft.codepush.react.CodePush;
-import com.reactnativecommunity.cameraroll.CameraRollPackage;
+import com.reactnativecommunity.cameraroll.CameraRollPackage;
+
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import io.invertase.firebase.ml.naturallanguage.ReactNativeFirebaseMLNaturalLanguagePackage;
