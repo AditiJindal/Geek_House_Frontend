@@ -51,7 +51,7 @@ class Explore extends React.PureComponent{
           borderRadius:10, elevation:7, alignSelf:'center'}}>
           <ImageBackground
             source={CATEGORY_IMAGES[exploreCategory]}
-            style={{flex:1}} resizeMode={"cover"} blurRadius={2}>
+            style={{flex:1}} resizeMode={"cover"}>
             <View style={{flex:1, backgroundColor:"rgba(60,60,60,0.35)", justifyContent:"center",
               alignItems:'center'}}>
               <Text style={styles.CategoryText}>{exploreCategory}</Text>

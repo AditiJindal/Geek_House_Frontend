@@ -12,6 +12,7 @@ import TimedAlert from '../components/TimedAlert';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from '@react-native-community/image-editor';
 import ImageSelector from './ImageSelector';
+import Avatar from './Avatar';
 import {Menu, MenuOptions, MenuOption, 
   MenuTrigger, MenuProvider} from 'react-native-popup-menu';
 import {modifyAdmins, leaveGroup, uploadGroupImage, chatInfoGroupDetailsUpdateAction,
@@ -21,7 +22,7 @@ import {modifyAdmins, leaveGroup, uploadGroupImage, chatInfoGroupDetailsUpdateAc
 const overlayWidth = Dimensions.get('screen').width*0.86
 
 const imageUrlCorrector = (image_url, image_adder) => {
-  if (!this.props.image_adder){return ''}
+  if (!image_adder){return ''}
   if (image_url.substring(0,4) !== 'http'){
     image_url = image_adder + image_url
   }
@@ -121,14 +122,16 @@ class ChatInfo extends Component {
 
   chatPeopleComponentHelper(user){
     const {image_url, name, isAdmin, _id} = user
+    const {COLORS} = this.props;
     return (      
       <View style={{flex:1, flexDirection:'row', alignItems:'center', justifyContent:'space-between',
         paddingHorizontal:15}}>
         <View style={{flexDirection:'row', alignItems:'center'}}>
-          <View style={{height:48, width:48, borderRadius:24, overflow:'hidden', elevation:7, backgroundColor:COLORS.LIGHT}}>
-            <Image source={{uri:imageUrlCorrector(image_url, this.props.image_adder)}} 
-              style={{flex:1}}/>
-          </View>
+          <Avatar
+            size={48}
+            COLORS={COLORS}
+            uri={imageUrlCorrector(image_url, this.props.image_adder)}
+          />
           <Text style={{fontFamily:FONTS.PRODUCT_SANS, color:COLORS.DARK, fontSize:16, marginLeft:5}}>
             {name}
           </Text>

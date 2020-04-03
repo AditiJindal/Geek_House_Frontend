@@ -22,6 +22,7 @@ import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 import ImageSelector from '../components/ImageSelector';
 import TimedAlert from '../components/TimedAlert';
+import Avatar from '../components/Avatar';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from '@react-native-community/image-editor';
 
@@ -219,23 +220,15 @@ class Settings extends Component {
     const {COLORS, data} = this.props;
 
     return(
-      <TouchableOpacity 
-          onPress={()=>{
-            this.imageSelector.showImageSelector(this.pickImage.bind(this))
-          }} disabled={this.props.profile_pic_loading}
-          style={{margin:10, backgroundColor:COLORS.LIGHT,
-            elevation:8, borderRadius:32, overflow:'hidden'}}>
-          {
-            (this.props.profile_pic_loading)?(
-              <Loading size={64} white={(this.props.theme!=='light')}/>
-            ):(
-              <Image
-                source={{uri:this.imageUrlCorrector(data.image_url)}}
-                style={{height:64, width:64}}
-              />
-            )
-          }                       
-        </TouchableOpacity>
+      <View style={{margin:10}}>
+        <Avatar
+          size={64}
+          COLORS={COLORS}
+          uri={this.imageUrlCorrector(data.image_url)}
+          onPress={()=>{this.imageSelector.showImageSelector(this.pickImage.bind(this))}}
+          loading={this.props.profile_pic_loading}
+        />
+      </View>
     )
   }
 

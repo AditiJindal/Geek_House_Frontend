@@ -8,6 +8,7 @@ import TimeAgo from 'react-native-timeago';
 import SView from 'react-native-simple-shadow-view';
 import toMaterialStyle from 'material-color-hash';
 import ImageViewer from './ImageViewer';
+import Avatar from '../components/Avatar';
 
 const screenWidth = Dimensions.get('screen').width
 
@@ -67,7 +68,7 @@ const getRecentMessage = (message) => {
 }
 
 const imageUrlCorrector = (image_url, image_adder) => {
-  if (!this.props.image_adder){return ''}
+  if (!image_adder){return ''}
   if (image_url.substring(0,4) !== 'http'){
     image_url = image_adder + image_url
   }
@@ -128,16 +129,15 @@ export default class ChatPeople extends React.Component{
             borderTopLeftRadius:IMAGE_SIZE/4}}/>
           ):null}
           <View style={{justifyContent:'center', flexDirection:'row', alignItems:'center',}}>
-            <TouchableOpacity style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE/2,
-                backgroundColor:COLORS.LIGHT, elevation:7, marginVertical:10}}
-                onPress={()=>this.setState({imageViewerActive:true})} activeOpacity={0.65}>
-              <Image
-                source={(data.image_url)?
-                  {uri:imageUrlCorrector(data.image_url, image_adder)}:
-                  require('../../assets/icons/user.png')} style={{borderRadius:IMAGE_SIZE/2, flex:1}}
+            <View style={{marginVertical:10}}>
+              <Avatar
+                size={IMAGE_SIZE}
+                onPress={()=>this.setState({imageViewerActive:true})}
+                COLORS={COLORS}
+                uri={imageUrlCorrector(data.image_url, image_adder)}
               />
               {getBadge(this.props)}
-            </TouchableOpacity>
+            </View>
             
             <View style={{marginHorizontal:10, justifyContent:'center', alignItems:'flex-start'}}>
               <Text style={{...styles.TextStyle, 

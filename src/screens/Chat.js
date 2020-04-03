@@ -17,6 +17,7 @@ import SView from 'react-native-simple-shadow-view';
 import ChatPeopleSearch from '../components/ChatPeopleSearch';
 import Loading from '../components/Loading';
 import TimedAlert from '../components/TimedAlert';
+import Avatar from '../components/Avatar';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from '@react-native-community/image-editor';
 import ImageSelector from '../components/ImageSelector';
@@ -156,13 +157,11 @@ class Chat extends Component {
             this.imageSelector.showImageSelector(this.pickImage.bind(this))
           }}
           >
-          {
-            (this.state.newGroupData.group_image)?(
-              <Image source={{uri:this.state.newGroupData.group_image}} style={{height:42, width:42, borderRadius:21}} />
-            ):(
-              <Icon type="feather" name="users" size={22} color={COLORS.LIGHT}/>
-            )
-          }
+          <Avatar
+            size={42}
+            COLORS={COLORS}
+            uri={this.state.newGroupData.group_image}
+          />
         </Ripple>
         <ImageSelector
           COLORS = {this.props.COLORS}

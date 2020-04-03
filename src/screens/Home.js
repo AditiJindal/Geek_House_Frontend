@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { View, StyleSheet, Text, StatusBar,
-  FlatList, ScrollView, Linking, Dimensions,
+  FlatList, ScrollView, Linking,
   TouchableOpacity}from 'react-native';
 import {connect} from 'react-redux';
 import {
@@ -31,9 +31,7 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 import ArticleTileAds from '../components/ArticleTileAds';
-import ImageViewer from '../components/ImageViewer';
-
-const screenWidth = Dimensions.get('screen').width
+import Avatar from '../components/Avatar';
 
 const OVERLAY_WIDTH_PERCENT=75
 class Home extends Component {
@@ -41,7 +39,6 @@ class Home extends Component {
 
   constructor() {
     super();
-    this.state={imageViewerActive: false}
     this.slides = [];
   }
 
@@ -138,7 +135,6 @@ class Home extends Component {
 
   renderOverlay(){
     const {COLORS, loading, theme} = this.props;
-    const {imageViewerActive} = this.state
     const isUpdateAvailable = this.props.welcomeData.latestVersion>LATEST_APP_VERSION
     return (
       <Overlay isVisible={this.props.overlayVisible}
@@ -148,24 +144,14 @@ class Home extends Component {
         width={`${OVERLAY_WIDTH_PERCENT}%`}
         height="auto">
         <>
-          <ImageViewer
-            isVisible={imageViewerActive}
-            onClose = {()=>this.setState({imageViewerActive:false})}
-            COLORS={COLORS}
-            imageWidth={screenWidth*0.92}
-            imageHeight={screenWidth*0.92}
-            source={{uri:this.imageUrlCorrector(this.props.data.image_url)}}
-          />
           <View style={{justifyContent:'space-around', alignItems:'center', flexDirection:'row', 
             backgroundColor:COLORS.LIGHT}}>
             {(!loading)?(
-            <TouchableOpacity
-              onPress={()=>this.setState({imageViewerActive:true})}>
-              <Image
-                source={{uri:this.imageUrlCorrector(this.props.data.image_url)}}
-                style={{marginRight:10, marginBottom:15, height:64, width:64, borderRadius:32,elevation:7}}
-              />
-            </TouchableOpacity>
+            <Avatar
+              size={64}
+              COLORS={COLORS}
+              uri={this.imageUrlCorrector(this.props.data.image_url)}
+            />
             ):
             (
               <View style={{height:42, width:42, justifyContent:'center', alignItems:'center'}}>
@@ -297,12 +283,15 @@ class Home extends Component {
           {
             (isUpdateAvailable)?(
               <View style={{height:10, width:10, borderRadius:5, borderColor:COLORS.LESS_LIGHT, borderWidth:1,
-              position:'absolute', top:0, right:0, backgroundColor:COLORS.YELLOW, zIndex:10}}/>
+              position:'absolute', top:1, right:1, backgroundColor:COLORS.YELLOW, elevation:6}}/>
             ):(null)
           }
-          <Image
-            source={{uri:this.imageUrlCorrector(this.props.data.image_url)}}
-            style={{height:42, width:42, borderRadius:24}}/>
+          <Avatar
+            size={42}
+            COLORS={COLORS}
+            uri={this.imageUrlCorrector(this.props.data.image_url)}
+            onPress={()=>this.props.toggleOverlay({overlayVisible:true})}
+          />
         </TouchableOpacity>
       )
     }

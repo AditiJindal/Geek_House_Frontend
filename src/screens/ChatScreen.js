@@ -13,6 +13,7 @@ import {sendMessage, checkMessagesObject, sendTyping, clearOtherUserData, setAut
 import Image from 'react-native-fast-image';
 import TimedAlert from '../components/TimedAlert';
 import ChatInfo from '../components/ChatInfo';
+import Avatar from '../components/Avatar';
 
 class ChatScreen extends Component {
 
@@ -98,31 +99,27 @@ class ChatScreen extends Component {
 
     const {COLORS, other_user_data} = this.props;
     return (
-      <TouchableOpacity style={{marginLeft:10, backgroundColor:COLORS.LIGHT, elevation:4,
-        borderRadius:24}} 
-        onPress={this.handleChatInfo}>
-          <Image
-            source={
-              (other_user_data.image_url)?
-              {uri:this.imageUrlCorrector(other_user_data.image_url)}:
-              require('../../assets/icons/user.png')
-            }
-            style={{height:48, width:48, borderRadius:24}}
-          />
-          {
-            (!other_user_data.newEntry && !other_user_data.isGroup
-            && this.props.status.hasOwnProperty(other_user_data._id) 
-            && this.props.status[other_user_data._id].online)?
-            (
-              <Badge
-                status="success"
-                containerStyle={{ position: 'absolute', top: 0, right: 2}}
-                badgeStyle={{height:10, width:10, borderRadius:5,
-                borderWidth:0.7, borderColor:COLORS.LIGHT}}
-              />
-            ):null
-          }
-      </TouchableOpacity>
+      <View>
+        <Avatar
+          size={48}
+          COLORS={COLORS}
+          uri={this.imageUrlCorrector(other_user_data.image_url)}
+          onPress={this.handleChatInfo}
+        />
+        {
+          (!other_user_data.newEntry && !other_user_data.isGroup
+          && this.props.status.hasOwnProperty(other_user_data._id) 
+          && this.props.status[other_user_data._id].online)?
+          (
+            <Badge
+              status="success"
+              containerStyle={{ position: 'absolute', top: 2, right: 2}}
+              badgeStyle={{height:10, width:10, borderRadius:5,
+              borderWidth:1, borderColor:COLORS.LIGHT}}
+            />
+          ):null
+        }
+      </View>
     )
   }
 
