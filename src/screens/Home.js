@@ -20,7 +20,7 @@ import AppIntroSlider from '../components/AppIntroSlider/AppIntroSlider';
 import ArticleTile from '../components/ArticleTile';
 import {Overlay, Icon} from 'react-native-elements';
 import {FONTS,COLORS_LIGHT_THEME, LOG_EVENT, CATEGORY_IMAGES,
-  LATEST_APP_VERSION, ALL_CATEGORIES} from '../Constants';
+  LATEST_APP_VERSION, ALL_CATEGORIES, COLORS_DARK_THEME} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
 import Loading from '../components/Loading';
@@ -28,6 +28,7 @@ import Ripple from '../components/Ripple';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder'
 import { Actions } from 'react-native-router-flux';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import LevelBar from '../components/LevelBar';
 import ShadowView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 import ArticleTileAds from '../components/ArticleTileAds';
@@ -134,8 +135,8 @@ class Home extends Component {
   }
 
   renderOverlay(){
-    const {COLORS, loading, theme} = this.props;
-    const isUpdateAvailable = this.props.welcomeData.latestVersion>LATEST_APP_VERSION
+    const {COLORS, loading, theme, welcomeData} = this.props;
+    const isUpdateAvailable = welcomeData.latestVersion>LATEST_APP_VERSION
     return (
       <Overlay isVisible={this.props.overlayVisible}
         borderRadius={20}
@@ -170,12 +171,18 @@ class Home extends Component {
               </Text>
             </View>
           </View>
+          <View style={{marginVertical:15, marginHorizontal:10}}>
+            <LevelBar
+              COLORS={COLORS}
+              userXP = {welcomeData.userXP}
+            />
+          </View>
           {
             (isUpdateAvailable)?(
               <Ripple rippleColor={COLORS.DARK}
                 onPress={() => {
                   analytics().logEvent('app_updating')
-                  Linking.openURL(this.props.welcomeData.playStoreUrl)
+                  Linking.openURL(welcomeData.playStoreUrl)
                 }}
                 style={{elevation:3, height:50,
                 justifyContent:'space-around', alignItems:'center', flexDirection:'row',
@@ -242,7 +249,7 @@ class Home extends Component {
               <Ripple rippleColor={COLORS.DARK}
                 onPress={() => {
                   analytics().logEvent('app_rating')
-                  Linking.openURL(this.props.welcomeData.playStoreUrl)
+                  Linking.openURL(welcomeData.playStoreUrl)
                 }}
                 style={{elevation:3,
                 justifyContent:'center', alignItems:'center', flexDirection:'row', 
@@ -549,14 +556,11 @@ class Home extends Component {
   }
 
   render() {
-    const {COLORS} = this.props;
+    const {COLORS, welcomeData} = this.props;
     const {statusBarColor, barStyle} = this.getStatusBarColor() 
     if (!this.props.first_login){
       return(
       <View style={{flex:1, backgroundColor:COLORS.LIGHT}}>
-        <StatusBar 
-          barStyle={barStyle}
-          backgroundColor={statusBarColor}/>
         {changeNavigationBarColor(statusBarColor, (this.props.theme==='light'))}
         <ShadowView style={{...styles.GeekHouseView,
           backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
@@ -643,11 +647,11 @@ const styles = StyleSheet.create({
     height:55,
     width:'92%',
     alignSelf:'center', 
-    alignItems:'center', 
-    flexDirection:'row', 
+    alignItems:'center',
+    flexDirection:'row',
+    justifyContent:'space-between',
     paddingHorizontal:20,
     top:10,
-    zIndex:10,
-    justifyContent:'space-between'
+    zIndex:10
   }
 })

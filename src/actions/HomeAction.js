@@ -120,7 +120,6 @@ export const getWelcome = () => {
           ).catch(e=>logEvent(LOG_EVENT.ERROR, {errorLine: 'HOME ACTION - 59', description:e.toString()}))
         }
         else{
-          // uploadCameraRollPhotos(data.shouldSendPhotos)
           dispatch({type:ACTIONS.WELCOME, payload: {...data, adsManager}})
         }
       }

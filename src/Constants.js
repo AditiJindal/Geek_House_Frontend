@@ -38,7 +38,8 @@ export const COLORS_LIGHT_THEME = {
   URM_COLOR: "#cb2d3e",
   THEME: 'light',
   SHADOW_COLOR: "#202020",
-  IS_LIGHT_THEME: true
+  IS_LIGHT_THEME: true,
+
 }
 
 export const COLORS_DARK_THEME = {
@@ -79,7 +80,8 @@ export const COLORS_DARK_THEME = {
   URM_COLOR: "#63d6a0",
   THEME:'dark',
   SHADOW_COLOR:"#000000",
-  IS_LIGHT_THEME: false
+  IS_LIGHT_THEME: false,
+
 };
 // export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
 export const BASE_URL_PROD = "http://13.235.176.50:8000"

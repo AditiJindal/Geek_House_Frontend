@@ -147,7 +147,7 @@ class Login extends Component {
         <View style={{flex:2, justifyContent:'center', alignItems:'center', flexWrap:'wrap', paddingHorizontal:80}}>
           <Image
             style={{height:200, width:200}}
-            source={require('../../assets/images/loginIcon.png')}
+            source={require('../../assets/images/logo_light.png')}
           />
           {
             (this.props.loading)?null:
