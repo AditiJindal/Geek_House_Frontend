@@ -48,9 +48,11 @@ class GiphyView extends React.Component {
               ):null
           }
         </View>
-        <Text style={{...styles.PBGText, color: COLORS.GRAY}}>
-          powered by GIPHY
-        </Text>
+
+        <Image
+          source={require("../../assets/images/giphy.png")}
+          style={{height:13, width:100}}
+        />
       </View>
     );
   }

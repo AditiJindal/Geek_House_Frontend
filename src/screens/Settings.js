@@ -9,7 +9,7 @@ import {setAuthToken, getSettingsData, settingsChangeFavouriteCategory,
   changeChatWallpaper, changeBlurRadius, changeName, revertName, changeImageUrl,
   } from '../actions/SettingsAction';
 import { Actions } from 'react-native-router-flux';
-import Image from 'react-native-fast-image';
+import LevelBar from '../components/LevelBar';
 import Ripple from '../components/Ripple';
 import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT,ALL_CATEGORIES } from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
@@ -251,7 +251,7 @@ class Settings extends Component {
   }
 
   renderUserInfo(){
-    const {COLORS, data} = this.props;
+    const {COLORS, data, welcomeData} = this.props;
 
     return (
       <SView style={{
@@ -269,6 +269,24 @@ class Settings extends Component {
               {data.email}
             </Text>
           </View>
+        </View>
+        <View style={{paddingHorizontal:10, marginBottom:10}}>
+          <LevelBar
+            COLORS={COLORS}
+            userXP = {welcomeData.userXP}
+          />
+          <Ripple rippleContainerBorderRadius={7} onPress={()=>{Actions.rewards()}}>
+              <LinearGradient style={{flex:1, justifyContent:'center', alignItems:'center', marginTop:10,
+                paddingVertical:7, borderRadius:7, elevation:7, backgroundColor:COLORS.LIGHT,
+                flexDirection:'row'}} colors={["#ad5389", "#3c1053"]} start={{x:0, y:1}} end={{x:1, y:1}}>
+                <Text style={{fontFamily:FONTS.GOTHAM_BLACK, color:COLORS_LIGHT_THEME.LIGHT, fontSize:18}}>
+                  XP
+                </Text>
+                <Text style={{fontFamily:FONTS.HELVETICA_NEUE, color:COLORS_LIGHT_THEME.LIGHT, fontSize:14, marginLeft:10, marginTop:2}}>
+                  View experience perks
+                </Text>
+              </LinearGradient>
+          </Ripple>
         </View>
         <View style={{height:15, justifyContent:'center', alignItems:'center', 
           backgroundColor:COLORS.DARK_GRAY, flex:1, 
@@ -609,6 +627,7 @@ const mapStateToProps = (state) => {
     internetReachable: state.login.internetReachable,
 
     image_adder: state.home.image_adder,
+    welcomeData: state.home.welcomeData,
 
     loading: state.settings.loading,
     fav_category: state.settings.fav_category,

@@ -14,9 +14,9 @@ const LevelBar = (props) => {
 
   return (
     <View style={{width:"100%", height:28, justifyContent:'center', paddingLeft:24, paddingRight:42}}>
-      <View style={{ width:"100%", height:10, backgroundColor:COLORS.LESSER_LIGHT, elevation:4}}>
-        <LinearGradient style={{width:`${widthPercent}%`, flex:1, borderRadius:2.5}}
-          colors={[COLORS.THEME1, COLORS.THEME2]} start={{x:0, y:1}} end={{x:1, y:1}}/>
+      <View style={{ width:"100%", height:20, backgroundColor:COLORS.LESSER_LIGHT, elevation:4}}>
+        <LinearGradient style={{width:`${widthPercent}%`, flex:1, borderTopRightRadius:5, borderBottomRightRadius:5}}
+          colors={[COLORS.GRADIENT_BLUE1, COLORS.GRADIENT_BLUE2]} start={{x:0, y:1}} end={{x:1, y:1}}/>
       </View>
       <View style={{borderRadius:14, height:28, width:28, justifyContent:'center', 
         alignItems:'center', backgroundColor:COLORS.LESSER_LIGHT, position:'absolute', elevation:5}}>

@@ -397,7 +397,7 @@ class ArticleInfo extends Component {
           }}
         >
           <LinearGradient style={{width:"100%", height:"100%",
-            borderTopLeftRadius:BORDER_RADIUS,
+            borderTopLeftRadius:BORDER_RADIUS, elevation:7,
               borderTopRightRadius:BORDER_RADIUS,overflow:'hidden'}}
             colors={(this.props.theme==='light')?
               ["rgb(20,20,20)", "rgb(50,50,50)"]:
@@ -429,6 +429,7 @@ class ArticleInfo extends Component {
                 borderRadius: PROFILE_IMAGE_MAX_HEIGHT/2,
                 marginLeft: 16, overflow:'hidden', zIndex:20,
                 backgroundColor:COLORS.LIGHT,
+                elevation:7,
                 transform:[{translateX:imageAnim},{scaleX:scaleToZero},{scaleY:scaleToZero}],
               }}>
               <Animated.Image

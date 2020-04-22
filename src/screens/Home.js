@@ -167,7 +167,7 @@ class Home extends Component {
                 {this.props.data.email}
               </Text>
               <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:11,alignSelf:'flex-end',color:COLORS.GRAY}}>
-                Geek House v1.15.0 A
+                Geek House v1.16.0 A
               </Text>
             </View>
           </View>
@@ -561,6 +561,10 @@ class Home extends Component {
     if (!this.props.first_login){
       return(
       <View style={{flex:1, backgroundColor:COLORS.LIGHT}}>
+        <StatusBar 
+          barStyle={(COLORS.THEME==='light')?'dark-content':'light-content'}
+          backgroundColor={COLORS.LIGHT}/>
+        {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
         {changeNavigationBarColor(statusBarColor, (this.props.theme==='light'))}
         <ShadowView style={{...styles.GeekHouseView,
           backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>

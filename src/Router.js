@@ -17,6 +17,7 @@ import NotificationArticle from './screens/NotificationArticle';
 import Policy from './screens/Policy';
 import Explore from './screens/Explore';
 import BottomTab from './components/BottomTab';
+import Rewards from './screens/Rewards';
 
 import { COLORS_DARK_THEME } from './Constants';
 
@@ -43,6 +44,7 @@ const RouterComponent = () => {
             <Scene key="publish" component={Publish} hideNavBar/>
             <Scene key="chatscreen" component={ChatScreen} hideNavBar/>
             <Scene key="settings" component={Settings} hideNavBar/>
+            <Scene key="rewards" component={Rewards} hideNavBar/>
             <Scene key="explore" component={Explore} hideNavBar/>
             <Scene key="feedback" component={Feedback} hideNavBar/>
             <Scene key="bookmark" component={Bookmark} hideNavBar/>

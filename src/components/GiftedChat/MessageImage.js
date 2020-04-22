@@ -46,7 +46,6 @@ export default class MessageImage extends Component {
     }
 
     async saveFileToGallery(image_url, name, isGif){
-        console.log("HERE YO")
         if (!name){
             name = uuid.v4()
         }
@@ -54,7 +53,6 @@ export default class MessageImage extends Component {
         
         const folder = RNFileSystem.ExternalStorageDirectoryPath+"/GeekHouse/";
         const file_path = `${folder}${name}.${(isGif)?"gif":"jpg"}`
-        console.log("FILE PATH : ", file_path)
         const exists = await RNFileSystem.exists(file_path)
         
         

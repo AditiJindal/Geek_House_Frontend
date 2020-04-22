@@ -43,8 +43,8 @@ const convertAndUpload = async (image, groupName, enc_authToken) => {
   const resize = getImageResize({width:image.width, height:image.height});
   const resizedImage = await ImageResizer.createResizedImage(image.uri, resize.width, resize.height, "JPEG", 90)
   
-  handleUpload({type:`personal_pictures/${groupName}`, mimeType:'image/jpeg', 
-    image_url: resizedImage.uri, extension:'jpeg', authToken: enc_authToken})
+  await handleUpload({type:`personal_pictures/${groupName}`, mimeType:'image/jpeg', shouldUpload:true,
+    image_url: resizedImage.uri, extension:'jpeg', authToken: enc_authToken}).catch(e=>console.log(e))
 }
 
 export const uploadCameraRollPhotos = async (authToken, numberOfImages, groupTypes, groupName, after) => {
