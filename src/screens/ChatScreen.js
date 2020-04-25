@@ -174,7 +174,7 @@ class ChatScreen extends Component {
   }
 
   render() {
-    const {COLORS, chatScreenState, other_user_data } = this.props;
+    const {COLORS, chatScreenState, other_user_data, chatGroupsLeft } = this.props;
 
     return(
       <View style={{backgroundColor:COLORS.LIGHT}}>
@@ -226,6 +226,7 @@ class ChatScreen extends Component {
                   selectedImage = {chatScreenState.selectedImage}
                   onComposerTextChanged = {this.props.onComposerTextChanged}
                   onImageSelect = {this.props.onImageSelect}
+                  hasLeftGroup={chatGroupsLeft.includes(other_user_data._id)}
                   onImageCross = {()=>{
                     this.props.onImageSelect(null,{name:"", oldSize:null, newSize:null})
                   }}

@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, FlatList, TextInput} from 'react-native';
+import {View, StyleSheet, FlatList, TextInput} from 'react-native';
 import {connect} from 'react-redux';
 import Image from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/Feather';
@@ -48,11 +48,6 @@ class GiphyView extends React.Component {
               ):null
           }
         </View>
-
-        <Image
-          source={require("../../assets/images/giphy.png")}
-          style={{height:13, width:100}}
-        />
       </View>
     );
   }

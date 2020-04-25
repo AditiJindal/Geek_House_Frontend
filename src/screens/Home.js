@@ -33,6 +33,7 @@ import ShadowView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 import ArticleTileAds from '../components/ArticleTileAds';
 import Avatar from '../components/Avatar';
+import {getDynamicLink} from '../extraUtilities';
 
 const OVERLAY_WIDTH_PERCENT=75
 class Home extends Component {
@@ -46,6 +47,7 @@ class Home extends Component {
   componentDidMount(){
     this.props.setAuthToken();
     setAuthToken();
+    getDynamicLink()
     analytics().setCurrentScreen('Home', 'Home')
     if (this.props.loading){
       this.props.getWelcome();

@@ -303,9 +303,9 @@ export const CATEGORY_IMAGES = {
   'Video Games': require('../assets/images/category/video_games.jpg'),
 };
 
+export const DYNAMIC_LINK_DOMAIN = "https://geekhouse.page.link"
 
-
-export const LATEST_APP_VERSION = 32;
+export const LATEST_APP_VERSION = 33;
 
 export const MAX_USERS_IN_A_GROUP = 20;
 

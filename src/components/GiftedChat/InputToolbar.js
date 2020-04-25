@@ -269,6 +269,7 @@ export default class InputToolbar extends React.Component {
     }
 
     render() {
+        if (this.props.hasLeftGroup){return null}
         return (<View style={[
             styles.container,
             this.props.containerStyle,

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { View, Text, StyleSheet, StatusBar,
+import { View, Text, StyleSheet, StatusBar, Share,
   Animated, TextInput,Dimensions, TouchableOpacity} from 'react-native';
 import _ from 'lodash';
 import {connect} from 'react-redux';
@@ -14,6 +14,7 @@ import NativeAdsComponent from './NativeAdsComponent';
 import Image from 'react-native-fast-image';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import TimedAlert from './TimedAlert';
+import Ripple from './Ripple';
 
 const screenWidth = Dimensions.get('screen').width
 const OVERLAY_WIDTH_PERCENT=88
@@ -174,25 +175,41 @@ class ArticleInfo extends Component {
   }
 
   renderOptions(){
-    const {COLORS} = this.props;
+    const {COLORS, selectedArticleInfo} = this.props;
 
     if ((this.props.article_id===-1) || this.props.selectedArticleInfo.my_article || this.props.selectedArticleInfo.cannotComment){
       return null;
     }
     const { bookmarked } = this.props.selectedArticleInfo;
     return(
-      <TouchableOpacity style={{borderColor:(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK,
-        paddingHorizontal:15,borderWidth:1.2, paddingVertical:10, borderRadius:10,
-        alignItems:'center', flexDirection:'row', width:130, justifyContent:'space-evenly',
-        alignSelf:'flex-start', marginVertical:10, marginLeft:20, elevation:7, backgroundColor:COLORS.LIGHT}}
-        onPress = {()=>{this.props.bookmarkArticle(this.props.article_id, bookmarked)}}>
-        <Icon name={(bookmarked)?"bookmark":"bookmark-border"} type="material" 
-        size={20} color={(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK}/>
-        <Text style={{fontFamily:FONTS.RALEWAY, color:(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK,
-        fontSize:(bookmarked)?10.5:13}}>
-          {(bookmarked)?'Bookmarked':'Bookmark'}
-        </Text>
-      </TouchableOpacity>
+      <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center', marginTop:15}}>
+        <Ripple rippleContainerBorderRadius={7} style={{borderColor:(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK,
+          borderWidth:1.2, paddingVertical:10, borderRadius:7,
+          alignItems:'center', flexDirection:'row', width:130, justifyContent:'space-evenly',
+          alignSelf:'flex-start', marginVertical:10, elevation:4, backgroundColor:COLORS.LIGHT}}
+          onPress = {()=>{this.props.bookmarkArticle(this.props.article_id, bookmarked)}}>
+          <Icon name={(bookmarked)?"bookmark":"bookmark-border"} type="material" 
+          size={20} color={(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK}/>
+          <Text style={{fontFamily:FONTS.RALEWAY, color:(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK,
+          fontSize:(bookmarked)?10.5:13}}>
+            {(bookmarked)?'Bookmarked':'Bookmark'}
+          </Text>
+        </Ripple>
+        <TouchableOpacity activeOpacity={1} style={{borderColor:COLORS.GREEN,
+          paddingHorizontal:15,borderWidth:1.2, paddingVertical:10, borderRadius:7,
+          alignItems:'center', flexDirection:'row', width:130, justifyContent:'space-evenly',
+          alignSelf:'flex-start', marginVertical:10, marginLeft:20, elevation:4, backgroundColor:COLORS.GREEN}}
+          onPress = {()=>{
+            Share.share({message:`View my article on ${selectedArticleInfo.topic} in Geek House using this link ${selectedArticleInfo.dynamicLink}`})
+          }}>
+          <Icon name={"share"} type="material" 
+            size={20} color={COLORS.LIGHT}/>
+          <Text style={{fontFamily:FONTS.RALEWAY, color:COLORS.LIGHT,
+          fontSize:13}}>
+            Share
+          </Text>
+        </TouchableOpacity>
+      </View>
     )
   }
 

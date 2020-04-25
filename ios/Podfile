@@ -65,6 +65,8 @@ target 'Geek_House' do
 
   pod 'RNFBAuth', :path => '../node_modules/@react-native-firebase/auth'
 
+  pod 'RNFBDynamicLinks', :path => '../node_modules/@react-native-firebase/dynamic-links'
+
   target 'Geek_HouseTests' do
     inherit! :search_paths
     # Pods for testing

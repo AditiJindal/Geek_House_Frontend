@@ -195,6 +195,15 @@ export default class MessageContainer extends React.PureComponent {
 
     render() {
         const {COLORS} = this.props;
+        let BOTTOM_PADDING = 80;
+
+        if (this.props.selectedImage){
+            BOTTOM_PADDING = 195
+        }
+        if (this.props.hasLeftGroup){
+            BOTTOM_PADDING = 20
+        }
+
         if (!this.props.messages ||
             (this.props.messages && this.props.messages.length === 0)) {
             return null;
@@ -229,7 +238,7 @@ export default class MessageContainer extends React.PureComponent {
             }
             ListHeaderComponent={<View>
                 {this.renderQuickReplies()}
-                <View style={{height:(this.props.selectedImage)?195:80,
+                <View style={{height:BOTTOM_PADDING,
                 justifyContent:'flex-start', alignItems:'center'}}/>
             </View>}
             scrollEventThrottle={100} 
