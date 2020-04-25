@@ -4,26 +4,24 @@ import {createStore, applyMiddleware} from 'redux';
 import ReduxThunk from 'redux-thunk';
 import reducers from './src/reducers';
 import RouterComponent from './src/Router';
-import PushNotification from "react-native-push-notification";
-import codePush from 'react-native-code-push'
+import PushNotification from 'react-native-push-notification';
+import codePush from 'react-native-code-push';
 
-
-PushNotification.cancelAllLocalNotifications()
+PushNotification.cancelAllLocalNotifications();
 export const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
-console.disableYellowBox = true
-class App extends Component{
-
-  constructor(){
+console.disableYellowBox = true;
+class App extends Component {
+  constructor() {
     super();
   }
 
-  render(){
+  render() {
     return (
       <Provider store={store}>
-        <RouterComponent/>
+        <RouterComponent />
       </Provider>
     );
-  };
+  }
 }
 
 const codePushOptions = {

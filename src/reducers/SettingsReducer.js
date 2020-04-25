@@ -5,7 +5,7 @@ const INITIAL_STATE = {
   settingsData: {},
   fav_category: '',
   gotSettingsData: false,
-  profile_pic_loading:false
+  profile_pic_loading: false,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -26,10 +26,10 @@ export default (state = INITIAL_STATE, action) => {
       return {...state, loading: true};
 
     case ACTIONS.LOGOUT:
-      return {...INITIAL_STATE}
+      return {...INITIAL_STATE};
 
     case ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING:
-        return {...state, profile_pic_loading:action.payload}
+      return {...state, profile_pic_loading: action.payload};
 
     default:
       return state;

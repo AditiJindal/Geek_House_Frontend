@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, StatusBar, StyleSheet, ScrollView, TextInput} from 'react-native';
 import { connect } from 'react-redux';
 import {logout} from '../actions/HomeAction';
-import {logEvent} from '../actions/ChatAction';
 import Loading from '../components/Loading';
 import {setAuthToken, getSettingsData, settingsChangeFavouriteCategory, 
   changeTheme, changeAnimationSettings, changeQuickRepliesSettings, submitName,
@@ -11,7 +10,7 @@ import {setAuthToken, getSettingsData, settingsChangeFavouriteCategory,
 import { Actions } from 'react-native-router-flux';
 import LevelBar from '../components/LevelBar';
 import Ripple from '../components/Ripple';
-import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT,ALL_CATEGORIES } from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME,ALL_CATEGORIES } from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import { Icon } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
@@ -192,8 +191,7 @@ class Settings extends Component {
           activeOpacity={0.4}
           onPress={()=>{
             analytics().setUserProperties({Theme: oppositeTheme});
-            this.props.changeTheme((oppositeTheme));
-            logEvent(LOG_EVENT.CURRENT_VIEW_MODE, oppositeTheme)}}>
+            this.props.changeTheme((oppositeTheme));}}>
           <View style={{paddingVertical:8, borderRadius:8, borderWidth:1,
             backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT,
             borderColor:(this.props.theme==='light')?"#f953c6":"#6DD5FA", 
@@ -415,8 +413,7 @@ class Settings extends Component {
               value = {theme==='dark'}
               onValueChange = {()=>{
                 analytics().setUserProperties({Theme: oppositeTheme});
-                this.props.changeTheme((oppositeTheme));
-                logEvent(LOG_EVENT.CURRENT_VIEW_MODE, oppositeTheme)}}
+                this.props.changeTheme((oppositeTheme));}}
               backgroundActive={COLORS_LIGHT_THEME.GREEN}
               backgroundInactive={COLORS.GRAY}
               circleSize={22}

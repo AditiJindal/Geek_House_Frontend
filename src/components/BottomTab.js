@@ -2,9 +2,8 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import { View, StyleSheet,Text, TouchableOpacity}from 'react-native';
 import {Icon} from 'react-native-elements';
-import {logEvent} from '../actions/ChatAction';
 import LinearGradient from 'react-native-linear-gradient';
-import {ICON_SIZE, SELECTED_ICON_SIZE, FONTS,LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
+import {ICON_SIZE, SELECTED_ICON_SIZE, FONTS, COLORS_LIGHT_THEME} from '../Constants';
 import {Actions} from "react-native-router-flux"
 import Typing from '../components/Typing';
 import SView from 'react-native-simple-shadow-view';
@@ -70,10 +69,10 @@ class BottomTab extends Component {
           // NOTE: SOLVE icon tapping lag issue by making a redux state for bottombar
           // and making it independent from the scene
           this.setState({selectedIcon:index})
-          if (index===0){Actions['home'](); logEvent(LOG_EVENT.SCREEN_CHANGE, 'home')}  
-          if (index===1){Actions['search'](); logEvent(LOG_EVENT.SCREEN_CHANGE, 'search')}
-          if (index===2){Actions['write'](); logEvent(LOG_EVENT.SCREEN_CHANGE, 'write')}
-          if (index===3){Actions['chat'](); logEvent(LOG_EVENT.SCREEN_CHANGE, 'chat')}
+          if (index===0){Actions['home']()}  
+          if (index===1){Actions['search']()}
+          if (index===2){Actions['write']()}
+          if (index===3){Actions['chat']()}
         }}
         style={{height:40, width:SELECTED_ICON_SIZE+22, justifyContent:'center', alignItems:'center'}}>
           {

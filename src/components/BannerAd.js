@@ -1,10 +1,10 @@
 import React from 'react';
 import {View} from 'react-native';
-import { BannerView } from 'react-native-fbads';
+import {BannerView} from 'react-native-fbads';
 
-const BannerAd = (props) => {
+const BannerAd = props => {
   return (
-    <View style={{elevation:7, overflow:'hidden', borderRadius:8}}>
+    <View style={{elevation: 7, overflow: 'hidden', borderRadius: 8}}>
       <BannerView
         placementId="2458153354447665_2496866597243007"
         type="standard"
@@ -14,6 +14,6 @@ const BannerAd = (props) => {
       />
     </View>
   );
-}
+};
 
-export default BannerAd
+export default BannerAd;

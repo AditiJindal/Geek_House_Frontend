@@ -1,7 +1,14 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { View, Animated, Easing, Platform, TouchableWithoutFeedback, I18nManager } from 'react-native';
-import { styles, radius } from './styles.js';
+import React, {PureComponent} from 'react';
+import {
+  View,
+  Animated,
+  Easing,
+  Platform,
+  TouchableWithoutFeedback,
+  I18nManager,
+} from 'react-native';
+import {styles, radius} from './styles.js';
 
 export default class Ripple extends PureComponent {
   static defaultProps = {
@@ -68,22 +75,22 @@ export default class Ripple extends PureComponent {
   }
 
   onLayout(event) {
-    let { width, height } = event.nativeEvent.layout;
-    let { onLayout } = this.props;
+    let {width, height} = event.nativeEvent.layout;
+    let {onLayout} = this.props;
 
     if ('function' === typeof onLayout) {
       onLayout(event);
     }
 
-    this.setState({ width, height });
+    this.setState({width, height});
   }
 
   onPress() {
-    this.props.onPress()
+    this.props.onPress();
   }
 
   onLongPress(event) {
-    let { onLongPress } = this.props;
+    let {onLongPress} = this.props;
 
     if ('function' === typeof onLongPress) {
       requestAnimationFrame(() => onLongPress(event));
@@ -91,7 +98,7 @@ export default class Ripple extends PureComponent {
   }
 
   onPressIn(event) {
-    let { onPressIn } = this.props;
+    let {onPressIn} = this.props;
 
     if ('function' === typeof onPressIn) {
       onPressIn(event);
@@ -100,7 +107,7 @@ export default class Ripple extends PureComponent {
   }
 
   onPressOut(event) {
-    let { onPressOut } = this.props;
+    let {onPressOut} = this.props;
 
     if ('function' === typeof onPressOut) {
       onPressOut(event);
@@ -109,12 +116,12 @@ export default class Ripple extends PureComponent {
 
   onAnimationEnd() {
     if (this.mounted) {
-      this.setState(({ ripples }) => ({ ripples: ripples.slice(1) }));
+      this.setState(({ripples}) => ({ripples: ripples.slice(1)}));
     }
   }
 
   startRipple(event) {
-    let { width, height } = this.state;
+    let {width, height} = this.state;
     let {
       rippleDuration,
       rippleCentered,
@@ -125,16 +132,17 @@ export default class Ripple extends PureComponent {
     let w2 = 0.5 * width;
     let h2 = 0.5 * height;
 
-    let { locationX, locationY } = rippleCentered?
-      { locationX: w2, locationY: h2 }:
-      event.nativeEvent;
+    let {locationX, locationY} = rippleCentered
+      ? {locationX: w2, locationY: h2}
+      : event.nativeEvent;
 
     let offsetX = Math.abs(w2 - locationX);
     let offsetY = Math.abs(h2 - locationY);
 
-    let R = rippleSize > 0?
-      0.5 * rippleSize:
-      Math.sqrt(Math.pow(w2 + offsetX, 2) + Math.pow(h2 + offsetY, 2));
+    let R =
+      rippleSize > 0
+        ? 0.5 * rippleSize
+        : Math.sqrt(Math.pow(w2 + offsetX, 2) + Math.pow(h2 + offsetY, 2));
 
     let ripple = {
       unique: this.unique++,
@@ -144,49 +152,48 @@ export default class Ripple extends PureComponent {
       R,
     };
 
-    let animation = Animated
-      .timing(ripple.progress, {
-        toValue: 1,
-        easing: Easing.out(Easing.ease),
-        duration: rippleDuration,
-        useNativeDriver: true,
-      });
+    let animation = Animated.timing(ripple.progress, {
+      toValue: 1,
+      easing: Easing.out(Easing.ease),
+      duration: rippleDuration,
+      useNativeDriver: true,
+    });
 
     onRippleAnimation(animation, this.onAnimationEnd);
 
-    this.setState(({ ripples }) => ({ ripples: ripples.concat(ripple) }));
+    this.setState(({ripples}) => ({ripples: ripples.concat(ripple)}));
   }
 
-  renderRipple({ unique, progress, locationX, locationY, R }) {
-    let { rippleColor, rippleOpacity, rippleFades } = this.props;
+  renderRipple({unique, progress, locationX, locationY, R}) {
+    let {rippleColor, rippleOpacity, rippleFades} = this.props;
 
     let rippleStyle = {
       top: locationY - radius,
-      [I18nManager.isRTL? 'right' : 'left']: locationX - radius,
+      [I18nManager.isRTL ? 'right' : 'left']: locationX - radius,
       backgroundColor: rippleColor,
 
-      transform: [{
-        scale: progress.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0.5 / radius, R / radius],
-        }),
-      }],
+      transform: [
+        {
+          scale: progress.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0.5 / radius, R / radius],
+          }),
+        },
+      ],
 
-      opacity: rippleFades?
-        progress.interpolate({
-          inputRange: [0, 1],
-          outputRange: [rippleOpacity, 0],
-        }):
-        rippleOpacity,
+      opacity: rippleFades
+        ? progress.interpolate({
+            inputRange: [0, 1],
+            outputRange: [rippleOpacity, 0],
+          })
+        : rippleOpacity,
     };
 
-    return (
-      <Animated.View style={[styles.ripple, rippleStyle]} key={unique} />
-    );
+    return <Animated.View style={[styles.ripple, rippleStyle]} key={unique} />;
   }
 
   render() {
-    let { ripples } = this.state;
+    let {ripples} = this.state;
     let {
       delayLongPress,
       delayPressIn,
@@ -206,7 +213,7 @@ export default class Ripple extends PureComponent {
       onLongPress,
       onLayout,
       onRippleAnimation,
-      
+
       rippleColor,
       rippleOpacity,
       rippleDuration,
@@ -233,11 +240,9 @@ export default class Ripple extends PureComponent {
       onPress: this.onPress,
       onPressIn: this.onPressIn,
       onPressOut: this.onPressOut,
-      onLongPress: onLongPress?
-        this.onLongPress:
-        undefined,
+      onLongPress: onLongPress ? this.onLongPress : undefined,
 
-      ...('web' !== Platform.OS? { nativeID } : null),
+      ...('web' !== Platform.OS ? {nativeID} : null),
     };
 
     let containerStyle = {
@@ -246,7 +251,7 @@ export default class Ripple extends PureComponent {
 
     return (
       <TouchableWithoutFeedback {...touchableProps}>
-        <Animated.View {...props} pointerEvents='box-only'>
+        <Animated.View {...props} pointerEvents="box-only">
           {children}
           <View style={[styles.container, containerStyle]}>
             {ripples.map(this.renderRipple)}

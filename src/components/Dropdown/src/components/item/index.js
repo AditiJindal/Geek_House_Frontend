@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, {PureComponent} from 'react';
 import {TouchableOpacity} from 'react-native';
 import styles from './styles';
 
@@ -21,7 +21,7 @@ export default class DropdownItem extends PureComponent {
   }
 
   onPress() {
-    let { onPress, index } = this.props;
+    let {onPress, index} = this.props;
 
     if ('function' === typeof onPress) {
       onPress(index);
@@ -29,10 +29,11 @@ export default class DropdownItem extends PureComponent {
   }
 
   render() {
-    let { children, style} = this.props;
+    let {children, style} = this.props;
 
     return (
-      <TouchableOpacity activeOpacity={0.3}
+      <TouchableOpacity
+        activeOpacity={0.3}
         style={[styles.container, style]}
         onPress={this.onPress}>
         {children}

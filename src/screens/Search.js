@@ -310,7 +310,7 @@ class Search extends Component {
     return {statusBarColor, barStyle}
   }
 
-  render() {
+  render() { 
     const {COLORS} = this.props;
     const {statusBarColor, barStyle} = this.getStatusBarColor() 
     return(

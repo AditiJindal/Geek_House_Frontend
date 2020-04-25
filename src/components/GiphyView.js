@@ -37,16 +37,18 @@ class GiphyView extends React.Component {
             placeholder={'Search Gifs'}
             style={{...styles.SearchTextInput, color: COLORS.DARK}}
             value={gifs.search}
-            onChangeText={text=>gifSearch(text)}
-            onSubmitEditing = {()=>getGifs(gifs.search)}
+            onChangeText={text => gifSearch(text)}
+            onSubmitEditing={() => getGifs(gifs.search)}
             placeholderTextColor={COLORS.GRAY}
           />
-          {
-            (gifs.search)?(
-              <Icon name="x" size={14} color={COLORS.GRAY}
-                onPress={()=>gifSearch("")}/>
-              ):null
-          }
+          {gifs.search ? (
+            <Icon
+              name="x"
+              size={14}
+              color={COLORS.GRAY}
+              onPress={() => gifSearch('')}
+            />
+          ) : null}
         </View>
       </View>
     );
@@ -56,8 +58,8 @@ class GiphyView extends React.Component {
     const width = (this.state.giphyViewWidth - 40) / 3;
     const height = (width * item.height) / item.width;
     const {onSelect} = this.props;
-    const aspectRatio = item.width/item.height
-    item = {...item, aspectRatio, isGif:true}
+    const aspectRatio = item.width / item.height;
+    item = {...item, aspectRatio, isGif: true};
     return (
       <Ripple
         style={{
@@ -68,7 +70,8 @@ class GiphyView extends React.Component {
           borderRadius: 7,
           overflow: 'hidden',
           elevation: 7,
-        }} onPress={()=>onSelect(item)}>
+        }}
+        onPress={() => onSelect(item)}>
         <Image source={{uri: item.url}} style={{flex: 1}} />
       </Ripple>
     );
@@ -85,7 +88,7 @@ class GiphyView extends React.Component {
       <FlatList
         data={gifs.data}
         numColumns={3}
-        ListFooterComponent={<View style={{height:20, width:1}}/>}
+        ListFooterComponent={<View style={{height: 20, width: 1}} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{paddingHorizontal: 5}}
         keyExtractor={(item, index) => index.toString()}
@@ -99,8 +102,10 @@ class GiphyView extends React.Component {
     return (
       <View
         style={{
-          width: '100%',height: (isKeyboardVisible)?null:GIPHY_VIEW_HEGHT,
-          backgroundColor:(COLORS.THEME === 'light') ? COLORS.LIGHT : COLORS.LESSER_LIGHT,
+          width: '100%',
+          height: isKeyboardVisible ? null : GIPHY_VIEW_HEGHT,
+          backgroundColor:
+            COLORS.THEME === 'light' ? COLORS.LIGHT : COLORS.LESSER_LIGHT,
         }}
         onLayout={({nativeEvent}) =>
           this.setState({giphyViewWidth: nativeEvent.layout.width})
@@ -115,7 +120,7 @@ class GiphyView extends React.Component {
             {this.renderGifSearch()}
             {this.renderGifs()}
           </>
-          )}
+        )}
       </View>
     );
   }

@@ -1,4 +1,4 @@
-import { StyleSheet, Platform } from 'react-native';
+import {StyleSheet, Platform} from 'react-native';
 
 export default StyleSheet.create({
   accessory: {
@@ -11,11 +11,14 @@ export default StyleSheet.create({
   triangle: {
     width: 8,
     height: 8,
-    transform: [{
-      translateY: -4,
-    }, {
-      rotate: '45deg',
-    }],
+    transform: [
+      {
+        translateY: -4,
+      },
+      {
+        rotate: '45deg',
+      },
+    ],
   },
 
   triangleContainer: {
@@ -24,7 +27,7 @@ export default StyleSheet.create({
     overflow: 'hidden',
     alignItems: 'center',
 
-    backgroundColor: 'transparent', /* XXX: Required */
+    backgroundColor: 'transparent' /* XXX: Required */,
   },
 
   overlay: {
@@ -42,7 +45,7 @@ export default StyleSheet.create({
         shadowRadius: 2,
         shadowColor: 'rgba(0, 0, 0, 1.0)',
         shadowOpacity: 0.54,
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
       },
 
       android: {

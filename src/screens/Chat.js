@@ -398,8 +398,7 @@ class Chat extends Component {
             onPress={()=>{
             this.props.setUserData(item);
             Actions.chatscreen();
-            analytics().setCurrentScreen("ChatScreen", "ChatScreen");
-            logEvent(LOG_EVENT.SCREEN_CHANGE, 'chatscreen');}}
+            analytics().setCurrentScreen("ChatScreen", "ChatScreen");}}
           />
           <View style={{height:4, width:1}}/>
         </>
@@ -455,8 +454,7 @@ class Chat extends Component {
               onPress={()=>{
               this.props.setUserData(item);
               Actions.chatscreen();
-              analytics().setCurrentScreen("ChatScreen", "ChatScreen")
-              logEvent(LOG_EVENT.SCREEN_CHANGE, 'chatscreen');}}
+              analytics().setCurrentScreen("ChatScreen", "ChatScreen")}}
             />
             <View style={{height:4, width:1}}/>
           </>

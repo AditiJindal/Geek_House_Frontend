@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View, Dimensions, Platform } from 'react-native';
+import {StyleSheet, Text, View, Dimensions, Platform} from 'react-native';
 import Image from 'react-native-fast-image';
 
 export default class DefaultSlide extends React.PureComponent {
   render() {
-    const { item, dimensions, bottomButton } = this.props;
+    const {item, dimensions, bottomButton} = this.props;
     const style = {
       flex: 1,
       backgroundColor: item.backgroundColor,

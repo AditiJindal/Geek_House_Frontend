@@ -15,6 +15,7 @@ import Image from 'react-native-fast-image';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import TimedAlert from './TimedAlert';
 import Ripple from './Ripple';
+import analytics from '@react-native-firebase/analytics';
 
 const screenWidth = Dimensions.get('screen').width
 const OVERLAY_WIDTH_PERCENT=88
@@ -23,7 +24,6 @@ const HEADER_MIN_HEIGHT = 70;
 const PROFILE_IMAGE_MAX_HEIGHT = 76;
 const BORDER_RADIUS=25 // PROFILE_IMAGE_MAX_HEIGHT/2;
 const TOPIC_SMALL_SIZE=18
-const ATouchable = Animated.createAnimatedComponent(TouchableOpacity)
 
 class ArticleInfo extends Component {
 
@@ -200,6 +200,7 @@ class ArticleInfo extends Component {
           alignItems:'center', flexDirection:'row', width:130, justifyContent:'space-evenly',
           alignSelf:'flex-start', marginVertical:10, marginLeft:20, elevation:4, backgroundColor:COLORS.GREEN}}
           onPress = {()=>{
+            analytics().logShare({content_type:'article', item_id:this.props.article_id})
             Share.share({message:`View my article on ${selectedArticleInfo.topic} in Geek House using this link ${selectedArticleInfo.dynamicLink}`})
           }}>
           <Icon name={"share"} type="material" 

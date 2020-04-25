@@ -169,7 +169,7 @@ class Home extends Component {
                 {this.props.data.email}
               </Text>
               <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:11,alignSelf:'flex-end',color:COLORS.GRAY}}>
-                Geek House v1.16.1 A
+                Geek House v1.16.2 A
               </Text>
             </View>
           </View>
@@ -210,8 +210,8 @@ class Home extends Component {
             <View style={{flex:1,}}>
               <Ripple rippleColor={COLORS.DARK}
                 onPress={() => {this.props.toggleOverlay({overlayVisible:false});
-                Actions.jump('settings'); analytics().setCurrentScreen('Settings', 'Settings')
-                logEvent(LOG_EVENT.SCREEN_CHANGE, 'settings');}}
+                Actions.jump('settings');
+                analytics().setCurrentScreen('Settings', 'Settings')}}
                 style={{elevation:3,
                 justifyContent:'center', alignItems:'center', flexDirection:'row', 
                 backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
@@ -223,8 +223,7 @@ class Home extends Component {
 
               <Ripple rippleColor={COLORS.DARK}
                 onPress={() => {this.props.toggleOverlay({overlayVisible:false});
-                Actions.jump('feedback'); analytics().setCurrentScreen('Feedback', 'Feedback');
-                logEvent(LOG_EVENT.SCREEN_CHANGE, 'feedback');}}
+                Actions.jump('feedback'); analytics().setCurrentScreen('Feedback', 'Feedback');}}
                 style={{elevation:3,
                 justifyContent:'center', alignItems:'center', flexDirection:'row', 
                 backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,
@@ -238,8 +237,7 @@ class Home extends Component {
             <View style={{flex:1}}>
               <Ripple rippleColor={COLORS.DARK}
                 onPress={() => {this.props.toggleOverlay({overlayVisible:false});
-                Actions.jump('about'); analytics().setCurrentScreen('About', 'About');
-                logEvent(LOG_EVENT.SCREEN_CHANGE, 'about');}}
+                Actions.jump('about'); analytics().setCurrentScreen('About', 'About');}}
                 style={{elevation:3, marginBottom:5,
                 justifyContent:'center', alignItems:'center', flexDirection:'row', 
                 backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESSER_LIGHT,

@@ -1040,7 +1040,7 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-firebase/analytics@^6.2.0":
+"@react-native-firebase/analytics@^6.7.1":
   version "6.7.1"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/analytics/-/analytics-6.7.1.tgz#c7f0e62fe0205ace83a26825604f4444cdde85a0"
   integrity sha512-NUgnvMcl5GgfDBDj0pj+ScGHSgDjwP2IVfokTMSwRdaha7lLMU+Z/MXX51IAJulQvrn61mKoS8waTRllega9wA==
@@ -1084,7 +1084,7 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/ml-vision/-/ml-vision-6.7.1.tgz#c79e89299ed8d5c76825a0c57ea0f7d1091a8dd5"
   integrity sha512-ktVg5DM1C4uuy13EnofrXoEcyzreeiIlXKDVx3AXrkJMf3vO1BVsMsXIAgGZaFPa05X3OXImraU2ceoOPuIrow==
 
-"@react-native-firebase/perf@^6.2.0":
+"@react-native-firebase/perf@^6.7.1":
   version "6.7.1"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/perf/-/perf-6.7.1.tgz#4d43cc793b33778aa09eba1e78462df1c8af2cdd"
   integrity sha512-pOpXJoF3s0bLEjYcxf7nk8mOX+NxB53E3NTdKF2z5CKmSC17nfLLe3XHO+7Wl6QATrfw2FMlGEayn0LS/PKRBg==

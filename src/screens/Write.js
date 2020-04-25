@@ -7,8 +7,7 @@ import ArticleTile from '../components/ArticleTile';
 import {setAuthToken, getMyArticles, clearPublish} from '../actions/WriteAction';
 import {Icon} from "react-native-elements"; 
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
-import {logEvent} from '../actions/ChatAction';
-import {FONTS, COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 import { Actions } from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
@@ -141,8 +140,7 @@ class Write extends Component {
       <Ripple style={{justifyContent:'center', alignItems:"center",bottom:70, 
         left:15, position:"absolute"}} rippleContainerBorderRadius={5}
         onPress={()=>{(this.props.isDraft)?()=>{}:this.props.clearPublish();
-        Actions.jump('writearticle'); analytics().setCurrentScreen('Write', 'Write');
-        logEvent(LOG_EVENT.SCREEN_CHANGE, 'writearticle');}}>
+        Actions.jump('writearticle'); analytics().setCurrentScreen('Write', 'Write');}}>
         <SView style={{borderRadius:10, shadowOpacity:0.4,shadowRadius:6,
           shadowOffset: { height:7}, shadowColor:'#202020', 
           backgroundColor:COLORS_LIGHT_THEME.LIGHT}}>
