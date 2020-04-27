@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StatusBar, StyleSheet, ScrollView, TextInput} from 'react-native';
 import { connect } from 'react-redux';
 import {logout} from '../actions/HomeAction';
@@ -25,7 +25,7 @@ import Avatar from '../components/Avatar';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from '@react-native-community/image-editor';
 
-class Settings extends Component {
+class Settings extends React.PureComponent {
 
   state = {
     blur:this.props.chat_background.blur

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import { View, StyleSheet, Text, StatusBar,
   FlatList, ScrollView, Linking,
   TouchableOpacity}from 'react-native';
@@ -13,14 +13,14 @@ import {
 import _ from 'lodash';
 import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
 import Image from 'react-native-fast-image';
-import {logEvent, setupComplete} from '../actions/ChatAction';
+import {setupComplete} from '../actions/ChatAction';
 import {Dropdown} from '../components/Dropdown';
 import LottieView from 'lottie-react-native'
 import AppIntroSlider from '../components/AppIntroSlider/AppIntroSlider';
 import ArticleTile from '../components/ArticleTile';
 import {Overlay, Icon} from 'react-native-elements';
-import {FONTS,COLORS_LIGHT_THEME, LOG_EVENT, CATEGORY_IMAGES,
-  LATEST_APP_VERSION, ALL_CATEGORIES, COLORS_DARK_THEME} from '../Constants';
+import {FONTS,COLORS_LIGHT_THEME, CATEGORY_IMAGES,
+  LATEST_APP_VERSION, ALL_CATEGORIES} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 import RaisedText from '../components/RaisedText';
 import Loading from '../components/Loading';
@@ -36,7 +36,7 @@ import Avatar from '../components/Avatar';
 import {getDynamicLink} from '../extraUtilities';
 
 const OVERLAY_WIDTH_PERCENT=75
-class Home extends Component {
+class Home extends React.PureComponent {
   state = {adIndex:0}
 
   constructor() {
@@ -556,8 +556,8 @@ class Home extends Component {
   }
 
   render() {
-    const {COLORS, welcomeData} = this.props;
-    const {statusBarColor, barStyle} = this.getStatusBarColor() 
+    const {COLORS} = this.props;
+    const {statusBarColor} = this.getStatusBarColor();
     if (!this.props.first_login){
       return(
       <View style={{flex:1, backgroundColor:COLORS.LIGHT}}>

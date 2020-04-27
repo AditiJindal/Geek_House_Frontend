@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -25,12 +25,11 @@ import {
   onComposerTextChanged,
   getChatGroupParticipants,
 } from '../actions/ChatAction';
-import Image from 'react-native-fast-image';
 import TimedAlert from '../components/TimedAlert';
 import ChatInfo from '../components/ChatInfo';
 import Avatar from '../components/Avatar';
 
-class ChatScreen extends Component {
+class ChatScreen extends React.PureComponent {
   state = {
     imageViewerSelected: false,
     chatInfoVisible: false,

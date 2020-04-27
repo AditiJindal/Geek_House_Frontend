@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,7 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 
-class Policy extends Component {
+class Policy extends React.PureComponent {
   componentDidMount() {
     if (!this.props.policy) {
       this.props.getPolicy();

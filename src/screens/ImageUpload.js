@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {View, Text, StyleSheet, StatusBar} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'lodash';
@@ -24,7 +24,7 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import vision from '@react-native-firebase/ml-vision';
 
-class ImageUpload extends Component {
+class ImageUpload extends React.PureComponent {
   constructor() {
     super();
     this.state = {

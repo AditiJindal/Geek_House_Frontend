@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -33,9 +33,8 @@ import ArticleTile from '../components/ArticleTile';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import TimedAlert from '../components/TimedAlert';
-// import console = require('console');
 
-class WriteArticle extends Component {
+class WriteArticle extends React.PureComponent {
   constructor() {
     super();
     this.state = {

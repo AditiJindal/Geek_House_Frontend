@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -16,7 +16,7 @@ import Loading from '../components/Loading';
 import analytics from '@react-native-firebase/analytics';
 import ArticleTile from '../components/ArticleTile';
 
-class NotificationArticle extends Component {
+class NotificationArticle extends React.PureComponent {
   componentDidMount() {
     this.props.setAuthToken();
     this.props.getArticleInfo(this.props.article_id, false, false);

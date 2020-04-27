@@ -42,7 +42,11 @@ export default (state = INITIAL_STATE, action) => {
       return {...state, image: action.payload};
 
     case ACTIONS.PUBLISH_SUCCESS:
-      state.myArticles[action.payload.category].unshift(action.payload);
+      if (state.myArticles[action.payload.category]) {
+        state.myArticles[action.payload.category].unshift(action.payload);
+      } else {
+        state.myArticles[action.payload.category] = [action.payload];
+      }
 
       return {
         ...state,

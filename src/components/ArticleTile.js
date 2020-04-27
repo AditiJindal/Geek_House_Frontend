@@ -190,6 +190,14 @@ export default class ArticleTile extends Component {
       ? {uri: data.image}
       : CATEGORY_IMAGES[data.category];
 
+    if (!imageSource) {
+      return (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Loading size={48} />
+        </View>
+      );
+    }
+
     return (
       <TouchableOpacity
         activeOpacity={0.8}
@@ -213,26 +221,26 @@ export default class ArticleTile extends Component {
           onError={() => {
             this.setState({imageLoaded: true, loadSuccessful: false});
           }}>
-          <ArticleInfo
-            theme={this.props.theme}
-            onBackdropPress={() => {
-              this.setState({infoVisible: false});
-              logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, {
-                mili_seconds: Date.now() - this.state.showStartTime,
-                endTime: Date.now(),
-              });
-            }}
-            isVisible={this.state.infoVisible}
-            article_id={data.article_id}
-            imageSource={imageSource}
-            loadSuccessful={this.state.loadSuccessful}
-            // for preview
-            preview_contents={data.preview_contents}
-            topic={data.topic}
-            category={data.category}
-          />
           {this.renderLinearGradient()}
         </Image>
+        <ArticleInfo
+          theme={this.props.theme}
+          onBackdropPress={() => {
+            this.setState({infoVisible: false});
+            logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, {
+              mili_seconds: Date.now() - this.state.showStartTime,
+              endTime: Date.now(),
+            });
+          }}
+          isVisible={this.state.infoVisible}
+          article_id={data.article_id}
+          imageSource={imageSource}
+          loadSuccessful={this.state.loadSuccessful}
+          // for preview
+          preview_contents={data.preview_contents}
+          topic={data.topic}
+          category={data.category}
+        />
       </TouchableOpacity>
     );
   }

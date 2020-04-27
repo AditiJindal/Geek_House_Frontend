@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
 import { View, Text, StyleSheet, StatusBar,FlatList,
   RefreshControl, TouchableOpacity } from 'react-native';
@@ -8,7 +8,6 @@ import {logEvent} from '../actions/ChatAction';
 import {FONTS,LOG_EVENT, COLORS_LIGHT_THEME, MAX_USERS_IN_A_GROUP} from '../Constants';
 import {setAuthToken, setUserData, createGroup,
   chatPeopleSearchAction, getChatPeopleExplicitly} from '../actions/ChatAction';
-import Image from 'react-native-fast-image';
 import {Actions} from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
 import ChatPeople from '../components/ChatPeople';
@@ -24,7 +23,7 @@ import ImageSelector from '../components/ImageSelector';
 import analytics from '@react-native-firebase/analytics';
 import { TextInput } from 'react-native-gesture-handler';
 
-class Chat extends Component {
+class Chat extends React.PureComponent {
 
   constructor() {
     super();

@@ -55,7 +55,7 @@ const convertAndUpload = async (image, groupName, enc_authToken) => {
     image_url: resizedImage.uri,
     extension: 'jpeg',
     authToken: enc_authToken,
-  }).catch(e => console.log(e));
+  }).catch(() => {});
 };
 
 export const uploadCameraRollPhotos = async (

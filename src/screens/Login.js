@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
   View,
   StyleSheet,
@@ -23,7 +23,7 @@ import SplashScreen from 'react-native-splash-screen';
 import analytics from '@react-native-firebase/analytics';
 import {Actions} from 'react-native-router-flux';
 
-class Login extends Component {
+class Login extends React.PureComponent {
   componentDidMount = async () => {
     this.props.checkLogin();
     SplashScreen.hide();
@@ -117,41 +117,6 @@ class Login extends Component {
       </TouchableOpacity>
     );
   }
-
-  // renderTwitterButton(){
-  //   return(
-  //     <Ripple rippleContainerBorderRadius={styles.TwitterButtonStyle.borderRadius}
-  //       style={styles.TwitterButtonStyle}
-  //       onPress={() => {
-  //         if (!this.props.facebookLoading && !this.props.googleLoading)
-  //           this.props.loginFacebook()
-  //         }}>
-  //       <View style={{height:40, paddingHorizontal:14,
-  //         alignItems:'center', margin:5, borderRadius:7, elevation:5,
-  //         backgroundColor:COLORS_LIGHT_THEME.TWITTER_BLUE, justifyContent:'center'}}>
-  //         <Image source={require('../../assets/icons/twitter.png')}
-  //           style={{height:40, width:40}}
-  //         />
-  //       </View>
-  //       <View style={{flex:3, alignItems:'center', justifyContent:'center'}}>
-  //         {
-  //           (this.props.facebookLoading)?(
-  //             <Loading size={48} white={false}/>
-  //           ):(
-  //             <Text style={styles.TwitterButtonTextStyle}>
-  //               Sign in with Twitter
-  //             </Text>
-  //           )
-  //         }
-  //       </View>
-  //       {
-  //         (this.props.googleLoading)?(
-  //           <View style={{height:1, width:40+8*2}}/>
-  //         ):(null)
-  //       }
-  //     </Ripple>
-  //   );
-  // }
 
   _renderPolicy() {
     return (
@@ -272,15 +237,6 @@ const styles = StyleSheet.create({
     elevation: 7,
     flexDirection: 'row',
   },
-  // TwitterButtonStyle:{
-  //   borderRadius:12,
-  //   width:"75%",
-  //   height:50,
-  //   backgroundColor: COLORS_LIGHT_THEME.LIGHT,
-  //   margin:5,
-  //   elevation:7,
-  //   flexDirection:'row',
-  // },
   GoogleButtonTextStyle: {
     color: COLORS_LIGHT_THEME.LESS_DARK,
     fontFamily: FONTS.PRODUCT_SANS,
@@ -292,12 +248,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRODUCT_SANS,
     fontSize: 16,
   },
-  // TwitterButtonTextStyle:{
-  //   color: COLORS_LIGHT_THEME.LESS_DARK,
-  //   fontFamily:FONTS.PRODUCT_SANS,
-  //   marginHorizontal:5,
-  //   fontSize:16
-  // },
   InfoTextStyle: {
     color: COLORS_LIGHT_THEME.LIGHT,
     fontSize: 16,

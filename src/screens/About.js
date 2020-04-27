@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,7 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 
-class Settings extends Component {
+class Settings extends React.PureComponent {
   componentDidMount() {
     this.props.setAuthToken();
     analytics().setCurrentScreen('About', 'About');

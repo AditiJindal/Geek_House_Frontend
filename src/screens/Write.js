@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
-import { View, Text, StyleSheet, StatusBar, FlatList, Dimensions,
+import { View, Text, StyleSheet, StatusBar, FlatList,
   RefreshControl, ScrollView} from 'react-native';
 import Ripple from '../components/Ripple';
 import ArticleTile from '../components/ArticleTile';
@@ -16,7 +16,7 @@ import analytics from '@react-native-firebase/analytics';
 
 
 
-class Write extends Component {
+class Write extends React.PureComponent {
 
   constructor() {
     super();

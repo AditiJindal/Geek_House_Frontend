@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {FONTS, COLORS_LIGHT_THEME, } from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 import {connect} from 'react-redux';
 import {Actions} from 'react-native-router-flux';
 import Ripple from '../components/Ripple';
@@ -18,7 +18,7 @@ import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 const ConfettiData = require('../../assets/animations/confetti.json');
 
-class Publish extends Component {
+class Publish extends React.PureComponent {
   constructor() {
     super();
     this.state = {

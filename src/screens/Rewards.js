@@ -17,7 +17,7 @@ The more you use Geek House for reading articles, the more you will get XP \
 or experience. Once you reach a certain level of experice, you will unlock certain\
 perks and rewards.';
 
-class Rewards extends React.Component {
+class Rewards extends React.PureComponent {
   renderHeader() {
     const {COLORS} = this.props;
     return (

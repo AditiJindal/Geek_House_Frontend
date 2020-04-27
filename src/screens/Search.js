@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, StatusBar, RefreshControl,
   FlatList, ScrollView, TouchableOpacity, TextInput}from 'react-native';
 import {connect} from 'react-redux';
@@ -25,9 +25,8 @@ import SView from 'react-native-simple-shadow-view';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import analytics from '@react-native-firebase/analytics';
 import ArticleTileAds from '../components/ArticleTileAds';
-// import BannerAd from '../components/BannerAd';
 
-class Search extends Component {
+class Search extends React.PureComponent {
   state = {adIndex:0, adCategoryIndex: []}
 
   componentDidMount(){

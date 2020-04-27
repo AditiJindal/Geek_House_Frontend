@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -33,7 +33,7 @@ const INITIAL_STATE = {
   feedback_submitted: false,
   isAnonymous: false,
 };
-class Feedback extends Component {
+class Feedback extends React.PureComponent {
   state = INITIAL_STATE;
 
   renderHeader() {

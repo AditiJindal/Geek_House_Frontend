@@ -135,7 +135,6 @@ export const publishArticle = (article, success_animation) => {
           }),
         );
     } else {
-      console.log('HERE');
       httpClient
         .post(URLS.publish, article)
         .then(({data}) => {
@@ -146,7 +145,6 @@ export const publishArticle = (article, success_animation) => {
           success_animation.play();
         })
         .catch(e => {
-          console.log(e);
           logEvent(LOG_EVENT.ERROR, {
             errorLine: 'WRITE ACTION - 97',
             description: e.toString(),

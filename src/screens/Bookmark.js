@@ -20,7 +20,7 @@ import ArticleTile from '../components/ArticleTile';
 import ArticleTileAds from '../components/ArticleTileAds';
 import {FONTS} from '../Constants';
 
-class Bookmark extends React.Component {
+class Bookmark extends React.PureComponent {
   state = {adIndex: 0, adCategoryIndex: []};
 
   componentDidMount() {
