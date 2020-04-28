@@ -125,7 +125,7 @@ class WriteArticle extends React.Component {
       color = COLORS.GRAY;
       error.title = 'No category provided';
       error.content = 'Please provide a category for your article...';
-    } else if (this.state.contents.length < 1) {
+    } else if (this.state.contents.length < 2) {
       nextEnabled = false;
       color = COLORS.GRAY;
       error.title = 'Very less content';

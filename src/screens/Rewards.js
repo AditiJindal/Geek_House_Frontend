@@ -14,8 +14,17 @@ import {Actions} from 'react-native-router-flux';
 const EXPERIENCE_TEXT =
   'In Geek House, you can can get various rewards and perks based on your usage.\
 The more you use Geek House for reading articles, the more you will get XP \
-or experience. Once you reach a certain level of experice, you will unlock certain\
+or experience. Once you reach a certain level of experience, you will unlock certain\
 perks and rewards.';
+
+const HOW_TO_GET_XP = [
+  'XP or Experience is gained by using the app regularly, reading and writing articles and using chat.',
+  'You get 10 XP for reading an article. You can get a maximum of 100 XP every hour from this method.',
+  'You get a minimum of 150 XP for writing an article. The longer and better your article is, the more XP you get',
+  'You get 1 XP for every view on your articles. You can get a maximum of 500 XP every hour using this method, till a certain number of views.',
+  'You get XP for using the chat based on the time spent. You can get a maximum of 200 XP every hour from this method.',
+  'You get additional 100 XP for using the app every hour.',
+];
 
 class Rewards extends React.PureComponent {
   renderHeader() {
@@ -45,7 +54,7 @@ class Rewards extends React.PureComponent {
         </TouchableOpacity>
 
         <Text style={{...styles.HeadingTextStyling, color: COLORS.DARK}}>
-          expreience
+          experience
         </Text>
       </View>
     );
@@ -58,6 +67,34 @@ class Rewards extends React.PureComponent {
         <Text style={{...styles.ExperienceText, color: COLORS.LESS_DARK}}>
           {EXPERIENCE_TEXT}
         </Text>
+      </View>
+    );
+  }
+
+  renderHowToGetXP() {
+    const {COLORS} = this.props;
+    return (
+      <View style={{marginTop: 30}}>
+        <Text style={{...styles.SubHeading, color: COLORS.LESS_DARK}}>
+          How to get XP?
+        </Text>
+        {HOW_TO_GET_XP.map(item => (
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <Text style={{fontSize: 16, color: COLORS.LESS_DARK}}>•</Text>
+            <Text
+              style={{
+                fontFamily: FONTS.RALEWAY,
+                fontSize: 13,
+                marginTop: 3,
+                color: COLORS.LESS_DARK,
+                textAlign: 'justify',
+                marginBottom: 5,
+                marginLeft: 10,
+              }}>
+              {item}
+            </Text>
+          </View>
+        ))}
       </View>
     );
   }
@@ -96,6 +133,7 @@ class Rewards extends React.PureComponent {
         }}>
         {this.renderHeader()}
         {this.renderText()}
+        {this.renderHowToGetXP()}
         {this.renderRewards()}
       </ScrollView>
     );

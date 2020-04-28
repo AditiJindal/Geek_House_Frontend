@@ -10,7 +10,9 @@ const LevelBar = props => {
   if (!XPObject) {
     return null;
   }
-  const widthPercent = Math.floor((100 * userXP) / XPObject.levelXP);
+  const widthPercent = Math.floor(
+    (100 * (XPObject.levelXP - XPObject.XPToLevelUp)) / XPObject.levelXP,
+  );
 
   return (
     <View
