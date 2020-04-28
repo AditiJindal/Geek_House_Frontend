@@ -34,7 +34,7 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import TimedAlert from '../components/TimedAlert';
 
-class WriteArticle extends React.PureComponent {
+class WriteArticle extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -125,7 +125,7 @@ class WriteArticle extends React.PureComponent {
       color = COLORS.GRAY;
       error.title = 'No category provided';
       error.content = 'Please provide a category for your article...';
-    } else if (this.state.contents.length < 2) {
+    } else if (this.state.contents.length < 1) {
       nextEnabled = false;
       color = COLORS.GRAY;
       error.title = 'Very less content';

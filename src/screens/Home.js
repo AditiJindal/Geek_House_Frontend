@@ -169,7 +169,7 @@ class Home extends React.PureComponent {
                 {this.props.data.email}
               </Text>
               <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:11,alignSelf:'flex-end',color:COLORS.GRAY}}>
-                Geek House v1.16.2 A
+                Geek House v1.16.3 A
               </Text>
             </View>
           </View>

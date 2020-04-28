@@ -14,6 +14,7 @@ import analytics from '@react-native-firebase/analytics';
 
 class NativeAdsComponent extends Component {
   render() {
+    return null;
     const {COLORS} = this.props;
     return (
       <SView

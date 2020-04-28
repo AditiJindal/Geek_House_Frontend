@@ -333,7 +333,7 @@ export const CATEGORY_IMAGES = {
 
 export const DYNAMIC_LINK_DOMAIN = 'https://geekhouse.page.link';
 
-export const LATEST_APP_VERSION = 35;
+export const LATEST_APP_VERSION = 36;
 
 export const MAX_USERS_IN_A_GROUP = 20;
 

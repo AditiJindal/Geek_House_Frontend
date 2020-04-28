@@ -3,7 +3,6 @@ import queryString from 'query-string';
 import {Actions} from 'react-native-router-flux';
 import axios from 'axios';
 import {HTTP_TIMEOUT, BASE_URL} from './Constants';
-import perf from '@react-native-firebase/perf';
 
 const httpClient = axios.create({timeout: HTTP_TIMEOUT, baseURL: BASE_URL});
 axios.interceptors.response.use(

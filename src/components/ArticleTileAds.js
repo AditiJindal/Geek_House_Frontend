@@ -21,6 +21,7 @@ class NativeAdsComponent extends Component {
   }
 
   render() {
+    return null;
     const {COLORS} = this.props;
     return (
       <View

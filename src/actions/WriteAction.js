@@ -119,6 +119,7 @@ export const publishArticle = (article, success_animation) => {
                   type: ACTIONS.PUBLISH_SUCCESS,
                   payload: {...article, ...data},
                 });
+                success_animation.play();
               });
             })
             .catch(e =>

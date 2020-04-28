@@ -23,6 +23,16 @@ class NotificationArticle extends React.PureComponent {
     analytics().setCurrentScreen('NotificationArticle', 'NotificationArticle');
   }
 
+  imageUrlCorrector(image_url) {
+    if (!this.props.image_adder) {
+      return '';
+    }
+    if (image_url.substring(0, 4) !== 'http') {
+      image_url = this.props.image_adder + image_url;
+    }
+    return image_url;
+  }
+
   renderHeader() {
     return (
       <View
@@ -56,6 +66,14 @@ class NotificationArticle extends React.PureComponent {
   }
 
   renderArticle() {
+    if (
+      this.props.selectedArticleInfo &&
+      this.props.selectedArticleInfo.image
+    ) {
+      this.props.selectedArticleInfo.image = this.imageUrlCorrector(
+        this.props.selectedArticleInfo.image,
+      );
+    }
     return (
       <View style={{flex: 1, padding: 10}}>
         {this.renderHeader()}
@@ -72,8 +90,10 @@ class NotificationArticle extends React.PureComponent {
               alignItems: 'center',
               marginBottom: 50,
             }}>
+            {console.log('THIS : ', this.props.selectedArticleInfo)}
             <ArticleTile
               data={this.props.selectedArticleInfo}
+              notifictionArticle={true}
               size={180}
               theme={this.props.theme}
               COLORS={this.props.COLORS}
@@ -99,6 +119,8 @@ class NotificationArticle extends React.PureComponent {
 
 const mapStateToProps = state => {
   return {
+    image_adder: state.home.image_adder,
+
     selectedArticleInfo: state.articleInfo.selectedArticleInfo,
     loading: state.articleInfo.loading,
 
