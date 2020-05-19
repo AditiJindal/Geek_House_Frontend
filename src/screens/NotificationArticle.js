@@ -90,7 +90,6 @@ class NotificationArticle extends React.PureComponent {
               alignItems: 'center',
               marginBottom: 50,
             }}>
-            {console.log('THIS : ', this.props.selectedArticleInfo)}
             <ArticleTile
               data={this.props.selectedArticleInfo}
               notifictionArticle={true}

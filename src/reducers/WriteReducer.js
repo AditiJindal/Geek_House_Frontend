@@ -12,9 +12,12 @@ const INITIAL_STATE = {
   alertVisible: false,
   alertMessage: {},
   isDraft: false,
+  editing_article_id: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
+  let new_state = {};
+
   switch (action.type) {
     case ACTIONS.LOGOUT:
       return {...INITIAL_STATE};
@@ -31,18 +34,30 @@ export default (state = INITIAL_STATE, action) => {
       };
 
     case ACTIONS.SET_CONTENTS:
-      return {
+      new_state = {
         ...state,
         contents: action.payload.contents,
         topic: action.payload.topic,
         category: action.payload.category,
+        editing_article_id: action.payload.article_id,
       };
+      return new_state;
 
     case ACTIONS.SET_IMAGE:
       return {...state, image: action.payload};
 
     case ACTIONS.PUBLISH_SUCCESS:
-      if (state.myArticles[action.payload.category]) {
+      if (action.payload.edited) {
+        state.myArticles[action.payload.category] = state.myArticles[
+          action.payload.category
+        ].map(article => {
+          if (article.article_id === action.payload.article_id) {
+            return action.payload;
+          } else {
+            return article;
+          }
+        });
+      } else if (state.myArticles[action.payload.category]) {
         state.myArticles[action.payload.category].unshift(action.payload);
       } else {
         state.myArticles[action.payload.category] = [action.payload];
@@ -55,6 +70,7 @@ export default (state = INITIAL_STATE, action) => {
         isDraft: false,
         reload: true,
         myArticles: {...state.myArticles},
+        editing_article_id: null,
       };
 
     case ACTIONS.CLEAR_WRITE:
@@ -67,6 +83,7 @@ export default (state = INITIAL_STATE, action) => {
         image: false,
         published: false,
         isDraft: false,
+        article_id: null,
       };
 
     case ACTIONS.WRITE_SHOW_ALERT:

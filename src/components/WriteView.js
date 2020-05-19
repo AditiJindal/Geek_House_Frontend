@@ -35,6 +35,19 @@ export default class WriteView extends Component {
     };
   }
 
+  imageUrlCorrector(image_url) {
+    if (!this.props.image_adder) {
+      return '';
+    }
+    if (
+      image_url.substring(0, 4) !== 'http' &&
+      image_url.substring(0, 4) !== 'file'
+    ) {
+      image_url = this.props.image_adder + image_url;
+    }
+    return image_url;
+  }
+
   async doTextRecognition(image_path) {
     if (!image_path) {
       return;
@@ -138,7 +151,7 @@ export default class WriteView extends Component {
       return (
         <View style={{width: '100%', height, paddingHorizontal: 5}}>
           <Image
-            source={{uri: obj.image.uri}}
+            source={{uri: this.imageUrlCorrector(obj.image.uri)}}
             style={{flex: 1, elevation: 5, borderRadius: 4}}>
             {this.renderRemoveImageButton()}
           </Image>

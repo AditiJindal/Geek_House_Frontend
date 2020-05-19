@@ -287,7 +287,7 @@ class Feedback extends React.PureComponent {
 
   onSubmit() {
     if (this.state.subject.length > 10 || this.state.description.length > 10) {
-      this.props.submitFeedback({
+      submitFeedback({
         subject: this.state.subject,
         description: this.state.description,
         image_url: this.state.image_url,
@@ -449,7 +449,7 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, {submitFeedback})(Feedback);
+export default connect(mapStateToProps, {})(Feedback);
 
 const styles = StyleSheet.create({
   HeadingTextStyling: {

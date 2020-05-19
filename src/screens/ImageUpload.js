@@ -35,9 +35,27 @@ class ImageUpload extends React.PureComponent {
     };
   }
 
+  imageUrlCorrector(image_url) {
+    if (!image_url) {
+      return null;
+    }
+    if (!this.props.image_adder) {
+      return '';
+    }
+    if (
+      image_url.substring(0, 4) !== 'http' &&
+      image_url.substring(0, 4) !== 'file'
+    ) {
+      image_url = this.props.image_adder + image_url;
+    }
+    return image_url;
+  }
+
   componentDidMount() {
     if (this.props.image) {
-      this.setState({image: this.props.image});
+      this.setState({
+        image: {uri: this.imageUrlCorrector(this.props.image.uri)},
+      });
     }
   }
 
@@ -487,10 +505,13 @@ class ImageUpload extends React.PureComponent {
 
 const mapStateToProps = state => {
   return {
+    image_adder: state.home.image_adder,
+
     contents: state.write.contents,
     topic: state.write.topic,
     category: state.write.category,
     image: state.write.image,
+    editing_article_id: state.write.editing_article_id,
 
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,

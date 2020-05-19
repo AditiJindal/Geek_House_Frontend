@@ -7,9 +7,11 @@ import {Overlay,Icon} from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
 import LinearGradient from 'react-native-linear-gradient';
 import {getArticleInfo, setAuthToken, submitComment, bookmarkArticle} from '../actions/ArticleInfoAction';
+import {setContents, setImage} from '../actions/WriteAction'
 import {FONTS, COLOR_COMBOS, COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import CardView from './CardView';
 import Loading from './Loading';
+import {Actions} from 'react-native-router-flux';
 import NativeAdsComponent from './NativeAdsComponent';
 import Image from 'react-native-fast-image';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
@@ -176,9 +178,32 @@ class ArticleInfo extends Component {
 
   renderOptions(){
     const {COLORS, selectedArticleInfo} = this.props;
+    const {cards, topic, category, image, article_id} = selectedArticleInfo
+    if (!cards){return null}
+    const contents = cards.map((card, index)=>{return {...card, key:index}})
 
     if ((this.props.article_id===-1) || this.props.selectedArticleInfo.my_article || this.props.selectedArticleInfo.cannotComment){
-      return null;
+      return (
+        <Ripple rippleContainerBorderRadius={7} style={{backgroundColor:COLORS.LIGHT,
+          paddingVertical:10, borderRadius:7, marginTop:15, marginLeft:15, borderWidth:1.2,
+          alignItems:'center', flexDirection:'row', width:100, justifyContent:'center',
+          alignSelf:'flex-start', marginVertical:10, elevation:4, marginBottom:-5, borderColor:COLORS.YELLOW}}
+          onPress = {()=>{
+            this.props.getArticleInfo(this.props.article_id, false);
+            this.setState({scrollY: new Animated.Value(0), adIndex:_.random});
+            this.props.onBackdropPress()
+            this.props.setContents(contents, topic, category, article_id)
+            this.props.setImage({uri:image})
+            Actions.jump("writearticle", {article_id:this.props.article_id})
+          }}>
+          <Icon name={"create"} type="material" 
+            size={18} color={COLORS.YELLOW}/>
+          <Text style={{fontFamily:FONTS.RALEWAY, color:COLORS.YELLOW,
+            fontSize:16, marginLeft:5}}>
+            Edit
+          </Text>
+        </Ripple>
+      )
     }
     const { bookmarked } = this.props.selectedArticleInfo;
     return(
@@ -201,7 +226,7 @@ class ArticleInfo extends Component {
           alignSelf:'flex-start', marginVertical:10, marginLeft:20, elevation:4, backgroundColor:COLORS.GREEN}}
           onPress = {()=>{
             analytics().logShare({content_type:'article', item_id:this.props.article_id})
-            Share.share({message:`View my article on ${selectedArticleInfo.topic} in Geek House using this link ${selectedArticleInfo.dynamicLink}`})
+            Share.share({message:`View this article on ${selectedArticleInfo.topic} in Geek House using this link ${selectedArticleInfo.dynamicLink}`})
           }}>
           <Icon name={"share"} type="material" 
             size={20} color={COLORS.LIGHT}/>
@@ -415,7 +440,7 @@ class ArticleInfo extends Component {
           }}
         >
           <LinearGradient style={{width:"100%", height:"100%",
-            borderTopLeftRadius:BORDER_RADIUS, elevation:7,
+            borderTopLeftRadius:BORDER_RADIUS,
               borderTopRightRadius:BORDER_RADIUS,overflow:'hidden'}}
             colors={(this.props.theme==='light')?
               ["rgb(20,20,20)", "rgb(50,50,50)"]:
@@ -427,7 +452,7 @@ class ArticleInfo extends Component {
             />
           </LinearGradient>
           <Animated.View
-              style={{ position: 'absolute', 
+              style={{ position: 'absolute',
               transform:[{translateY:headerTextTranslate}],
               alignItems:'center', justifyContent:'center' }}
             >
@@ -626,7 +651,7 @@ const mapStateToProps =(state) => {
 }
 
 export default connect(mapStateToProps, {getArticleInfo, setAuthToken, submitComment, 
-  bookmarkArticle})(ArticleInfo)
+  bookmarkArticle, setContents, setImage})(ArticleInfo)
 
 const styles = StyleSheet.create({
   OverlayStyle:{

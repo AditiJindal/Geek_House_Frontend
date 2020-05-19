@@ -15,7 +15,7 @@ export default class Ripple extends PureComponent {
     ...TouchableWithoutFeedback.defaultProps,
 
     rippleColor: '#000000',
-    rippleOpacity: 0.4,
+    rippleOpacity: 0.2,
     rippleDuration: 300,
     rippleSize: 0,
     rippleContainerBorderRadius: 0,

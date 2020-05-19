@@ -54,6 +54,7 @@ class WriteArticle extends React.Component {
           this.state.contents,
           this.state.topic,
           this.state.category,
+          this.props.editing_article_id,
         );
         this.props.setDraft();
       }
@@ -180,6 +181,7 @@ class WriteArticle extends React.Component {
                   this.state.contents,
                   this.state.topic,
                   this.state.category,
+                  this.props.editing_article_id,
                 );
                 Actions.replace('imageupload');
               }
@@ -252,7 +254,7 @@ class WriteArticle extends React.Component {
   }
 
   renderWriteView() {
-    const {COLORS, theme} = this.props;
+    const {COLORS, theme, image_adder} = this.props;
     return (
       <FlatList
         ref={scrollView => (this.scrollView = scrollView)}
@@ -260,7 +262,8 @@ class WriteArticle extends React.Component {
         data={this.state.contents}
         ListHeaderComponent={
           <>
-            <View style={{height: 70, width: 1}} />
+            <View style={{height: 80, width: 1}} />
+            {this.renderEditingArticle()}
             {this.renderCategoryDropdown()}
           </>
         }
@@ -278,6 +281,7 @@ class WriteArticle extends React.Component {
             onClosePressed={() => {
               this.setState({childAlertVisible: true});
             }}
+            image_adder={image_adder}
             onContentChange={this.onContentChange.bind(this)}
             onSubHeadingChange={this.onSubHeadingChange.bind(this)}
             onCardImageChange={this.onCardImageChange.bind(this)}
@@ -329,6 +333,7 @@ class WriteArticle extends React.Component {
               this.state.contents,
               this.state.topic,
               this.state.category,
+              null,
             );
             this.props.setDraft();
             Actions.pop();
@@ -464,6 +469,32 @@ class WriteArticle extends React.Component {
     return null;
   }
 
+  renderEditingArticle() {
+    const {COLORS, editing_article_id} = this.props;
+    if (!editing_article_id) {
+      return null;
+    }
+    return (
+      <View
+        style={{
+          marginHorizontal: 25,
+          backgroundColor: COLORS.LIGHT_BLUE,
+          padding: 3,
+          borderRadius: 7,
+        }}>
+        <Text
+          style={{
+            fontFamily: FONTS.PRODUCT_SANS,
+            fontSize: 12,
+            color: COLORS.LIGHT,
+            alignSelf: 'center',
+          }}>
+          You are editing an article
+        </Text>
+      </View>
+    );
+  }
+
   render() {
     const {statusBarColor, barStyle} = this.getStatusBarColor();
     return (
@@ -497,6 +528,7 @@ const mapStateToProps = state => {
     category: state.write.category,
     alertVisible: state.write.alertVisible,
     alertMessage: state.write.alertMessage,
+    editing_article_id: state.write.editing_article_id,
 
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,

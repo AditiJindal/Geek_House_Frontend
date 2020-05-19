@@ -93,6 +93,18 @@ export default (state = INITIAL_STATE, action) => {
     case ACTIONS.BOOKMARKS_ERROR:
       return {...state, bookmarks_error: action.payload};
 
+    case ACTIONS.PUBLISH_SUCCESS:
+      state.articles = state.articles.map(article => {
+        if (article.article_id === action.payload.article_id) {
+          article.category = action.payload.category;
+          article.contents = action.payload.contents;
+          article.image = action.payload.image;
+          article.topic = action.payload.topic;
+        }
+        return article;
+      });
+      return {...state, articles: [...state.articles]};
+
     case ACTIONS.GET_BOOKMARKS:
       return {
         ...state,

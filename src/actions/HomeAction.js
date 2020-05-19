@@ -189,38 +189,36 @@ export const getWelcome = () => {
 export const submitFeedback = feedback_obj => {
   // this function is responsible for uploading data,
   //nothing will be passed to the reducer
-  return dispatch => {
-    const local_image_url = feedback_obj.image_url;
-    if (local_image_url) {
-      httpClient
-        .get(URLS.imageupload, {params: {type: 'feedback', image_type: 'jpeg'}})
-        .then(({data}) => {
-          const preSignedURL = decrypt(data.url);
-          uploadImage(
-            {contentType: 'image/jpeg', uploadUrl: preSignedURL},
-            local_image_url,
-          )
-            .then(() => {
-              feedback_obj.image_url = decrypt(data.key);
-              httpClient.post(URLS.feedback, feedback_obj);
-            })
-            .catch(e =>
-              logEvent(LOG_EVENT.ERROR, {
-                errorLine: 'HOME ACTION - 86',
-                description: e.toString(),
-              }),
-            );
-        })
-        .catch(e =>
-          logEvent(LOG_EVENT.ERROR, {
-            errorLine: 'HOME ACTION - 87',
-            description: e.toString(),
-          }),
-        );
-    } else {
-      httpClient.post(URLS.feedback, feedback_obj);
-    }
-  };
+  const local_image_url = feedback_obj.image_url;
+  if (local_image_url) {
+    httpClient
+      .get(URLS.imageupload, {params: {type: 'feedback', image_type: 'jpeg'}})
+      .then(({data}) => {
+        const preSignedURL = decrypt(data.url);
+        uploadImage(
+          {contentType: 'image/jpeg', uploadUrl: preSignedURL},
+          local_image_url,
+        )
+          .then(() => {
+            feedback_obj.image_url = decrypt(data.key);
+            httpClient.post(URLS.feedback, feedback_obj);
+          })
+          .catch(e =>
+            logEvent(LOG_EVENT.ERROR, {
+              errorLine: 'HOME ACTION - 86',
+              description: e.toString(),
+            }),
+          );
+      })
+      .catch(e =>
+        logEvent(LOG_EVENT.ERROR, {
+          errorLine: 'HOME ACTION - 87',
+          description: e.toString(),
+        }),
+      );
+  } else {
+    httpClient.post(URLS.feedback, feedback_obj);
+  }
 };
 
 export const exploreSearch = category => {

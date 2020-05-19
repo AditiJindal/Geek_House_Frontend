@@ -121,6 +121,29 @@ class Home extends React.PureComponent {
     ];
   }
 
+  renderHeader(){
+    const {COLORS} = this.props;
+    return (
+      <ShadowView style={{...styles.GeekHouseView,
+        backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
+        <View style={{flexDirection:'row',alignItems:'center'}}>
+        {this.renderAvatar()}
+        <Text style={{...styles.TextStyle, color:COLORS.DARK}}>
+          home
+        </Text>
+        </View>
+        <View>
+        <View style={{backgroundColor:COLORS.GREEN, position:'absolute', top:2, right:2, borderRadius:4, height:8, width:8, elevation:4}}/>
+        <TouchableOpacity onPress={()=>Actions.notification()}
+          style={{padding:10, backgroundColor:(this.props.theme==='light')?"#F8F8F8":"#202020", borderRadius:100}}>
+          <Icon name="bell" color={COLORS.DARK} size={16} type={'feather'} />
+        </TouchableOpacity>
+        </View>
+        
+      </ShadowView>
+    )
+  }
+
   getInitials(name){
     if (!name){return null}
     let initials = name.match(/\b\w/g) || [];
@@ -169,7 +192,7 @@ class Home extends React.PureComponent {
                 {this.props.data.email}
               </Text>
               <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:11,alignSelf:'flex-end',color:COLORS.GRAY}}>
-                Geek House v1.16.3 A
+                Geek House v1.16.3 B
               </Text>
             </View>
           </View>
@@ -270,38 +293,35 @@ class Home extends React.PureComponent {
   }
 
   renderAvatar(){
-    const {COLORS, loading, overlayVisible, theme, image_adder} = this.props;
+    const {COLORS, loading,  theme} = this.props;
     const isUpdateAvailable = this.props.welcomeData.latestVersion>LATEST_APP_VERSION
-    if (overlayVisible || !image_adder){
-      return null
-    }
-    else{
-      if (loading){
-        return (
-          <TouchableOpacity style={{height:42, width:42, justifyContent:'center', alignItems:'center'}}
-            onPress={()=>this.props.toggleOverlay({overlayVisible:true})}>
-            <Loading size={42} white={theme!=='light'}/>
-          </TouchableOpacity>
-        )
-      }
-      return(
-        <TouchableOpacity onPress={()=>this.props.toggleOverlay({overlayVisible:true})}
-          style={{borderRadius:30, backgroundColor:COLORS.LESS_LIGHT, elevation:5}}>
-          {
-            (isUpdateAvailable)?(
-              <View style={{height:10, width:10, borderRadius:5, borderColor:COLORS.LESS_LIGHT, borderWidth:1,
-              position:'absolute', top:1, right:1, backgroundColor:COLORS.YELLOW, elevation:6}}/>
-            ):(null)
-          }
-          <Avatar
-            size={42}
-            COLORS={COLORS}
-            uri={this.imageUrlCorrector(this.props.data.image_url)}
-            onPress={()=>this.props.toggleOverlay({overlayVisible:true})}
-          />
+
+    if (loading){
+      return (
+        <TouchableOpacity style={{height:42, width:42, justifyContent:'center', alignItems:'center'}}
+          onPress={()=>this.props.toggleOverlay({overlayVisible:true})}>
+          <Loading size={42} white={theme!=='light'}/>
         </TouchableOpacity>
       )
     }
+    return(
+      <TouchableOpacity onPress={()=>this.props.toggleOverlay({overlayVisible:true})}
+        style={{borderRadius:30, backgroundColor:COLORS.LESS_LIGHT, elevation:5}}>
+        {
+          (isUpdateAvailable)?(
+            <View style={{height:10, width:10, borderRadius:5, borderColor:COLORS.LESS_LIGHT, borderWidth:1,
+            position:'absolute', top:1, right:1, backgroundColor:COLORS.YELLOW, elevation:6}}/>
+          ):(null)
+        }
+        <Avatar
+          size={42}
+          COLORS={COLORS}
+          uri={this.imageUrlCorrector(this.props.data.image_url)}
+          onPress={()=>this.props.toggleOverlay({overlayVisible:true})}
+        />
+      </TouchableOpacity>
+    )
+    
   }
 
   renderWelcome(){
@@ -566,13 +586,7 @@ class Home extends React.PureComponent {
           backgroundColor={COLORS.LIGHT}/>
         {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
         {changeNavigationBarColor(statusBarColor, (this.props.theme==='light'))}
-        <ShadowView style={{...styles.GeekHouseView,
-          backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
-          <Text style={{...styles.TextStyle, color:COLORS.DARK}}>
-            home
-          </Text>
-          {this.renderAvatar()}
-        </ShadowView>
+        {this.renderHeader()}
         {this.renderOverlay()}
         {this.renderHome()}
         
@@ -620,6 +634,7 @@ const styles = StyleSheet.create({
   TextStyle:{
     fontSize:24,
     fontFamily:FONTS.GOTHAM_BLACK,
+    marginLeft:10
   },
   AvatarTextStyle:{
     fontSize:22,

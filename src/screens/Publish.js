@@ -30,6 +30,22 @@ class Publish extends React.PureComponent {
     analytics().setCurrentScreen('Publish', 'Publish');
   }
 
+  imageUrlCorrector(image_url) {
+    if (!image_url) {
+      return null;
+    }
+    if (!this.props.image_adder) {
+      return '';
+    }
+    if (
+      image_url.substring(0, 4) !== 'http' &&
+      image_url.substring(0, 4) !== 'file'
+    ) {
+      image_url = this.props.image_adder + image_url;
+    }
+    return image_url;
+  }
+
   renderBack() {
     const {COLORS} = this.props;
     return (
@@ -136,7 +152,7 @@ class Publish extends React.PureComponent {
 
   renderPreview() {
     data = {
-      image: this.props.image.uri,
+      image: this.imageUrlCorrector(this.props.image.uri),
       article_id: -1,
       topic: this.props.topic,
       preview_contents: this.props.contents,
@@ -254,7 +270,7 @@ class Publish extends React.PureComponent {
   }
 
   render() {
-    const {COLORS} = this.props;
+    const {COLORS, editing_article_id} = this.props;
     return (
       <View style={{flex: 1, backgroundColor: COLORS.LIGHT}}>
         {this.props.published ? this.renderClose() : this.renderBack()}
@@ -265,11 +281,15 @@ class Publish extends React.PureComponent {
               Actions.pop();
             })
           : this.renderBottomButton(
-              'PUBLISH',
+              editing_article_id ? 'SAVE' : 'PUBLISH',
               ['#11998e', '#38ef7d'],
               async data_to_send => {
                 const article = await uploadArticleImages(data_to_send);
-                this.props.publishArticle(article, this.animation);
+                this.props.publishArticle(
+                  article,
+                  this.animation,
+                  editing_article_id,
+                );
               },
             )}
       </View>
@@ -279,12 +299,15 @@ class Publish extends React.PureComponent {
 
 const mapStateToProps = state => {
   return {
+    image_adder: state.home.image_adder,
+
     contents: state.write.contents,
     topic: state.write.topic,
     category: state.write.category,
     image: state.write.image,
     loading: state.write.loading,
     published: state.write.published,
+    editing_article_id: state.write.editing_article_id,
 
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,

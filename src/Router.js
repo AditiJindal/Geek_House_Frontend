@@ -20,6 +20,7 @@ import About from './screens/About';
 import Feedback from './screens/Feedback';
 import Bookmark from './screens/Bookmark';
 import NotificationArticle from './screens/NotificationArticle';
+import Notification from './screens/Notification';
 import Policy from './screens/Policy';
 import Explore from './screens/Explore';
 import BottomTab from './components/BottomTab';
@@ -68,6 +69,7 @@ const RouterComponent = () => {
             component={NotificationArticle}
             hideNavBar
           />
+          <Scene key="notification" component={Notification} hideNavBar />
         </Scene>
         <Scene key="policy" component={Policy} hideNavBar />
       </Scene>

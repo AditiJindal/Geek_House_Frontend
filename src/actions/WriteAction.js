@@ -36,8 +36,11 @@ export const getMyArticles = (myArticlesLength, reload) => {
   }
 };
 
-export const setContents = (contents, topic, category) => {
-  return {type: ACTIONS.SET_CONTENTS, payload: {contents, topic, category}};
+export const setContents = (contents, topic, category, article_id = null) => {
+  return {
+    type: ACTIONS.SET_CONTENTS,
+    payload: {contents, topic, category, article_id},
+  };
 };
 
 export const setImage = image => {
@@ -98,11 +101,15 @@ export const uploadArticleImages = async article => {
   return article;
 };
 
-export const publishArticle = (article, success_animation) => {
+export const publishArticle = (
+  article,
+  success_animation,
+  editing_article_id = null,
+) => {
   return dispatch => {
     dispatch({type: ACTIONS.WRITE_LOADING});
 
-    if (article.image) {
+    if (article.image && article.image.substring(0, 4) === 'file') {
       httpClient
         .get(URLS.imageupload, {params: {type: 'article', image_type: 'jpeg'}})
         .then(response => {
@@ -114,13 +121,15 @@ export const publishArticle = (article, success_animation) => {
           )
             .then(() => {
               article.image = decrypt(response.data.key);
-              httpClient.post(URLS.publish, article).then(({data}) => {
-                dispatch({
-                  type: ACTIONS.PUBLISH_SUCCESS,
-                  payload: {...article, ...data},
+              httpClient
+                .post(URLS.publish, {...article, editing_article_id})
+                .then(({data}) => {
+                  success_animation.play();
+                  dispatch({
+                    type: ACTIONS.PUBLISH_SUCCESS,
+                    payload: {...article, ...data},
+                  });
                 });
-                success_animation.play();
-              });
             })
             .catch(e =>
               logEvent(LOG_EVENT.ERROR, {
@@ -137,13 +146,13 @@ export const publishArticle = (article, success_animation) => {
         );
     } else {
       httpClient
-        .post(URLS.publish, article)
+        .post(URLS.publish, {...article, editing_article_id})
         .then(({data}) => {
+          success_animation.play();
           dispatch({
             type: ACTIONS.PUBLISH_SUCCESS,
             payload: {...article, ...data},
           });
-          success_animation.play();
         })
         .catch(e => {
           logEvent(LOG_EVENT.ERROR, {
