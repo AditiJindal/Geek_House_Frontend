@@ -87,8 +87,8 @@ export const COLORS_DARK_THEME = {
   SHADOW_COLOR: '#000000',
   IS_LIGHT_THEME: false,
 };
-// export const BASE_URL_PROD = "https://stark-beach-17150.herokuapp.com"
-export const BASE_URL_PROD = 'http://13.235.176.50:8000';
+
+export const BASE_URL_PROD = 'https://tjproductions.xyz'; // 'http://13.235.176.50:8000';
 export const BASE_URL_DEBUG = 'http://192.168.0.103:8000';
 export const BASE_URL = __DEV__ ? BASE_URL_DEBUG : BASE_URL_PROD;
 
@@ -333,7 +333,7 @@ export const CATEGORY_IMAGES = {
 
 export const DYNAMIC_LINK_DOMAIN = 'https://geekhouse.page.link';
 
-export const LATEST_APP_VERSION = 36;
+export const LATEST_APP_VERSION = 37;
 
 export const MAX_USERS_IN_A_GROUP = 20;
 

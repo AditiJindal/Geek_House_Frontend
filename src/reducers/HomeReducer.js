@@ -2,7 +2,7 @@ import {ACTIONS} from '../actions/types';
 
 const INITIAL_STATE = {
   overlayVisible: false,
-  welcomeData: {},
+  welcomeData: {notifications: []},
   loading: true,
   error: '',
   selected_category: '',

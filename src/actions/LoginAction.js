@@ -485,7 +485,7 @@ export const loginGoogle = () => {
         );
         auth().signInWithCredential(credential);
 
-        pushToken = await getFCMToken();
+        const pushToken = await getFCMToken();
         analytics().logLogin({method: 'google'});
         let new_data = {
           id: response.user.id,
@@ -531,7 +531,6 @@ export const loginGoogle = () => {
           .catch(e => {
             dispatch({type: ACTIONS.LOADING_GOOGLE, payload: false});
           });
-        // console.log("RESPONE : ", response)
       })
       .catch(e => {
         dispatch({type: ACTIONS.LOADING_GOOGLE, payload: false});

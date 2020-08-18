@@ -122,7 +122,7 @@ class Home extends React.PureComponent {
   }
 
   renderHeader(){
-    const {COLORS} = this.props;
+    const {COLORS, new_notifications} = this.props;
     return (
       <ShadowView style={{...styles.GeekHouseView,
         backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT}}>
@@ -133,7 +133,11 @@ class Home extends React.PureComponent {
         </Text>
         </View>
         <View>
-        <View style={{backgroundColor:COLORS.GREEN, position:'absolute', top:2, right:2, borderRadius:4, height:8, width:8, elevation:4}}/>
+        {
+          (new_notifications)?(
+            <View style={{backgroundColor:COLORS.GREEN, position:'absolute', top:2, right:2, borderRadius:4, height:8, width:8, elevation:4}}/>
+          ):null
+        }
         <TouchableOpacity onPress={()=>Actions.notification()}
           style={{padding:10, backgroundColor:(this.props.theme==='light')?"#F8F8F8":"#202020", borderRadius:100}}>
           <Icon name="bell" color={COLORS.DARK} size={16} type={'feather'} />
@@ -192,7 +196,7 @@ class Home extends React.PureComponent {
                 {this.props.data.email}
               </Text>
               <Text style={{fontFamily:FONTS.PRODUCT_SANS, fontSize:11,alignSelf:'flex-end',color:COLORS.GRAY}}>
-                Geek House v1.16.3 B
+                Geek House v1.17.0 A
               </Text>
             </View>
           </View>
@@ -293,8 +297,12 @@ class Home extends React.PureComponent {
   }
 
   renderAvatar(){
-    const {COLORS, loading,  theme} = this.props;
+    const {COLORS, loading,  theme, error} = this.props;
     const isUpdateAvailable = this.props.welcomeData.latestVersion>LATEST_APP_VERSION
+
+    if (error){
+      return null
+    }
 
     if (loading){
       return (
@@ -305,7 +313,7 @@ class Home extends React.PureComponent {
       )
     }
     return(
-      <TouchableOpacity onPress={()=>this.props.toggleOverlay({overlayVisible:true})}
+      <View
         style={{borderRadius:30, backgroundColor:COLORS.LESS_LIGHT, elevation:5}}>
         {
           (isUpdateAvailable)?(
@@ -319,7 +327,7 @@ class Home extends React.PureComponent {
           uri={this.imageUrlCorrector(this.props.data.image_url)}
           onPress={()=>this.props.toggleOverlay({overlayVisible:true})}
         />
-      </TouchableOpacity>
+      </View>
     )
     
   }
@@ -613,6 +621,7 @@ const mapStateToProps = (state) => {
     overlayVisible: state.home.overlayVisible,
     selected_category: state.home.selected_category,
     canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
+    new_notifications: !!state.home.welcomeData.notifications.length,
 
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,

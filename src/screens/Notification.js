@@ -99,6 +99,16 @@ class Notification extends React.Component {
         keyExtractor={(_, index) => index.toString()}
         renderItem={this.renderNotification.bind(this)}
         contentContainerStyle={{flexGrow: 1}}
+        ListHeaderComponent={this.renderHeader()}
+        ListEmptyComponent={
+          <View
+            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <Text style={{...styles.NoNotifications, color: COLORS.DARK}}>
+              No new notifications
+            </Text>
+            <View style={{height: 60}} />
+          </View>
+        }
       />
     );
   }
@@ -106,10 +116,9 @@ class Notification extends React.Component {
   render() {
     const {COLORS} = this.props;
     return (
-      <SView style={{flex: 1, backgroundColor: COLORS.LIGHT}}>
-        {this.renderHeader()}
+      <View style={{flex: 1, backgroundColor: COLORS.LIGHT}}>
         {this.renderNotifications()}
-      </SView>
+      </View>
     );
   }
 }
@@ -149,5 +158,9 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRODUCT_SANS,
     fontSize: 10,
     marginTop: 5,
+  },
+  NoNotifications: {
+    fontFamily: FONTS.PRODUCT_SANS_BOLD,
+    fontSize: 18,
   },
 });

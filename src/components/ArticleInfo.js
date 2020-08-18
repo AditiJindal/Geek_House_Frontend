@@ -47,8 +47,10 @@ class ArticleInfo extends Component {
   }
 
   renderCardViews(cards){
+    const {adIndex} = this.state
+    const {adsManager, canShowAdsRemote, theme, COLORS, image_adder} = this.props
 
-    if (!this.state.adIndex && cards){
+    if (!adIndex && cards){
       this.setState({adIndex: _.random(1, cards.length-1)})
     }
 
@@ -59,17 +61,17 @@ class ArticleInfo extends Component {
             (item, i) => {
               return (
               <View key={i.toString()}>
-                {(i===this.state.adIndex && this.props.adsManager && this.props.canShowAdsRemote)?
-                  <NativeAdsComponent theme={this.props.theme}
-                  COLORS = {this.props.COLORS} adsManager={this.props.adsManager} />:
+                {(i===adIndex && adsManager && canShowAdsRemote)?
+                  <NativeAdsComponent theme={theme}
+                  COLORS = {COLORS} adsManager={adsManager} />:
                   null
                 }
                 <CardView 
-                  theme={this.props.theme}
+                  theme={theme}
                   COLORS = {COLORS}
                   key={item.sub_heading}
                   cardData={item}
-                  image_adder={this.props.image_adder}
+                  image_adder={image_adder}
                 />
               </View>
               )
@@ -96,19 +98,21 @@ class ArticleInfo extends Component {
   }
 
   showStarRating(){
-    if (this.props.selectedArticleInfo.cannotComment){
+    const {selectedArticleInfo, COLORS} = this.props;
+    const {userCommentRating} = this.state
+
+    if (selectedArticleInfo.cannotComment){
       return null
     }
-    const {COLORS} = this.props
 
     return (
       <StarRating
         selectedStar={(rating)=>{this.setState({userCommentRating:rating})}}
         activeOpacity={0.8}
         maxStars={5}
-        rating={this.state.userCommentRating}
+        rating={userCommentRating}
         halfStarEnabled={true}
-        emptyStarColor={(this.props.theme==='light')?COLORS.LESS_LIGHT:COLORS.GRAY}
+        emptyStarColor={(COLORS.THEME==='light')?COLORS.LESS_LIGHT:COLORS.GRAY}
         halfStarColor={COLORS.STAR_YELLOW}
         fullStarColor={COLORS.STAR_YELLOW}
         starSize={28}
@@ -121,7 +125,8 @@ class ArticleInfo extends Component {
   }
 
   renderCommentBox(){
-    const {COLORS,  userData} = this.props
+    const {commentText, userCommentRating} = this.state
+    const {COLORS,  userData, article_id} = this.props
 
     return (
       <View>
@@ -129,7 +134,7 @@ class ArticleInfo extends Component {
           backgroundColor:COLORS.LESSER_LIGHT, 
           padding:10, borderRadius:10, marginBottom:15}}>
           <TextInput
-            value={this.state.commentText}
+            value={commentText}
             onChangeText={(text)=>{this.setState({commentText:text})}}
             textAlignVertical='top'
             keyboardAppearance="light"
@@ -152,11 +157,11 @@ class ArticleInfo extends Component {
             style={{backgroundColor:COLORS.GREEN, 
               alignSelf:'flex-end', padding:10, borderRadius:30,elevation:7, margin:15}}
             onPress={()=>{
-              if (this.state.userCommentRating!==-1 || this.state.commentText){
+              if (userCommentRating!==-1 || commentText){
                 this.props.submitComment({
-                  rating:this.state.userCommentRating,
-                  comment: this.state.commentText,
-                  article_id: this.props.article_id
+                  rating:userCommentRating,
+                  comment: commentText,
+                  article_id: article_id
                 }, userData.name, userData.image_url)
               }
               else{
@@ -177,24 +182,29 @@ class ArticleInfo extends Component {
   }
 
   renderOptions(){
-    const {COLORS, selectedArticleInfo} = this.props;
-    const {cards, topic, category, image, article_id} = selectedArticleInfo
+    const {COLORS, selectedArticleInfo, article_id} = this.props;
+    const {cards, topic, category, image, dynamicLink, my_article, cannotComment, bookmarked} = selectedArticleInfo;
+
     if (!cards){return null}
     const contents = cards.map((card, index)=>{return {...card, key:index}})
 
-    if ((this.props.article_id===-1) || this.props.selectedArticleInfo.my_article || this.props.selectedArticleInfo.cannotComment){
+    if ((this.props.article_id===-1)){
+      return null
+    }
+
+    if (my_article || cannotComment){
       return (
         <Ripple rippleContainerBorderRadius={7} style={{backgroundColor:COLORS.LIGHT,
           paddingVertical:10, borderRadius:7, marginTop:15, marginLeft:15, borderWidth:1.2,
           alignItems:'center', flexDirection:'row', width:100, justifyContent:'center',
           alignSelf:'flex-start', marginVertical:10, elevation:4, marginBottom:-5, borderColor:COLORS.YELLOW}}
           onPress = {()=>{
-            this.props.getArticleInfo(this.props.article_id, false);
+            this.props.getArticleInfo(article_id, false);
             this.setState({scrollY: new Animated.Value(0), adIndex:_.random});
             this.props.onBackdropPress()
             this.props.setContents(contents, topic, category, article_id)
             this.props.setImage({uri:image})
-            Actions.jump("writearticle", {article_id:this.props.article_id})
+            Actions.jump("writearticle", {article_id})
           }}>
           <Icon name={"create"} type="material" 
             size={18} color={COLORS.YELLOW}/>
@@ -205,14 +215,14 @@ class ArticleInfo extends Component {
         </Ripple>
       )
     }
-    const { bookmarked } = this.props.selectedArticleInfo;
+
     return(
       <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center', marginTop:15}}>
         <Ripple rippleContainerBorderRadius={7} style={{borderColor:(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK,
           borderWidth:1.2, paddingVertical:10, borderRadius:7,
           alignItems:'center', flexDirection:'row', width:130, justifyContent:'space-evenly',
           alignSelf:'flex-start', marginVertical:10, elevation:4, backgroundColor:COLORS.LIGHT}}
-          onPress = {()=>{this.props.bookmarkArticle(this.props.article_id, bookmarked)}}>
+          onPress = {()=>{this.props.bookmarkArticle(article_id, bookmarked)}}>
           <Icon name={(bookmarked)?"bookmark":"bookmark-border"} type="material" 
           size={20} color={(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK}/>
           <Text style={{fontFamily:FONTS.RALEWAY, color:(bookmarked)?COLORS.STAR_YELLOW:COLORS.LESSER_DARK,
@@ -225,8 +235,8 @@ class ArticleInfo extends Component {
           alignItems:'center', flexDirection:'row', width:130, justifyContent:'space-evenly',
           alignSelf:'flex-start', marginVertical:10, marginLeft:20, elevation:4, backgroundColor:COLORS.GREEN}}
           onPress = {()=>{
-            analytics().logShare({content_type:'article', item_id:this.props.article_id})
-            Share.share({message:`View this article on ${selectedArticleInfo.topic} in Geek House using this link ${selectedArticleInfo.dynamicLink}`})
+            analytics().logShare({content_type:'article', item_id:article_id})
+            Share.share({message:`View this article on ${topic} in Geek House using this link ${dynamicLink}`})
           }}>
           <Icon name={"share"} type="material" 
             size={20} color={COLORS.LIGHT}/>
@@ -240,8 +250,10 @@ class ArticleInfo extends Component {
   }
 
   renderComments(comments){
-    const {COLORS} = this.props;
-    if (this.props.selectedArticleInfo.cannotComment){
+    const {COLORS, selectedArticleInfo} = this.props;
+    const {cannotComment, my_article} = selectedArticleInfo
+
+    if (cannotComment){
       return null
     }
     return (
@@ -252,11 +264,11 @@ class ArticleInfo extends Component {
           marginLeft:15}}>Comments</Text>
 
         <View style={{
-            backgroundColor:(this.props.theme==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
+            backgroundColor:(COLORS.THEME==='light')?COLORS.LIGHT:COLORS.LESS_LIGHT, 
             borderColor:COLORS_DARK_THEME.GRAY, borderWidth:2,elevation:3,
             borderRadius:15, padding:10, margin:10}}>
           {
-            (this.props.selectedArticleInfo.my_article)?
+            (my_article)?
             null:
             this.renderCommentBox()
           }
@@ -289,7 +301,7 @@ class ArticleInfo extends Component {
                                 disabled={true}
                                 showRating={true}
                                 rating={item.rating}
-                                emptyStarColor={(this.props.theme==='light')?COLORS.LESS_LIGHT:COLORS.GRAY}
+                                emptyStarColor={(COLORS.THEME==='light')?COLORS.LESS_LIGHT:COLORS.GRAY}
                                 halfStarColor={COLORS.STAR_YELLOW}
                                 fullStarColor={COLORS.STAR_YELLOW}
                                 starSize={14}
@@ -324,7 +336,7 @@ class ArticleInfo extends Component {
                 <Text style={{fontFamily:FONTS.LATO, fontSize:16, margin:10,
                   color:COLORS.LESS_DARK}}>
                   {
-                    (!this.props.selectedArticleInfo.my_article)?
+                    (!my_article)?
                     'Be the first to comment':
                     'No comments yet'
                   }
@@ -355,9 +367,9 @@ class ArticleInfo extends Component {
   }
 
   renderArticle(){
-    const {COLORS} = this.props;
+    const {COLORS, imageSource, article_id} = this.props;
     const {author, cards, views, category, comments, author_image,
-      rating, topic} = this.props.selectedArticleInfo;
+      rating, topic, cannotComment} = this.props.selectedArticleInfo;
     
     const headerHeight = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
@@ -442,13 +454,13 @@ class ArticleInfo extends Component {
           <LinearGradient style={{width:"100%", height:"100%",
             borderTopLeftRadius:BORDER_RADIUS,
               borderTopRightRadius:BORDER_RADIUS,overflow:'hidden'}}
-            colors={(this.props.theme==='light')?
+            colors={(COLORS.THEME==='light')?
               ["rgb(20,20,20)", "rgb(50,50,50)"]:
               ["rgb(200,200,200)", "rgb(240,240,240)"]}>
             <Animated.Image
               style={{transform: [{scale:bigImageScale}], opacity:bigImageOpacity, 
                 height:"100%", width:"100%"}}
-              source={this.props.imageSource}
+              source={imageSource}
             />
           </LinearGradient>
           <Animated.View
@@ -528,7 +540,7 @@ class ArticleInfo extends Component {
                     disabled={true}
                     showRating={true}
                     rating={rating}
-                    emptyStarColor={(this.props.theme==='light')?COLORS.LESS_LIGHT:COLORS.GRAY}
+                    emptyStarColor={(COLORS.THEME==='light')?COLORS.LESS_LIGHT:COLORS.GRAY}
                     halfStarColor={COLORS.STAR_YELLOW}
                     fullStarColor={COLORS.STAR_YELLOW}
                     starSize={20}
@@ -544,14 +556,14 @@ class ArticleInfo extends Component {
                   </Text>
                 </Animated.View>:
                 (
-                  (this.props.selectedArticleInfo.cannotComment)? 
+                  (cannotComment)? 
                   null:
                   (
                     <Animated.Text style={{marginLeft:16, fontSize:10, 
                       fontFamily:FONTS.HELVETICA_NEUE,
                       transform:[{translateY: textAnim4}],opacity:opacityChange,
                       color:COLORS.LIGHT_GRAY}}>
-                      {(this.props.article_id!==-1)?"*Not yet rated":"*In preview mode"}
+                      {(article_id!==-1)?"*Not yet rated":"*In preview mode"}
                     </Animated.Text>
                   )
                 )
@@ -562,7 +574,7 @@ class ArticleInfo extends Component {
           {this.renderCardViews(cards)}
           {this.renderOptions()}
           {
-            (this.props.article_id!==-1)?
+            (article_id!==-1)?
             this.renderComments(comments):
             <View style={{width:"100%", margin:10}}>
               <Text style={{marginLeft:10, fontSize:14, 
@@ -579,35 +591,34 @@ class ArticleInfo extends Component {
   }
 
   render() {
-    const {COLORS} = this.props;
-    if (!this.props.isVisible){
+    const {COLORS, isVisible, loading, article_id, topic, category, userData,preview_contents, selectedArticleInfo} = this.props;
+    
+    if (!isVisible){
       return null;
     }
-    else{
-      if (this.props.article_id!==-1){
-        preview_article=false
-      }
-      else{
+    
+    let preview_article = false
+    if (article_id===-1){
         preview_article = {
           article_id:-1,
           already_viewed:false,
-          topic:this.props.topic,
-          category: this.props.category,
-          author: this.props.userData.name,
-          author_image:this.props.userData.image_url,
-          cards:this.props.preview_contents
+          topic:topic,
+          category: category,
+          author: userData.name,
+          author_image:userData.image_url,
+          cards:preview_contents
         }
       }
       
-      if ((this.props.selectedArticleInfo.article_id!==this.props.article_id) && (!this.props.loading)){
-        this.props.getArticleInfo(this.props.article_id, preview_article)
+      if ((selectedArticleInfo.article_id!==article_id) && (!loading)){
+        this.props.getArticleInfo(article_id, preview_article)
       }
 
       return(
         <Overlay
-          isVisible={this.props.isVisible}
+          isVisible={isVisible}
           overlayStyle={{...styles.OverlayStyle, backgroundColor:COLORS.LIGHT}}
-          onBackdropPress={()=>{this.props.getArticleInfo(this.props.article_id, false);
+          onBackdropPress={()=>{this.props.getArticleInfo(article_id, false);
             this.setState({scrollY: new Animated.Value(0), adIndex:_.random});this.props.onBackdropPress()}}
           width={`${OVERLAY_WIDTH_PERCENT}%`}
           height="90%"
@@ -616,21 +627,21 @@ class ArticleInfo extends Component {
             <StatusBar 
               barStyle={'light-content'}
               backgroundColor={COLORS.OVERLAY_COLOR}/>
-            {changeNavigationBarColor(COLORS.LIGHT, (this.props.theme==='light'))}
-            <TimedAlert theme={this.props.theme} onRef={ref=>this.timedAlert = ref} 
+            {changeNavigationBarColor(COLORS.LIGHT, (COLORS.THEME==='light'))}
+            <TimedAlert theme={COLORS.THEME} onRef={ref=>this.timedAlert = ref} 
               COLORS = {COLORS}
             />
             {
-              (this.props.loading)?
+              (loading)?
               <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-              <Loading size={128} white={(this.props.theme!=='light')}/>
+              <Loading size={128} white={(COLORS.THEME!=='light')}/>
               </View>:
               this.renderArticle()
             }
           </>
         </Overlay>
       );
-    }
+    
   }
 }
 
