@@ -26,6 +26,11 @@ const HOW_TO_GET_XP = [
   'You get additional 100 XP for using the app every hour.',
 ];
 
+const REWARDS = [
+  {level: 'Level 5', reward: 'Silver Avatar Ring'},
+  {level: 'Level 10', reward: 'Golden Avatar Ring'},
+];
+
 class Rewards extends React.PureComponent {
   renderHeader() {
     const {COLORS} = this.props;
@@ -106,17 +111,28 @@ class Rewards extends React.PureComponent {
         <Text style={{...styles.SubHeading, color: COLORS.LESS_DARK}}>
           Rewards & Perks
         </Text>
-        <Text
-          style={{
-            fontFamily: FONTS.RALEWAY,
-            fontSize: 12,
-            color: COLORS.LESS_DARK,
-            textAlign: 'justify',
-          }}>
-          # We are currently deciding exciting rewards and perks for you, until
-          then keep using the app and gain XP to get rewards as soon as they
-          arrive.
-        </Text>
+        {REWARDS.map(({level, reward}) => (
+          <View style={{flexDirection: 'row', flex: 1, alignItems: 'center'}}>
+            <Text style={{fontSize: 16, color: COLORS.LESS_DARK}}>•</Text>
+            <Text
+              style={{
+                fontSize: 14,
+                color: COLORS.LESS_DARK,
+                fontFamily: FONTS.RALEWAY_BOLD,
+                marginHorizontal: 5,
+              }}>
+              {level}
+            </Text>
+            <Text
+              style={{
+                fontFamily: FONTS.RALEWAY,
+                fontSize: 14,
+                color: COLORS.LESS_DARK,
+              }}>
+              {reward}
+            </Text>
+          </View>
+        ))}
       </View>
     );
   }
