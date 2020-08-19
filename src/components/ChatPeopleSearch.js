@@ -4,7 +4,6 @@ import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
 
 let searchValue = '';
-
 const determineSearchMethod = text => {
   if (text.includes('@')) {
     return 'email';

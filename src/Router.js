@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Scene,
-  Router,
-  ActionConst,
-  Tabs,
-  Drawer,
-} from 'react-native-router-flux';
+import {Scene, Router, ActionConst, Tabs} from 'react-native-router-flux';
 import Login from './screens/Login';
 import Home from './screens/Home';
 import Search from './screens/Search';

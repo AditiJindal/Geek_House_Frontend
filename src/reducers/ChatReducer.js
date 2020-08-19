@@ -3,7 +3,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {COLORS_LIGHT_THEME, COLORS_DARK_THEME, LOG_EVENT} from '../Constants';
 import analytics from '@react-native-firebase/analytics';
 import _ from 'lodash';
-import {logEvent} from '../actions/ChatAction';
 import perf from '@react-native-firebase/perf';
 import {database} from '../database';
 import uuid from 'uuid';
