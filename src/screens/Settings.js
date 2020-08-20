@@ -323,7 +323,6 @@ class Settings extends React.PureComponent {
       <View style={{margin: 10}}>
         <Avatar
           size={64}
-          COLORS={COLORS}
           uri={this.imageUrlCorrector(data.image_url)}
           onPress={() => {
             this.imageSelector.showImageSelector(this.pickImage.bind(this));

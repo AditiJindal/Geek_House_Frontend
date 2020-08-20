@@ -259,7 +259,6 @@ class Home extends React.PureComponent {
             {!loading ? (
               <Avatar
                 size={64}
-                COLORS={COLORS}
                 uri={this.imageUrlCorrector(this.props.data.image_url)}
               />
             ) : (
@@ -530,12 +529,7 @@ class Home extends React.PureComponent {
       );
     }
     return (
-      <View
-        style={{
-          borderRadius: 30,
-          backgroundColor: COLORS.LESS_LIGHT,
-          elevation: 5,
-        }}>
+      <View>
         {isUpdateAvailable ? (
           <View
             style={{
@@ -554,7 +548,6 @@ class Home extends React.PureComponent {
         ) : null}
         <Avatar
           size={42}
-          COLORS={COLORS}
           uri={this.imageUrlCorrector(this.props.data.image_url)}
           onPress={() => this.props.toggleOverlay({overlayVisible: true})}
         />

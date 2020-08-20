@@ -222,11 +222,7 @@ class Chat extends React.PureComponent {
             }
             this.imageSelector.showImageSelector(this.pickImage.bind(this));
           }}>
-          <Avatar
-            size={42}
-            COLORS={COLORS}
-            uri={this.state.newGroupData.group_image}
-          />
+          <Avatar size={42} uri={this.state.newGroupData.group_image} />
         </Ripple>
         <ImageSelector
           COLORS={this.props.COLORS}

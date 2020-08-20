@@ -213,7 +213,6 @@ export default class ChatPeople extends React.Component {
               <Avatar
                 size={IMAGE_SIZE}
                 onPress={() => this.setState({imageViewerActive: true})}
-                COLORS={COLORS}
                 uri={imageUrlCorrector(data.image_url, image_adder)}
               />
               {getBadge(this.props)}

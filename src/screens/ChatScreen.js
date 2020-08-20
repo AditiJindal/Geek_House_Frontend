@@ -132,7 +132,6 @@ class ChatScreen extends React.PureComponent {
       <View>
         <Avatar
           size={48}
-          COLORS={COLORS}
           uri={this.imageUrlCorrector(other_user_data.image_url)}
           onPress={this.handleChatInfo}
         />

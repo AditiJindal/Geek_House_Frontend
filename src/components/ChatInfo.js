@@ -171,7 +171,6 @@ class ChatInfo extends Component {
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Avatar
             size={48}
-            COLORS={COLORS}
             uri={imageUrlCorrector(image_url, this.props.image_adder)}
           />
           <Text

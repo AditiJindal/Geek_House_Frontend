@@ -1,5 +1,7 @@
 import React from 'react';
 import {TouchableOpacity, Dimensions, View} from 'react-native';
+import {connect} from 'react-redux';
+import {getLevel} from '../extraUtilities';
 import Image from 'react-native-fast-image';
 import ImageViewer from './ImageViewer';
 import Loading from '../components/Loading';
@@ -10,7 +12,16 @@ class Avatar extends React.Component {
   state = {isVisible: false};
 
   render() {
-    const {size, COLORS, uri, onPress, loading} = this.props;
+    const {size, COLORS, userXP, uri, onPress, loading} = this.props;
+    const {level} = getLevel(userXP);
+    let ringColor = null;
+    if (level >= 5) {
+      ringColor = '#C0C0C0';
+    }
+    if (level >= 10) {
+      ringColor = '#FFD700';
+    }
+
     if (loading) {
       return (
         <View
@@ -39,6 +50,11 @@ class Avatar extends React.Component {
             backgroundColor: COLORS.LIGHT,
             borderRadius: size / 2,
             elevation: 5,
+            borderWidth: ringColor ? 2 : 0,
+            borderColor: ringColor,
+            height: size,
+            width: size,
+            overflow: 'hidden',
           }}
           activeOpacity={1}
           onPress={() => {
@@ -48,14 +64,19 @@ class Avatar extends React.Component {
               this.setState({isVisible: true});
             }
           }}>
-          <Image
-            source={{uri}}
-            style={{borderRadius: size / 2, height: size, width: size}}
-          />
+          <Image source={{uri}} style={{flex: 1}} />
         </TouchableOpacity>
       </>
     );
   }
 }
 
-export default Avatar;
+const mapStateToProps = state => {
+  return {
+    userXP: state.home.welcomeData.userXP,
+
+    COLORS: state.chat.COLORS,
+  };
+};
+
+export default connect(mapStateToProps, {})(Avatar);
