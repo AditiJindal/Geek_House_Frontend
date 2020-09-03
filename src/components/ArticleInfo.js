@@ -37,6 +37,7 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import TimedAlert from './TimedAlert';
 import Ripple from './Ripple';
 import analytics from '@react-native-firebase/analytics';
+import {getRingColor} from '../extraUtilities';
 
 const screenWidth = Dimensions.get('screen').width;
 const OVERLAY_WIDTH_PERCENT = 88;
@@ -544,15 +545,18 @@ class ArticleInfo extends Component {
     const {COLORS, imageSource, article_id} = this.props;
     const {
       author,
+      author_image,
+      author_userXP,
       cards,
       views,
       category,
       comments,
-      author_image,
       rating,
       topic,
       cannotComment,
     } = this.props.selectedArticleInfo;
+
+    const ring_color = getRingColor(author_userXP);
 
     const headerHeight = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
@@ -686,7 +690,8 @@ class ArticleInfo extends Component {
               borderRadius: PROFILE_IMAGE_MAX_HEIGHT / 2,
               marginLeft: 16,
               overflow: 'hidden',
-              zIndex: 20,
+              borderWidth: ring_color ? 2 : 0,
+              borderColor: ring_color,
               backgroundColor: COLORS.LIGHT,
               elevation: 7,
               transform: [
@@ -700,7 +705,6 @@ class ArticleInfo extends Component {
               style={{
                 flex: 1,
                 transform: [{rotate: pictureRotate}],
-                resizeMode: 'cover',
               }}
             />
           </Animated.View>

@@ -9,12 +9,12 @@ import {
 import {FONTS, COLORS_LIGHT_THEME, MESSAGE_SPECIAL_ADDER} from '../Constants';
 import Typing from '../components/Typing';
 import {Icon} from 'react-native-elements';
-import Image from 'react-native-fast-image';
 import TimeAgo from 'react-native-timeago';
 import SView from 'react-native-simple-shadow-view';
 import toMaterialStyle from 'material-color-hash';
 import ImageViewer from './ImageViewer';
 import Avatar from '../components/Avatar';
+import {getRingColor} from '../extraUtilities';
 
 const screenWidth = Dimensions.get('screen').width;
 
@@ -214,6 +214,7 @@ export default class ChatPeople extends React.Component {
                 size={IMAGE_SIZE}
                 onPress={() => this.setState({imageViewerActive: true})}
                 uri={imageUrlCorrector(data.image_url, image_adder)}
+                ring_color={getRingColor(data.userXP)}
               />
               {getBadge(this.props)}
             </View>

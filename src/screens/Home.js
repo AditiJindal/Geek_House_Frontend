@@ -45,7 +45,7 @@ import ShadowView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 import ArticleTileAds from '../components/ArticleTileAds';
 import Avatar from '../components/Avatar';
-import {getDynamicLink} from '../extraUtilities';
+import {getDynamicLink, getRingColor} from '../extraUtilities';
 
 const OVERLAY_WIDTH_PERCENT = 75;
 class Home extends React.PureComponent {
@@ -260,6 +260,7 @@ class Home extends React.PureComponent {
               <Avatar
                 size={64}
                 uri={this.imageUrlCorrector(this.props.data.image_url)}
+                ring_color={getRingColor(welcomeData.userXP)}
               />
             ) : (
               <View
@@ -506,7 +507,8 @@ class Home extends React.PureComponent {
   }
 
   renderAvatar() {
-    const {COLORS, loading, theme, error} = this.props;
+    const {COLORS, loading, theme, error, welcomeData} = this.props;
+
     const isUpdateAvailable =
       this.props.welcomeData.latestVersion > LATEST_APP_VERSION;
 
@@ -528,6 +530,7 @@ class Home extends React.PureComponent {
         </TouchableOpacity>
       );
     }
+
     return (
       <View>
         {isUpdateAvailable ? (
@@ -550,6 +553,7 @@ class Home extends React.PureComponent {
           size={42}
           uri={this.imageUrlCorrector(this.props.data.image_url)}
           onPress={() => this.props.toggleOverlay({overlayVisible: true})}
+          ring_color={getRingColor(welcomeData.userXP)}
         />
       </View>
     );

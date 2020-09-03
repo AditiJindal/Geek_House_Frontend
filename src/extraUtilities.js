@@ -43,6 +43,24 @@ export const getLevel = userXP => {
   return {level, XPToLevelUp: -xpLeft, levelXP};
 };
 
+export const getRingColor = userXP => {
+  if (!userXP) {
+    return null;
+  }
+  // get the color of ring of the user from his XP
+  const {level} = getLevel(userXP);
+  let ring_color = null;
+
+  if (level >= 5) {
+    ring_color = '#C0C0C0';
+  }
+  if (level >= 10) {
+    ring_color = '#FFD700';
+  }
+
+  return ring_color;
+};
+
 export const getDynamicLink = async () => {
   const response = await dynamicLinks().getInitialLink();
   if (response && response.url) {

@@ -42,6 +42,7 @@ import TimedAlert from '../components/TimedAlert';
 import Avatar from '../components/Avatar';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from '@react-native-community/image-editor';
+import {getRingColor} from '../extraUtilities';
 
 class Settings extends React.PureComponent {
   state = {
@@ -317,7 +318,7 @@ class Settings extends React.PureComponent {
   }
 
   renderProfilePictureEditor() {
-    const {COLORS, data} = this.props;
+    const {data, welcomeData} = this.props;
 
     return (
       <View style={{margin: 10}}>
@@ -328,6 +329,7 @@ class Settings extends React.PureComponent {
             this.imageSelector.showImageSelector(this.pickImage.bind(this));
           }}
           loading={this.props.profile_pic_loading}
+          ring_color={getRingColor(welcomeData.userXP)}
         />
       </View>
     );
