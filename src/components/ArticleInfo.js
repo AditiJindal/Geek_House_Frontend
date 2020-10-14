@@ -27,10 +27,10 @@ import {
   COLOR_COMBOS,
   COLORS_LIGHT_THEME,
   COLORS_DARK_THEME,
+  SCREENS,
 } from '../Constants';
 import CardView from './CardView';
 import Loading from './Loading';
-import {Actions} from 'react-native-router-flux';
 import NativeAdsComponent from './NativeAdsComponent';
 import Avatar from './Avatar';
 import moment from 'moment';
@@ -140,7 +140,7 @@ class ArticleInfo extends Component {
 
     return (
       <StarRating
-        selectedStar={rating => {
+        selectedStar={(rating) => {
           this.setState({userCommentRating: rating});
         }}
         activeOpacity={0.8}
@@ -176,7 +176,7 @@ class ArticleInfo extends Component {
           }}>
           <TextInput
             value={commentText}
-            onChangeText={text => {
+            onChangeText={(text) => {
               this.setState({commentText: text});
             }}
             textAlignVertical="top"
@@ -284,7 +284,7 @@ class ArticleInfo extends Component {
             this.props.onBackdropPress();
             this.props.setContents(contents, topic, category, article_id);
             this.props.setImage({uri: image});
-            Actions.jump('writearticle', {article_id});
+            this.props.navigation.navigate(SCREENS.WriteArticle, {article_id});
           }}>
           <Icon
             name={'create'}
@@ -882,7 +882,7 @@ class ArticleInfo extends Component {
           {changeNavigationBarColor(COLORS.LIGHT, COLORS.THEME === 'light')}
           <TimedAlert
             theme={COLORS.THEME}
-            onRef={ref => (this.timedAlert = ref)}
+            onRef={(ref) => (this.timedAlert = ref)}
             COLORS={COLORS}
           />
           {loading ? (
@@ -899,7 +899,7 @@ class ArticleInfo extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     userData: state.login.data,
 
@@ -915,17 +915,14 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  {
-    getArticleInfo,
-    setAuthToken,
-    submitComment,
-    bookmarkArticle,
-    setContents,
-    setImage,
-  },
-)(ArticleInfo);
+export default connect(mapStateToProps, {
+  getArticleInfo,
+  setAuthToken,
+  submitComment,
+  bookmarkArticle,
+  setContents,
+  setImage,
+})(ArticleInfo);
 
 const styles = StyleSheet.create({
   OverlayStyle: {

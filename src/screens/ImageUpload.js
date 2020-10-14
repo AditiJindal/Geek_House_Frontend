@@ -3,7 +3,6 @@ import {View, Text, StyleSheet, StatusBar} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import {Icon} from 'react-native-elements';
-import {Actions} from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
@@ -20,7 +19,9 @@ import {
   ERROR_BUTTONS,
   COLORS_LIGHT_THEME,
   LOG_EVENT,
+  SCREENS,
 } from '../Constants';
+import Publish from './Publish';
 
 class ImageUpload extends React.PureComponent {
   constructor() {
@@ -128,7 +129,7 @@ class ImageUpload extends React.PureComponent {
         rippleContainerBorderRadius={10}
         onPress={() => {
           this.props.image.uri
-            ? Actions.replace('publish')
+            ? this.props.navigation.replace(SCREENS.Publish)
             : this.setState({alertVisible: true});
         }}>
         <Text
@@ -321,6 +322,7 @@ class ImageUpload extends React.PureComponent {
             data={{...data, category: this.props.category}}
             theme={this.props.theme}
             COLORS={this.props.COLORS}
+            navigation={this.props.navigation}
           />
           {this.state.relatedImageWords ? (
             <View
@@ -372,9 +374,7 @@ class ImageUpload extends React.PureComponent {
           marginRight: 15,
         }}>
         <Ripple
-          onPress={() => {
-            Actions.replace('writearticle');
-          }}
+          onPress={() => this.props.navigation.navigate(SCREENS.WriteArticle)}
           rippleContainerBorderRadius={30}>
           <SView
             style={{
@@ -449,7 +449,7 @@ class ImageUpload extends React.PureComponent {
           }}
           onThirdButtonPress={() => {
             this.setState({alertVisible: false});
-            Actions.replace('publish');
+            this.props.navigation.replace(SCREENS.Publish);
           }}
           onBackdropPress={() => {
             this.setState({alertVisible: false});

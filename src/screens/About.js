@@ -8,19 +8,21 @@ import {
   ScrollView,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {Actions} from 'react-native-router-flux';
 import {Icon} from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 import {Loading} from '../components';
 import {setAuthToken, getSettingsData} from '../actions/SettingsAction';
-import {FONTS} from '../Constants';
+import {FONTS, SCREENS, SCREEN_CLASSES} from '../Constants';
 
 class Settings extends React.PureComponent {
   componentDidMount() {
     this.props.setAuthToken();
-    analytics().logScreenView({screen_class: 'About', screen_name: 'about'});
+    analytics().logScreenView({
+      screen_class: SCREEN_CLASSES.About,
+      screen_name: SCREENS.About,
+    });
     this.props.getSettingsData();
   }
 
@@ -40,9 +42,7 @@ class Settings extends React.PureComponent {
         }}>
         <TouchableOpacity
           activeOpacity={1}
-          onPress={() => {
-            Actions.pop();
-          }}
+          onPress={() => this.props.navigation.goBack()}
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
@@ -112,9 +112,11 @@ class Settings extends React.PureComponent {
         <View style={{height: 20, width: 1}} />
         <TouchableOpacity
           key={'touchable_opacity'}
-          onPress={() => {
-            Actions.jump('policy', {navBar: COLORS.LIGHT});
-          }}
+          onPress={() =>
+            this.props.navigation.navigate(SCREENS.Policy, {
+              navBar: COLORS.LIGHT,
+            })
+          }
           style={{bottom: 10, position: 'absolute', alignSelf: 'center'}}>
           <Text
             style={{

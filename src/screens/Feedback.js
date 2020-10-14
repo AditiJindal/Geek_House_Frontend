@@ -10,7 +10,6 @@ import {
   ScrollView,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {Actions} from 'react-native-router-flux';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import {Icon} from 'react-native-elements';
 import SView from 'react-native-simple-shadow-view';
@@ -52,9 +51,7 @@ class Feedback extends React.PureComponent {
         }}>
         <TouchableOpacity
           activeOpacity={1}
-          onPress={() => {
-            Actions.pop();
-          }}
+          onPress={() => this.props.navigation.goBack()}
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
@@ -371,7 +368,9 @@ class Feedback extends React.PureComponent {
           alignSelf: 'center',
         }}
         onPress={() => {
-          !this.state.feedback_submitted ? this.onSubmit() : Actions.pop();
+          !this.state.feedback_submitted
+            ? this.onSubmit()
+            : this.props.navigation.goBack();
         }}>
         <SView
           style={{

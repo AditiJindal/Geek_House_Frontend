@@ -10,8 +10,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {Badge, Icon} from 'react-native-elements';
-import {Actions} from 'react-native-router-flux';
-import {FONTS} from '../Constants';
+import {FONTS, SCREENS} from '../Constants';
 import {
   sendMessage,
   checkMessagesObject,
@@ -33,6 +32,7 @@ class ChatScreen extends React.PureComponent {
     chatInfoVisible: false,
     chatInfoLoading: false,
   };
+  backHandler = null;
 
   componentDidMount() {
     this.props.setAuthToken();
@@ -47,19 +47,18 @@ class ChatScreen extends React.PureComponent {
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () =>
       this.keyboardDidHide(),
     );
-    BackHandler.addEventListener('hardwareBackPress', () => {
-      if (Actions.currentScene === 'chatscreen') {
-        if (this.props.other_user_data.newEntry) {
-          this.props.getChatPeopleExplicitly();
-        }
-        this.props.clearOtherUserData();
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (this.props.other_user_data.newEntry) {
+        this.props.getChatPeopleExplicitly();
       }
+      this.props.clearOtherUserData();
     });
   }
 
   componentWillUnmount() {
     this.keyboardDidHideListener.remove();
     this.keyboardDidShowListener.remove();
+    this.backHandler.remove();
   }
 
   keyboardDidShow() {
@@ -126,7 +125,6 @@ class ChatScreen extends React.PureComponent {
 
   renderHeaderAvatar() {
     const {COLORS, other_user_data} = this.props;
-    console.log('OTHER USER DATA : ', other_user_data);
     return (
       <View>
         <Avatar
@@ -221,7 +219,7 @@ class ChatScreen extends React.PureComponent {
                 if (other_user_data.newEntry) {
                   this.props.getChatPeopleExplicitly();
                 }
-                Actions.pop();
+                this.props.navigation.goBack();
                 this.props.clearOtherUserData();
               }}>
               <Icon

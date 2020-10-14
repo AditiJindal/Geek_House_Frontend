@@ -1,4 +1,11 @@
-import {KEYCODE_PROD} from '../prod_keys';
+export {
+  KEYCODE_PROD,
+  FACEBOOK_ADS_ID,
+  GIPHY_KEY,
+  TWITTER_KEYS,
+  ANDROID_CLIENT_ID,
+  WEB_CLIENT_ID,
+} from '../prod_keys';
 
 export const COLORS_LIGHT_THEME = {
   THEME1: '#00b0f0',
@@ -172,6 +179,52 @@ export const FONTS = {
   LECKERLIONE: 'LeckerliOne-Regular',
 };
 
+export const SCREENS = {
+  Login: 'Login',
+  Main: 'Main',
+  MainTab: 'MainTab',
+  Home: 'Home',
+  Search: 'Search',
+  Write: 'Write',
+  Chat: 'Chat',
+  WriteArticle: 'WriteArticle',
+  ImageUpload: 'ImageUpload',
+  Publish: 'Publish',
+  ChatScreen: 'ChatScreen',
+  Settings: 'Settings',
+  About: 'About',
+  Feedback: 'Feedback',
+  Bookmark: 'Bookmark',
+  NotificationArticle: 'NotificationArticle',
+  Notification: 'Notification',
+  Policy: 'Policy',
+  Explore: 'Explore',
+  Rewards: 'Rewards',
+};
+
+export const SCREEN_CLASSES = {
+  Login: 'Login',
+  Main: 'Main',
+  MainTab: 'Home',
+  Home: 'Home',
+  Search: 'Search',
+  Write: 'Write',
+  Chat: 'Chat',
+  WriteArticle: 'Write',
+  ImageUpload: 'Write',
+  Publish: 'Write',
+  ChatScreen: 'Chat',
+  Settings: 'Home',
+  About: 'Home',
+  Feedback: 'Home',
+  Bookmark: 'Search',
+  NotificationArticle: 'Main',
+  Notification: 'Main',
+  Policy: 'Main',
+  Explore: 'Home',
+  Rewards: 'Home',
+};
+
 export const COLOR_COMBOS = [
   ['rgb(72, 76, 75)', 'rgb(14, 150, 162)'],
   ['rgb(50, 93, 127)', 'rgb(103, 93, 121)'],
@@ -336,10 +389,3 @@ export const DYNAMIC_LINK_DOMAIN = 'https://geekhouse.page.link';
 export const LATEST_APP_VERSION = 37;
 
 export const MAX_USERS_IN_A_GROUP = 20;
-
-export const GIPHY_KEY = 'O7mLvZw6sroUurHDtxZrc3E4RQd4swhj';
-
-export const TWITTER_KEYS = {
-  key: '8vk8ljGu7eT1ctIZGSx3CjAQw',
-  skey: 'd7ZsF3zPWnYUGFo1MTJ2IMJoWk0QJlQWsmTWYP9RXBEPVPZR6O',
-};

@@ -7,7 +7,6 @@ import {
   FlatList,
   ScrollView,
 } from 'react-native';
-import {Actions} from 'react-native-router-flux';
 import {Icon} from 'react-native-elements';
 import _ from 'lodash';
 import {connect} from 'react-redux';
@@ -44,9 +43,7 @@ class Bookmark extends React.PureComponent {
         }}>
         <TouchableOpacity
           activeOpacity={1}
-          onPress={() => {
-            Actions.pop();
-          }}
+          onPress={() => this.props.navigation.goBack()}
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
@@ -341,7 +338,12 @@ class Bookmark extends React.PureComponent {
                   />
                 </View>
               ) : null}
-              <ArticleTile data={item} theme={theme} COLORS={COLORS} />
+              <ArticleTile
+                data={item}
+                theme={theme}
+                COLORS={COLORS}
+                navigation={this.props.navigation}
+              />
             </View>
           );
         }}

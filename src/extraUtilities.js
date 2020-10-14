@@ -1,19 +1,18 @@
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import queryString from 'query-string';
-import {Actions} from 'react-native-router-flux';
 import axios from 'axios';
-import {HTTP_TIMEOUT, BASE_URL} from './Constants';
+import {HTTP_TIMEOUT, BASE_URL, SCREENS} from './Constants';
 
 const httpClient = axios.create({timeout: HTTP_TIMEOUT, baseURL: BASE_URL});
 axios.interceptors.response.use(
-  async response => {
+  async (response) => {
     const {httpMetric} = response.config.metadata;
     httpMetric.setHttpResponseCode(response.status);
     httpMetric.setResponseContentType(response.headers['content-type']);
     await httpMetric.stop();
     return response;
   },
-  async error => {
+  async (error) => {
     const {httpMetric} = error.config.metadata;
     httpMetric.setHttpResponseCode(error.response.status);
     httpMetric.setResponseContentType(error.response.headers['content-type']);
@@ -24,7 +23,7 @@ axios.interceptors.response.use(
 
 export {httpClient};
 
-export const getLevel = userXP => {
+export const getLevel = (userXP) => {
   if (!userXP) {
     return null;
   }
@@ -43,7 +42,7 @@ export const getLevel = userXP => {
   return {level, XPToLevelUp: -xpLeft, levelXP};
 };
 
-export const getRingColor = userXP => {
+export const getRingColor = (userXP) => {
   if (!userXP) {
     return null;
   }
@@ -61,14 +60,16 @@ export const getRingColor = userXP => {
   return ring_color;
 };
 
-export const getDynamicLink = async () => {
+export const getDynamicLink = async (navigation) => {
   const response = await dynamicLinks().getInitialLink();
   if (response && response.url) {
     const result = queryString.parseUrl(response.url);
     const {query} = result;
     switch (query.type) {
       case 'article':
-        Actions.jump('notification_article', {article_id: query.article_id});
+        navigation.navigate(SCREENS.NotificationArticle, {
+          article_id: query.article_id,
+        });
 
       default:
         return null;

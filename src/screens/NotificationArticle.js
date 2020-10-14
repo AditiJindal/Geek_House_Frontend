@@ -8,21 +8,21 @@ import {
   StyleSheet,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {Actions} from 'react-native-router-flux';
 import {Icon} from 'react-native-elements';
 import analytics from '@react-native-firebase/analytics';
 
 import {ArticleTile, Loading} from '../components';
 import {setAuthToken, getArticleInfo} from '../actions/ArticleInfoAction';
-import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME, SCREENS, SCREEN_CLASSES} from '../Constants';
 
 class NotificationArticle extends React.PureComponent {
   componentDidMount() {
     this.props.setAuthToken();
-    this.props.getArticleInfo(this.props.article_id, false, false);
+    const {article_id} = this.props.route.state;
+    this.props.getArticleInfo(article_id, false, false);
     analytics().logScreenView({
-      screen_class: 'Home',
-      screen_name: 'notification_article',
+      screen_class: SCREEN_CLASSES.NotificationArticle,
+      screen_name: SCREENS.NotificationArticle,
     });
   }
 
@@ -50,9 +50,7 @@ class NotificationArticle extends React.PureComponent {
         }}>
         <TouchableOpacity
           activeOpacity={1}
-          onPress={() => {
-            Actions.pop();
-          }}
+          onPress={() => this.props.navigation.goBack()}
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
@@ -99,6 +97,7 @@ class NotificationArticle extends React.PureComponent {
               size={180}
               theme={this.props.theme}
               COLORS={this.props.COLORS}
+              navigation={this.props.navigation}
             />
           </View>
         )}

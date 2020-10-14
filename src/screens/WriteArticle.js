@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {Icon} from 'react-native-elements';
-import {Actions} from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
@@ -35,6 +34,7 @@ import {
   ERROR_BUTTONS,
   COLORS_LIGHT_THEME,
   ALL_CATEGORIES,
+  SCREENS,
 } from '../Constants';
 
 class WriteArticle extends React.Component {
@@ -186,7 +186,7 @@ class WriteArticle extends React.Component {
                   this.state.category,
                   this.props.editing_article_id,
                 );
-                Actions.replace('imageupload');
+                this.props.navigation.navigate(SCREENS.ImageUpload);
               }
             : () => {
                 this.props.showAlert(true, error);
@@ -239,6 +239,7 @@ class WriteArticle extends React.Component {
         <ArticleTile
           theme={this.props.theme}
           size={180}
+          navigation={this.props.navigation}
           data={{
             image: this.props.image_adder + 'guidlines.jpg',
             topic: 'Article Guidelines',
@@ -253,7 +254,7 @@ class WriteArticle extends React.Component {
   onBackPress() {
     this.state.topic.length !== 0 || this.state.contents.length !== 0
       ? this.setState({backAlertVisible: true})
-      : Actions.pop();
+      : this.props.navigation.goBack();
   }
 
   renderWriteView() {
@@ -339,7 +340,7 @@ class WriteArticle extends React.Component {
               null,
             );
             this.props.setDraft();
-            Actions.pop();
+            this.props.navigation.goBack();
           }}
           onSecondButtonPress={() => {
             this.setState({backAlertVisible: false});
@@ -347,7 +348,7 @@ class WriteArticle extends React.Component {
           onThirdButtonPress={() => {
             this.setState({backAlertVisible: false});
             this.props.clearPublish();
-            Actions.pop();
+            this.props.navigation.goBack();
           }}
           onBackdropPress={() => {
             this.setState({backAlertVisible: false});

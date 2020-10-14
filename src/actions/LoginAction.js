@@ -5,12 +5,13 @@ import {
   HTTP_TIMEOUT,
   LOG_EVENT,
   MESSAGE_SPECIAL_ADDER,
+  ANDROID_CLIENT_ID,
+  WEB_CLIENT_ID,
 } from '../Constants';
 import {AppState} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {setSocket, getQuickReplies, logEvent} from './ChatAction';
-import {Actions} from 'react-native-router-flux';
 import io from 'socket.io-client';
 import {v4 as uuid} from 'uuid';
 import {store} from '../../App';
@@ -43,9 +44,7 @@ const getFCMToken = async () => {
   return pushToken;
 };
 
-PushNotification.popInitialNotification((notification) => {
-  // console.log(notification);
-});
+PushNotification.popInitialNotification(() => {});
 
 const setPushNotifications = async () => {
   PushNotification.configure({
@@ -144,26 +143,6 @@ const makeLocalNotification = async (notification) => {
     });
   }
 };
-
-// const handleNotification = (notification) => {
-//   switch(notification.type){
-//     case 'article':
-//       analytics().logEvent('article_notification_tapped')
-//       Actions.notification_article({articleData: {
-//         article_id: notification.article_id,
-//         category: notification.category,
-//         topic: notification.topic,
-//         image: notification.image,
-//       }})
-
-//     case 'feedback':
-//       Actions.jump('feedback');
-//       analytics().logEvent('feedback_notification_tapped')
-
-//     default:
-//       return null;
-//   }
-// }
 
 const decryptMessage = (message) => {
   if (message.image && message.image.url) {
@@ -450,14 +429,15 @@ const makeConnection = async (json_data, dispatch, getState) => {
   });
 };
 
-export const checkLogin = () => {
+export const checkLogin = (onSuccess) => {
   return (dispatch, getState) => {
     AsyncStorage.getItem('data')
       .then((response) => {
         if (response !== null && Object.keys(response).length !== 0) {
           json_data = JSON.parse(response);
-          makeConnection(json_data, dispatch, getState);
-          Actions.replace('main');
+          makeConnection(json_data, dispatch, getState, onSuccess).then(() =>
+            onSuccess(),
+          );
           analytics().setUserId(json_data.data.authtoken);
         } else {
           dispatch({type: ACTIONS.LOGOUT});
@@ -467,175 +447,161 @@ export const checkLogin = () => {
   };
 };
 
-export const loginGoogle = () => {
-  return (dispatch, getState) => {
-    dispatch({type: ACTIONS.LOADING_GOOGLE, payload: true});
-    GoogleSignin.configure({
-      androidClientId:
-        '315957273790-l39qn5bp73tj2ug8r46ejdcj5t2gb433.apps.googleusercontent.com',
-      webClientId:
-        '315957273790-o4p20t2j3brt7c8bqc68814pj63j1lum.apps.googleusercontent.com',
-      forceConsentPrompt: true,
-    });
-    GoogleSignin.signIn()
-      .then(async (response) => {
-        const {idToken, accessToken} = await GoogleSignin.getTokens();
-        const credential = auth.GoogleAuthProvider.credential(
-          idToken,
-          accessToken,
-        );
-        auth().signInWithCredential(credential);
+const loginGoogleHelper = async (dispatch, getState) => {
+  dispatch({type: ACTIONS.LOADING_GOOGLE, payload: true});
 
-        const pushToken = await getFCMToken();
+  GoogleSignin.configure({
+    androidClientId: ANDROID_CLIENT_ID,
+    webClientId: WEB_CLIENT_ID,
+    forceConsentPrompt: true,
+  });
 
-        analytics().logLogin({method: 'google'});
-        let new_data = {
-          id: response.user.id,
-          provider: credential.providerId,
-          name: response.user.name,
-          email: response.user.email,
-          image_url: response.user.photo, //response.user.photoURL,
-          pushToken: pushToken,
-        };
+  const response = await GoogleSignin.signIn().catch((e) => {
+    dispatch({type: ACTIONS.LOADING_GOOGLE, payload: false});
+  });
+  const {idToken, accessToken} = await GoogleSignin.getTokens();
+  const credential = auth.GoogleAuthProvider.credential(idToken, accessToken);
+  auth().signInWithCredential(credential);
 
-        let data_to_send = new_data;
-        data_to_send.id = encrypt(data_to_send.id);
-        data_to_send.pushToken = encrypt(data_to_send.pushToken);
+  const pushToken = await getFCMToken();
 
-        httpClient
-          .post(URLS.login, data_to_send)
-          .then((response) => {
-            new_data.name = response.data.name;
-            new_data.image_url = response.data.image_url;
-
-            authtoken = response.data.token;
-            final_data = {data: new_data, authtoken: authtoken};
-            analytics().setUserId(authtoken);
-            to_save = JSON.stringify(final_data);
-            AsyncStorage.setItem('data', to_save);
-            if (response.data.first_login) {
-              analytics().logSignUp({method: 'google'});
-            } else {
-              analytics().logLogin({method: 'google'});
-            }
-            dispatch({
-              type: ACTIONS.CHAT_FIRST_LOGIN,
-              payload: {
-                first_login: response.data.first_login,
-                theme: response.data.theme,
-                authtoken: final_data.authtoken,
-              },
-            });
-            dispatch({type: ACTIONS.LOGIN_DATA, payload: final_data});
-            makeConnection(final_data, dispatch, getState);
-            Actions.replace('main');
-          })
-          .catch((e) => {
-            dispatch({type: ACTIONS.LOADING_GOOGLE, payload: false});
-          });
-      })
-      .catch((e) => {
-        console.log(e);
-        dispatch({type: ACTIONS.LOADING_GOOGLE, payload: false});
-      });
+  analytics().logLogin({method: 'google'});
+  let new_data = {
+    id: response.user.id,
+    provider: credential.providerId,
+    name: response.user.name,
+    email: response.user.email,
+    image_url: response.user.photo, //response.user.photoURL,
+    pushToken: pushToken,
   };
+
+  let data_to_send = new_data;
+  data_to_send.id = encrypt(data_to_send.id);
+  data_to_send.pushToken = encrypt(data_to_send.pushToken);
+
+  const {data: user_data} = await httpClient
+    .post(URLS.login, data_to_send)
+    .catch((e) => {
+      dispatch({type: ACTIONS.LOADING_GOOGLE, payload: false});
+    });
+
+  new_data.name = user_data.name;
+  new_data.image_url = user_data.image_url;
+
+  authtoken = user_data.token;
+  final_data = {data: new_data, authtoken: authtoken};
+  analytics().setUserId(authtoken);
+  to_save = JSON.stringify(final_data);
+  AsyncStorage.setItem('data', to_save);
+  if (user_data.first_login) {
+    analytics().logSignUp({method: 'google'});
+  } else {
+    analytics().logLogin({method: 'google'});
+  }
+  dispatch({
+    type: ACTIONS.CHAT_FIRST_LOGIN,
+    payload: {
+      first_login: user_data.first_login,
+      theme: user_data.theme,
+      authtoken: final_data.authtoken,
+    },
+  });
+  dispatch({type: ACTIONS.LOGIN_DATA, payload: final_data});
+  makeConnection(final_data, dispatch, getState);
 };
 
-export const loginFacebook = () => {
-  return (dispatch, getState) => {
-    dispatch({type: ACTIONS.LOADING_FB, payload: true});
-    LoginManager.logInWithPermissions(['public_profile', 'email'])
-      .then((response) => {
-        if (response.isCancelled) {
-          dispatch({type: ACTIONS.LOADING_FB, payload: false});
-        } else {
-          AccessToken.getCurrentAccessToken()
-            .then((response) => {
-              const token = response.accessToken;
-              const userId = response.userID;
+export const loginGoogle = (onSuccess) => {
+  return (dispatch, getState) =>
+    loginGoogleHelper(dispatch, getState).then(onSuccess);
+};
 
-              fetch(
-                `https://graph.facebook.com/${userId}?fields=email,picture.type(large),name&access_token=${token}`,
-              )
-                .then((response) => {
-                  const credential = auth.FacebookAuthProvider.credential(
-                    token,
-                  );
-                  auth()
-                    .signInWithCredential(credential)
-                    .catch(() => {});
+export const loginFacebookHelper = async (dispatch, getState) => {
+  dispatch({type: ACTIONS.LOADING_FB, payload: true});
 
-                  response
-                    .json()
-                    .then(async (data) => {
-                      pushToken = await getFCMToken();
-                      analytics().logLogin({method: 'facebook'});
-                      let new_data = {
-                        id: data.id,
-                        provider: credential.providerId,
-                        name: data.name,
-                        email: data.email,
-                        image_url: data.picture.data.url,
-                        pushToken: pushToken,
-                      };
+  const response = await LoginManager.logInWithPermissions([
+    'public_profile',
+    'email',
+  ]).catch((e) => {
+    dispatch({type: ACTIONS.LOADING_FB, payload: false});
+  });
+  if (response.isCancelled) {
+    dispatch({type: ACTIONS.LOADING_FB, payload: false});
+    return;
+  }
 
-                      let data_to_send = new_data;
-                      data_to_send.id = encrypt(data_to_send.id);
-                      data_to_send.pushToken = encrypt(data_to_send.pushToken);
+  const accessTokenData = await AccessToken.getCurrentAccessToken().catch(
+    (e) => {
+      dispatch({type: ACTIONS.LOADING_FB, payload: false});
+    },
+  );
 
-                      httpClient
-                        .post(URLS.login, data_to_send)
-                        .then((response) => {
-                          new_data.name = response.data.name;
-                          new_data.image_url = response.data.image_url;
+  const token = accessTokenData.accessToken;
+  const userId = accessTokenData.userID;
+  const credential = auth.FacebookAuthProvider.credential(token);
+  auth()
+    .signInWithCredential(credential)
+    .catch(() => {});
 
-                          authtoken = response.data.token;
-                          final_data = {data: new_data, authtoken: authtoken};
-                          analytics().setUserId(authtoken);
+  const fetch_response = await fetch(
+    `https://graph.facebook.com/${userId}?fields=email,picture.type(large),name&access_token=${token}`,
+  ).catch((e) => {
+    dispatch({type: ACTIONS.LOADING_FB, payload: false});
+  });
+  const data = await fetch_response.json();
 
-                          to_save = JSON.stringify(final_data);
-                          AsyncStorage.setItem('data', to_save);
-                          if (response.data.first_login) {
-                            analytics().logSignUp({method: 'facebook'});
-                          } else {
-                            analytics().logLogin({method: 'facebook'});
-                          }
-                          dispatch({
-                            type: ACTIONS.CHAT_FIRST_LOGIN,
-                            payload: {
-                              first_login: response.data.first_login,
-                              theme: response.data.theme,
-                              authtoken: final_data.authtoken,
-                            },
-                          });
-                          dispatch({
-                            type: ACTIONS.LOGIN_DATA,
-                            payload: final_data,
-                          });
-                          makeConnection(final_data, dispatch, getState);
-                          Actions.replace('main');
-                        })
-                        .catch((e) => {
-                          dispatch({type: ACTIONS.LOADING_FB, payload: false});
-                        });
-                    })
-                    .catch((e) => {
-                      dispatch({type: ACTIONS.LOADING_FB, payload: false});
-                    });
-                })
-                .catch((e) => {
-                  dispatch({type: ACTIONS.LOADING_FB, payload: false});
-                });
-            })
-            .catch((e) => {
-              dispatch({type: ACTIONS.LOADING_FB, payload: false});
-            });
-        }
-      })
-      .catch((e) => {
-        dispatch({type: ACTIONS.LOADING_FB, payload: false});
-      });
+  pushToken = await getFCMToken();
+  analytics().logLogin({method: 'facebook'});
+  let new_data = {
+    id: data.id,
+    provider: credential.providerId,
+    name: data.name,
+    email: data.email,
+    image_url: data.picture.data.url,
+    pushToken: pushToken,
   };
+
+  let data_to_send = new_data;
+  data_to_send.id = encrypt(data_to_send.id);
+  data_to_send.pushToken = encrypt(data_to_send.pushToken);
+
+  const {data: user_data} = await httpClient
+    .post(URLS.login, data_to_send)
+    .catch((e) => {
+      dispatch({type: ACTIONS.LOADING_FB, payload: false});
+    });
+
+  new_data.name = user_data.name;
+  new_data.image_url = user_data.image_url;
+
+  authtoken = user_data.token;
+  final_data = {data: new_data, authtoken: authtoken};
+  analytics().setUserId(authtoken);
+
+  to_save = JSON.stringify(final_data);
+  AsyncStorage.setItem('data', to_save);
+  if (user_data.first_login) {
+    analytics().logSignUp({method: 'facebook'});
+  } else {
+    analytics().logLogin({method: 'facebook'});
+  }
+  dispatch({
+    type: ACTIONS.CHAT_FIRST_LOGIN,
+    payload: {
+      first_login: user_data.first_login,
+      theme: user_data.theme,
+      authtoken: final_data.authtoken,
+    },
+  });
+  dispatch({
+    type: ACTIONS.LOGIN_DATA,
+    payload: final_data,
+  });
+  makeConnection(final_data, dispatch, getState);
+};
+
+export const loginFacebook = (onSuccess) => {
+  return (dispatch, getState) =>
+    loginFacebookHelper(dispatch, getState).then(onSuccess);
 };
 
 export const getPolicy = () => {

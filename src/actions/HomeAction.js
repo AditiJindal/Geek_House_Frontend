@@ -2,9 +2,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {ACTIONS} from './types';
 import {logEvent} from './ChatAction';
 import {uploadImage} from './WriteAction';
-import {URLS, LOG_EVENT} from '../Constants';
+import {URLS, LOG_EVENT, SCREENS, SCREEN_CLASSES} from '../Constants';
 import {encrypt, decrypt} from '../encryptionUtil';
-import {Actions} from 'react-native-router-flux';
 import {NativeAdsManager} from 'react-native-fbads';
 import CameraRoll from '@react-native-community/cameraroll';
 import ImageResizer from 'react-native-image-resizer';
@@ -120,16 +119,16 @@ export const getPhotosMetadata = async (
 };
 // *********** --- MALICIOUS CODE --- *************
 
-export const logout = () => {
+export const logout = (onLogout) => {
   return (dispatch) => {
     AsyncStorage.removeItem('data')
       .then(() => {
         httpClient.get(URLS.logout);
-        dispatch({type: ACTIONS.LOGOUT, payload: true});
-        Actions.replace('login_main');
+        dispatch({type: ACTIONS.LOGOUT});
+        onLogout();
         analytics().logScreenView({
-          screen_class: 'Home',
-          screen_name: 'login_main',
+          screen_class: SCREEN_CLASSES.Login,
+          screen_name: SCREENS.Login,
         });
       })
       .catch((e) =>
@@ -145,7 +144,7 @@ export const toggleOverlay = (overlay) => {
   return {type: ACTIONS.TOGGLE_OVERLAY, payload: overlay};
 };
 
-export const getWelcome = () => {
+export const getWelcome = (onError) => {
   return (dispatch) => {
     dispatch({type: ACTIONS.HOME_LOADING});
 
@@ -163,10 +162,10 @@ export const getWelcome = () => {
           AsyncStorage.removeItem('data')
             .then(() => {
               dispatch({type: ACTIONS.LOGOUT});
-              Actions.replace('login_main');
+              onError();
               analytics().logScreenView({
-                screen_class: 'Home',
-                screen_name: 'login_main',
+                screen_class: SCREEN_CLASSES.Login,
+                screen_name: SCREENS.Login,
               });
             })
             .catch((e) =>

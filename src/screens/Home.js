@@ -17,7 +17,6 @@ import {Overlay, Icon} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import InAppReview from 'react-native-in-app-review';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
-import {Actions} from 'react-native-router-flux';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
@@ -50,6 +49,8 @@ import {
   CATEGORY_IMAGES,
   LATEST_APP_VERSION,
   ALL_CATEGORIES,
+  SCREENS,
+  SCREEN_CLASSES,
 } from '../Constants';
 
 const OVERLAY_WIDTH_PERCENT = 75;
@@ -64,10 +65,13 @@ class Home extends React.PureComponent {
   componentDidMount() {
     this.props.setAuthToken();
     setAuthToken();
-    getDynamicLink();
-    analytics().logScreenView({screen_class: 'Home', screen_name: 'home'});
+    getDynamicLink(this.props.navigation);
+    analytics().logScreenView({
+      screen_class: SCREEN_CLASSES.Home,
+      screen_name: SCREENS.Home,
+    });
     if (this.props.loading) {
-      this.props.getWelcome();
+      this.props.getWelcome(() => this.props.navigation.replace(SCREENS.Login));
       analytics().logTutorialBegin();
     }
     let new_data = [];
@@ -157,7 +161,7 @@ class Home extends React.PureComponent {
       },
       {
         key: '3',
-        title: 'Conpect of Articles',
+        title: 'Concept of Articles',
         text:
           'You can simply search the articles of your choice and read them. You can also write your own articles',
         source: require('../../assets/animations/welcome/book.json'),
@@ -218,7 +222,7 @@ class Home extends React.PureComponent {
             />
           ) : null}
           <TouchableOpacity
-            onPress={() => Actions.notification()}
+            onPress={() => this.props.navigation.navigate(SCREENS.Notification)}
             style={{
               padding: 10,
               backgroundColor:
@@ -382,10 +386,10 @@ class Home extends React.PureComponent {
                 rippleColor={COLORS.DARK}
                 onPress={() => {
                   this.props.toggleOverlay({overlayVisible: false});
-                  Actions.jump('settings');
+                  this.props.navigation.navigate(SCREENS.Settings);
                   analytics().logScreenView({
-                    screen_class: 'Home',
-                    screen_name: 'settings',
+                    screen_class: SCREEN_CLASSES.Settings,
+                    screen_name: SCREENS.Settings,
                   });
                 }}
                 style={{
@@ -417,10 +421,10 @@ class Home extends React.PureComponent {
                 rippleColor={COLORS.DARK}
                 onPress={() => {
                   this.props.toggleOverlay({overlayVisible: false});
-                  Actions.jump('feedback');
+                  this.props.navigation.navigate(SCREENS.Feedback);
                   analytics().logScreenView({
-                    screen_class: 'Home',
-                    screen_name: 'feedback',
+                    screen_class: SCREEN_CLASSES.Feedback,
+                    screen_name: SCREENS.Feedback,
                   });
                 }}
                 style={{
@@ -457,10 +461,10 @@ class Home extends React.PureComponent {
                 rippleColor={COLORS.DARK}
                 onPress={() => {
                   this.props.toggleOverlay({overlayVisible: false});
-                  Actions.jump('about');
+                  this.props.navigation.navigate(SCREENS.About);
                   analytics().logScreenView({
-                    screen_class: 'Home',
-                    screen_name: 'about',
+                    screen_class: SCREEN_CLASSES.About,
+                    screen_name: SCREENS.About,
                   });
                 }}
                 style={{
@@ -733,6 +737,7 @@ class Home extends React.PureComponent {
                   size={180}
                   theme={theme}
                   COLORS={COLORS}
+                  navigation={this.props.navigation}
                 />
               </View>
             );
@@ -857,7 +862,9 @@ class Home extends React.PureComponent {
         </Text>
         <Ripple
           onPress={() => {
-            this.props.getWelcome();
+            this.props.getWelcome(() =>
+              this.props.navigation.replace(SCREENS.Login),
+            );
           }}>
           <LinearGradient
             style={{
@@ -1060,7 +1067,7 @@ class Home extends React.PureComponent {
                   }}
                   onPress={() => {
                     this.props.exploreSearch(item);
-                    Actions.explore();
+                    this.props.navigation.navigate(SCREENS.Explore);
                   }}>
                   <Image source={CATEGORY_IMAGES[item]} style={{flex: 1}} />
                   <Text

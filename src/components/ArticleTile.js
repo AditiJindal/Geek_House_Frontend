@@ -135,6 +135,7 @@ export default class ArticleTile extends Component {
               </Text>
             ) : null}
             <ArticleInfo
+              navigation={this.props.navigation}
               onBackdropPress={() => {
                 this.setState({infoVisible: false});
                 logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, {
@@ -222,6 +223,7 @@ export default class ArticleTile extends Component {
         </Image>
         <ArticleInfo
           theme={this.props.theme}
+          navigation={this.props.navigation}
           onBackdropPress={() => {
             this.setState({infoVisible: false});
             logEvent(LOG_EVENT.TIME_IN_ARTICLE_INFO, {

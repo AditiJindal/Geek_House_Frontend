@@ -10,7 +10,6 @@ import {
   BackHandler,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {Actions} from 'react-native-router-flux';
 import {Icon} from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
@@ -18,16 +17,21 @@ import analytics from '@react-native-firebase/analytics';
 
 import {Loading} from '../components';
 import {getPolicy} from '../actions/LoginAction';
-import {FONTS} from '../Constants';
+import {FONTS, SCREENS, SCREEN_CLASSES} from '../Constants';
 
 class Policy extends React.PureComponent {
   componentDidMount() {
     if (!this.props.policy) {
       this.props.getPolicy();
     }
-    analytics().logScreenView({screen_class: 'Policy', screen_name: 'policy'});
+    analytics().logScreenView({
+      screen_class: SCREEN_CLASSES.Policy,
+      screen_name: SCREENS.Policy,
+    });
+
+    const {navBar} = this.props.route.params;
     BackHandler.addEventListener('hardwareBackPress', () => {
-      changeNavigationBarColor(this.props.navBar, false);
+      changeNavigationBarColor(navBar, false);
     });
   }
 
@@ -52,8 +56,8 @@ class Policy extends React.PureComponent {
         <TouchableOpacity
           activeOpacity={1}
           onPress={() => {
-            changeNavigationBarColor(this.props.navBar, false);
-            Actions.pop();
+            changeNavigationBarColor(this.props.route.params.navBar, false);
+            this.props.navigation.goBack();
           }}
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon

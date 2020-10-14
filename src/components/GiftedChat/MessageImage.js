@@ -9,7 +9,7 @@ import {
   Text,
 } from 'react-native';
 import Image from 'react-native-fast-image';
-import uuid from 'uuid';
+import {v4 as uuid} from 'uuid';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import RNFileSystem from 'react-native-fs';
 import ImageViewer from '../ImageViewer';
@@ -55,7 +55,7 @@ export default class MessageImage extends Component {
 
   async saveFileToGallery(image_url, name, isGif) {
     if (!name) {
-      name = uuid.v4();
+      name = uuid();
     }
 
     const folder = RNFileSystem.ExternalStorageDirectoryPath + '/GeekHouse/';

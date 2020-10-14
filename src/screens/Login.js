@@ -13,7 +13,6 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import Image from 'react-native-fast-image';
 import SplashScreen from 'react-native-splash-screen';
 import analytics from '@react-native-firebase/analytics';
-import {Actions} from 'react-native-router-flux';
 
 import {Loading} from '../components';
 import {
@@ -22,11 +21,13 @@ import {
   checkLogin,
   internetHandler,
 } from '../actions/LoginAction';
-import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME, SCREENS} from '../Constants';
 
 class Login extends React.PureComponent {
   componentDidMount = async () => {
-    this.props.checkLogin();
+    this.props.checkLogin(() => {
+      this.props.navigation.replace(SCREENS.Main);
+    });
     SplashScreen.hide();
     analytics().logAppOpen();
     NetInfo.fetch().then((state) =>
@@ -44,7 +45,9 @@ class Login extends React.PureComponent {
         style={styles.GoogleButtonStyle}
         onPress={() => {
           if (!this.props.facebookLoading && !this.props.googleLoading)
-            this.props.loginGoogle();
+            this.props.loginGoogle(() => {
+              this.props.navigation.replace(SCREENS.Main);
+            });
         }}>
         <View
           style={{
@@ -85,7 +88,9 @@ class Login extends React.PureComponent {
         style={styles.FacebookButtonStyle}
         onPress={() => {
           if (!this.props.facebookLoading && !this.props.googleLoading)
-            this.props.loginFacebook();
+            this.props.loginFacebook(() => {
+              this.props.navigation.replace(SCREENS.Main);
+            });
         }}>
         <View
           style={{
@@ -124,7 +129,9 @@ class Login extends React.PureComponent {
       <TouchableOpacity
         style={{alignSelf: 'center'}}
         onPress={() => {
-          Actions.jump('policy', {navBar: COLORS_LIGHT_THEME.THEME2});
+          this.props.navigation.navigate(SCREENS.Policy, {
+            navBar: COLORS_LIGHT_THEME.THEME2,
+          });
         }}>
         <Text
           style={{

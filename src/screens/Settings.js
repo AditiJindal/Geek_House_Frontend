@@ -9,7 +9,6 @@ import {
   TextInput,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {Actions} from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
 import {Icon} from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
@@ -30,7 +29,7 @@ import {
   Loading,
 } from '../components';
 import {getRingColor} from '../extraUtilities';
-import {FONTS, COLORS_LIGHT_THEME, ALL_CATEGORIES} from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME, ALL_CATEGORIES, SCREENS} from '../Constants';
 import {logout} from '../actions/HomeAction';
 import {
   setAuthToken,
@@ -170,9 +169,7 @@ class Settings extends React.PureComponent {
         }}>
         <TouchableOpacity
           activeOpacity={1}
-          onPress={() => {
-            Actions.pop();
-          }}
+          onPress={() => this.props.navigation.goBack()}
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
@@ -204,7 +201,11 @@ class Settings extends React.PureComponent {
           }}
           onPress={() => {
             if (this.props.internetReachable) {
-              this.props.logout();
+              // disconnect socket form server
+              this.props.socket.disconnect(true);
+              this.props.logout(() =>
+                this.props.navigation.replace(SCREENS.Login),
+              );
             } else {
               this.timedAlert.showAlert(3000, 'Internet required to logout');
             }
@@ -409,9 +410,7 @@ class Settings extends React.PureComponent {
           <LevelBar COLORS={COLORS} userXP={welcomeData.userXP} />
           <Ripple
             rippleContainerBorderRadius={7}
-            onPress={() => {
-              Actions.rewards();
-            }}>
+            onPress={() => this.props.navigation.navigate(SCREENS.Rewards)}>
             <LinearGradient
               style={{
                 flex: 1,
@@ -990,7 +989,6 @@ class Settings extends React.PureComponent {
 }
 
 const mapStateToProps = (state) => {
-  console.log('STATE : ', state);
   return {
     data: state.login.data,
     internetReachable: state.login.internetReachable,
@@ -1004,6 +1002,7 @@ const mapStateToProps = (state) => {
     profile_pic_loading: state.settings.profile_pic_loading,
 
     theme: state.chat.theme,
+    socket: state.chat.socket,
     COLORS: state.chat.COLORS,
     animationOn: state.chat.animationOn,
     chat_background: state.chat.chat_background,

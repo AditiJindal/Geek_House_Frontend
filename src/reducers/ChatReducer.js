@@ -214,9 +214,6 @@ export default (state = INITIAL_STATE, action) => {
 
   switch (action.type) {
     case ACTIONS.LOGOUT:
-      if (action.payload) {
-        state.socket.disconnect(true);
-      }
       return {...INITIAL_STATE};
 
     case ACTIONS.SET_SOCKET:

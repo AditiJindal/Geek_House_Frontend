@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import {Icon} from 'react-native-elements';
 import {connect} from 'react-redux';
-import {Actions} from 'react-native-router-flux';
 import {clearSearch} from '../actions/SearchAction';
 import {ArticleTile, Loading} from '../components';
 import {FONTS, CATEGORY_IMAGES, COLORS_LIGHT_THEME} from '../Constants';
@@ -42,7 +41,7 @@ class Explore extends React.PureComponent {
           activeOpacity={1}
           onPress={() => {
             this.props.clearSearch();
-            Actions.pop();
+            this.props.navigation.goBack();
           }}
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
@@ -111,6 +110,7 @@ class Explore extends React.PureComponent {
           size={((screenWidth - 60) * 3) / 4}
           theme={theme}
           COLORS={COLORS}
+          navigation={this.props.navigation}
         />
       </View>
     );

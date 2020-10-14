@@ -41,6 +41,8 @@ import {
   ERROR_MESSAGES,
   COLORS_LIGHT_THEME,
   ALL_CATEGORIES,
+  SCREENS,
+  SCREEN_CLASSES,
 } from '../Constants';
 
 class Search extends React.PureComponent {
@@ -50,8 +52,8 @@ class Search extends React.PureComponent {
     if (!this.props.popularSearchesData) {
       this.props.setAuthToken();
       analytics().logScreenView({
-        screen_class: 'Search',
-        screen_name: 'search',
+        screen_class: SCREEN_CLASSES.Search,
+        screen_name: SCREENS.Search,
       });
       this.props.getPopularSearches();
     }
@@ -94,6 +96,7 @@ class Search extends React.PureComponent {
                 data={{...item, category}}
                 theme={theme}
                 COLORS={COLORS}
+                navigation={this.props.navigation}
               />
             </View>
           );

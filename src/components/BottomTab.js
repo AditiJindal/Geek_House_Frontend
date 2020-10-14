@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {Icon} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
-import {Actions} from 'react-native-router-flux';
 import SView from 'react-native-simple-shadow-view';
 import {Typing} from './index';
 import {
@@ -11,6 +10,7 @@ import {
   SELECTED_ICON_SIZE,
   FONTS,
   COLORS_LIGHT_THEME,
+  SCREENS,
 } from '../Constants';
 
 const COLOR_PALETE = [
@@ -21,12 +21,9 @@ const COLOR_PALETE = [
 ];
 
 class BottomTab extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedIcon: 0,
-    };
-  }
+  state = {
+    selectedIcon: 0,
+  };
 
   renderChatBadge() {
     const {COLORS} = this.props;
@@ -83,7 +80,7 @@ class BottomTab extends Component {
     );
   }
 
-  renderIcon(iconName, index, selectedIcon) {
+  renderIcon(iconName, index, selectedIcon, screen) {
     const {COLORS} = this.props;
 
     if (index !== selectedIcon) {
@@ -93,18 +90,7 @@ class BottomTab extends Component {
             // NOTE: SOLVE icon tapping lag issue by making a redux state for bottombar
             // and making it independent from the scene
             this.setState({selectedIcon: index});
-            if (index === 0) {
-              Actions['home']();
-            }
-            if (index === 1) {
-              Actions['search']();
-            }
-            if (index === 2) {
-              Actions['write']();
-            }
-            if (index === 3) {
-              Actions['chat']();
-            }
+            this.props.navigation.navigate(screen);
           }}
           style={{
             height: 40,
@@ -144,7 +130,7 @@ class BottomTab extends Component {
 
   render() {
     const {COLORS} = this.props;
-    const selectedIcon = this.props.navigation.state.index;
+    const selectedIcon = this.props.state.index;
     if (this.props.first_login) {
       return null;
     }
@@ -157,10 +143,10 @@ class BottomTab extends Component {
           backgroundColor:
             this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
         }}>
-        {this.renderIcon('home', 0, selectedIcon)}
-        {this.renderIcon('search', 1, selectedIcon)}
-        {this.renderIcon('edit-2', 2, selectedIcon)}
-        {this.renderIcon('message-circle', 3, selectedIcon)}
+        {this.renderIcon('home', 0, selectedIcon, SCREENS.Home)}
+        {this.renderIcon('search', 1, selectedIcon, SCREENS.Search)}
+        {this.renderIcon('edit-2', 2, selectedIcon, SCREENS.Write)}
+        {this.renderIcon('message-circle', 3, selectedIcon, SCREENS.Chat)}
       </SView>
     );
   }

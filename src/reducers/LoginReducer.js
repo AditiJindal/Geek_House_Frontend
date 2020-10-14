@@ -13,7 +13,7 @@ const INITIAL_STATE = {
   internetReachable: false,
 };
 
-const saveLoginData = state => {
+const saveLoginData = (state) => {
   // {data:new_data, authtoken:authtoken,
   //   categories:response.data.categories}
   const final_data = {
@@ -47,10 +47,7 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         data: action.payload.data,
         nameCopy: action.payload.data.name,
-        facebookLoading: false,
-        googleLoading: false,
         authtoken: action.payload.authtoken,
-        loading: false,
       };
 
     case ACTIONS.LOGIN_POLICY:

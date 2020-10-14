@@ -9,7 +9,6 @@ import {
 import {connect} from 'react-redux';
 import {Icon} from 'react-native-elements';
 import {FONTS} from '../Constants';
-import {Actions} from 'react-native-router-flux';
 
 const EXPERIENCE_TEXT =
   'In Geek House, you can can get various rewards and perks based on your usage.\
@@ -45,9 +44,7 @@ class Rewards extends React.PureComponent {
         }}>
         <TouchableOpacity
           activeOpacity={1}
-          onPress={() => {
-            Actions.pop();
-          }}
+          onPress={() => this.props.navigation.goBack()}
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
@@ -83,7 +80,7 @@ class Rewards extends React.PureComponent {
         <Text style={{...styles.SubHeading, color: COLORS.LESS_DARK}}>
           How to get XP?
         </Text>
-        {HOW_TO_GET_XP.map(item => (
+        {HOW_TO_GET_XP.map((item) => (
           <View style={{flexDirection: 'row', flex: 1}}>
             <Text style={{fontSize: 16, color: COLORS.LESS_DARK}}>•</Text>
             <Text
@@ -156,7 +153,7 @@ class Rewards extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     COLORS: state.chat.COLORS,
   };

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Animated, Platform, StyleSheet, View, SafeAreaView} from 'react-native';
 import moment from 'moment';
-import uuid from 'uuid';
+import {v4 as uuid} from 'uuid';
 import * as utils from './utils';
 import Actions from './Actions';
 import Avatar from './Avatar';
@@ -46,10 +46,10 @@ class GiftedChat extends React.Component {
       text: undefined,
     };
     this.getLocale = () => this._locale;
-    this.safeAreaIphoneX = bottomOffset => {
+    this.safeAreaIphoneX = (bottomOffset) => {
       return bottomOffset;
     };
-    this.onKeyboardWillShow = e => {
+    this.onKeyboardWillShow = (e) => {
       this.setIsTypingDisabled(true);
       this.setKeyboardHeight(
         e.endCoordinates ? e.endCoordinates.height : e.end.height,
@@ -67,7 +67,7 @@ class GiftedChat extends React.Component {
         });
       }
     };
-    this.onKeyboardWillHide = _e => {
+    this.onKeyboardWillHide = (_e) => {
       this.setIsTypingDisabled(true);
       this.setKeyboardHeight(0);
       this.setBottomOffset(0);
@@ -83,13 +83,13 @@ class GiftedChat extends React.Component {
         });
       }
     };
-    this.onKeyboardDidShow = e => {
+    this.onKeyboardDidShow = (e) => {
       if (Platform.OS === 'android') {
         this.onKeyboardWillShow(e);
       }
       this.setIsTypingDisabled(false);
     };
-    this.onKeyboardDidHide = e => {
+    this.onKeyboardDidHide = (e) => {
       if (Platform.OS === 'android') {
         this.onKeyboardWillHide(e);
       }
@@ -99,7 +99,7 @@ class GiftedChat extends React.Component {
       if (!Array.isArray(messages)) {
         messages = [messages];
       }
-      const newMessages = messages.map(message => {
+      const newMessages = messages.map((message) => {
         return {
           ...message,
           user: this.props.user,
@@ -123,7 +123,7 @@ class GiftedChat extends React.Component {
         }, 100);
       }
     };
-    this.onInputSizeChanged = size => {
+    this.onInputSizeChanged = (size) => {
       const newComposerHeight = Math.max(
         this.props.minComposerHeight,
         Math.min(this.props.maxComposerHeight, size.height),
@@ -138,7 +138,7 @@ class GiftedChat extends React.Component {
         ),
       });
     };
-    this.onInputTextChanged = text => {
+    this.onInputTextChanged = (text) => {
       if (this.getIsTypingDisabled()) {
         return;
       }
@@ -146,7 +146,7 @@ class GiftedChat extends React.Component {
         this.props.onInputTextChanged(text);
       }
     };
-    this.onInitialLayoutViewLayout = e => {
+    this.onInitialLayoutViewLayout = (e) => {
       const {layout} = e.nativeEvent;
       if (layout.height <= 0) {
         return;
@@ -167,7 +167,7 @@ class GiftedChat extends React.Component {
         ),
       });
     };
-    this.onMainViewLayout = e => {
+    this.onMainViewLayout = (e) => {
       // fix an issue when keyboard is dismissing during the initialization
       const {layout} = e.nativeEvent;
       if (
@@ -398,7 +398,7 @@ class GiftedChat extends React.Component {
       onTextChanged: this.onInputTextChanged,
       textInputProps: {
         ...this.props.textInputProps,
-        ref: textInput => (this.textInput = textInput),
+        ref: (textInput) => (this.textInput = textInput),
         maxLength: this.getIsTypingDisabled() ? 0 : this.props.maxInputLength,
       },
     };
@@ -445,7 +445,7 @@ GiftedChat.defaultProps = {
   messages: [],
   text: undefined,
   placeholder: DEFAULT_PLACEHOLDER,
-  messageIdGenerator: () => uuid.v4(),
+  messageIdGenerator: () => uuid(),
   user: {},
   onSend: () => {},
   locale: null,

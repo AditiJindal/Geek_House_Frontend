@@ -3,10 +3,9 @@ import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 import {connect} from 'react-redux';
 import SView from 'react-native-simple-shadow-view';
 import {Icon} from 'react-native-elements';
-import {Actions} from 'react-native-router-flux';
 
 import {Ripple} from '../components';
-import {FONTS} from '../Constants';
+import {FONTS, SCREENS} from '../Constants';
 
 class Notification extends React.Component {
   renderHeader() {
@@ -24,9 +23,7 @@ class Notification extends React.Component {
         }}>
         <TouchableOpacity
           activeOpacity={1}
-          onPress={() => {
-            Actions.pop();
-          }}
+          onPress={() => this.props.navigation.goBack()}
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
@@ -60,7 +57,7 @@ class Notification extends React.Component {
   onPressNotification(item) {
     switch (item.type) {
       case 'article':
-        Actions.jump('notification_article', {
+        this.props.navigation.navigate(SCREENS.NotificationArticle, {
           article_id: item.data.article_id,
         });
         return;

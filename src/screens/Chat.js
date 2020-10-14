@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import {Overlay, Icon} from 'react-native-elements';
 import analytics from '@react-native-firebase/analytics';
-import {Actions} from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
@@ -33,6 +32,8 @@ import {
   LOG_EVENT,
   COLORS_LIGHT_THEME,
   MAX_USERS_IN_A_GROUP,
+  SCREENS,
+  SCREEN_CLASSES,
 } from '../Constants';
 import {
   setAuthToken,
@@ -56,7 +57,10 @@ class Chat extends React.PureComponent {
   }
 
   componentDidMount() {
-    analytics().logScreenView({screen_class: 'Chat', screen_name: 'chat'});
+    analytics().logScreenView({
+      screen_class: SCREEN_CLASSES.Chat,
+      screen_name: SCREENS.Chat,
+    });
     if (!this.props.authTokenSet) {
       this.props.setAuthToken();
     }
@@ -644,10 +648,10 @@ class Chat extends React.PureComponent {
                 image_adder={this.props.image_adder}
                 onPress={() => {
                   this.props.setUserData(item);
-                  Actions.chatscreen();
+                  this.props.navigation.navigate(SCREENS.ChatScreen);
                   analytics().logScreenView({
-                    screen_class: 'Chat',
-                    screen_name: 'chat',
+                    screen_class: SCREEN_CLASSES.Chat,
+                    screen_name: SCREENS.Chat,
                   });
                 }}
               />
@@ -725,10 +729,10 @@ class Chat extends React.PureComponent {
                 image_adder={this.props.image_adder}
                 onPress={() => {
                   this.props.setUserData(item);
-                  Actions.chatscreen();
+                  this.props.navigation.navigate(SCREENS.ChatScreen);
                   analytics().logScreenView({
-                    screen_class: 'Chat',
-                    screen_name: 'chat',
+                    screen_class: SCREEN_CLASSES.Chat,
+                    screen_name: SCREENS.Chat,
                   });
                 }}
               />

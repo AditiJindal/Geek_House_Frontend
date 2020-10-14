@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import {Icon} from 'react-native-elements';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
-import {Actions} from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
@@ -23,7 +22,7 @@ import {
   getMyArticles,
   clearPublish,
 } from '../actions/WriteAction';
-import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME, SCREENS, SCREEN_CLASSES} from '../Constants';
 
 class Write extends React.PureComponent {
   constructor() {
@@ -33,8 +32,8 @@ class Write extends React.PureComponent {
   componentDidMount() {
     this.props.setAuthToken();
     analytics().logScreenView({
-      screen_class: 'Write',
-      screen_name: 'my_articles',
+      screen_class: SCREEN_CLASSES.Write,
+      screen_name: SCREENS.Write,
     });
     this.props.getMyArticles(
       Object.keys(this.props.myArticles).length,
@@ -60,6 +59,7 @@ class Write extends React.PureComponent {
               <ArticleTile
                 data={{...item, category}}
                 theme={this.props.theme}
+                navigation={this.props.navigation}
                 COLORS={this.props.COLORS}
               />
             </View>
@@ -346,10 +346,10 @@ class Write extends React.PureComponent {
         rippleContainerBorderRadius={5}
         onPress={() => {
           this.props.isDraft ? () => {} : this.props.clearPublish();
-          Actions.jump('writearticle');
+          this.props.navigation.navigate(SCREENS.WriteArticle);
           analytics().logScreenView({
-            screen_class: 'Write',
-            screen_name: 'write',
+            screen_class: SCREEN_CLASSES.Write,
+            screen_name: SCREENS.Write,
           });
         }}>
         <SView
@@ -455,9 +455,7 @@ class Write extends React.PureComponent {
           </Text>
           <Ripple
             rippleContainerBorderRadius={6}
-            onPress={() => {
-              Actions.bookmark();
-            }}>
+            onPress={() => this.props.navigation.navigate(SCREENS.Bookmark)}>
             <LinearGradient
               style={{
                 paddingHorizontal: 10,

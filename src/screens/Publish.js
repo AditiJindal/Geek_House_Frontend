@@ -1,7 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {connect} from 'react-redux';
-import {Actions} from 'react-native-router-flux';
 import LottieView from 'lottie-react-native';
 import {Icon} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
@@ -14,7 +13,7 @@ import {
   getMyArticles,
   uploadArticleImages,
 } from '../actions/WriteAction';
-import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME, SCREENS, SCREEN_CLASSES} from '../Constants';
 
 const ConfettiData = require('../../assets/animations/confetti.json');
 
@@ -27,7 +26,10 @@ class Publish extends React.PureComponent {
   }
 
   componentDidMount() {
-    analytics().logScreenView({screen_class: 'Write', screen_name: 'publish'});
+    analytics().logScreenView({
+      screen_class: SCREEN_CLASSES.Publish,
+      screen_name: SCREENS.Publish,
+    });
   }
 
   imageUrlCorrector(image_url) {
@@ -59,9 +61,7 @@ class Publish extends React.PureComponent {
           marginRight: 15,
         }}>
         <Ripple
-          onPress={() => {
-            Actions.replace('imageupload');
-          }}
+          onPress={() => this.props.navigation.replace(SCREENS.ImageUpload)}
           rippleContainerBorderRadius={30}>
           <SView
             style={{
@@ -121,7 +121,7 @@ class Publish extends React.PureComponent {
         <TouchableOpacity
           onPress={() => {
             this.props.getMyArticles();
-            Actions.pop();
+            this.props.navigation.goBack();
           }}
           activeOpacity={1}
           style={{
@@ -174,6 +174,7 @@ class Publish extends React.PureComponent {
             animate
             theme={this.props.theme}
             COLORS={this.props.COLORS}
+            navigation={this.props.navigation}
           />
           {!this.props.image.uri ? (
             <Text
@@ -278,7 +279,7 @@ class Publish extends React.PureComponent {
         {this.props.published
           ? this.renderBottomButton('CONTINUE', ['#ec008c', '#fc6767'], () => {
               this.props.getMyArticles();
-              Actions.pop();
+              this.props.navigation.goBack();
             })
           : this.renderBottomButton(
               editing_article_id ? 'SAVE' : 'PUBLISH',

@@ -17,14 +17,14 @@ export const setAuthToken = () => {
 
 export const getMyArticles = (myArticlesLength, reload) => {
   if (myArticlesLength === 0 || reload) {
-    return dispatch => {
-      dispatch({type: ACTIONS.WRITE_LOADING, payload:true});
+    return (dispatch) => {
+      dispatch({type: ACTIONS.WRITE_LOADING, payload: true});
       httpClient
         .get(URLS.myarticles)
         .then(({data}) => {
           dispatch({type: ACTIONS.GET_MY_ARTICLES, payload: data});
         })
-        .catch(e =>
+        .catch((e) =>
           logEvent(LOG_EVENT.ERROR, {
             errorLine: 'WRITE ACTION - 32',
             description: e.toString(),
@@ -43,7 +43,7 @@ export const setContents = (contents, topic, category, article_id = null) => {
   };
 };
 
-export const setImage = image => {
+export const setImage = (image) => {
   return {type: ACTIONS.SET_IMAGE, payload: image};
 };
 
@@ -53,12 +53,11 @@ export const getBlob = async (file) => {
   return image;
 };
 
-
 export const uploadImage = async (resourceData, file) => {
   const image = await getBlob(file);
 
   return fetch(resourceData.uploadUrl, {
-    method: "PUT",
+    method: 'PUT',
     body: image,
   });
 };
@@ -85,7 +84,7 @@ export const uploadImage = async (resourceData, file) => {
 //   });
 // };
 
-export const uploadArticleImages = async article => {
+export const uploadArticleImages = async (article) => {
   let promises = [];
   let contents = article.contents;
   let new_contents = [];
@@ -122,15 +121,14 @@ export const publishArticle = (
   success_animation,
   editing_article_id = null,
 ) => {
-  return dispatch => {
-    dispatch({type: ACTIONS.WRITE_LOADING, payload:true});
+  return (dispatch) => {
+    dispatch({type: ACTIONS.WRITE_LOADING, payload: true});
 
     if (article.image && article.image.substring(0, 4) === 'file') {
       httpClient
         .get(URLS.imageupload, {params: {type: 'article', image_type: 'jpeg'}})
-        .then(response => {
+        .then((response) => {
           const preSignedURL = decrypt(response.data.url);
-          console.log("URL : ", preSignedURL)
           const pathToImage = article.image;
           uploadImage(
             {contentType: 'image/jpeg', uploadUrl: preSignedURL},
@@ -148,17 +146,15 @@ export const publishArticle = (
                   });
                 });
             })
-            .catch(e =>{
-              console.log("ERROR : ", e)
+            .catch((e) => {
               logEvent(LOG_EVENT.ERROR, {
                 errorLine: 'WRITE ACTION - 88',
                 description: e.toString(),
-              })
-            dispatch({type:ACTIONS.WRITE_LOADING, payload:false})  
-            }
-            );
+              });
+              dispatch({type: ACTIONS.WRITE_LOADING, payload: false});
+            });
         })
-        .catch(e =>
+        .catch((e) =>
           logEvent(LOG_EVENT.ERROR, {
             errorLine: 'WRITE ACTION - 89',
             description: e.toString(),
@@ -174,7 +170,7 @@ export const publishArticle = (
             payload: {...article, ...data},
           });
         })
-        .catch(e => {
+        .catch((e) => {
           logEvent(LOG_EVENT.ERROR, {
             errorLine: 'WRITE ACTION - 97',
             description: e.toString(),
