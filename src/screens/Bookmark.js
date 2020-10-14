@@ -11,13 +11,12 @@ import {Actions} from 'react-native-router-flux';
 import {Icon} from 'react-native-elements';
 import _ from 'lodash';
 import {connect} from 'react-redux';
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import {
   setAuthToken,
   getBookmarkedArticles,
 } from '../actions/ArticleInfoAction';
-import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
-import ArticleTile from '../components/ArticleTile';
-import ArticleTileAds from '../components/ArticleTileAds';
+import {ArticleTile, ArticleTileAds} from '../components';
 import {FONTS} from '../Constants';
 
 class Bookmark extends React.PureComponent {
@@ -385,7 +384,7 @@ class Bookmark extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     adsManager: state.home.adsManager,
     canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,

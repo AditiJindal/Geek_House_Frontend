@@ -2,27 +2,25 @@ import React from 'react';
 import {View, Text, StyleSheet, StatusBar} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import {setImage} from '../actions/WriteAction';
-import Ripple from '../components/Ripple';
 import {Icon} from 'react-native-elements';
 import {Actions} from 'react-native-router-flux';
-import {
-  FONTS,
-  ERROR_BUTTONS,
-  COLORS_LIGHT_THEME,
-  LOG_EVENT,
-} from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
-import ArticleTile from '../components/ArticleTile';
-import CustomAlert from '../components/CustomAlert';
-import TimedAlert from '../components/TimedAlert';
-import {logEvent} from '../actions/ChatAction';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from '@react-native-community/image-editor';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import vision from '@react-native-firebase/ml-vision';
+
+import {TimedAlert, CustomAlert, ArticleTile, Ripple} from '../components';
+import {setImage} from '../actions/WriteAction';
+import {logEvent} from '../actions/ChatAction';
+import {
+  FONTS,
+  ERROR_BUTTONS,
+  COLORS_LIGHT_THEME,
+  LOG_EVENT,
+} from '../Constants';
 
 class ImageUpload extends React.PureComponent {
   constructor() {
@@ -196,7 +194,7 @@ class ImageUpload extends React.PureComponent {
     let response = await vision().imageLabelerProcessImage(image_path);
     let filterList = [];
     let relatedImageWords = '';
-    response.map(item => {
+    response.map((item) => {
       if (item.confidence > 0.5) {
         filterList.push(item);
       }
@@ -227,7 +225,7 @@ class ImageUpload extends React.PureComponent {
       chooseWhichLibraryTitle: 'Select an App',
     };
 
-    ImagePicker.launchImageLibrary(ImageOptions, image => {
+    ImagePicker.launchImageLibrary(ImageOptions, (image) => {
       if (image.error) {
         this.timedAlert.showAlert(3000, 'Image permission needed');
         return;
@@ -246,17 +244,19 @@ class ImageUpload extends React.PureComponent {
           'JPEG',
           80,
         )
-          .then(resized_image => {
-            ImageEditor.cropImage(resized_image.uri, crop).then(crop_image => {
-              image = {uri: crop_image};
-              this.setState({
-                image,
-                imageSize: {width: resize.width, height: resize.height},
-              });
-              this.props.setImage(image);
-            });
+          .then((resized_image) => {
+            ImageEditor.cropImage(resized_image.uri, crop).then(
+              (crop_image) => {
+                image = {uri: crop_image};
+                this.setState({
+                  image,
+                  imageSize: {width: resize.width, height: resize.height},
+                });
+                this.props.setImage(image);
+              },
+            );
           })
-          .catch(e =>
+          .catch((e) =>
             logEvent(LOG_EVENT.ERROR, {
               errorLine: 'ARTICLE INFO ACTION - 46',
               description: e.toString(),
@@ -475,7 +475,7 @@ class ImageUpload extends React.PureComponent {
         {this.renderBack()}
         <TimedAlert
           theme={this.props.theme}
-          onRef={ref => (this.timedAlert = ref)}
+          onRef={(ref) => (this.timedAlert = ref)}
           COLORS={COLORS}
         />
         <View
@@ -503,7 +503,7 @@ class ImageUpload extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     image_adder: state.home.image_adder,
 

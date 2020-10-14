@@ -13,9 +13,8 @@ import {Icon} from 'react-native-elements';
 import {connect} from 'react-redux';
 import {Actions} from 'react-native-router-flux';
 import {clearSearch} from '../actions/SearchAction';
+import {ArticleTile, Loading} from '../components';
 import {FONTS, CATEGORY_IMAGES, COLORS_LIGHT_THEME} from '../Constants';
-import Loading from '../components/Loading';
-import ArticleTile from '../components/ArticleTile';
 
 const screenWidth = Dimensions.get('screen').width;
 
@@ -126,7 +125,7 @@ class Explore extends React.PureComponent {
           data={data}
           horizontal
           showsHorizontalScrollIndicator={false}
-          keyExtractor={item => item.article_id.toString()}
+          keyExtractor={(item) => item.article_id.toString()}
           renderItem={this.renderArticle.bind(this)}
           contentContainerStyle={{alignItems: 'center'}}
           ListEmptyComponent={
@@ -136,7 +135,7 @@ class Explore extends React.PureComponent {
                 color: COLORS.DARK,
                 fontSize: 18,
               }}>
-              Sorry we could'nt find any article
+              Sorry we couldn't find any article
             </Text>
           }
         />
@@ -169,7 +168,7 @@ class Explore extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     loading: state.home.exploreLoading,
     exploreData: state.home.exploreData,

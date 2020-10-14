@@ -1,33 +1,13 @@
 rootProject.name = 'Geek_House'
-include ':@react-native-firebase_dynamic-links'
-project(':@react-native-firebase_dynamic-links').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/dynamic-links/android')
-include ':@react-native-firebase_auth'
-project(':@react-native-firebase_auth').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/auth/android')
-include ':@react-native-community_cameraroll'
-project(':@react-native-community_cameraroll').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/cameraroll/android')
-include ':react-native-vector-icons'
-project(':react-native-vector-icons').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-vector-icons/android')
-include ':react-native-push-notification'
-project(':react-native-push-notification').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-push-notification/android')
-include ':@react-native-firebase_ml-natural-language'
-project(':@react-native-firebase_ml-natural-language').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/ml-natural-language/android')
-include ':@react-native-firebase_messaging'
-project(':@react-native-firebase_messaging').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/messaging/android')
-include ':@react-native-firebase_perf'
-project(':@react-native-firebase_perf').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/perf/android')
-include ':@react-native-firebase_ml-vision'
-project(':@react-native-firebase_ml-vision').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/ml-vision/android')
-include ':react-native-document-picker'
-project(':react-native-document-picker').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-document-picker/android')
-include ':react-native-fs'
-project(':react-native-fs').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fs/android')
-include ':react-native-fbads'
-project(':react-native-fbads').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fbads/android/app')
-include ':react-native-customized-image-picker'
-include ':watermelondb'
-project(':watermelondb').projectDir = new File(rootProject.projectDir, '../node_modules/@nozbe/watermelondb/native/android')
-include ':react-native-device-info'
-project(':react-native-device-info').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-device-info/android')
-project(':react-native-customized-image-picker').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-customized-image-picker/android')
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
+include ':react-native-gesture-handler'
+project(':react-native-gesture-handler').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-gesture-handler/android')
+include ':react-native-code-push'
+project(':react-native-code-push').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-code-push/android/app/')
+include ':react-native-fbads'
+project(':react-native-fbads').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fbads/android/app/')
+include ':watermelondb'
+project(':watermelondb').projectDir = new File(rootProject.projectDir, '../node_modules/@nozbe/watermelondb/native/android')
+include ':react-native-fbsdk'
+project(':react-native-fbsdk').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fbsdk/android')

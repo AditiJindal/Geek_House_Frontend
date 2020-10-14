@@ -12,7 +12,7 @@ import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {setSocket, getQuickReplies, logEvent} from './ChatAction';
 import {Actions} from 'react-native-router-flux';
 import io from 'socket.io-client';
-import uuid from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
 import {store} from '../../App';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
@@ -35,20 +35,21 @@ const trace = perf().newTrace('get_data_async_storage');
 var timer = null;
 var uniqueDeviceId = null;
 
-const getFCMToken = () => {
-  if (!messages().isRegisteredForRemoteNotifications) {
-    messages().registerForRemoteNotifications();
+const getFCMToken = async () => {
+  if (!messages().isDeviceRegisteredForRemoteMessages) {
+    messages().registerDeviceForRemoteMessages();
   }
-  return messages().getToken();
+  const pushToken = await messages().getToken();
+  return pushToken;
 };
 
-PushNotification.popInitialNotification(notification => {
+PushNotification.popInitialNotification((notification) => {
   // console.log(notification);
 });
 
 const setPushNotifications = async () => {
   PushNotification.configure({
-    onNotification: notification => {
+    onNotification: (notification) => {
       makeLocalNotification(notification);
       // handleNotification(notification)
     },
@@ -58,7 +59,7 @@ const setPushNotifications = async () => {
 
 setPushNotifications();
 
-const incomingMessageConverter = data => {
+const incomingMessageConverter = (data) => {
   new_message = [
     {
       _id: uuid(),
@@ -71,7 +72,7 @@ const incomingMessageConverter = data => {
   return new_message;
 };
 
-const makeLocalNotification = async notification => {
+const makeLocalNotification = async (notification) => {
   let authtoken;
   if (notification.silent) {
     switch (notification.type) {
@@ -164,7 +165,7 @@ const makeLocalNotification = async notification => {
 //   }
 // }
 
-const decryptMessage = message => {
+const decryptMessage = (message) => {
   if (message.image && message.image.url) {
     message.image.url = decrypt(message.image.url);
   }
@@ -253,7 +254,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
   const t = Date.now();
   trace.start();
   AsyncStorage.getItem(json_data.authtoken.toString())
-    .then(response => {
+    .then((response) => {
       trace.stop();
       trace.putMetric('get_async_storage_time', Date.now() - t);
       response = JSON.parse(response);
@@ -286,7 +287,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
   });
   setSocket(socket);
 
-  AppState.addEventListener('change', appState => {
+  AppState.addEventListener('change', (appState) => {
     if (appState === 'background' || appState === 'inactive') {
       socket.emit('send-me-offline', {id: json_data.authtoken});
       analytics().logEvent('app_went_background');
@@ -304,7 +305,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
 
   socket.emit('join', to_emit);
 
-  socket.on('incoming_message', data => {
+  socket.on('incoming_message', (data) => {
     data = decryptMessage(data);
     const message = incomingMessageConverter(data);
     const {
@@ -323,26 +324,26 @@ const makeConnection = async (json_data, dispatch, getState) => {
     });
   });
 
-  socket.on('incoming_typing', data => {
+  socket.on('incoming_typing', (data) => {
     dispatch({type: ACTIONS.CHAT_TYPING, payload: data});
   });
 
-  socket.on('chat_people', data => {
+  socket.on('chat_people', (data) => {
     dispatch({type: ACTIONS.GET_CHAT_PEOPLE, payload: data});
   });
 
-  socket.on('online', data => {
+  socket.on('online', (data) => {
     4;
     if (data.user_id !== json_data.authtoken) {
       dispatch({type: ACTIONS.CHAT_USER_ONLINE, payload: data});
     }
   });
 
-  socket.on('chat_group_participants', response => {
+  socket.on('chat_group_participants', (response) => {
     dispatch({type: ACTIONS.CHAT_GROUP_PARTICIPANTS, payload: response});
   });
 
-  socket.on('create_group', response => {
+  socket.on('create_group', (response) => {
     dispatch({type: ACTIONS.CHAT_GROUP_CREATE, payload: response});
   });
 
@@ -354,8 +355,8 @@ const makeConnection = async (json_data, dispatch, getState) => {
     socket.emit('not-disconnected', {id: json_data.authtoken});
   });
 
-  socket.on('commands', commands => {
-    commands.map(command => {
+  socket.on('commands', (commands) => {
+    commands.map((command) => {
       switch (command.command) {
         case 'chat_leave_group':
           chat_leave_group_helper(command.data, dispatch);
@@ -452,7 +453,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
 export const checkLogin = () => {
   return (dispatch, getState) => {
     AsyncStorage.getItem('data')
-      .then(response => {
+      .then((response) => {
         if (response !== null && Object.keys(response).length !== 0) {
           json_data = JSON.parse(response);
           makeConnection(json_data, dispatch, getState);
@@ -477,7 +478,7 @@ export const loginGoogle = () => {
       forceConsentPrompt: true,
     });
     GoogleSignin.signIn()
-      .then(async response => {
+      .then(async (response) => {
         const {idToken, accessToken} = await GoogleSignin.getTokens();
         const credential = auth.GoogleAuthProvider.credential(
           idToken,
@@ -486,6 +487,7 @@ export const loginGoogle = () => {
         auth().signInWithCredential(credential);
 
         const pushToken = await getFCMToken();
+
         analytics().logLogin({method: 'google'});
         let new_data = {
           id: response.user.id,
@@ -502,7 +504,7 @@ export const loginGoogle = () => {
 
         httpClient
           .post(URLS.login, data_to_send)
-          .then(response => {
+          .then((response) => {
             new_data.name = response.data.name;
             new_data.image_url = response.data.image_url;
 
@@ -528,11 +530,12 @@ export const loginGoogle = () => {
             makeConnection(final_data, dispatch, getState);
             Actions.replace('main');
           })
-          .catch(e => {
+          .catch((e) => {
             dispatch({type: ACTIONS.LOADING_GOOGLE, payload: false});
           });
       })
-      .catch(e => {
+      .catch((e) => {
+        console.log(e);
         dispatch({type: ACTIONS.LOADING_GOOGLE, payload: false});
       });
   };
@@ -542,19 +545,19 @@ export const loginFacebook = () => {
   return (dispatch, getState) => {
     dispatch({type: ACTIONS.LOADING_FB, payload: true});
     LoginManager.logInWithPermissions(['public_profile', 'email'])
-      .then(response => {
+      .then((response) => {
         if (response.isCancelled) {
           dispatch({type: ACTIONS.LOADING_FB, payload: false});
         } else {
           AccessToken.getCurrentAccessToken()
-            .then(response => {
+            .then((response) => {
               const token = response.accessToken;
               const userId = response.userID;
 
               fetch(
                 `https://graph.facebook.com/${userId}?fields=email,picture.type(large),name&access_token=${token}`,
               )
-                .then(response => {
+                .then((response) => {
                   const credential = auth.FacebookAuthProvider.credential(
                     token,
                   );
@@ -564,7 +567,7 @@ export const loginFacebook = () => {
 
                   response
                     .json()
-                    .then(async data => {
+                    .then(async (data) => {
                       pushToken = await getFCMToken();
                       analytics().logLogin({method: 'facebook'});
                       let new_data = {
@@ -582,7 +585,7 @@ export const loginFacebook = () => {
 
                       httpClient
                         .post(URLS.login, data_to_send)
-                        .then(response => {
+                        .then((response) => {
                           new_data.name = response.data.name;
                           new_data.image_url = response.data.image_url;
 
@@ -612,37 +615,37 @@ export const loginFacebook = () => {
                           makeConnection(final_data, dispatch, getState);
                           Actions.replace('main');
                         })
-                        .catch(e => {
+                        .catch((e) => {
                           dispatch({type: ACTIONS.LOADING_FB, payload: false});
                         });
                     })
-                    .catch(e => {
+                    .catch((e) => {
                       dispatch({type: ACTIONS.LOADING_FB, payload: false});
                     });
                 })
-                .catch(e => {
+                .catch((e) => {
                   dispatch({type: ACTIONS.LOADING_FB, payload: false});
                 });
             })
-            .catch(e => {
+            .catch((e) => {
               dispatch({type: ACTIONS.LOADING_FB, payload: false});
             });
         }
       })
-      .catch(e => {
+      .catch((e) => {
         dispatch({type: ACTIONS.LOADING_FB, payload: false});
       });
   };
 };
 
 export const getPolicy = () => {
-  return dispatch => {
-    httpClient.get(URLS.policy).then(response => {
+  return (dispatch) => {
+    httpClient.get(URLS.policy).then((response) => {
       dispatch({type: ACTIONS.LOGIN_POLICY, payload: response.data});
     });
   };
 };
 
-export const internetHandler = internetReachable => {
+export const internetHandler = (internetReachable) => {
   return {type: ACTIONS.LOGIN_INTERNET_REACHABLE, payload: internetReachable};
 };

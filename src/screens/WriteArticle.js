@@ -10,29 +10,32 @@ import {
   FlatList,
 } from 'react-native';
 import {connect} from 'react-redux';
+import {Icon} from 'react-native-elements';
+import {Actions} from 'react-native-router-flux';
+import LinearGradient from 'react-native-linear-gradient';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import SView from 'react-native-simple-shadow-view';
+
+import {
+  TimedAlert,
+  ArticleTile,
+  WriteView,
+  CustomAlert,
+  Dropdown,
+  Ripple,
+} from '../components';
 import {
   setContents,
   showAlert,
   clearPublish,
   setDraft,
 } from '../actions/WriteAction';
-import Ripple from '../components/Ripple';
 import {
   FONTS,
   ERROR_BUTTONS,
   COLORS_LIGHT_THEME,
   ALL_CATEGORIES,
 } from '../Constants';
-import {Icon} from 'react-native-elements';
-import {Dropdown} from '../components/Dropdown';
-import {Actions} from 'react-native-router-flux';
-import WriteView from '../components/WriteView';
-import CustomAlert from '../components/CustomAlert';
-import LinearGradient from 'react-native-linear-gradient';
-import ArticleTile from '../components/ArticleTile';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import SView from 'react-native-simple-shadow-view';
-import TimedAlert from '../components/TimedAlert';
 
 class WriteArticle extends React.Component {
   constructor() {
@@ -133,7 +136,7 @@ class WriteArticle extends React.Component {
       error.content =
         'You need to have atleast 2 cards in your article for publishing it';
     } else {
-      this.state.contents.map(item => {
+      this.state.contents.map((item) => {
         if (item.sub_heading.length === 0) {
           nextEnabled = false;
           color = COLORS.GRAY;
@@ -257,7 +260,7 @@ class WriteArticle extends React.Component {
     const {COLORS, theme, image_adder} = this.props;
     return (
       <FlatList
-        ref={scrollView => (this.scrollView = scrollView)}
+        ref={(scrollView) => (this.scrollView = scrollView)}
         keyboardShouldPersistTaps="always"
         data={this.state.contents}
         ListHeaderComponent={
@@ -268,7 +271,7 @@ class WriteArticle extends React.Component {
           </>
         }
         ListFooterComponent={<View style={{height: 70, width: 1}} />}
-        keyExtractor={item => item.key.toString()}
+        keyExtractor={(item) => item.key.toString()}
         renderItem={({item, index}) => (
           <WriteView
             key={index}
@@ -367,7 +370,7 @@ class WriteArticle extends React.Component {
   renderCategoryDropdown() {
     const {COLORS} = this.props;
     let new_data = [];
-    ALL_CATEGORIES.map(item => {
+    ALL_CATEGORIES.map((item) => {
       new_data.push({value: item});
     });
 
@@ -379,7 +382,7 @@ class WriteArticle extends React.Component {
           label="Select a Category"
           value={this.props.category || 'Select One'}
           itemCount={7}
-          onChangeText={category => {
+          onChangeText={(category) => {
             this.setState({category});
           }}
         />
@@ -426,7 +429,7 @@ class WriteArticle extends React.Component {
           textAlignVertical="top"
           keyboardAppearance="light"
           maxLength={128}
-          onChangeText={value => {
+          onChangeText={(value) => {
             this.setState({topic: value});
           }}
           spellCheck={true}
@@ -502,7 +505,7 @@ class WriteArticle extends React.Component {
         <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
         <TimedAlert
           theme={this.props.theme}
-          onRef={ref => (this.timedAlert = ref)}
+          onRef={(ref) => (this.timedAlert = ref)}
           COLORS={COLORS}
         />
         {changeNavigationBarColor(statusBarColor, this.props.theme === 'light')}
@@ -519,7 +522,7 @@ class WriteArticle extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     image_adder: state.home.image_adder,
 

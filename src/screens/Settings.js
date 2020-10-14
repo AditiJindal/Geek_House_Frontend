@@ -9,8 +9,29 @@ import {
   TextInput,
 } from 'react-native';
 import {connect} from 'react-redux';
+import {Actions} from 'react-native-router-flux';
+import LinearGradient from 'react-native-linear-gradient';
+import {Icon} from 'react-native-elements';
+import StarRating from 'react-native-star-rating';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import {Switch} from 'react-native-switch';
+import SView from 'react-native-simple-shadow-view';
+import analytics from '@react-native-firebase/analytics';
+import ImageResizer from 'react-native-image-resizer';
+import ImageEditor from '@react-native-community/image-editor';
+
+import {
+  Avatar,
+  TimedAlert,
+  ImageSelector,
+  Dropdown,
+  Ripple,
+  LevelBar,
+  Loading,
+} from '../components';
+import {getRingColor} from '../extraUtilities';
+import {FONTS, COLORS_LIGHT_THEME, ALL_CATEGORIES} from '../Constants';
 import {logout} from '../actions/HomeAction';
-import Loading from '../components/Loading';
 import {
   setAuthToken,
   getSettingsData,
@@ -25,24 +46,6 @@ import {
   revertName,
   changeImageUrl,
 } from '../actions/SettingsAction';
-import {Actions} from 'react-native-router-flux';
-import LevelBar from '../components/LevelBar';
-import Ripple from '../components/Ripple';
-import {FONTS, COLORS_LIGHT_THEME, ALL_CATEGORIES} from '../Constants';
-import LinearGradient from 'react-native-linear-gradient';
-import {Icon} from 'react-native-elements';
-import StarRating from 'react-native-star-rating';
-import {Dropdown} from '../components/Dropdown';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import {Switch} from 'react-native-switch';
-import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics';
-import ImageSelector from '../components/ImageSelector';
-import TimedAlert from '../components/TimedAlert';
-import Avatar from '../components/Avatar';
-import ImageResizer from 'react-native-image-resizer';
-import ImageEditor from '@react-native-community/image-editor';
-import {getRingColor} from '../extraUtilities';
 
 class Settings extends React.PureComponent {
   state = {
@@ -113,9 +116,9 @@ class Settings extends React.PureComponent {
       resize.height,
       'JPEG',
       80,
-    ).then(resized_image => {
-      ImageEditor.cropImage(resized_image.uri, crop).then(crop_image => {
-        this.props.changeImageUrl(crop_image, msg => {
+    ).then((resized_image) => {
+      ImageEditor.cropImage(resized_image.uri, crop).then((crop_image) => {
+        this.props.changeImageUrl(crop_image, (msg) => {
           this.timedAlert.showAlert(3000, msg, false);
         });
       });
@@ -341,9 +344,9 @@ class Settings extends React.PureComponent {
     return (
       <TextInput
         value={data.name}
-        onChangeText={name => changeName(name)}
+        onChangeText={(name) => changeName(name)}
         onSubmitEditing={() =>
-          submitName(data.name, msg => {
+          submitName(data.name, (msg) => {
             this.timedAlert.showAlert(3000, msg, false);
           })
         }
@@ -604,7 +607,9 @@ class Settings extends React.PureComponent {
               ...styles.TextStyling,
               color: COLORS.GRAY,
               marginBottom: 1,
-            }}></Text>
+            }}>
+            {this.props.settingsData.total_views_on_articles}
+          </Text>
         </View>
 
         <View
@@ -631,7 +636,7 @@ class Settings extends React.PureComponent {
 
   renderCategorySelector() {
     let new_data = [];
-    ALL_CATEGORIES.map(item => {
+    ALL_CATEGORIES.map((item) => {
       new_data.push({value: item});
     });
     const {COLORS} = this.props;
@@ -653,7 +658,7 @@ class Settings extends React.PureComponent {
           label="Select a Category"
           value={this.props.fav_category}
           itemCount={7}
-          onChangeText={selected_category => {
+          onChangeText={(selected_category) => {
             this.props.settingsChangeFavouriteCategory(selected_category);
           }}
         />
@@ -860,7 +865,7 @@ class Settings extends React.PureComponent {
             alignItems: 'center',
           }}
           onPress={() => {
-            this.imageSelector.showImageSelector(response => {
+            this.imageSelector.showImageSelector((response) => {
               this.props.changeChatWallpaper(
                 response,
                 this.props.chat_background.image,
@@ -968,9 +973,9 @@ class Settings extends React.PureComponent {
         {changeNavigationBarColor(COLORS.LIGHT, this.props.theme === 'light')}
         <ImageSelector
           COLORS={this.props.COLORS}
-          onRef={ref => (this.imageSelector = ref)}
+          onRef={(ref) => (this.imageSelector = ref)}
         />
-        <TimedAlert onRef={ref => (this.timedAlert = ref)} COLORS={COLORS} />
+        <TimedAlert onRef={(ref) => (this.timedAlert = ref)} COLORS={COLORS} />
         {this.props.loading ? (
           <View
             style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -984,7 +989,8 @@ class Settings extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
+  console.log('STATE : ', state);
   return {
     data: state.login.data,
     internetReachable: state.login.internetReachable,

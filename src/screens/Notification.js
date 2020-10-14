@@ -1,11 +1,12 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 import {connect} from 'react-redux';
-import {FONTS} from '../Constants';
 import SView from 'react-native-simple-shadow-view';
 import {Icon} from 'react-native-elements';
 import {Actions} from 'react-native-router-flux';
-import Ripple from '../components/Ripple';
+
+import {Ripple} from '../components';
+import {FONTS} from '../Constants';
 
 class Notification extends React.Component {
   renderHeader() {
@@ -123,7 +124,7 @@ class Notification extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     notifications: state.home.welcomeData.notifications,
 

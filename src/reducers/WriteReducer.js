@@ -23,7 +23,7 @@ export default (state = INITIAL_STATE, action) => {
       return {...INITIAL_STATE};
 
     case ACTIONS.WRITE_LOADING:
-      return {...state, loading: true};
+      return {...state, loading: action.payload};
 
     case ACTIONS.GET_MY_ARTICLES:
       return {

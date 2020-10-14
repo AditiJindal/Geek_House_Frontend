@@ -32,7 +32,8 @@ import CardView from './CardView';
 import Loading from './Loading';
 import {Actions} from 'react-native-router-flux';
 import NativeAdsComponent from './NativeAdsComponent';
-import Image from 'react-native-fast-image';
+import Avatar from './Avatar';
+import moment from 'moment';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import TimedAlert from './TimedAlert';
 import Ripple from './Ripple';
@@ -427,20 +428,16 @@ class ArticleInfo extends Component {
               return (
                 <View key={index.toString()}>
                   <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Image
-                      source={{uri: this.imageUrlCorrector(item.author_image)}}
-                      style={{
-                        height: 48,
-                        width: 48,
-                        borderRadius: 25,
-                        marginRight: 20,
-                      }}
+                    <Avatar
+                      size={48}
+                      uri={this.imageUrlCorrector(item.author_image)}
                     />
                     <View
                       style={{
                         flex: 1,
                         justifyContent: 'space-evenly',
                         alignItems: 'flex-start',
+                        paddingLeft: 12,
                       }}>
                       <Text
                         style={{
@@ -472,6 +469,7 @@ class ArticleInfo extends Component {
                       ) : null}
                     </View>
                   </View>
+
                   <Text
                     style={{
                       fontFamily: FONTS.HELVETICA_NEUE,
@@ -483,6 +481,7 @@ class ArticleInfo extends Component {
                     }}>
                     {item.comment}
                   </Text>
+
                   {index === comments.length - 1 ? null : (
                     <View
                       style={{
@@ -554,7 +553,10 @@ class ArticleInfo extends Component {
       rating,
       topic,
       cannotComment,
+      date_created,
     } = this.props.selectedArticleInfo;
+
+    const date = moment(date_created);
 
     const ring_color = getRingColor(author_userXP);
 
@@ -569,21 +571,6 @@ class ArticleInfo extends Component {
       // extrapolate:'clamp'
     });
     const textAnim = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_MAX_HEIGHT],
-      outputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) / 2],
-      // extrapolate:'clamp'
-    });
-    const textAnim2 = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_MAX_HEIGHT],
-      outputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) / 2],
-      // extrapolate:'clamp'
-    });
-    const textAnim3 = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_MAX_HEIGHT],
-      outputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) / 2],
-      // extrapolate:'clamp'
-    });
-    const textAnim4 = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_MAX_HEIGHT],
       outputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) / 2],
       // extrapolate:'clamp'
@@ -739,7 +726,7 @@ class ArticleInfo extends Component {
                 opacity: opacityChange,
                 transform: [{translateY: textAnim}],
               }}>
-              by{' '}
+              {'by '}
               <Text style={{fontFamily: FONTS.LATO_BOLD, fontSize: 18}}>
                 {author}
               </Text>
@@ -751,28 +738,29 @@ class ArticleInfo extends Component {
                 fontFamily: FONTS.NOE_DISPLAY,
                 color: COLORS.LESS_DARK,
                 opacity: opacityChange,
-                transform: [{translateY: textAnim2}],
+                transform: [{translateY: textAnim}],
               }}>
               {topic}
             </Animated.Text>
-
             <Animated.Text
               style={{
                 fontFamily: FONTS.HELVETICA_NEUE,
                 fontSize: 12,
                 marginLeft: 16,
                 color: COLORS.GRAY,
-                transform: [{translateY: textAnim3}],
+                transform: [{translateY: textAnim}],
                 opacity: opacityChange,
               }}>
-              {`${category}\n${views} View${views !== 1 ? 's' : ''}`}
+              {`${category}\n${date.format(
+                'DD MMM',
+              )} (${date.fromNow()})\n${views} View${views !== 1 ? 's' : ''}`}
             </Animated.Text>
             {rating ? (
               <Animated.View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  transform: [{translateY: textAnim4}],
+                  transform: [{translateY: textAnim}],
                   opacity: opacityChange,
                 }}>
                 <StarRating
@@ -808,7 +796,7 @@ class ArticleInfo extends Component {
                   marginLeft: 16,
                   fontSize: 10,
                   fontFamily: FONTS.HELVETICA_NEUE,
-                  transform: [{translateY: textAnim4}],
+                  transform: [{translateY: textAnim}],
                   opacity: opacityChange,
                   color: COLORS.LIGHT_GRAY,
                 }}>
@@ -927,14 +915,17 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, {
-  getArticleInfo,
-  setAuthToken,
-  submitComment,
-  bookmarkArticle,
-  setContents,
-  setImage,
-})(ArticleInfo);
+export default connect(
+  mapStateToProps,
+  {
+    getArticleInfo,
+    setAuthToken,
+    submitComment,
+    bookmarkArticle,
+    setContents,
+    setImage,
+  },
+)(ArticleInfo);
 
 const styles = StyleSheet.create({
   OverlayStyle: {

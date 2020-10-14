@@ -17,8 +17,8 @@ import NotificationArticle from './screens/NotificationArticle';
 import Notification from './screens/Notification';
 import Policy from './screens/Policy';
 import Explore from './screens/Explore';
-import BottomTab from './components/BottomTab';
 import Rewards from './screens/Rewards';
+import {BottomTab} from './components';
 
 import {COLORS_DARK_THEME} from './Constants';
 

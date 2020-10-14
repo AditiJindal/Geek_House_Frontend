@@ -3,13 +3,11 @@ import {
   Text,
   StyleSheet,
   Animated,
-  View,
   PanResponder,
   UIManager,
   Dimensions,
 } from 'react-native';
 import {FONTS} from '../Constants';
-import CardFlip from 'react-native-card-flip';
 import _ from 'lodash';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -40,25 +38,6 @@ export default class RaisedText extends Component {
   }
 
   componentDidMount() {
-    if (this.props.animationEnabled) {
-      this.interval = setInterval(() => {
-        this.timer = setTimeout(() => {
-          if (this.state.card) {
-            this.state.card.flip();
-          }
-        }, _.random(7000, 10000));
-      }, _.random(7000, 10000));
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.props.animationEnabled) {
-      clearInterval(this.interval);
-      clearTimeout(this.timer);
-    }
-  }
-
-  componentDidUpdate() {
     UIManager.setLayoutAnimationEnabledExperimental &&
       UIManager.setLayoutAnimationEnabledExperimental(true);
   }
@@ -85,7 +64,7 @@ export default class RaisedText extends Component {
   }
 
   render() {
-    const {COLORS} = this.props;
+    const {COLORS, text} = this.props;
     return (
       <Animated.View
         style={[
@@ -94,46 +73,17 @@ export default class RaisedText extends Component {
             ...styles.AnimatedViewStyle,
             borderColor: COLORS.LESS_DARK,
             backgroundColor:
-              this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
+              COLORS.THEME === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
           },
         ]}
         {...this.state.panResponder.panHandlers}>
-        <CardFlip
-          duration={1000}
-          ref={card => {
-            if (!this.state.card) {
-              this.setState({card});
-            }
-          }}
+        <Text
           style={{
-            zIndex: 100,
-            height: 30,
-            width: 200,
-            alignItems: 'center',
-            justifyContent: 'center',
+            ...styles.AnimatedWelcomeHeading,
+            color: COLORS.LESSER_DARK,
           }}>
-          <View
-            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Text
-              style={{
-                ...styles.AnimatedWelcomeHeading,
-                color: COLORS.LESSER_DARK,
-              }}>
-              {this.props.text}
-            </Text>
-          </View>
-
-          <View
-            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Text
-              style={{
-                ...styles.AnimatedWelcomeHeading,
-                color: COLORS.LESSER_DARK,
-              }}>
-              {this.props.secondaryText}
-            </Text>
-          </View>
-        </CardFlip>
+          {text}
+        </Text>
       </Animated.View>
     );
   }
@@ -150,5 +100,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginRight: 25,
     borderRadius: 12,
+    alignItems: 'center',
+    width: 200,
   },
 });

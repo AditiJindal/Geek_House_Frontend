@@ -8,9 +8,25 @@ import {
   FlatList,
   RefreshControl,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import {Overlay, Icon} from 'react-native-elements';
-import Ripple from '../components/Ripple';
+import analytics from '@react-native-firebase/analytics';
+import {Actions} from 'react-native-router-flux';
+import LinearGradient from 'react-native-linear-gradient';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import SView from 'react-native-simple-shadow-view';
+import ImageResizer from 'react-native-image-resizer';
+import ImageEditor from '@react-native-community/image-editor';
+import {
+  ImageSelector,
+  Ripple,
+  ChatPeople,
+  ChatPeopleSearch,
+  Loading,
+  TimedAlert,
+  Avatar,
+} from '../components';
 import {logEvent} from '../actions/ChatAction';
 import {
   FONTS,
@@ -25,20 +41,6 @@ import {
   chatPeopleSearchAction,
   getChatPeopleExplicitly,
 } from '../actions/ChatAction';
-import {Actions} from 'react-native-router-flux';
-import LinearGradient from 'react-native-linear-gradient';
-import ChatPeople from '../components/ChatPeople';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import SView from 'react-native-simple-shadow-view';
-import ChatPeopleSearch from '../components/ChatPeopleSearch';
-import Loading from '../components/Loading';
-import TimedAlert from '../components/TimedAlert';
-import Avatar from '../components/Avatar';
-import ImageResizer from 'react-native-image-resizer';
-import ImageEditor from '@react-native-community/image-editor';
-import ImageSelector from '../components/ImageSelector';
-import analytics from '@react-native-firebase/analytics';
-import {TextInput} from 'react-native-gesture-handler';
 
 class Chat extends React.PureComponent {
   constructor() {
@@ -54,7 +56,7 @@ class Chat extends React.PureComponent {
   }
 
   componentDidMount() {
-    analytics().setCurrentScreen('Chat', 'Chat');
+    analytics().logScreenView({screen_class: 'Chat', screen_name: 'chat'});
     if (!this.props.authTokenSet) {
       this.props.setAuthToken();
     }
@@ -166,8 +168,8 @@ class Chat extends React.PureComponent {
       resize.height,
       'JPEG',
       80,
-    ).then(resized_image => {
-      ImageEditor.cropImage(resized_image.uri, crop).then(crop_image => {
+    ).then((resized_image) => {
+      ImageEditor.cropImage(resized_image.uri, crop).then((crop_image) => {
         this.setState({
           newGroupData: {...this.state.newGroupData, group_image: crop_image},
         });
@@ -226,7 +228,7 @@ class Chat extends React.PureComponent {
         </Ripple>
         <ImageSelector
           COLORS={this.props.COLORS}
-          onRef={ref => (this.imageSelector = ref)}
+          onRef={(ref) => (this.imageSelector = ref)}
         />
       </View>
     );
@@ -293,7 +295,7 @@ class Chat extends React.PureComponent {
   getSelectedUsers(user_id, shouldRemove) {
     if (shouldRemove) {
       new_users = [];
-      this.state.newGroupData.users.map(item => {
+      this.state.newGroupData.users.map((item) => {
         if (item !== user_id) {
           new_users.push(item);
         }
@@ -333,7 +335,7 @@ class Chat extends React.PureComponent {
             newGroupData: {name: '', group_image: null, users: []},
           });
         },
-        msg => {
+        (msg) => {
           this.setState({
             peopleSelectorVisible: false,
             groupPeopleSelectorLoading: false,
@@ -365,7 +367,7 @@ class Chat extends React.PureComponent {
         <>
           <TimedAlert
             theme={this.props.theme}
-            onRef={ref => (this.timedAlert2 = ref)}
+            onRef={(ref) => (this.timedAlert2 = ref)}
             COLORS={COLORS}
           />
           <TouchableOpacity
@@ -435,7 +437,7 @@ class Chat extends React.PureComponent {
                         placeholderTextColor={COLORS.GRAY}
                         value={this.state.newGroupData.name}
                         maxLength={56}
-                        onChangeText={text =>
+                        onChangeText={(text) =>
                           this.setState({
                             newGroupData: {
                               ...this.state.newGroupData,
@@ -585,7 +587,7 @@ class Chat extends React.PureComponent {
               theme={this.props.theme}
               COLORS={COLORS}
               value={this.state.chatPeopleSearchText}
-              onTextChange={value => {
+              onTextChange={(value) => {
                 this.setState({chatPeopleSearchText: value});
               }}
               onSearch={() => this.onSearch()}
@@ -643,7 +645,10 @@ class Chat extends React.PureComponent {
                 onPress={() => {
                   this.props.setUserData(item);
                   Actions.chatscreen();
-                  analytics().setCurrentScreen('ChatScreen', 'ChatScreen');
+                  analytics().logScreenView({
+                    screen_class: 'Chat',
+                    screen_name: 'chat',
+                  });
                 }}
               />
               <View style={{height: 4, width: 1}} />
@@ -674,7 +679,7 @@ class Chat extends React.PureComponent {
               theme={this.props.theme}
               COLORS={COLORS}
               value={this.state.chatPeopleSearchText}
-              onTextChange={value => {
+              onTextChange={(value) => {
                 this.setState({chatPeopleSearchText: value});
               }}
               onSearch={() => this.onSearch()}
@@ -721,7 +726,10 @@ class Chat extends React.PureComponent {
                 onPress={() => {
                   this.props.setUserData(item);
                   Actions.chatscreen();
-                  analytics().setCurrentScreen('ChatScreen', 'ChatScreen');
+                  analytics().logScreenView({
+                    screen_class: 'Chat',
+                    screen_name: 'chat',
+                  });
                 }}
               />
               <View style={{height: 4, width: 1}} />
@@ -784,7 +792,7 @@ class Chat extends React.PureComponent {
         {this.renderChatPeopleSelector()}
         <TimedAlert
           theme={this.props.theme}
-          onRef={ref => (this.timedAlert = ref)}
+          onRef={(ref) => (this.timedAlert = ref)}
           COLORS={COLORS}
         />
         {this.renderHeader()}
@@ -794,7 +802,7 @@ class Chat extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     image_adder: state.home.image_adder,
 

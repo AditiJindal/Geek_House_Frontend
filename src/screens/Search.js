@@ -11,18 +11,22 @@ import {
   TextInput,
 } from 'react-native';
 import {connect} from 'react-redux';
-import Loading from '../components/Loading';
-import {
-  FONTS,
-  ERROR_MESSAGES,
-  COLORS_LIGHT_THEME,
-  ALL_CATEGORIES,
-} from '../Constants';
-import ArticleTile from '../components/ArticleTile';
 import LinearGradient from 'react-native-linear-gradient';
-import RaisedText from '../components/RaisedText';
 import {Icon} from 'react-native-elements';
 import _ from 'lodash';
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
+import SView from 'react-native-simple-shadow-view';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import analytics from '@react-native-firebase/analytics';
+
+import {
+  ArticleTileAds,
+  CustomAlert,
+  Dropdown,
+  RaisedText,
+  ArticleTile,
+  Loading,
+} from '../components';
 import {
   getPopularSearches,
   setAuthToken,
@@ -32,13 +36,12 @@ import {
   clearSearch,
   showAlert,
 } from '../actions/SearchAction';
-import {Dropdown} from '../components/Dropdown';
-import CustomAlert from '../components/CustomAlert';
-import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
-import SView from 'react-native-simple-shadow-view';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import analytics from '@react-native-firebase/analytics';
-import ArticleTileAds from '../components/ArticleTileAds';
+import {
+  FONTS,
+  ERROR_MESSAGES,
+  COLORS_LIGHT_THEME,
+  ALL_CATEGORIES,
+} from '../Constants';
 
 class Search extends React.PureComponent {
   state = {adIndex: 0, adCategoryIndex: []};
@@ -46,7 +49,10 @@ class Search extends React.PureComponent {
   componentDidMount() {
     if (!this.props.popularSearchesData) {
       this.props.setAuthToken();
-      analytics().setCurrentScreen('Search', 'Search');
+      analytics().logScreenView({
+        screen_class: 'Search',
+        screen_name: 'search',
+      });
       this.props.getPopularSearches();
     }
   }
@@ -61,7 +67,7 @@ class Search extends React.PureComponent {
         data={articles}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyExtractor={item => item.article_id.toString()}
+        keyExtractor={(item) => item.article_id.toString()}
         renderItem={({item, index}) => {
           return (
             <View
@@ -130,7 +136,7 @@ class Search extends React.PureComponent {
           textAlignVertical="top"
           keyboardAppearance="light"
           maxLength={128}
-          onChangeText={search => {
+          onChangeText={(search) => {
             this.props.updateSearchValue(search);
           }}
           spellCheck={true}
@@ -531,7 +537,7 @@ class Search extends React.PureComponent {
     const {COLORS} = this.props;
     let new_data = [{value: 'All Categories'}];
 
-    ALL_CATEGORIES.map(item => {
+    ALL_CATEGORIES.map((item) => {
       new_data.push({value: item});
     });
     if (this.props.searchValue.length > 1) {
@@ -543,7 +549,7 @@ class Search extends React.PureComponent {
             label="Category Selection"
             value="All Categories"
             itemCount={6}
-            onChangeText={category => {
+            onChangeText={(category) => {
               this.props.selectCategory(category);
             }}
           />
@@ -618,7 +624,7 @@ class Search extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     adsManager: state.home.adsManager,
     canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,

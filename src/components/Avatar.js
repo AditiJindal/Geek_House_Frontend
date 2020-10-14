@@ -2,8 +2,7 @@ import React from 'react';
 import {TouchableOpacity, Dimensions, View} from 'react-native';
 import {connect} from 'react-redux';
 import Image from 'react-native-fast-image';
-import ImageViewer from './ImageViewer';
-import Loading from '../components/Loading';
+import {Loading, ImageViewer} from './index';
 
 const screenWidth = Dimensions.get('screen').width;
 
@@ -62,7 +61,7 @@ class Avatar extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     COLORS: state.chat.COLORS,
   };

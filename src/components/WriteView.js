@@ -11,7 +11,7 @@ import SView from 'react-native-simple-shadow-view';
 import Image from 'react-native-fast-image';
 import vision from '@react-native-firebase/ml-vision';
 import ImageResizer from 'react-native-image-resizer';
-import CustomAlert from '../components/CustomAlert';
+import {Loading, Ripple, ImageSelector, CustomAlert} from './index';
 import {
   FONTS,
   ERROR_MESSAGES,
@@ -19,9 +19,6 @@ import {
   COLORS_LIGHT_THEME,
 } from '../Constants';
 import {logEvent} from '../actions/ChatAction';
-import ImageSelector from './ImageSelector';
-import Ripple from './Ripple';
-import Loading from './Loading';
 
 const MIN_TI_HEIGHT = 120;
 export default class WriteView extends Component {
@@ -55,7 +52,7 @@ export default class WriteView extends Component {
     this.setState({visionLoading: true});
     vision()
       .textRecognizerProcessImage(image_path)
-      .then(response => {
+      .then((response) => {
         if (response.text.length === 0) {
           this.props.timedAlert.showAlert(
             3000,
@@ -69,7 +66,7 @@ export default class WriteView extends Component {
         this.props.onContentChange(response.text, this.props.index);
         this.setState({visionLoading: false});
       })
-      .catch(e =>
+      .catch((e) =>
         logEvent(LOG_EVENT.ERROR, {
           errorLine: 'WRITE VIEW - 42',
           description: e.toString(),
@@ -110,7 +107,7 @@ export default class WriteView extends Component {
 
   handleAddCardImage() {
     const {index, onCardImageChange} = this.props;
-    this.imageSelector.showImageSelector(async response => {
+    this.imageSelector.showImageSelector(async (response) => {
       const resize = this.getImageResize(response);
       const resized_image = await ImageResizer.createResizedImage(
         response.uri,
@@ -188,7 +185,7 @@ export default class WriteView extends Component {
           maxLength={512}
           textAlignVertical="top"
           value={this.props.obj.content}
-          onChangeText={value => {
+          onChangeText={(value) => {
             this.props.onContentChange(value, this.props.index);
           }}
           textBreakStrategy="highQuality"
@@ -200,7 +197,7 @@ export default class WriteView extends Component {
         <TouchableOpacity
           activeOpacity={0.6}
           onPress={() => {
-            this.imageSelector.showImageSelector(response => {
+            this.imageSelector.showImageSelector((response) => {
               this.doTextRecognition(response.path);
             });
           }}
@@ -245,14 +242,14 @@ export default class WriteView extends Component {
           backgroundColor:
             this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
         }}
-        onLayout={event => {
+        onLayout={(event) => {
           if (!this.state.cardWidth) {
             this.setState({cardWidth: event.nativeEvent.layout.width});
           }
         }}>
         <ImageSelector
           COLORS={this.props.COLORS}
-          onRef={ref => (this.imageSelector = ref)}
+          onRef={(ref) => (this.imageSelector = ref)}
         />
         <CustomAlert
           theme={this.props.theme}
@@ -289,7 +286,7 @@ export default class WriteView extends Component {
             placeholderTextColor={COLORS.LESSER_DARK}
             value={this.props.obj.sub_heading}
             maxLength={128}
-            onChangeText={value => {
+            onChangeText={(value) => {
               this.props.onSubHeadingChange(value, this.props.index);
             }}
             textBreakStrategy="highQuality"

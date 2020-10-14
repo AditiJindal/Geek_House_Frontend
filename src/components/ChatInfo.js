@@ -11,16 +11,9 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {Overlay, Icon} from 'react-native-elements';
-import Ripple from './Ripple';
 import Image from 'react-native-fast-image';
-import ChatPeople from './ChatPeople';
-import {FONTS, MAX_USERS_IN_A_GROUP, COLORS_LIGHT_THEME} from '../Constants';
-import Loading from '../components/Loading';
-import TimedAlert from '../components/TimedAlert';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from '@react-native-community/image-editor';
-import ImageSelector from './ImageSelector';
-import Avatar from './Avatar';
 import {
   Menu,
   MenuOptions,
@@ -37,6 +30,16 @@ import {
   groupDetailsChange,
   chatInfoGroupIconUploadingAction,
 } from '../actions/ChatAction';
+import {
+  TimedAlert,
+  Loading,
+  Ripple,
+  ImageSelector,
+  Avatar,
+  ChatPeople,
+} from './index';
+import {FONTS, MAX_USERS_IN_A_GROUP, COLORS_LIGHT_THEME} from '../Constants';
+import {getRingColor} from '../extraUtilities';
 
 const overlayWidth = Dimensions.get('screen').width * 0.86;
 
@@ -102,7 +105,7 @@ class ChatInfo extends Component {
     return crop;
   }
 
-  pickImage = async image => {
+  pickImage = async (image) => {
     if (image.didCancel) {
       return null;
     }
@@ -157,7 +160,7 @@ class ChatInfo extends Component {
   }
 
   chatPeopleComponentHelper(user) {
-    const {image_url, name, isAdmin, _id} = user;
+    const {image_url, name, isAdmin, _id, userXP} = user;
     const {COLORS} = this.props;
     return (
       <View
@@ -172,6 +175,7 @@ class ChatInfo extends Component {
           <Avatar
             size={48}
             uri={imageUrlCorrector(image_url, this.props.image_adder)}
+            ring_color={getRingColor(userXP)}
           />
           <Text
             style={{
@@ -316,7 +320,7 @@ class ChatInfo extends Component {
   getSelectedUsers(user_id, shouldRemove) {
     if (shouldRemove) {
       new_users = [];
-      this.state.peopleToAdd.map(item => {
+      this.state.peopleToAdd.map((item) => {
         if (item !== user_id) {
           new_users.push(item);
         }
@@ -349,7 +353,7 @@ class ChatInfo extends Component {
       return;
     }
 
-    group_participants.users.map(item => {
+    group_participants.users.map((item) => {
       group_participants_user_ids.push(item._id);
     });
 
@@ -372,7 +376,7 @@ class ChatInfo extends Component {
         <>
           <TimedAlert
             theme={this.props.theme}
-            onRef={ref => (this.timedAlert2 = ref)}
+            onRef={(ref) => (this.timedAlert2 = ref)}
             COLORS={COLORS}
           />
           <TouchableOpacity
@@ -552,7 +556,7 @@ class ChatInfo extends Component {
       <Menu>
         <MenuTrigger
           customStyles={{
-            TriggerTouchableComponent: props => {
+            TriggerTouchableComponent: (props) => {
               if (this.props.currentUserId === user._id) {
                 return <View children={props.children} />;
               }
@@ -828,12 +832,12 @@ class ChatInfo extends Component {
           {this.renderChatPeopleSelector()}
           <TimedAlert
             theme={this.props.theme}
-            onRef={ref => (this.timedAlert = ref)}
+            onRef={(ref) => (this.timedAlert = ref)}
             COLORS={COLORS}
           />
           <ImageSelector
             COLORS={this.props.COLORS}
-            onRef={ref => (this.imageSelector = ref)}
+            onRef={(ref) => (this.imageSelector = ref)}
           />
           {isLoading || !group_participants ? (
             <View
@@ -868,13 +872,13 @@ class ChatInfo extends Component {
                     placeholderTextColor={COLORS.GRAY}
                     multiline
                     editable={this.state.editMode}
-                    onChangeText={text => {
+                    onChangeText={(text) => {
                       chatInfoGroupDetailsUpdateAction({
                         ...chatInfoGroupDetails,
                         groupName: text,
                       });
                     }}
-                    ref={ref => (this.textInput = ref)}
+                    ref={(ref) => (this.textInput = ref)}
                   />
                 </Image>
 
@@ -893,7 +897,7 @@ class ChatInfo extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     authtoken: state.login.authtoken,
     user_name: state.login.data.name,

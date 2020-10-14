@@ -17,10 +17,12 @@ import com.android.build.OutputFile
  *   // the name of the generated asset file containing your JS bundle
  *   bundleAssetName: "index.android.bundle",
  *
- *   // the entry file for bundle generation
+ *   // the entry file for bundle generation. If none specified and
+ *   // "index.android.js" exists, it will be used. Otherwise "index.js" is
+ *   // default. Can be overridden with ENTRY_FILE environment variable.
  *   entryFile: "index.android.js",
  *
- *   // https://facebook.github.io/react-native/docs/performance#enable-the-ram-format
+ *   // https://reactnative.dev/docs/performance#enable-the-ram-format
  *   bundleCommand: "ram-bundle",
  *
  *   // whether to bundle JS and assets in debug mode
@@ -78,7 +80,6 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    entryFile: "index.js",
     enableHermes: true,  // clean and rebuild if changing
 ]
 
@@ -129,6 +130,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     configurations.all {
         resolutionStrategy {
             force "com.facebook.soloader:soloader:0.8.0"
@@ -144,7 +146,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 37
-        versionName "1.17.0"
+        versionName "1.37"
         manifestPlaceholders = [
             appAuthRedirectScheme: 'io.identityserver.demo'
         ]
@@ -185,15 +187,17 @@ android {
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
-            // see https://facebook.github.io/react-native/docs/signed-apk-android.
+            // see https://reactnative.dev/docs/signed-apk-android.
             minifyEnabled true
             signingConfig signingConfigs.debug
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             manifestPlaceholders = [usesCleartextTraffic:"false"]
+
         }
     }
+
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
@@ -228,26 +232,30 @@ android {
 }
 
 dependencies {
-    implementation project(':@react-native-firebase_dynamic-links')
-    implementation project(':@react-native-firebase_auth')
-    implementation project(':@react-native-community_cameraroll')
-    implementation project(':react-native-vector-icons')
-    implementation project(':react-native-push-notification')
-    implementation project(':@react-native-firebase_ml-natural-language')
-    implementation project(':@react-native-firebase_messaging')
-    implementation project(':@react-native-firebase_perf')
-    implementation project(':react-native-code-push')
-    implementation project(':@react-native-firebase_ml-vision')
-    implementation project(':react-native-document-picker')
-    implementation 'com.facebook.fresco:animated-gif:2.0.0'
-    implementation 'com.facebook.fresco:fresco:2.0.0'
-    implementation project(':react-native-fs')
-    implementation project(':react-native-fbads')
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
-    implementation project(':react-native-device-info')
+
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
+    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
+      exclude group:'com.facebook.fbjni'
+    }
+
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
+        exclude group:'com.facebook.flipper'
+        exclude group:'com.squareup.okhttp3', module:'okhttp'
+    }
+
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
+        exclude group:'com.facebook.flipper'
+    }
+
     implementation project(':watermelondb')
+    implementation project(':react-native-fbads')
+    implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'com.facebook.android:audience-network-sdk:5.+'
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
@@ -264,7 +272,6 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.compile
     into 'libs'
 }
-
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply plugin: 'com.google.gms.google-services'

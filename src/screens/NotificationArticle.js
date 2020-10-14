@@ -8,19 +8,22 @@ import {
   StyleSheet,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {setAuthToken, getArticleInfo} from '../actions/ArticleInfoAction';
 import {Actions} from 'react-native-router-flux';
-import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 import {Icon} from 'react-native-elements';
-import Loading from '../components/Loading';
 import analytics from '@react-native-firebase/analytics';
-import ArticleTile from '../components/ArticleTile';
+
+import {ArticleTile, Loading} from '../components';
+import {setAuthToken, getArticleInfo} from '../actions/ArticleInfoAction';
+import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 
 class NotificationArticle extends React.PureComponent {
   componentDidMount() {
     this.props.setAuthToken();
     this.props.getArticleInfo(this.props.article_id, false, false);
-    analytics().setCurrentScreen('NotificationArticle', 'NotificationArticle');
+    analytics().logScreenView({
+      screen_class: 'Home',
+      screen_name: 'notification_article',
+    });
   }
 
   imageUrlCorrector(image_url) {
@@ -116,7 +119,7 @@ class NotificationArticle extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     image_adder: state.home.image_adder,
 

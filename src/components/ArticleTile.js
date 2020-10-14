@@ -108,11 +108,6 @@ export default class ArticleTile extends Component {
       return (
         <TouchableOpacity
           onPress={() => {
-            analytics().logViewItem({
-              item_id: data.article_id.toString(),
-              item_category: data.category,
-              item_name: data.topic,
-            });
             this.setState({infoVisible: true, showStartTime: Date.now()});
           }}
           activeOpacity={1}
@@ -169,14 +164,16 @@ export default class ArticleTile extends Component {
           end={{x: 1, y: 1}}>
           <View
             style={{
-              alignItems: 'flex-start',
               flexDirection: 'row',
+              alignItems: 'flex-end',
               justifyContent: 'space-between',
             }}>
-            <Text
-              style={{...styles.TextStyle, color: COLORS_LIGHT_THEME.LIGHT}}>
-              {data.topic}
-            </Text>
+            <View style={{flex: 1}}>
+              <Text
+                style={{...styles.TextStyle, color: COLORS_LIGHT_THEME.LIGHT}}>
+                {data.topic}
+              </Text>
+            </View>
             {this.renderStarRating(data.rating)}
           </View>
         </LinearGradient>

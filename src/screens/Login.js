@@ -7,31 +7,32 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 import NetInfo from '@react-native-community/netinfo';
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  loginGoogle,
-  loginFacebook,
-  checkLogin,
-  internetHandler,
-} from '../actions/LoginAction';
-import Loading from '../components/Loading';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import Image from 'react-native-fast-image';
 import SplashScreen from 'react-native-splash-screen';
 import analytics from '@react-native-firebase/analytics';
 import {Actions} from 'react-native-router-flux';
 
+import {Loading} from '../components';
+import {
+  loginGoogle,
+  loginFacebook,
+  checkLogin,
+  internetHandler,
+} from '../actions/LoginAction';
+import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
+
 class Login extends React.PureComponent {
   componentDidMount = async () => {
     this.props.checkLogin();
     SplashScreen.hide();
     analytics().logAppOpen();
-    NetInfo.fetch().then(state =>
+    NetInfo.fetch().then((state) =>
       this.props.internetHandler(state.isInternetReachable),
     );
-    NetInfo.addEventListener(state =>
+    NetInfo.addEventListener((state) =>
       this.props.internetHandler(state.isInternetReachable),
     );
   };
@@ -198,7 +199,7 @@ class Login extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     googleLoading: state.login.googleLoading,
     facebookLoading: state.login.facebookLoading,

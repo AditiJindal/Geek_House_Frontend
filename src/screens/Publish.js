@@ -1,21 +1,21 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 import {connect} from 'react-redux';
 import {Actions} from 'react-native-router-flux';
-import Ripple from '../components/Ripple';
+import LottieView from 'lottie-react-native';
+import {Icon} from 'react-native-elements';
+import LinearGradient from 'react-native-linear-gradient';
+import SView from 'react-native-simple-shadow-view';
+import analytics from '@react-native-firebase/analytics';
+
+import {Loading, ArticleTile, Ripple} from '../components';
 import {
   publishArticle,
   getMyArticles,
   uploadArticleImages,
 } from '../actions/WriteAction';
-import LottieView from 'lottie-react-native';
-import {Icon} from 'react-native-elements';
-import LinearGradient from 'react-native-linear-gradient';
-import ArticleTile from '../components/ArticleTile';
-import Loading from '../components/Loading';
-import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics';
+import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
+
 const ConfettiData = require('../../assets/animations/confetti.json');
 
 class Publish extends React.PureComponent {
@@ -27,7 +27,7 @@ class Publish extends React.PureComponent {
   }
 
   componentDidMount() {
-    analytics().setCurrentScreen('Publish', 'Publish');
+    analytics().logScreenView({screen_class: 'Write', screen_name: 'publish'});
   }
 
   imageUrlCorrector(image_url) {
@@ -257,7 +257,7 @@ class Publish extends React.PureComponent {
   renderSuccess() {
     return (
       <LottieView
-        ref={animation => {
+        ref={(animation) => {
           this.animation = animation;
         }}
         autoPlay={false}
@@ -283,7 +283,7 @@ class Publish extends React.PureComponent {
           : this.renderBottomButton(
               editing_article_id ? 'SAVE' : 'PUBLISH',
               ['#11998e', '#38ef7d'],
-              async data_to_send => {
+              async (data_to_send) => {
                 const article = await uploadArticleImages(data_to_send);
                 this.props.publishArticle(
                   article,
@@ -297,7 +297,7 @@ class Publish extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     image_adder: state.home.image_adder,
 

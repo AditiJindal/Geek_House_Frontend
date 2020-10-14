@@ -10,21 +10,22 @@ import {
   BackHandler,
 } from 'react-native';
 import {connect} from 'react-redux';
-import Loading from '../components/Loading';
-import {getPolicy} from '../actions/LoginAction';
 import {Actions} from 'react-native-router-flux';
-import {FONTS} from '../Constants';
 import {Icon} from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
+
+import {Loading} from '../components';
+import {getPolicy} from '../actions/LoginAction';
+import {FONTS} from '../Constants';
 
 class Policy extends React.PureComponent {
   componentDidMount() {
     if (!this.props.policy) {
       this.props.getPolicy();
     }
-    analytics().setCurrentScreen('Policy', 'Policy');
+    analytics().logScreenView({screen_class: 'Policy', screen_name: 'policy'});
     BackHandler.addEventListener('hardwareBackPress', () => {
       changeNavigationBarColor(this.props.navBar, false);
     });
@@ -208,7 +209,7 @@ class Policy extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     policy: state.login.policy,
     policyLoading: state.login.policyLoading,

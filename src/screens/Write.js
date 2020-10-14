@@ -9,21 +9,21 @@ import {
   RefreshControl,
   ScrollView,
 } from 'react-native';
-import Ripple from '../components/Ripple';
-import ArticleTile from '../components/ArticleTile';
-import {
-  setAuthToken,
-  getMyArticles,
-  clearPublish,
-} from '../actions/WriteAction';
 import {Icon} from 'react-native-elements';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
-import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 import {Actions} from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
+
+import {ArticleTile, Ripple} from '../components';
+import {
+  setAuthToken,
+  getMyArticles,
+  clearPublish,
+} from '../actions/WriteAction';
+import {FONTS, COLORS_LIGHT_THEME} from '../Constants';
 
 class Write extends React.PureComponent {
   constructor() {
@@ -32,7 +32,10 @@ class Write extends React.PureComponent {
 
   componentDidMount() {
     this.props.setAuthToken();
-    analytics().setCurrentScreen('MyArticles', 'MyArticles');
+    analytics().logScreenView({
+      screen_class: 'Write',
+      screen_name: 'my_articles',
+    });
     this.props.getMyArticles(
       Object.keys(this.props.myArticles).length,
       this.props.reload,
@@ -45,7 +48,7 @@ class Write extends React.PureComponent {
         data={articles}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyExtractor={item => item.article_id.toString()}
+        keyExtractor={(item) => item.article_id.toString()}
         renderItem={({item}) => {
           return (
             <View
@@ -344,7 +347,10 @@ class Write extends React.PureComponent {
         onPress={() => {
           this.props.isDraft ? () => {} : this.props.clearPublish();
           Actions.jump('writearticle');
-          analytics().setCurrentScreen('Write', 'Write');
+          analytics().logScreenView({
+            screen_class: 'Write',
+            screen_name: 'write',
+          });
         }}>
         <SView
           style={{
@@ -488,7 +494,7 @@ class Write extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     loading: state.write.loading,
     myArticles: state.write.myArticles,

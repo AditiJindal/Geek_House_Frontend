@@ -10,9 +10,8 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {Badge, Icon} from 'react-native-elements';
-import {FONTS} from '../Constants';
-import {GiftedChat} from '../components/GiftedChat/index';
 import {Actions} from 'react-native-router-flux';
+import {FONTS} from '../Constants';
 import {
   sendMessage,
   checkMessagesObject,
@@ -25,9 +24,8 @@ import {
   onComposerTextChanged,
   getChatGroupParticipants,
 } from '../actions/ChatAction';
-import TimedAlert from '../components/TimedAlert';
-import ChatInfo from '../components/ChatInfo';
-import Avatar from '../components/Avatar';
+import {Avatar, ChatInfo, TimedAlert, GiftedChat} from '../components';
+import {getRingColor} from '../extraUtilities';
 
 class ChatScreen extends React.PureComponent {
   state = {
@@ -128,11 +126,13 @@ class ChatScreen extends React.PureComponent {
 
   renderHeaderAvatar() {
     const {COLORS, other_user_data} = this.props;
+    console.log('OTHER USER DATA : ', other_user_data);
     return (
       <View>
         <Avatar
           size={48}
           uri={this.imageUrlCorrector(other_user_data.image_url)}
+          ring_color={getRingColor(other_user_data.userXP)}
           onPress={this.handleChatInfo}
         />
         {!other_user_data.newEntry &&
@@ -270,7 +270,7 @@ class ChatScreen extends React.PureComponent {
           }>
           {this.renderHeader()}
           <TimedAlert
-            onRef={ref => (this.timedAlert = ref)}
+            onRef={(ref) => (this.timedAlert = ref)}
             theme={this.props.theme}
             COLORS={COLORS}
           />
@@ -294,7 +294,7 @@ class ChatScreen extends React.PureComponent {
                   marginTop: 2,
                 }}
                 messages={this.props.currentMessages}
-                onSend={message => {
+                onSend={(message) => {
                   this.props.sendMessage(
                     this.props.socket,
                     [{...message[0], isGroup: other_user_data.isGroup}],
@@ -321,7 +321,7 @@ class ChatScreen extends React.PureComponent {
                   });
                 }}
                 image_adder={this.props.image_adder}
-                onViewerSelect={value => {
+                onViewerSelect={(value) => {
                   this.setState({imageViewerSelected: value});
                 }}
                 internetReachable={this.props.internetReachable}
@@ -337,7 +337,7 @@ class ChatScreen extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     authtoken: state.login.authtoken,
     internetReachable: state.login.internetReachable,

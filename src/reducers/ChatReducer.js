@@ -5,7 +5,7 @@ import analytics from '@react-native-firebase/analytics';
 import _ from 'lodash';
 import perf from '@react-native-firebase/perf';
 import {database} from '../database';
-import uuid from 'uuid';
+import {v4 as uuid} from 'uuid';
 import {decrypt} from '../encryptionUtil';
 
 const MessagesCollection = database.collections.get('messages');
@@ -54,7 +54,7 @@ const INITIAL_STATE = {
   gifs_loading: false,
 };
 
-const incomingMessageConverter = item => {
+const incomingMessageConverter = (item) => {
   new_message = [
     {
       _id: uuid(),
@@ -67,7 +67,7 @@ const incomingMessageConverter = item => {
   return new_message;
 };
 
-const decryptMessage = message => {
+const decryptMessage = (message) => {
   if (message.image) {
     message.image.url = decrypt(message.image.url);
   }
@@ -85,7 +85,7 @@ const insertUnreadMessages = (
   chats,
 ) => {
   let new_chats = [...chats];
-  unread_messages.map(item => {
+  unread_messages.map((item) => {
     item = decryptMessage(item);
 
     status[item.from].unread_messages += 1;
@@ -110,7 +110,7 @@ const insertUnreadMessages = (
 
 const reorderChatsList = (list, elem) => {
   new_list = [];
-  list.map(item => {
+  list.map((item) => {
     if (item._id === elem) {
       new_list.unshift(item);
     } else {
@@ -142,7 +142,7 @@ const saveMessageInDB = (payload, this_user_id) => {
   var t = Date.now();
   database
     .action(async () => {
-      MessagesCollection.create(new_message => {
+      MessagesCollection.create((new_message) => {
         (new_message.other_user_id = other_user_id.toString()),
           (new_message.message_id = message[0]._id),
           (new_message.created_at = Date.parse(message[0].createdAt)),
@@ -194,12 +194,12 @@ const mergeChats = (new_chats, old_chats) => {
 
   let old_chat_ids = [];
 
-  old_chats.map(chat => {
+  old_chats.map((chat) => {
     final_result.push(chat);
     old_chat_ids.push(chat._id);
   });
 
-  new_chats.map(chat => {
+  new_chats.map((chat) => {
     if (!old_chat_ids.includes(chat._id)) {
       final_result.unshift(chat);
     }
@@ -366,7 +366,7 @@ export default (state = INITIAL_STATE, action) => {
 
       if (state.loaded_from_storage && Object.keys(state.status).length !== 0) {
         status = {...state.status};
-        all_users.map(item => {
+        all_users.map((item) => {
           if (!status.hasOwnProperty(item._id)) {
             status[item._id] = {
               online: false,
@@ -387,7 +387,7 @@ export default (state = INITIAL_STATE, action) => {
         });
       } else {
         status = {};
-        all_users.map(item => {
+        all_users.map((item) => {
           action.payload.allOnline.includes(item._id)
             ? (online = true)
             : (online = false);
@@ -651,7 +651,7 @@ export default (state = INITIAL_STATE, action) => {
       if (state.chatGroupsLeft.includes(group._id)) {
         // means user was earlier in this group, is now being re-added
         new_chatGroupsLeft = [];
-        state.chatGroupsLeft.map(item => {
+        state.chatGroupsLeft.map((item) => {
           if (item !== group._id) {
             new_chatGroupsLeft.push(item);
           }
@@ -679,7 +679,7 @@ export default (state = INITIAL_STATE, action) => {
       new_users = [];
       if (state.chat_group_participants[action.payload.group_id]) {
         state.chat_group_participants[action.payload.group_id].users.map(
-          item => {
+          (item) => {
             if (item._id !== action.payload.user_id) {
               new_users.push(item);
             }
@@ -691,7 +691,7 @@ export default (state = INITIAL_STATE, action) => {
 
         new_admins = [];
         state.chat_group_participants[action.payload.group_id].admins.map(
-          item => {
+          (item) => {
             if (item._id !== action.payload.user_id) {
               new_admins.push(item);
             }
@@ -713,7 +713,7 @@ export default (state = INITIAL_STATE, action) => {
     case ACTIONS.CHAT_GROUP_MODIFY_ADMINS:
       new_users = state.chat_group_participants[
         action.payload.group_id
-      ].users.map(user => {
+      ].users.map((user) => {
         if (action.payload.admins.includes(user._id)) {
           user.isAdmin = true;
         } else {

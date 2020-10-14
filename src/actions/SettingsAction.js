@@ -1,6 +1,6 @@
 import {ACTIONS} from './types';
 import {URLS} from '../Constants';
-import uuid from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
 import RNFileSystem from 'react-native-fs';
 import {encrypt, decrypt} from '../encryptionUtil';
 import {uploadImage} from './WriteAction';
@@ -18,17 +18,17 @@ export const setAuthToken = () => {
 };
 // till here
 
-export const getSettingsData = reload => {
+export const getSettingsData = (reload) => {
   return (dispatch, getState) => {
     const state = getState();
 
     if (reload || !state.settings.gotSettingsData) {
       httpClient
         .get(URLS.settings)
-        .then(response => {
+        .then((response) => {
           dispatch({type: ACTIONS.GET_SETTINGS_DATA, payload: response.data});
         })
-        .catch(e =>
+        .catch((e) =>
           logEvent(LOG_EVENT.ERROR, {
             errorLine: 'SEARCH ACTION - 30',
             description: e.toString(),
@@ -38,7 +38,7 @@ export const getSettingsData = reload => {
   };
 };
 
-export const settingsChangeFavouriteCategory = selected_category => {
+export const settingsChangeFavouriteCategory = (selected_category) => {
   return {
     type: ACTIONS.CHAT_SOCKET_CHANGE_CATEGORY,
     payload: selected_category,
@@ -53,12 +53,12 @@ export const changeQuickRepliesSettings = () => {
   return {type: ACTIONS.SETTINGS_CHANGE_QUICK_REPLIES};
 };
 
-export const changeTheme = value => {
+export const changeTheme = (value) => {
   return {type: ACTIONS.CHANGE_THEME, payload: value};
 };
 
 export const changeChatWallpaper = (response, previous_image) => {
-  return dispatch => {
+  return (dispatch) => {
     const target_path =
       RNFileSystem.ExternalStorageDirectoryPath +
       '/GeekHouse/' +
@@ -76,11 +76,11 @@ export const changeChatWallpaper = (response, previous_image) => {
   };
 };
 
-export const changeBlurRadius = blur => {
+export const changeBlurRadius = (blur) => {
   return {type: ACTIONS.CHANGE_CHAT_BACKGROUND_BLUR, payload: blur};
 };
 
-const nameValidator = name => {
+const nameValidator = (name) => {
   if (name.length < 2) {
     return {error: 'Name too short'};
   }
@@ -91,7 +91,7 @@ const nameValidator = name => {
   }
 };
 
-export const changeName = name => {
+export const changeName = (name) => {
   // this goes into LoginReducer as name remains with LoginReducer
   return {
     type: ACTIONS.SETTINGS_CHANGE_NAME,
@@ -100,7 +100,7 @@ export const changeName = name => {
 };
 
 export const submitName = (name, callback) => {
-  return dispatch => {
+  return (dispatch) => {
     const {error} = nameValidator(name);
     if (!error) {
       httpClient.post(URLS.change_name, {name}).then(() => {
@@ -122,7 +122,7 @@ export const revertName = () => {
 
 export const changeImageUrl = (image_url, callback) => {
   // this goes into LoginReducer as image_url remains with LoginReducer
-  return dispatch => {
+  return (dispatch) => {
     dispatch({
       type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
       payload: true,
@@ -131,7 +131,7 @@ export const changeImageUrl = (image_url, callback) => {
       .get(URLS.imageupload, {
         params: {type: 'profile_picture', image_type: 'jpeg'},
       })
-      .then(response => {
+      .then((response) => {
         const preSignedURL = decrypt(response.data.url);
 
         uploadImage(
@@ -154,7 +154,7 @@ export const changeImageUrl = (image_url, callback) => {
                   payload: false,
                 });
               })
-              .catch(e => {
+              .catch((e) => {
                 callback('Not able to change profile pic');
                 dispatch({
                   type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
@@ -162,7 +162,7 @@ export const changeImageUrl = (image_url, callback) => {
                 });
               });
           })
-          .catch(e => {
+          .catch((e) => {
             callback("Couldn't change profile pic");
             dispatch({
               type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
@@ -170,7 +170,7 @@ export const changeImageUrl = (image_url, callback) => {
             });
           });
       })
-      .catch(e => {
+      .catch((e) => {
         callback('Unable to change profile pic');
         dispatch({
           type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,

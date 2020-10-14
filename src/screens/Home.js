@@ -10,6 +10,32 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {connect} from 'react-redux';
+import _ from 'lodash';
+import Image from 'react-native-fast-image';
+import LottieView from 'lottie-react-native';
+import {Overlay, Icon} from 'react-native-elements';
+import LinearGradient from 'react-native-linear-gradient';
+import InAppReview from 'react-native-in-app-review';
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
+import {Actions} from 'react-native-router-flux';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import ShadowView from 'react-native-simple-shadow-view';
+import analytics from '@react-native-firebase/analytics';
+
+import {
+  Avatar,
+  ArticleTileAds,
+  LevelBar,
+  Ripple,
+  Loading,
+  RaisedText,
+  ArticleTile,
+  Dropdown,
+  AppIntroSlider,
+} from '../components';
+import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
+import {getHumanTime} from '../timeUtil';
+import {setupComplete} from '../actions/ChatAction';
 import {
   logout,
   toggleOverlay,
@@ -17,15 +43,7 @@ import {
   setAuthToken,
   exploreSearch,
 } from '../actions/HomeAction';
-import _ from 'lodash';
-import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
-import Image from 'react-native-fast-image';
-import {setupComplete} from '../actions/ChatAction';
-import {Dropdown} from '../components/Dropdown';
-import LottieView from 'lottie-react-native';
-import AppIntroSlider from '../components/AppIntroSlider/AppIntroSlider';
-import ArticleTile from '../components/ArticleTile';
-import {Overlay, Icon} from 'react-native-elements';
+import {getDynamicLink, getRingColor} from '../extraUtilities';
 import {
   FONTS,
   COLORS_LIGHT_THEME,
@@ -33,19 +51,6 @@ import {
   LATEST_APP_VERSION,
   ALL_CATEGORIES,
 } from '../Constants';
-import LinearGradient from 'react-native-linear-gradient';
-import RaisedText from '../components/RaisedText';
-import Loading from '../components/Loading';
-import Ripple from '../components/Ripple';
-import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
-import {Actions} from 'react-native-router-flux';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import LevelBar from '../components/LevelBar';
-import ShadowView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics';
-import ArticleTileAds from '../components/ArticleTileAds';
-import Avatar from '../components/Avatar';
-import {getDynamicLink, getRingColor} from '../extraUtilities';
 
 const OVERLAY_WIDTH_PERCENT = 75;
 class Home extends React.PureComponent {
@@ -60,13 +65,13 @@ class Home extends React.PureComponent {
     this.props.setAuthToken();
     setAuthToken();
     getDynamicLink();
-    analytics().setCurrentScreen('Home', 'Home');
+    analytics().logScreenView({screen_class: 'Home', screen_name: 'home'});
     if (this.props.loading) {
       this.props.getWelcome();
       analytics().logTutorialBegin();
     }
     let new_data = [];
-    ALL_CATEGORIES.map(item => {
+    ALL_CATEGORIES.map((item) => {
       new_data.push({value: item});
     });
     this.slides = [
@@ -141,7 +146,7 @@ class Home extends React.PureComponent {
               label="Category Selection"
               value="Select One"
               itemCount={6}
-              onChangeText={selected_category => {
+              onChangeText={(selected_category) => {
                 this.props.settingsChangeFavouriteCategory(selected_category);
               }}
             />
@@ -172,7 +177,12 @@ class Home extends React.PureComponent {
   }
 
   renderHeader() {
-    const {COLORS, new_notifications} = this.props;
+    const {
+      COLORS,
+      new_notifications,
+      data: {name},
+    } = this.props;
+
     return (
       <ShadowView
         style={{
@@ -180,9 +190,17 @@ class Home extends React.PureComponent {
           backgroundColor:
             this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
         }}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          {this.renderAvatar()}
+        {this.renderAvatar()}
+        <View style={{flex: 1, marginLeft: 10}}>
           <Text style={{...styles.TextStyle, color: COLORS.DARK}}>home</Text>
+          <Text
+            style={{
+              fontFamily: FONTS.RALEWAY,
+              color: COLORS.DARK,
+              fontSize: 12,
+            }}>
+            {name ? getHumanTime(name.split(' ')[0]) : ''}
+          </Text>
         </View>
         <View>
           {new_notifications ? (
@@ -365,7 +383,10 @@ class Home extends React.PureComponent {
                 onPress={() => {
                   this.props.toggleOverlay({overlayVisible: false});
                   Actions.jump('settings');
-                  analytics().setCurrentScreen('Settings', 'Settings');
+                  analytics().logScreenView({
+                    screen_class: 'Home',
+                    screen_name: 'settings',
+                  });
                 }}
                 style={{
                   elevation: 3,
@@ -397,7 +418,10 @@ class Home extends React.PureComponent {
                 onPress={() => {
                   this.props.toggleOverlay({overlayVisible: false});
                   Actions.jump('feedback');
-                  analytics().setCurrentScreen('Feedback', 'Feedback');
+                  analytics().logScreenView({
+                    screen_class: 'Home',
+                    screen_name: 'feedback',
+                  });
                 }}
                 style={{
                   elevation: 3,
@@ -434,7 +458,10 @@ class Home extends React.PureComponent {
                 onPress={() => {
                   this.props.toggleOverlay({overlayVisible: false});
                   Actions.jump('about');
-                  analytics().setCurrentScreen('About', 'About');
+                  analytics().logScreenView({
+                    screen_class: 'Home',
+                    screen_name: 'about',
+                  });
                 }}
                 style={{
                   elevation: 3,
@@ -469,7 +496,7 @@ class Home extends React.PureComponent {
                 rippleColor={COLORS.DARK}
                 onPress={() => {
                   analytics().logEvent('app_rating');
-                  Linking.openURL(welcomeData.playStoreUrl);
+                  InAppReview.RequestInAppReview();
                 }}
                 style={{
                   elevation: 3,
@@ -679,7 +706,7 @@ class Home extends React.PureComponent {
           data={data_list}
           horizontal
           showsHorizontalScrollIndicator={false}
-          keyExtractor={item => item.article_id.toString()}
+          keyExtractor={(item) => item.article_id.toString()}
           renderItem={({item, index}) => {
             return (
               <View
@@ -718,7 +745,7 @@ class Home extends React.PureComponent {
 
   renderPopularArticles() {
     const {COLORS, theme, animationOn, loading} = this.props;
-    data_list = this.props.welcomeData.popular_topics;
+    const data_list = this.props.welcomeData.popular_topics;
     if (loading || data_list.length) {
       return (
         <View
@@ -973,7 +1000,7 @@ class Home extends React.PureComponent {
           this.props.theme === 'light',
         )}
         <AppIntroSlider
-          ref={appIntroSlider => (this.appIntroSlider = appIntroSlider)}
+          ref={(appIntroSlider) => (this.appIntroSlider = appIntroSlider)}
           renderItem={({item}) => this._renderItem(item)}
           slides={this.slides}
           activeDotStyle={{backgroundColor: COLORS_LIGHT_THEME.LIGHT_BLUE}}
@@ -1015,7 +1042,7 @@ class Home extends React.PureComponent {
         />
         <FlatList
           data={ALL_CATEGORIES}
-          keyExtractor={item => item}
+          keyExtractor={(item) => item}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{paddingHorizontal: 5}}
@@ -1084,7 +1111,7 @@ class Home extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     data: state.login.data,
     authtoken: state.login.authtoken,
@@ -1118,9 +1145,8 @@ export default connect(mapStateToProps, {
 
 const styles = StyleSheet.create({
   TextStyle: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: FONTS.GOTHAM_BLACK,
-    marginLeft: 10,
   },
   AvatarTextStyle: {
     fontSize: 22,

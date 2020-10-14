@@ -18,7 +18,7 @@ export const setAuthToken = () => {
 export const getMyArticles = (myArticlesLength, reload) => {
   if (myArticlesLength === 0 || reload) {
     return dispatch => {
-      dispatch({type: ACTIONS.WRITE_LOADING});
+      dispatch({type: ACTIONS.WRITE_LOADING, payload:true});
       httpClient
         .get(URLS.myarticles)
         .then(({data}) => {
@@ -47,27 +47,43 @@ export const setImage = image => {
   return {type: ACTIONS.SET_IMAGE, payload: image};
 };
 
+export const getBlob = async (file) => {
+  const response = await fetch(file);
+  const image = await response.blob();
+  return image;
+};
+
+
 export const uploadImage = async (resourceData, file) => {
-  return new Promise((resolver, rejecter) => {
-    const xhr = new XMLHttpRequest();
+  const image = await getBlob(file);
 
-    xhr.onload = () => {
-      if (xhr.status < 400) {
-        resolver(true);
-      } else {
-        const error = new Error(xhr.response);
-        rejecter(error);
-      }
-    };
-    xhr.onerror = error => {
-      rejecter(error);
-    };
-
-    xhr.open('PUT', resourceData.uploadUrl);
-    xhr.setRequestHeader('Content-Type', resourceData.contentType);
-    xhr.send({uri: file});
+  return fetch(resourceData.uploadUrl, {
+    method: "PUT",
+    body: image,
   });
 };
+
+// export const uploadImage = async (resourceData, file) => {
+//   return new Promise((resolver, rejecter) => {
+//     const xhr = new XMLHttpRequest();
+
+//     xhr.onload = () => {
+//       if (xhr.status < 400) {
+//         resolver(true);
+//       } else {
+//         const error = new Error(xhr.response);
+//         rejecter(error);
+//       }
+//     };
+//     xhr.onerror = error => {
+//       rejecter(error);
+//     };
+
+//     xhr.open('PUT', resourceData.uploadUrl);
+//     xhr.setRequestHeader('Content-Type', resourceData.contentType);
+//     xhr.send({uri: file});
+//   });
+// };
 
 export const uploadArticleImages = async article => {
   let promises = [];
@@ -107,13 +123,14 @@ export const publishArticle = (
   editing_article_id = null,
 ) => {
   return dispatch => {
-    dispatch({type: ACTIONS.WRITE_LOADING});
+    dispatch({type: ACTIONS.WRITE_LOADING, payload:true});
 
     if (article.image && article.image.substring(0, 4) === 'file') {
       httpClient
         .get(URLS.imageupload, {params: {type: 'article', image_type: 'jpeg'}})
         .then(response => {
           const preSignedURL = decrypt(response.data.url);
+          console.log("URL : ", preSignedURL)
           const pathToImage = article.image;
           uploadImage(
             {contentType: 'image/jpeg', uploadUrl: preSignedURL},
@@ -131,11 +148,14 @@ export const publishArticle = (
                   });
                 });
             })
-            .catch(e =>
+            .catch(e =>{
+              console.log("ERROR : ", e)
               logEvent(LOG_EVENT.ERROR, {
                 errorLine: 'WRITE ACTION - 88',
                 description: e.toString(),
-              }),
+              })
+            dispatch({type:ACTIONS.WRITE_LOADING, payload:false})  
+            }
             );
         })
         .catch(e =>

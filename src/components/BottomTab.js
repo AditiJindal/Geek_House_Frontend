@@ -3,15 +3,15 @@ import {connect} from 'react-redux';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {Icon} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
+import {Actions} from 'react-native-router-flux';
+import SView from 'react-native-simple-shadow-view';
+import {Typing} from './index';
 import {
   ICON_SIZE,
   SELECTED_ICON_SIZE,
   FONTS,
   COLORS_LIGHT_THEME,
 } from '../Constants';
-import {Actions} from 'react-native-router-flux';
-import Typing from '../components/Typing';
-import SView from 'react-native-simple-shadow-view';
 
 const COLOR_PALETE = [
   ['#FF585D', '#cc2b5e'],
@@ -166,7 +166,7 @@ class BottomTab extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     first_login: state.chat.first_login,
     total_typing: state.chat.total_typing,

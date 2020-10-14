@@ -8,19 +8,19 @@ import {
   ScrollView,
 } from 'react-native';
 import {connect} from 'react-redux';
-import Loading from '../components/Loading';
-import {setAuthToken, getSettingsData} from '../actions/SettingsAction';
 import {Actions} from 'react-native-router-flux';
-import {FONTS} from '../Constants';
 import {Icon} from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
+import {Loading} from '../components';
+import {setAuthToken, getSettingsData} from '../actions/SettingsAction';
+import {FONTS} from '../Constants';
 
 class Settings extends React.PureComponent {
   componentDidMount() {
     this.props.setAuthToken();
-    analytics().setCurrentScreen('About', 'About');
+    analytics().logScreenView({screen_class: 'About', screen_name: 'about'});
     this.props.getSettingsData();
   }
 
@@ -152,7 +152,7 @@ class Settings extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     data: state.login.data,
 

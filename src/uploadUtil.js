@@ -1,4 +1,4 @@
-import uuid from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
 import {BASE_URL, URLS} from './Constants';
 
 const createFormData = ({image_url, mimeType, extension}) => {
@@ -20,7 +20,7 @@ const getFileMetadata = ({type, extension}) => {
   return {fileName, uploadType};
 };
 
-export const handleUpload = async data => {
+export const handleUpload = async (data) => {
   if (!data.shouldUpload) {
     return data.image_url;
   }

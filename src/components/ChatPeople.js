@@ -6,19 +6,17 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import {FONTS, COLORS_LIGHT_THEME, MESSAGE_SPECIAL_ADDER} from '../Constants';
-import Typing from '../components/Typing';
+import toMaterialStyle from 'material-color-hash';
 import {Icon} from 'react-native-elements';
 import TimeAgo from 'react-native-timeago';
+import {FONTS, COLORS_LIGHT_THEME, MESSAGE_SPECIAL_ADDER} from '../Constants';
 import SView from 'react-native-simple-shadow-view';
-import toMaterialStyle from 'material-color-hash';
-import ImageViewer from './ImageViewer';
-import Avatar from '../components/Avatar';
+import {Avatar, ImageViewer, Typing} from './index';
 import {getRingColor} from '../extraUtilities';
 
 const screenWidth = Dimensions.get('screen').width;
 
-getInitials = name => {
+getInitials = (name) => {
   if (!name) {
     return null;
   }
@@ -27,7 +25,7 @@ getInitials = name => {
   return initials;
 };
 
-const getBadge = props => {
+const getBadge = (props) => {
   const {COLORS, data, typing, online} = props;
   if (typing) {
     return (
@@ -68,7 +66,7 @@ const getBadge = props => {
   }
 };
 
-const getRecentTime = time => {
+const getRecentTime = (time) => {
   const new_date = new Date(time);
   return (
     <Text
@@ -82,7 +80,7 @@ const getRecentTime = time => {
   );
 };
 
-const getRecentMessage = message => {
+const getRecentMessage = (message) => {
   if (
     message &&
     message.substring(0, MESSAGE_SPECIAL_ADDER.length) === MESSAGE_SPECIAL_ADDER
@@ -107,7 +105,7 @@ const imageUrlCorrector = (image_url, image_adder) => {
   return image_url;
 };
 
-const getAppropriateAccessory = props => {
+const getAppropriateAccessory = (props) => {
   const {
     COLORS,
     isSelector,

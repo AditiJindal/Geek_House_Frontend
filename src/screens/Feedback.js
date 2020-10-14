@@ -10,8 +10,6 @@ import {
   ScrollView,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {COLORS_LIGHT_THEME, COLORS_DARK_THEME, FONTS} from '../Constants';
-import {submitFeedback} from '../actions/HomeAction';
 import {Actions} from 'react-native-router-flux';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import {Icon} from 'react-native-elements';
@@ -19,10 +17,13 @@ import SView from 'react-native-simple-shadow-view';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
-import TimedAlert from '../components/TimedAlert';
 import {Switch} from 'react-native-switch';
 import analytics from '@react-native-firebase/analytics';
 import prettysize from 'prettysize';
+
+import {TimedAlert} from '../components';
+import {submitFeedback} from '../actions/HomeAction';
+import {COLORS_LIGHT_THEME, COLORS_DARK_THEME, FONTS} from '../Constants';
 
 const INITIAL_STATE = {
   subject: '',
@@ -95,7 +96,7 @@ class Feedback extends React.PureComponent {
         resize.height,
         'JPEG',
         50,
-      ).then(resizedImage => {
+      ).then((resizedImage) => {
         const image_url = resizedImage.uri;
         this.setState({
           image_url,
@@ -116,7 +117,7 @@ class Feedback extends React.PureComponent {
           mediaType: 'photo',
           chooseWhichLibraryTitle: 'Select an App',
         },
-        response => {
+        (response) => {
           this.handleImage(response);
         },
       );
@@ -163,7 +164,7 @@ class Feedback extends React.PureComponent {
             <TextInput
               placeholder={'Subject of request'}
               value={this.state.subject}
-              onChangeText={subject => {
+              onChangeText={(subject) => {
                 this.setState({subject});
               }}
               placeholderTextColor={COLORS.GRAY}
@@ -182,7 +183,7 @@ class Feedback extends React.PureComponent {
               placeholder={'Enter a detailed description'}
               multiline={true}
               value={this.state.description}
-              onChangeText={description => {
+              onChangeText={(description) => {
                 this.setState({description});
               }}
               placeholderTextColor={COLORS.GRAY}
@@ -418,7 +419,7 @@ class Feedback extends React.PureComponent {
           }
         />
         <TimedAlert
-          onRef={ref => (this.timedAlert = ref)}
+          onRef={(ref) => (this.timedAlert = ref)}
           theme={this.props.theme}
           COLORS={COLORS}
         />
@@ -440,7 +441,7 @@ class Feedback extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     data: state.login.data,
 
