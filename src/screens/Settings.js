@@ -34,7 +34,7 @@ import {logout} from '../actions/HomeAction';
 import {
   setAuthToken,
   getSettingsData,
-  settingsChangeFavouriteCategory,
+  settingsChangeFavoriteCategory,
   changeTheme,
   changeAnimationSettings,
   changeQuickRepliesSettings,
@@ -649,7 +649,7 @@ class Settings extends React.PureComponent {
             fontFamily: FONTS.PRODUCT_SANS_BOLD,
             color: COLORS.LESSER_DARK,
           }}>
-          Change Favourite Category
+          Change Favorite Category
         </Text>
         <Dropdown
           COLORS={COLORS}
@@ -658,7 +658,7 @@ class Settings extends React.PureComponent {
           value={this.props.fav_category}
           itemCount={7}
           onChangeText={(selected_category) => {
-            this.props.settingsChangeFavouriteCategory(selected_category);
+            this.props.settingsChangeFavoriteCategory(selected_category);
           }}
         />
       </View>
@@ -679,7 +679,7 @@ class Settings extends React.PureComponent {
               fontFamily: FONTS.PRODUCT_SANS_BOLD,
               color: COLORS.LESSER_DARK,
             }}>
-            Switch Theme
+            Dark Mode
           </Text>
           <View style={{flex: 1, alignItems: 'flex-end', paddingRight: 15}}>
             <Switch
@@ -711,8 +711,8 @@ class Settings extends React.PureComponent {
             color: COLORS.GRAY,
           }}>
           {oppositeTheme === 'light'
-            ? `Currently in Dark theme, switch to\nLight theme for vibrant colors`
-            : `Currently in Light theme, switch to\nDark theme for less strain on eyes`}
+            ? `Currently in Dark mode, switch to\nLight mode for vibrant colors`
+            : `Currently in Light mode, switch to\nDark mode for less strain on eyes`}
         </Text>
       </View>
     );
@@ -1014,7 +1014,7 @@ export default connect(mapStateToProps, {
   logout,
   setAuthToken,
   getSettingsData,
-  settingsChangeFavouriteCategory,
+  settingsChangeFavoriteCategory,
   changeTheme,
   changeAnimationSettings,
   changeQuickRepliesSettings,

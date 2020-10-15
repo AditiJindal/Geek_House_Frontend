@@ -10,7 +10,6 @@ export const ACTIONS = {
 
   // HOME
   LOGOUT: 'home.logout',
-  TOGGLE_OVERLAY: 'home.toggle_overlay',
   WELCOME: 'home.welcome',
   HOME_ERROR: 'home.error',
   HOME_LOADING: 'home.loading',

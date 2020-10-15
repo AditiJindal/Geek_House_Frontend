@@ -146,7 +146,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 37
-        versionName "1.37"
+        versionName "1.37 A"
         manifestPlaceholders = [
             appAuthRedirectScheme: 'io.identityserver.demo'
         ]

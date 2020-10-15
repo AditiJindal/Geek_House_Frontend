@@ -6,16 +6,14 @@ import {
   StatusBar,
   FlatList,
   ScrollView,
-  Linking,
   TouchableOpacity,
 } from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import Image from 'react-native-fast-image';
 import LottieView from 'lottie-react-native';
-import {Overlay, Icon} from 'react-native-elements';
+import {Icon} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
-import InAppReview from 'react-native-in-app-review';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
@@ -24,7 +22,6 @@ import analytics from '@react-native-firebase/analytics';
 import {
   Avatar,
   ArticleTileAds,
-  LevelBar,
   Ripple,
   Loading,
   RaisedText,
@@ -32,12 +29,11 @@ import {
   Dropdown,
   AppIntroSlider,
 } from '../components';
-import {settingsChangeFavouriteCategory} from '../actions/SettingsAction';
+import {settingsChangeFavoriteCategory} from '../actions/SettingsAction';
 import {getHumanTime} from '../timeUtil';
 import {setupComplete} from '../actions/ChatAction';
 import {
   logout,
-  toggleOverlay,
   getWelcome,
   setAuthToken,
   exploreSearch,
@@ -53,7 +49,6 @@ import {
   SCREEN_CLASSES,
 } from '../Constants';
 
-const OVERLAY_WIDTH_PERCENT = 75;
 class Home extends React.PureComponent {
   state = {adIndex: 0};
 
@@ -151,7 +146,7 @@ class Home extends React.PureComponent {
               value="Select One"
               itemCount={6}
               onChangeText={(selected_category) => {
-                this.props.settingsChangeFavouriteCategory(selected_category);
+                this.props.settingsChangeFavoriteCategory(selected_category);
               }}
             />
           </View>
@@ -183,7 +178,6 @@ class Home extends React.PureComponent {
   renderHeader() {
     const {
       COLORS,
-      new_notifications,
       data: {name},
     } = this.props;
 
@@ -194,7 +188,16 @@ class Home extends React.PureComponent {
           backgroundColor:
             this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
         }}>
-        {this.renderAvatar()}
+        <TouchableOpacity
+          onPress={() => this.props.navigation.openDrawer()}
+          style={{
+            padding: 10,
+            backgroundColor:
+              this.props.theme === 'light' ? '#F8F8F8' : '#282828',
+            borderRadius: 100,
+          }}>
+          <Icon name="menu" color={COLORS.DARK} size={16} type={'feather'} />
+        </TouchableOpacity>
         <View style={{flex: 1, marginLeft: 10}}>
           <Text style={{...styles.TextStyle, color: COLORS.DARK}}>home</Text>
           <Text
@@ -206,32 +209,7 @@ class Home extends React.PureComponent {
             {name ? getHumanTime(name.split(' ')[0]) : ''}
           </Text>
         </View>
-        <View>
-          {new_notifications ? (
-            <View
-              style={{
-                backgroundColor: COLORS.GREEN,
-                position: 'absolute',
-                top: 2,
-                right: 2,
-                borderRadius: 4,
-                height: 8,
-                width: 8,
-                elevation: 4,
-              }}
-            />
-          ) : null}
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate(SCREENS.Notification)}
-            style={{
-              padding: 10,
-              backgroundColor:
-                this.props.theme === 'light' ? '#F8F8F8' : '#202020',
-              borderRadius: 100,
-            }}>
-            <Icon name="bell" color={COLORS.DARK} size={16} type={'feather'} />
-          </TouchableOpacity>
-        </View>
+        {this.renderAvatar()}
       </ShadowView>
     );
   }
@@ -257,286 +235,6 @@ class Home extends React.PureComponent {
     return image_url;
   }
 
-  renderOverlay() {
-    const {COLORS, loading, theme, welcomeData} = this.props;
-    const isUpdateAvailable = welcomeData.latestVersion > LATEST_APP_VERSION;
-    return (
-      <Overlay
-        isVisible={this.props.overlayVisible}
-        borderRadius={20}
-        overlayBackgroundColor={COLORS.LIGHT}
-        onBackdropPress={() => {
-          this.props.toggleOverlay({overlayVisible: false});
-        }}
-        width={`${OVERLAY_WIDTH_PERCENT}%`}
-        height="auto">
-        <>
-          <View
-            style={{
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              flexDirection: 'row',
-              backgroundColor: COLORS.LIGHT,
-            }}>
-            {!loading ? (
-              <Avatar
-                size={64}
-                uri={this.imageUrlCorrector(this.props.data.image_url)}
-                ring_color={getRingColor(welcomeData.userXP)}
-              />
-            ) : (
-              <View
-                style={{
-                  height: 42,
-                  width: 42,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Loading size={42} white={theme !== 'light'} />
-              </View>
-            )}
-            <View style={{flex: 1}}>
-              <Text
-                style={{
-                  ...styles.AvatarTextStyle,
-                  color: COLORS.DARK,
-                  textAlign: 'right',
-                }}>
-                {this.props.data.name}
-              </Text>
-              <Text
-                style={{
-                  ...styles.AvatarTextStyle,
-                  fontSize: 12,
-                  alignSelf: 'flex-end',
-                  color: COLORS.GRAY,
-                }}>
-                {this.props.data.email}
-              </Text>
-              <Text
-                style={{
-                  fontFamily: FONTS.PRODUCT_SANS,
-                  fontSize: 11,
-                  alignSelf: 'flex-end',
-                  color: COLORS.GRAY,
-                }}>
-                Geek House v1.17.0 A
-              </Text>
-            </View>
-          </View>
-          <View style={{marginVertical: 15, marginHorizontal: 10}}>
-            <LevelBar COLORS={COLORS} userXP={welcomeData.userXP} />
-          </View>
-          {isUpdateAvailable ? (
-            <Ripple
-              rippleColor={COLORS.DARK}
-              onPress={() => {
-                analytics().logEvent('app_updating');
-                Linking.openURL(welcomeData.playStoreUrl);
-              }}
-              style={{
-                elevation: 3,
-                height: 50,
-                justifyContent: 'space-around',
-                alignItems: 'center',
-                flexDirection: 'row',
-                backgroundColor:
-                  this.props.theme === 'light'
-                    ? COLORS.LIGHT
-                    : COLORS.LESSER_LIGHT,
-                borderRadius: 10,
-                margin: 5,
-              }}>
-              <View>
-                <Text
-                  style={{
-                    ...styles.LogoutButtonTextStyle,
-                    color: COLORS.DARK,
-                    marginLeft: 0,
-                  }}>
-                  New Update Available
-                </Text>
-
-                <Text
-                  style={{
-                    ...styles.AvatarTextStyle,
-                    fontSize: 12,
-                    color: COLORS.YELLOW,
-                  }}>
-                  You are using outdated version
-                </Text>
-              </View>
-              <Icon
-                name="chevron-right"
-                color={COLORS.DARK}
-                size={28}
-                type={'feather'}
-              />
-            </Ripple>
-          ) : null}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-around',
-              height: 120,
-            }}>
-            <View style={{flex: 1}}>
-              <Ripple
-                rippleColor={COLORS.DARK}
-                onPress={() => {
-                  this.props.toggleOverlay({overlayVisible: false});
-                  this.props.navigation.navigate(SCREENS.Settings);
-                  analytics().logScreenView({
-                    screen_class: SCREEN_CLASSES.Settings,
-                    screen_name: SCREENS.Settings,
-                  });
-                }}
-                style={{
-                  elevation: 3,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  backgroundColor:
-                    this.props.theme === 'light'
-                      ? COLORS.LIGHT
-                      : COLORS.LESSER_LIGHT,
-                  borderRadius: 10,
-                  flex: 1,
-                  margin: 5,
-                }}>
-                <Icon
-                  name="settings"
-                  color={COLORS.DARK}
-                  size={24}
-                  type={'feather'}
-                />
-                <Text
-                  style={{...styles.LogoutButtonTextStyle, color: COLORS.DARK}}>
-                  settings
-                </Text>
-              </Ripple>
-
-              <Ripple
-                rippleColor={COLORS.DARK}
-                onPress={() => {
-                  this.props.toggleOverlay({overlayVisible: false});
-                  this.props.navigation.navigate(SCREENS.Feedback);
-                  analytics().logScreenView({
-                    screen_class: SCREEN_CLASSES.Feedback,
-                    screen_name: SCREENS.Feedback,
-                  });
-                }}
-                style={{
-                  elevation: 3,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  backgroundColor:
-                    this.props.theme === 'light'
-                      ? COLORS.LIGHT
-                      : COLORS.LESSER_LIGHT,
-                  borderRadius: 10,
-                  flex: 1,
-                  margin: 5,
-                }}>
-                <Icon
-                  name="message-square"
-                  color={COLORS.DARK}
-                  size={22}
-                  type={'feather'}
-                />
-                <Text
-                  style={{
-                    ...styles.LogoutButtonTextStyle,
-                    fontSize: 14,
-                    color: COLORS.DARK,
-                  }}>
-                  feedback
-                </Text>
-              </Ripple>
-            </View>
-            <View style={{flex: 1}}>
-              <Ripple
-                rippleColor={COLORS.DARK}
-                onPress={() => {
-                  this.props.toggleOverlay({overlayVisible: false});
-                  this.props.navigation.navigate(SCREENS.About);
-                  analytics().logScreenView({
-                    screen_class: SCREEN_CLASSES.About,
-                    screen_name: SCREENS.About,
-                  });
-                }}
-                style={{
-                  elevation: 3,
-                  marginBottom: 5,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  backgroundColor:
-                    this.props.theme === 'light'
-                      ? COLORS.LIGHT
-                      : COLORS.LESSER_LIGHT,
-                  borderRadius: 10,
-                  flex: 1,
-                  margin: 5,
-                }}>
-                <Icon
-                  name="user"
-                  color={COLORS.DARK}
-                  size={24}
-                  type={'feather'}
-                />
-                <Text
-                  style={{
-                    ...styles.LogoutButtonTextStyle,
-                    marginLeft: 10,
-                    color: COLORS.DARK,
-                  }}>
-                  about us
-                </Text>
-              </Ripple>
-              <Ripple
-                rippleColor={COLORS.DARK}
-                onPress={() => {
-                  analytics().logEvent('app_rating');
-                  InAppReview.RequestInAppReview();
-                }}
-                style={{
-                  elevation: 3,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  backgroundColor:
-                    this.props.theme === 'light'
-                      ? COLORS.LIGHT
-                      : COLORS.LESSER_LIGHT,
-                  borderRadius: 10,
-                  flex: 1,
-                  margin: 5,
-                }}>
-                <Icon
-                  name="thumbs-up"
-                  color={COLORS.DARK}
-                  size={24}
-                  type={'feather'}
-                />
-                <Text
-                  style={{
-                    ...styles.LogoutButtonTextStyle,
-                    marginLeft: 10,
-                    color: COLORS.DARK,
-                  }}>
-                  rate
-                </Text>
-              </Ripple>
-            </View>
-          </View>
-        </>
-      </Overlay>
-    );
-  }
-
   renderAvatar() {
     const {COLORS, loading, theme, error, welcomeData} = this.props;
 
@@ -548,18 +246,7 @@ class Home extends React.PureComponent {
     }
 
     if (loading) {
-      return (
-        <TouchableOpacity
-          style={{
-            height: 42,
-            width: 42,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          onPress={() => this.props.toggleOverlay({overlayVisible: true})}>
-          <Loading size={42} white={theme !== 'light'} />
-        </TouchableOpacity>
-      );
+      return <Loading size={42} white={theme !== 'light'} />;
     }
 
     return (
@@ -583,7 +270,6 @@ class Home extends React.PureComponent {
         <Avatar
           size={42}
           uri={this.imageUrlCorrector(this.props.data.image_url)}
-          onPress={() => this.props.toggleOverlay({overlayVisible: true})}
           ring_color={getRingColor(welcomeData.userXP)}
         />
       </View>
@@ -1026,10 +712,6 @@ class Home extends React.PureComponent {
     const {COLORS, theme} = this.props;
     let barStyle = theme === 'light' ? 'dark-content' : 'light-content';
     let statusBarColor = COLORS.LIGHT;
-    if (this.props.overlayVisible) {
-      statusBarColor = COLORS.OVERLAY_COLOR;
-      barStyle = 'light-content';
-    }
     return {statusBarColor, barStyle};
   }
 
@@ -1108,7 +790,6 @@ class Home extends React.PureComponent {
             this.props.theme === 'light',
           )}
           {this.renderHeader()}
-          {this.renderOverlay()}
           {this.renderHome()}
         </View>
       );
@@ -1129,10 +810,8 @@ const mapStateToProps = (state) => {
     adsManager: state.home.adsManager,
     image_adder: state.home.image_adder,
     welcomeData: state.home.welcomeData,
-    overlayVisible: state.home.overlayVisible,
     selected_category: state.home.selected_category,
     canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
-    new_notifications: !!state.home.welcomeData.notifications.length,
 
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,
@@ -1142,10 +821,9 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
   logout,
-  toggleOverlay,
   getWelcome,
   setAuthToken,
-  settingsChangeFavouriteCategory,
+  settingsChangeFavoriteCategory: settingsChangeFavoriteCategory,
   setupComplete,
   exploreSearch,
 })(Home);

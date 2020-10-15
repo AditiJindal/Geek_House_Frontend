@@ -140,10 +140,6 @@ export const logout = (onLogout) => {
   };
 };
 
-export const toggleOverlay = (overlay) => {
-  return {type: ACTIONS.TOGGLE_OVERLAY, payload: overlay};
-};
-
 export const getWelcome = (onError) => {
   return (dispatch) => {
     dispatch({type: ACTIONS.HOME_LOADING});

@@ -38,7 +38,7 @@ export const getSettingsData = (reload) => {
   };
 };
 
-export const settingsChangeFavouriteCategory = (selected_category) => {
+export const settingsChangeFavoriteCategory = (selected_category) => {
   return {
     type: ACTIONS.CHAT_SOCKET_CHANGE_CATEGORY,
     payload: selected_category,

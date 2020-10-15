@@ -2,6 +2,7 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 
 import Login from './screens/Login';
 import Home from './screens/Home';
@@ -21,6 +22,7 @@ import Notification from './screens/Notification';
 import Policy from './screens/Policy';
 import Explore from './screens/Explore';
 import Rewards from './screens/Rewards';
+import Drawer from './screens/Drawer';
 import {BottomTab} from './components';
 
 import {COLORS_DARK_THEME, SCREENS} from './Constants';
@@ -31,6 +33,8 @@ const MainStack = createStackNavigator();
 const RootStack = createStackNavigator();
 
 const Tabs = createBottomTabNavigator();
+
+const DrawerStack = createDrawerNavigator();
 
 //Login Navigation
 const LoginNavigator = () => {
@@ -53,8 +57,32 @@ const TabNavigator = () => {
   );
 };
 
+const DrawerNavigator = () => {
+  return (
+    <DrawerStack.Navigator
+      drawerType="slide"
+      drawerContent={(props) => <Drawer {...props} />}>
+      <DrawerStack.Screen name={SCREENS.MainTab} component={TabNavigator} />
+
+      <DrawerStack.Screen
+        name={SCREENS.Notification}
+        component={Notification}
+      />
+      <DrawerStack.Screen name={SCREENS.Settings} component={Settings} />
+      <DrawerStack.Screen name={SCREENS.Feedback} component={Feedback} />
+      <DrawerStack.Screen name={SCREENS.About} component={About} />
+      <DrawerStack.Screen name={SCREENS.Explore} component={Explore} />
+      <DrawerStack.Screen name={SCREENS.Rewards} component={Rewards} />
+      <DrawerStack.Screen name={SCREENS.Policy} component={Policy} />
+      <DrawerStack.Screen name={SCREENS.ChatScreen} component={ChatScreen} />
+      <DrawerStack.Screen name={SCREENS.Bookmark} component={Bookmark} />
+    </DrawerStack.Navigator>
+  );
+};
+
 const MainNavigator = () => {
-  // Main app navigator, used for screens thats are not a part of bottom tab from other stacks
+  // Main app navigator, used for screens that do not contain the drawer and displaying the
+  // drawer navigator
   return (
     <MainStack.Navigator
       headerMode="none"
@@ -62,16 +90,11 @@ const MainNavigator = () => {
       screenOptions={{
         headerShown: false,
       }}>
-      <MainStack.Screen name={SCREENS.MainTab} component={TabNavigator} />
+      {/* Drawer navigator */}
+      <MainStack.Screen name={SCREENS.Drawer} component={DrawerNavigator} />
 
-      <MainStack.Screen name={SCREENS.Settings} component={Settings} />
-      <MainStack.Screen name={SCREENS.Feedback} component={Feedback} />
-      <MainStack.Screen name={SCREENS.About} component={About} />
-      <MainStack.Screen name={SCREENS.Explore} component={Explore} />
-      <MainStack.Screen name={SCREENS.Rewards} component={Rewards} />
-      <MainStack.Screen name={SCREENS.Notification} component={Notification} />
-      <MainStack.Screen name={SCREENS.Policy} component={Policy} />
-      <MainStack.Screen name={SCREENS.Bookmark} component={Bookmark} />
+      {/* Individual Screens */}
+
       <MainStack.Screen name={SCREENS.WriteArticle} component={WriteArticle} />
       <MainStack.Screen name={SCREENS.ImageUpload} component={ImageUpload} />
       <MainStack.Screen name={SCREENS.Publish} component={Publish} />
@@ -79,18 +102,23 @@ const MainNavigator = () => {
         name={SCREENS.NotificationArticle}
         component={NotificationArticle}
       />
-      <MainStack.Screen name={SCREENS.ChatScreen} component={ChatScreen} />
     </MainStack.Navigator>
+  );
+};
+
+const RootNavigator = () => {
+  return (
+    <RootStack.Navigator headerMode="none">
+      <RootStack.Screen name={SCREENS.Login} component={LoginNavigator} />
+      <RootStack.Screen name={SCREENS.Main} component={MainNavigator} />
+    </RootStack.Navigator>
   );
 };
 
 const Router = () => {
   return (
     <NavigationContainer>
-      <RootStack.Navigator headerMode="none">
-        <RootStack.Screen name={SCREENS.Login} component={LoginNavigator} />
-        <RootStack.Screen name={SCREENS.Main} component={MainNavigator} />
-      </RootStack.Navigator>
+      <RootNavigator />
     </NavigationContainer>
   );
 };

@@ -200,6 +200,7 @@ export const SCREENS = {
   Policy: 'Policy',
   Explore: 'Explore',
   Rewards: 'Rewards',
+  Drawer: 'Drawer',
 };
 
 export const SCREEN_CLASSES = {
@@ -223,6 +224,7 @@ export const SCREEN_CLASSES = {
   Policy: 'Main',
   Explore: 'Home',
   Rewards: 'Home',
+  Drawer: 'Drawer',
 };
 
 export const COLOR_COMBOS = [
@@ -386,6 +388,8 @@ export const CATEGORY_IMAGES = {
 
 export const DYNAMIC_LINK_DOMAIN = 'https://geekhouse.page.link';
 
+export const MAX_USERS_IN_A_GROUP = 20;
+
 export const LATEST_APP_VERSION = 37;
 
-export const MAX_USERS_IN_A_GROUP = 20;
+export const APP_VERSION = require('../package.json').version;

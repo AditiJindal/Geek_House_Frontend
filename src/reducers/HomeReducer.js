@@ -1,7 +1,6 @@
 import {ACTIONS} from '../actions/types';
 
 const INITIAL_STATE = {
-  overlayVisible: false,
   welcomeData: {notifications: []},
   loading: true,
   error: '',
@@ -18,9 +17,6 @@ export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ACTIONS.LOGOUT:
       return {...INITIAL_STATE};
-
-    case ACTIONS.TOGGLE_OVERLAY:
-      return {...state, ...action.payload, error: ''};
 
     case ACTIONS.WELCOME:
       const {adsManager, image_adder} = action.payload;
