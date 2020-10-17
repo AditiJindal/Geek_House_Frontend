@@ -1,10 +1,10 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {getLevel} from '../extraUtilities';
+import {getLevel} from '../utilities/experience';
 import {FONTS} from '../Constants';
 
-const LevelBar = props => {
+const LevelBar = (props) => {
   const {COLORS, userXP} = props;
   const XPObject = getLevel(userXP);
   if (!XPObject) {

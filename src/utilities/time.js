@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export const getHumanTime = name => {
+export const getHumanTime = (name) => {
   let humanTime = '';
   const currentTime = moment();
 

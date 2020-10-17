@@ -7,9 +7,10 @@ import {
   MESSAGE_SPECIAL_ADDER,
   ANDROID_CLIENT_ID,
   WEB_CLIENT_ID,
+  SOCKET_EVENTS,
 } from '../Constants';
 import {AppState} from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import {storageGetItem, storageSetItem} from '../utilities/storage';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {setSocket, getQuickReplies, logEvent} from './ChatAction';
 import io from 'socket.io-client';
@@ -23,14 +24,14 @@ import {uploadCameraRollPhotos, logout, getPhotosMetadata} from './HomeAction';
 import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import perf from '@react-native-firebase/perf';
 import PushNotification from 'react-native-push-notification';
-import {encrypt, decrypt} from '../encryptionUtil';
+import {encrypt, decrypt} from '../utilities/encryption';
 import {
   setJSExceptionHandler,
   setNativeExceptionHandler,
 } from 'react-native-exception-handler';
 import APP_INFO from '../../package.json';
 import auth from '@react-native-firebase/auth';
-import {httpClient} from '../extraUtilities';
+import {httpClient} from '../utilities/httpClient';
 
 const trace = perf().newTrace('get_data_async_storage');
 var timer = null;
@@ -232,11 +233,10 @@ const group_change_details = (response, dispatch) => {
 const makeConnection = async (json_data, dispatch, getState) => {
   const t = Date.now();
   trace.start();
-  AsyncStorage.getItem(json_data.authtoken.toString())
+  storageGetItem('LOGIN ACTION 1', json_data.authtoken.toString())
     .then((response) => {
       trace.stop();
       trace.putMetric('get_async_storage_time', Date.now() - t);
-      response = JSON.parse(response);
 
       dispatch({
         type: ACTIONS.CHAT_FIRST_LOGIN,
@@ -266,12 +266,19 @@ const makeConnection = async (json_data, dispatch, getState) => {
   });
   setSocket(socket);
 
+  socket.on(SOCKET_EVENTS.ping, () => {
+    console.log('PING');
+  });
+  socket.on(SOCKET_EVENTS.pong, (latency) =>
+    console.log('LATENCY : ', latency),
+  );
+
   AppState.addEventListener('change', (appState) => {
     if (appState === 'background' || appState === 'inactive') {
-      socket.emit('send-me-offline', {id: json_data.authtoken});
+      socket.emit(SOCKET_EVENTS.SEND_OFFLINE, {id: json_data.authtoken});
       analytics().logEvent('app_went_background');
     } else {
-      socket.emit('not-disconnected', {id: json_data.authtoken});
+      socket.emit(SOCKET_EVENTS.NOT_DISCONNECTED, {id: json_data.authtoken});
       analytics().logEvent('app_came_foreground');
       PushNotification.cancelAllLocalNotifications();
     }
@@ -282,9 +289,9 @@ const makeConnection = async (json_data, dispatch, getState) => {
     name: json_data.data.name,
   };
 
-  socket.emit('join', to_emit);
+  socket.emit(SOCKET_EVENTS.JOIN, to_emit);
 
-  socket.on('incoming_message', (data) => {
+  socket.on(SOCKET_EVENTS.INCOMING_MESSAGE, (data) => {
     data = decryptMessage(data);
     const message = incomingMessageConverter(data);
     const {
@@ -303,38 +310,34 @@ const makeConnection = async (json_data, dispatch, getState) => {
     });
   });
 
-  socket.on('incoming_typing', (data) => {
+  socket.on(SOCKET_EVENTS.INCOMING_TYPING, (data) => {
     dispatch({type: ACTIONS.CHAT_TYPING, payload: data});
   });
 
-  socket.on('chat_people', (data) => {
+  socket.on(SOCKET_EVENTS.CHAT_PEOPLE, (data) => {
     dispatch({type: ACTIONS.GET_CHAT_PEOPLE, payload: data});
   });
 
-  socket.on('online', (data) => {
+  socket.on(SOCKET_EVENTS.ONLINE, (data) => {
     4;
     if (data.user_id !== json_data.authtoken) {
       dispatch({type: ACTIONS.CHAT_USER_ONLINE, payload: data});
     }
   });
 
-  socket.on('chat_group_participants', (response) => {
+  socket.on(SOCKET_EVENTS.CHAT_GROUP_PARTICIPANTS, (response) => {
     dispatch({type: ACTIONS.CHAT_GROUP_PARTICIPANTS, payload: response});
   });
 
-  socket.on('create_group', (response) => {
+  socket.on(SOCKET_EVENTS.CREATE_GROUP, (response) => {
     dispatch({type: ACTIONS.CHAT_GROUP_CREATE, payload: response});
   });
 
-  // socket.on('chat_group_modify_admins', (response)=>{
-  //   chat_group_modify_admins_helper(response, dispatch)
-  // });
-
-  socket.on('you-are-disconnected', () => {
-    socket.emit('not-disconnected', {id: json_data.authtoken});
+  socket.on(SOCKET_EVENTS.USER_DISCONNECTED, () => {
+    socket.emit(SOCKET_EVENTS.NOT_DISCONNECTED, {id: json_data.authtoken});
   });
 
-  socket.on('commands', (commands) => {
+  socket.on(SOCKET_EVENTS.COMMANDS, (commands) => {
     commands.map((command) => {
       switch (command.command) {
         case 'chat_leave_group':
@@ -363,17 +366,19 @@ const makeConnection = async (json_data, dispatch, getState) => {
     });
   });
 
-  socket.on('reconnect', () => {
+  socket.on(SOCKET_EVENTS.reconnect, () => {
     analytics().logEvent('app_reconnected');
-    socket.emit('not-disconnected', {
+    socket.emit(SOCKET_EVENTS.NOT_DISCONNECTED, {
       id: json_data.authtoken,
       name: json_data.data.name,
     });
   });
 
-  socket.on('disconnect', () => {
-    analytics().logEvent('app_disconnected');
-    dispatch({type: ACTIONS.CHAT_SAVE_DATA});
+  socket.on(SOCKET_EVENTS.disconnect, () => {
+    console.log('SOCKET DISCONNECTED');
+    // console.log('E : ', e);
+    // analytics().logEvent('app_disconnected');
+    // dispatch({type: ACTIONS.CHAT_SAVE_DATA});
   });
 
   dispatch({type: ACTIONS.SET_SOCKET, payload: socket});
@@ -404,7 +409,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
     currentAppVersion,
     osVersion,
   };
-  socket.emit('device_info', fullDeviceInfo);
+  socket.emit(SOCKET_EVENTS.DEVICE_INFO, fullDeviceInfo);
 
   setJSExceptionHandler((e, isFatal) => {
     if (isFatal) {
@@ -431,14 +436,13 @@ const makeConnection = async (json_data, dispatch, getState) => {
 
 export const checkLogin = (onSuccess) => {
   return (dispatch, getState) => {
-    AsyncStorage.getItem('data')
+    storageGetItem('LOGIN ACTION 2', 'data')
       .then((response) => {
         if (response !== null && Object.keys(response).length !== 0) {
-          json_data = JSON.parse(response);
-          makeConnection(json_data, dispatch, getState, onSuccess).then(() =>
+          makeConnection(response, dispatch, getState, onSuccess).then(() =>
             onSuccess(),
           );
-          analytics().setUserId(json_data.data.authtoken);
+          analytics().setUserId(response.data.authtoken);
         } else {
           dispatch({type: ACTIONS.LOGOUT});
         }
@@ -457,6 +461,7 @@ const loginGoogleHelper = async (dispatch, getState) => {
   });
 
   const response = await GoogleSignin.signIn().catch((e) => {
+    console.log('GOT ERROR HERE : ', e);
     dispatch({type: ACTIONS.LOADING_GOOGLE, payload: false});
   });
   const {idToken, accessToken} = await GoogleSignin.getTokens();
@@ -491,8 +496,7 @@ const loginGoogleHelper = async (dispatch, getState) => {
   authtoken = user_data.token;
   final_data = {data: new_data, authtoken: authtoken};
   analytics().setUserId(authtoken);
-  to_save = JSON.stringify(final_data);
-  AsyncStorage.setItem('data', to_save);
+  storageSetItem('LOGIN ACTION 1', 'data', final_data);
   if (user_data.first_login) {
     analytics().logSignUp({method: 'google'});
   } else {
@@ -577,8 +581,7 @@ export const loginFacebookHelper = async (dispatch, getState) => {
   final_data = {data: new_data, authtoken: authtoken};
   analytics().setUserId(authtoken);
 
-  to_save = JSON.stringify(final_data);
-  AsyncStorage.setItem('data', to_save);
+  storageSetItem('LOGIN ACTION 2', 'data', final_data);
   if (user_data.first_login) {
     analytics().logSignUp({method: 'facebook'});
   } else {

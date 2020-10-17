@@ -13,8 +13,9 @@ import {
   SCREEN_CLASSES,
   COLORS_LIGHT_THEME,
   LATEST_APP_VERSION,
+  LOG_EVENT,
 } from '../Constants';
-import {getRingColor} from '../extraUtilities';
+import {getRingColor} from '../utilities/experience';
 import {Avatar, LevelBar, Ripple} from '../components';
 import {changeTheme} from '../actions/SettingsAction';
 
@@ -63,7 +64,7 @@ class Drawer extends React.Component {
   }
 
   renderProfile() {
-    const {data, welcomeData, loading} = this.props;
+    const {data, welcomeData, loading, COLORS} = this.props;
     return (
       <View>
         <View
@@ -221,6 +222,7 @@ class Drawer extends React.Component {
   }
 
   renderAppVersion() {
+    const {COLORS} = this.props;
     return (
       <View
         style={{

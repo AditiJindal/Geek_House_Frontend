@@ -14,7 +14,6 @@ import {
   COLORS_DARK_THEME,
 } from '../Constants';
 import LinearGradient from 'react-native-linear-gradient';
-import analytics from '@react-native-firebase/analytics';
 
 const LG_SUCCESS = ['rgba(100, 100, 100, 0)', 'rgba(100, 100, 100, 0.7)'];
 

@@ -1,8 +1,8 @@
 import {ACTIONS} from './types';
-import {URLS, LOG_EVENT} from '../Constants';
+import {URLS, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
 import {logEvent} from './ChatAction';
-import {encrypt} from '../encryptionUtil';
-import {httpClient} from '../extraUtilities';
+import {encrypt} from '../utilities/encryption';
+import {httpClient} from '../utilities/httpClient';
 import analytics from '@react-native-firebase/analytics';
 
 export const setAuthToken = () => {
@@ -17,7 +17,7 @@ export const setAuthToken = () => {
 // till here
 
 export const getPopularSearches = () => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({type: ACTIONS.SEARCH_LOADING});
     httpClient
       .get(URLS.popularsearches)
@@ -34,16 +34,16 @@ export const getPopularSearches = () => {
   };
 };
 
-export const updateSearchValue = search => {
+export const updateSearchValue = (search) => {
   return {type: ACTIONS.SEARCH_UPDATE, payload: search};
 };
 
-export const selectCategory = category => {
+export const selectCategory = (category) => {
   return {type: ACTIONS.SEARCH_SELECT_CATEGORY, payload: category};
 };
 
 export const doSearch = (search, category) => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({type: ACTIONS.DOING_SEARCH_LOADING});
     analytics().logSearch({search_term: search});
     httpClient
@@ -51,7 +51,7 @@ export const doSearch = (search, category) => {
       .then(({data}) => {
         dispatch({type: ACTIONS.DO_SEARCH, payload: data});
       })
-      .catch(e =>
+      .catch((e) =>
         logEvent(LOG_EVENT.ERROR, {
           errorLine: 'SEARCH ACTION - 452',
           description: e.toString(),
@@ -65,7 +65,7 @@ export const clearSearch = () => {
 };
 
 export const showAlert = (alertVisible, alertMessage) => {
-  let statusBarColor = '#FFFFFF';
+  let statusBarColor = COLORS_LIGHT_THEME.LIGHT;
   return {
     type: ACTIONS.SHOW_SEARCH_ALERT,
     payload: {alertVisible, alertMessage, statusBarColor},

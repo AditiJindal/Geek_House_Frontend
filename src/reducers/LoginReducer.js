@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import {storageSetItem} from '../utilities/storage';
 import {ACTIONS} from '../actions/types';
 
 const INITIAL_STATE = {
@@ -20,8 +20,8 @@ const saveLoginData = (state) => {
     data: state.data,
     authtoken: state.authtoken,
   };
-  to_save = JSON.stringify(final_data);
-  AsyncStorage.setItem('data', to_save);
+
+  storageSetItem('LOGIN REDUCER 1', 'data', final_data);
 };
 
 export default (state = INITIAL_STATE, action) => {

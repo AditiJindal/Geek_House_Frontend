@@ -1,14 +1,14 @@
 import {ACTIONS} from './types';
-import {URLS, LOG_EVENT} from '../Constants';
+import {URLS, LOG_EVENT, SOCKET_EVENTS} from '../Constants';
 import _ from 'lodash';
 import {uploadImage} from './WriteAction';
 import {database} from '../database';
 import {Q} from '@nozbe/watermelondb';
 import naturalLanguage from '@react-native-firebase/ml-natural-language';
 import perf from '@react-native-firebase/perf';
-import {encrypt, decrypt} from '../encryptionUtil';
-import {handleUpload} from '../uploadUtil';
-import {httpClient} from '../extraUtilities';
+import {encrypt, decrypt} from '../utilities/encryption';
+import {handleUpload} from '../utilities/imageBased';
+import {httpClient} from '../utilities/httpClient';
 import analytics from '@react-native-firebase/analytics';
 
 const MessagesCollection = database.collections.get('messages');
@@ -27,21 +27,21 @@ export const setAuthToken = () => {
   };
 };
 
-export const setSocket = new_socket => {
+export const setSocket = (new_socket) => {
   socket = new_socket;
 };
 
 // till here
 
 export const getChatPeople = () => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({type: ACTIONS.CHAT_LOADING});
     httpClient
       .get(URLS.chatpeople)
-      .then(response => {
+      .then((response) => {
         dispatch({type: ACTIONS.GET_CHAT_PEOPLE, payload: response.data});
       })
-      .catch(e =>
+      .catch((e) =>
         logEvent(LOG_EVENT.ERROR, {
           errorLine: 'CHAT ACTION - 43',
           description: e.toString(),
@@ -50,11 +50,11 @@ export const getChatPeople = () => {
   };
 };
 
-export const setUserData = data => {
+export const setUserData = (data) => {
   return {type: ACTIONS.SET_CHAT_USER_DATA, payload: data};
 };
 
-const encryptMessage = message => {
+const encryptMessage = (message) => {
   if (message.image && message.image.url) {
     message.image.url = encrypt(message.image.url);
   }
@@ -65,7 +65,7 @@ const encryptMessage = message => {
 };
 
 export const sendMessage = (socket, message, other_user_id, image) => {
-  return dispatch => {
+  return (dispatch) => {
     let message_to_send = {text: '', to: '', image: null, ...message[0]};
 
     dispatch({
@@ -81,14 +81,14 @@ export const sendMessage = (socket, message, other_user_id, image) => {
         authToken: httpClient.defaults.headers.common['Authorization'],
         shouldUpload: !image.isGif,
       })
-        .then(image_url => {
+        .then((image_url) => {
           image.url = image_url;
           image.name = image.name;
           message_to_send.text = message[0].text;
           message_to_send.to = other_user_id;
           message_to_send = {...message_to_send, image};
 
-          socket.emit('message', encryptMessage(message_to_send));
+          socket.emit(SOCKET_EVENTS.MESSAGE, encryptMessage(message_to_send));
           message[0].image.url = decrypt(message[0].image.url);
 
           dispatch({
@@ -96,7 +96,7 @@ export const sendMessage = (socket, message, other_user_id, image) => {
             payload: {message, other_user_id, isIncomming: false},
           });
         })
-        .catch(e =>
+        .catch((e) =>
           logEvent(LOG_EVENT.ERROR, {
             errorLine: 'CHAT ACTION - 83, Server chat image upload error',
             description: e.toString(),
@@ -109,20 +109,20 @@ export const sendMessage = (socket, message, other_user_id, image) => {
       });
       message_to_send.text = message[0].text;
       message_to_send.to = other_user_id;
-      socket.emit('message', encryptMessage(message_to_send));
+      socket.emit(SOCKET_EVENTS.MESSAGE, encryptMessage(message_to_send));
     }
   };
 };
 
-export const chatPeopleSearchAction = value => {
-  return dispatch => {
+export const chatPeopleSearchAction = (value) => {
+  return (dispatch) => {
     if (!value) {
       dispatch({type: ACTIONS.CHAT_PEOPLE_SEARCH, payload: null});
     } else {
       dispatch({type: ACTIONS.CHAT_LOADING});
       socket
         .emit('chat_people_search', value)
-        .on('chat_people_search', response => {
+        .on('chat_people_search', (response) => {
           dispatch({
             type: ACTIONS.CHAT_PEOPLE_SEARCH,
             payload: response.chatPeopleSearch,
@@ -133,7 +133,7 @@ export const chatPeopleSearchAction = value => {
 };
 
 export const logEvent = (eventType, data) => {
-  socket.emit('log_event', {eventType, data});
+  socket.emit(SOCKET_EVENTS.LOG_EVENT, {eventType, data});
 };
 
 export const setupComplete = () => {
@@ -141,12 +141,12 @@ export const setupComplete = () => {
 };
 
 export const sendTyping = (socket, value, other_user_id) => {
-  socket.emit('typing', {to: other_user_id, value});
+  socket.emit(SOCKET_EVENTS.TYPING, {to: other_user_id, value});
   return {type: null};
 };
 
 export const getChatPeopleExplicitly = () => {
-  socket.emit('chat_people_explicitly');
+  socket.emit(SOCKET_EVENTS.CHAT_PEOPLE_EXPLICITLY);
   return {type: ACTIONS.CHAT_LOADING};
 };
 
@@ -157,7 +157,7 @@ export const checkMessagesObject = (other_user_id, messages) => {
   return {type: ACTIONS.CHECK_MESSAGES_OBJECT, payload: messages};
 };
 
-const messageConverter = item => {
+const messageConverter = (item) => {
   if (!!item.text) {
     text_to_save = item.text;
   } else {
@@ -192,12 +192,12 @@ export const getCurrentUserMessages = (
 ) => {
   var t = Date.now();
   trace.start();
-  return dispatch => {
+  return (dispatch) => {
     MessagesCollection.query(Q.where('other_user_id', other_user_id))
       .fetch()
-      .then(response => {
+      .then((response) => {
         let new_response = [];
-        response.map(x => {
+        response.map((x) => {
           item = x._raw;
           if (item.this_user_id === this_user_id) {
             // imp. check, prevents chat leak into other user's chats
@@ -230,13 +230,13 @@ export const onImageSelect = (image, imageMetaData) => {
   };
 };
 
-export const onComposerTextChanged = text => {
+export const onComposerTextChanged = (text) => {
   return {type: ACTIONS.CHAT_COMPOSER_TEXT_CHANGED, payload: {text}};
 };
 
 export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
   const feedList = [];
-  recent_messages.reverse().map(item => {
+  recent_messages.reverse().map((item) => {
     if (!(item.text && item.createdAt && item.user._id)) {
       return;
     }
@@ -254,10 +254,10 @@ export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
 
   naturalLanguage()
     .suggestReplies(feedList)
-    .then(response => {
+    .then((response) => {
       dispatch({type: ACTIONS.CHAT_QUICK_REPLIES, payload: response});
     })
-    .catch(e =>
+    .catch((e) =>
       logEvent(LOG_EVENT.ERROR, {
         errorLine: 'CHAT ACTION - 213, Quick Replies Error',
         description: e.toString(),
@@ -265,7 +265,7 @@ export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
     );
 };
 
-export const uploadGroupImage = async local_image_uri => {
+export const uploadGroupImage = async (local_image_uri) => {
   try {
     const response = await httpClient.get(URLS.imageupload, {
       params: {type: 'group_icon', image_type: 'jpeg'},
@@ -287,7 +287,7 @@ export const createGroup = async (
   errorCallback,
 ) => {
   if (!newGroupInfo.group_image) {
-    socket.emit('create_group', newGroupInfo);
+    socket.emit(SOCKET_EVENTS.CREATE_GROUP, newGroupInfo);
     successCallback();
   }
 
@@ -298,45 +298,48 @@ export const createGroup = async (
     return;
   }
   newGroupInfo.group_image = aws_image;
-  socket.emit('create_group', newGroupInfo);
+  socket.emit(SOCKET_EVENTS.CREATE_GROUP, newGroupInfo);
   successCallback();
 };
 
-export const getChatGroupParticipants = group_id => {
-  socket.emit('chat_group_participants', group_id);
+export const getChatGroupParticipants = (group_id) => {
+  socket.emit(SOCKET_EVENTS.CHAT_GROUP_PARTICIPANTS, group_id);
   return {type: ACTIONS.CHAT_GROUP_INFO_LOADING, payload: true};
 };
 
-export const chatInfoGroupDetailsUpdateAction = data => {
+export const chatInfoGroupDetailsUpdateAction = (data) => {
   return {type: ACTIONS.CHAT_INFO_GROUP_DETAILS_UPDATE, payload: data};
 };
 
-export const chatInfoGroupIconUploadingAction = value => {
+export const chatInfoGroupIconUploadingAction = (value) => {
   return {type: ACTIONS.CHAT_INFO_GROUP_ICON_UPLOADING, payload: value};
 };
 
-export const modifyAdmins = async data => {
+export const modifyAdmins = async (data) => {
   // data = {group_id:String, user_id:String, add:Boolean}
-  socket.emit('chat_group_modify_admins', data);
+  socket.emit(SOCKET_EVENTS.CHAT_GROUP_MODIFY_ADMINS, data);
 };
 
 export const leaveGroup = async (group_id, user_id) => {
-  socket.emit('chat_leave_group', {group_id, user_id_to_remove: user_id});
+  socket.emit(SOCKET_EVENTS.CHAT_LEAVE_GROUP, {
+    group_id,
+    user_id_to_remove: user_id,
+  });
 };
 
 export const addGroupParticipants = async (group_id, user_id_list) => {
-  socket.emit('chat_add_participants', {group_id, user_id_list});
+  socket.emit(SOCKET_EVENTS.CHAT_ADD_PARTICIPANTS, {group_id, user_id_list});
 };
 
 export const groupDetailsChange = async (group_id, data) => {
-  socket.emit('group_change_details', {group_id, ...data});
+  socket.emit(SOCKET_EVENTS.GROUP_CHANGE_DETAILS, {group_id, ...data});
 };
 
-export const getGifs = search => {
+export const getGifs = (search) => {
   if (!search) {
     search = '';
   }
-  return dispatch => {
+  return (dispatch) => {
     analytics().logSearch({search_term: search});
     dispatch({type: ACTIONS.CHAT_GIFS_LOADING, payload: true});
     httpClient.get(URLS.get_gifs, {params: {search}}).then(({data}) => {
@@ -346,6 +349,6 @@ export const getGifs = search => {
   };
 };
 
-export const gifSearch = text => {
+export const gifSearch = (text) => {
   return {type: ACTIONS.CHAT_GIF_SEARCH, payload: text};
 };

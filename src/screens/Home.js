@@ -30,7 +30,7 @@ import {
   AppIntroSlider,
 } from '../components';
 import {settingsChangeFavoriteCategory} from '../actions/SettingsAction';
-import {getHumanTime} from '../timeUtil';
+import {getHumanTime} from '../utilities/time';
 import {setupComplete} from '../actions/ChatAction';
 import {
   logout,
@@ -38,7 +38,8 @@ import {
   setAuthToken,
   exploreSearch,
 } from '../actions/HomeAction';
-import {getDynamicLink, getRingColor} from '../extraUtilities';
+import {getRingColor} from '../utilities/experience';
+import {getDynamicLink} from '../utilities/dynamicLinks';
 import {
   FONTS,
   COLORS_LIGHT_THEME,
@@ -270,6 +271,7 @@ class Home extends React.PureComponent {
         <Avatar
           size={42}
           uri={this.imageUrlCorrector(this.props.data.image_url)}
+          onPress={() => this.props.navigation.navigate(SCREENS.Settings)}
           ring_color={getRingColor(welcomeData.userXP)}
         />
       </View>

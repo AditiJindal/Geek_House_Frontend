@@ -1,4 +1,4 @@
-export {
+import {
   KEYCODE_PROD,
   FACEBOOK_ADS_ID,
   GIPHY_KEY,
@@ -6,6 +6,15 @@ export {
   ANDROID_CLIENT_ID,
   WEB_CLIENT_ID,
 } from '../prod_keys';
+
+export {
+  KEYCODE_PROD,
+  FACEBOOK_ADS_ID,
+  GIPHY_KEY,
+  TWITTER_KEYS,
+  ANDROID_CLIENT_ID,
+  WEB_CLIENT_ID,
+};
 
 export const COLORS_LIGHT_THEME = {
   THEME1: '#00b0f0',
@@ -105,12 +114,16 @@ export const KEYCODE = __DEV__ ? KEYCODE_DEBUG : KEYCODE_PROD;
 
 export const HTTP_TIMEOUT = 12000;
 
-export const MESSAGE_SPECIAL_ADDER = '(#SPECIAL%)';
+export const MESSAGE_SPECIAL_ADDER = 'PO54zUMrndr4Z4yKoK13lQBEKaFGic1V';
 
 export const LOG_EVENT = {
+  SCREEN_CHANGE: 'screen_change',
   AD_CLICKED: 'ad_clicked',
+  CURRENT_VIEW_MODE: 'current_view_mode',
   TIME_IN_CHAT: 'time_in_chat',
   TIME_IN_ARTICLE_INFO: 'time_in_article_info',
+  ASYNC_STORAGE_TIME: 'async_storage_time',
+  MOBILE_DB_TIME: 'mobile_db_time',
   ERROR: 'error',
 };
 
@@ -393,3 +406,44 @@ export const MAX_USERS_IN_A_GROUP = 20;
 export const LATEST_APP_VERSION = 37;
 
 export const APP_VERSION = require('../package.json').version;
+
+export const SOCKET_EVENTS = {
+  SEND_OFFLINE: 'SEND_OFFLINE',
+  NOT_DISCONNECTED: 'NOT_DISCONNECTED',
+  JOIN: 'JOIN',
+  INCOMING_MESSAGE: 'INCOMING_MESSAGE',
+  INCOMING_TYPING: 'INCOMING_TYPING',
+  CHAT_PEOPLE: 'CHAT_PEOPLE',
+  CHAT_PEOPLE_EXPLICITLY: 'CHAT_PEOPLE_EXPLICITLY',
+  ONLINE: 'ONLINE',
+  CHAT_GROUP_PARTICIPANTS: 'CHAT_GROUP_PARTICIPANTS',
+  CREATE_GROUP: 'CREATE_GROUP',
+  USER_DISCONNECTED: 'USER_DISCONNECTED',
+  COMMANDS: 'COMMANDS',
+  DEVICE_INFO: 'DEVICE_INFO',
+  MESSAGE_SUCCESSFUL: 'MESSAGE_SUCCESSFUL',
+  LOG_EVENT: 'LOG_EVENT',
+  TYPING: 'TYPING',
+  MESSAGE: 'MESSAGE',
+  CHANGE_FAVORITE_CATEGORY: 'CHANGE_FAVORITE_CATEGORY',
+  USER_SETUP_DONE: 'USER_SETUP_DONE',
+  IS_ONLINE: 'IS_ONLINE',
+  CHAT_PEOPLE_SEARCH: 'CHAT_PEOPLE_SEARCH',
+  CHAT_GROUP: 'CHAT_GROUP',
+  CHAT_LEAVE_GROUP: 'CHAT_LEAVE_GROUP',
+  CHAT_ADD_PARTICIPANTS: 'CHAT_ADD_PARTICIPANTS',
+  GROUP_CHANGE_DETAILS: 'GROUP_CHANGE_DETAILS',
+  CHAT_GROUP_MODIFY_ADMINS: 'CHAT_GROUP_MODIFY_ADMINS',
+
+  // built-in commands
+  connect: 'connect',
+  disconnect: 'disconnect',
+  reconnect: 'reconnect',
+  error: 'error',
+  connect_error: 'connect_error',
+  connect_timeout: 'connect_timeout',
+  reconnect_attempt: 'reconnect_attempt',
+  reconnect_error: 'reconnect_error',
+  ping: 'ping',
+  pong: 'pong',
+};

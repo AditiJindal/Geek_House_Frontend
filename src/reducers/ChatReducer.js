@@ -1,12 +1,17 @@
 import {ACTIONS} from '../actions/types';
-import AsyncStorage from '@react-native-community/async-storage';
-import {COLORS_LIGHT_THEME, COLORS_DARK_THEME, LOG_EVENT} from '../Constants';
+import {storageSetItem} from '../utilities/storage';
+import {
+  COLORS_LIGHT_THEME,
+  COLORS_DARK_THEME,
+  LOG_EVENT,
+  SOCKET_EVENTS,
+} from '../Constants';
 import analytics from '@react-native-firebase/analytics';
 import _ from 'lodash';
 import perf from '@react-native-firebase/perf';
 import {database} from '../database';
 import {v4 as uuid} from 'uuid';
-import {decrypt} from '../encryptionUtil';
+import {decrypt} from '../utilities/encryption';
 
 const MessagesCollection = database.collections.get('messages');
 const traceDB = perf().newTrace('mobile_db_time_save');
@@ -164,8 +169,8 @@ const saveMessageInDB = (payload, this_user_id) => {
     });
 };
 
-const saveData = async (state, recordPerf = false) => {
-  let to_save = {
+const saveData = async (action_type, state, recordPerf = false) => {
+  const to_save = {
     status: state.status,
     total_unread_messages: state.total_unread_messages,
     theme: state.theme,
@@ -181,8 +186,9 @@ const saveData = async (state, recordPerf = false) => {
     t = Date.now();
     trace.start();
   }
-  to_save = JSON.stringify(to_save);
-  await AsyncStorage.setItem(state.user_id.toString(), to_save);
+
+  await storageSetItem(action_type, state.user_id.toString(), to_save);
+
   if (recordPerf) {
     trace.stop();
     trace.putMetric('save_data_time', Date.now() - t);
@@ -260,7 +266,7 @@ export default (state = INITIAL_STATE, action) => {
           chats: new_chats,
         };
 
-        saveData(new_state);
+        saveData(action.type, new_state);
         return new_state;
       } else {
         return {...state, user_id};
@@ -276,7 +282,7 @@ export default (state = INITIAL_STATE, action) => {
       }
       new_state = {...state, theme: action.payload, COLORS};
 
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.GOT_CHAT_MESSAGE:
@@ -347,7 +353,7 @@ export default (state = INITIAL_STATE, action) => {
         chatScreenOpen: true,
       };
 
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.GET_CHAT_PEOPLE:
@@ -424,7 +430,7 @@ export default (state = INITIAL_STATE, action) => {
 
       // delete action.payload.chats
 
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_MESSAGE_HANDLER:
@@ -477,7 +483,7 @@ export default (state = INITIAL_STATE, action) => {
           recentActivity: payload_message[0].createdAt,
         };
 
-        state.socket.emit('chat_people_explicitly');
+        state.socket.emit(SOCKET_EVENTS.CHAT_PEOPLE_EXPLICITLY);
       } else {
         new_status[action.payload.other_user_id].recentActivity =
           payload_message[0].createdAt;
@@ -509,7 +515,7 @@ export default (state = INITIAL_STATE, action) => {
         chatScreenState: INITIAL_CHAT_SCREEN_STATE,
       };
 
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_CLEAR_OTHER_USER:
@@ -525,12 +531,12 @@ export default (state = INITIAL_STATE, action) => {
       };
 
     case ACTIONS.CHAT_SAVE_DATA:
-      saveData(state, true);
+      saveData(action.type, state, true);
       return state;
 
     case ACTIONS.SETTINGS_CHANGE_ANIMATION:
       new_state = {...state, animationOn: !state.animationOn};
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.SETTINGS_CHANGE_QUICK_REPLIES:
@@ -538,20 +544,20 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         quick_replies_enabled: !state.quick_replies_enabled,
       };
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_PEOPLE_SEARCH:
       return {...state, chatPeopleSearch: action.payload, loading: false};
 
     case ACTIONS.CHAT_SOCKET_CHANGE_CATEGORY:
-      state.socket.emit('change_favourite_category', action.payload);
+      state.socket.emit(SOCKET_EVENTS.CHANGE_FAVORITE_CATEGORY, action.payload);
       return state;
 
     case ACTIONS.CHAT_SETUP_COMPLETE:
-      state.socket.emit('user_setup_done');
+      state.socket.emit(SOCKET_EVENTS.USER_SETUP_DONE);
       new_state = {...state, first_login: false};
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_FIRST_LOGIN:
@@ -566,7 +572,7 @@ export default (state = INITIAL_STATE, action) => {
         user_id: action.payload.authtoken,
         theme: action.payload.theme,
       };
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_GET_USER_MESSAGES:
@@ -578,7 +584,7 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         chat_background: {...state.chat_background, image: action.payload},
       };
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHANGE_CHAT_BACKGROUND_BLUR:
@@ -586,7 +592,7 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         chat_background: {...state.chat_background, blur: action.payload},
       };
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_QUICK_REPLIES:
@@ -632,7 +638,7 @@ export default (state = INITIAL_STATE, action) => {
         chat_group_participants: new_chat_group_participants,
         chatInfoLoading: false,
       };
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_GROUP_INFO_LOADING:
@@ -640,7 +646,7 @@ export default (state = INITIAL_STATE, action) => {
 
     case ACTIONS.CHAT_GROUP_CREATE:
       new_state = {...state, chats: [action.payload, ...state.chats]};
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_ADDED_TO_GROUP:
@@ -663,7 +669,7 @@ export default (state = INITIAL_STATE, action) => {
         new_state = {...state, chats: [group, ...state.chats]};
       }
 
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_LEAVE_GROUP:
@@ -704,7 +710,7 @@ export default (state = INITIAL_STATE, action) => {
         chatGroupsLeft: [...state.chatGroupsLeft],
         chat_group_participants: {...state.chat_group_participants},
       };
-      saveData(new_state);
+      saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_GROUP_MODIFY_ADMINS:

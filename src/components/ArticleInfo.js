@@ -38,7 +38,7 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import TimedAlert from './TimedAlert';
 import Ripple from './Ripple';
 import analytics from '@react-native-firebase/analytics';
-import {getRingColor} from '../extraUtilities';
+import {getRingColor} from '../utilities/experience';
 
 const screenWidth = Dimensions.get('screen').width;
 const OVERLAY_WIDTH_PERCENT = 88;
@@ -366,10 +366,10 @@ class ArticleInfo extends Component {
             backgroundColor: COLORS.GREEN,
           }}
           onPress={() => {
-            analytics().logShare({
-              content_type: 'article',
-              item_id: article_id,
-            });
+            // analytics().logShare({
+            //   content_type: 'article',
+            //   item_id: this.props.article_id,
+            // });
             Share.share({
               message: `View this article on ${topic} in Geek House using this link ${dynamicLink}`,
             });

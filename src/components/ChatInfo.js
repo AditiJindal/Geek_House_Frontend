@@ -39,7 +39,7 @@ import {
   ChatPeople,
 } from './index';
 import {FONTS, MAX_USERS_IN_A_GROUP, COLORS_LIGHT_THEME} from '../Constants';
-import {getRingColor} from '../extraUtilities';
+import {getRingColor} from '../utilities/experience';
 
 const overlayWidth = Dimensions.get('screen').width * 0.86;
 

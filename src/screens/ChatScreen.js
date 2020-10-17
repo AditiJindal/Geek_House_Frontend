@@ -24,7 +24,7 @@ import {
   getChatGroupParticipants,
 } from '../actions/ChatAction';
 import {Avatar, ChatInfo, TimedAlert, GiftedChat} from '../components';
-import {getRingColor} from '../extraUtilities';
+import {getRingColor} from '../utilities/experience';
 
 class ChatScreen extends React.PureComponent {
   state = {

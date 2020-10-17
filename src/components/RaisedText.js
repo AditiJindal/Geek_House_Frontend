@@ -47,6 +47,7 @@ export default class RaisedText extends Component {
       toValue: {x: 0, y: 0},
       duration: 700,
       delay: 10,
+      useNativeDriver: true,
     }).start();
   }
 

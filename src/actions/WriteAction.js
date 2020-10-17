@@ -1,8 +1,8 @@
 import {ACTIONS} from './types';
 import {URLS, LOG_EVENT} from '../Constants';
 import {logEvent} from './ChatAction';
-import {encrypt, decrypt} from '../encryptionUtil';
-import {httpClient} from '../extraUtilities';
+import {encrypt, decrypt} from '../utilities/encryption';
+import {httpClient} from '../utilities/httpClient';
 
 export const setAuthToken = () => {
   return (dispatch, getState) => {

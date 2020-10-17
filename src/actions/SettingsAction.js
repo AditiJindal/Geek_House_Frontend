@@ -1,10 +1,11 @@
 import {ACTIONS} from './types';
-import {URLS} from '../Constants';
+import {URLS, LOG_EVENT} from '../Constants';
 import {v4 as uuid} from 'uuid';
 import RNFileSystem from 'react-native-fs';
-import {encrypt, decrypt} from '../encryptionUtil';
+import {encrypt, decrypt} from '../utilities/encryption';
 import {uploadImage} from './WriteAction';
-import {httpClient} from '../extraUtilities';
+import {httpClient} from '../utilities/httpClient';
+import {logEvent} from './ChatAction';
 
 var timer = null;
 
@@ -54,6 +55,7 @@ export const changeQuickRepliesSettings = () => {
 };
 
 export const changeTheme = (value) => {
+  logEvent(LOG_EVENT.CURRENT_VIEW_MODE, value);
   return {type: ACTIONS.CHANGE_THEME, payload: value};
 };
 
@@ -67,7 +69,7 @@ export const changeChatWallpaper = (response, previous_image) => {
     if (previous_image) {
       RNFileSystem.unlink(previous_image.substring(7)).catch(() => {});
     }
-    RNFileSystem.copyFile(response.path, target_path).then(() => {
+    RNFileSystem.copyFile(response.path, target_path).then((res) => {
       dispatch({
         type: ACTIONS.CHANGE_CHAT_BACKGROUND,
         payload: target_path_url,

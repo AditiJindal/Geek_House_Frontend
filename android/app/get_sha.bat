@@ -1,0 +1,1 @@
+keytool -list -v -alias my-key-alias -keystore my-upload-key.ks

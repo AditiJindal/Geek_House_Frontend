@@ -1,5 +1,5 @@
 import {v4 as uuid} from 'uuid';
-import {BASE_URL, URLS} from './Constants';
+import {BASE_URL, URLS} from '../Constants';
 
 const createFormData = ({image_url, mimeType, extension}) => {
   const data = new FormData();

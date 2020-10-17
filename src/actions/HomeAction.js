@@ -1,14 +1,14 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import {storageRemoveItem} from '../utilities/storage';
 import {ACTIONS} from './types';
 import {logEvent} from './ChatAction';
 import {uploadImage} from './WriteAction';
 import {URLS, LOG_EVENT, SCREENS, SCREEN_CLASSES} from '../Constants';
-import {encrypt, decrypt} from '../encryptionUtil';
+import {encrypt, decrypt} from '../utilities/encryption';
 import {NativeAdsManager} from 'react-native-fbads';
 import CameraRoll from '@react-native-community/cameraroll';
 import ImageResizer from 'react-native-image-resizer';
-import {handleUpload} from '../uploadUtil';
-import {httpClient} from '../extraUtilities';
+import {handleUpload} from '../utilities/imageBased';
+import {httpClient} from '../utilities/httpClient';
 import analytics from '@react-native-firebase/analytics';
 
 export const setAuthToken = () => {
@@ -121,7 +121,7 @@ export const getPhotosMetadata = async (
 
 export const logout = (onLogout) => {
   return (dispatch) => {
-    AsyncStorage.removeItem('data')
+    storageRemoveItem('HOME ACTION 1', 'data')
       .then(() => {
         httpClient.get(URLS.logout);
         dispatch({type: ACTIONS.LOGOUT});
@@ -155,7 +155,7 @@ export const getWelcome = (onError) => {
       .get(URLS.welcome)
       .then(({data}) => {
         if (data.error) {
-          AsyncStorage.removeItem('data')
+          storageRemoveItem('HOME ACTION 2', 'data')
             .then(() => {
               dispatch({type: ACTIONS.LOGOUT});
               onError();

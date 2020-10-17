@@ -586,7 +586,7 @@ export default class Dropdown extends PureComponent {
             color: COLORS.LESS_DARK,
             fontSize: 14,
           }}
-          onChangeText={text => {
+          onChangeText={(text) => {
             LayoutAnimation.configureNext(
               LayoutAnimation.create(
                 300,
@@ -617,6 +617,7 @@ export default class Dropdown extends PureComponent {
   }
 
   render() {
+    const {COLORS} = this.props;
     let {
       renderBase,
       renderAccessory,
@@ -728,7 +729,7 @@ export default class Dropdown extends PureComponent {
                 ListHeaderComponent={<View style={{height: 45, width: 1}} />}
                 ListFooterComponent={<View style={{height: 20, width: 1}} />}
                 style={styles.scroll}
-                renderItem={item => this.renderItem(item)}
+                renderItem={(item) => this.renderItem(item)}
                 keyExtractor={this.keyExtractor}
                 contentContainerStyle={styles.scrollContainer}
               />

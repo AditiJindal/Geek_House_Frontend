@@ -1,8 +1,8 @@
 import {ACTIONS} from './types';
 import {URLS, LOG_EVENT} from '../Constants';
 import {logEvent} from './ChatAction';
-import {encrypt} from '../encryptionUtil';
-import {httpClient} from '../extraUtilities';
+import {encrypt} from '../utilities/encryption';
+import {httpClient} from '../utilities/httpClient';
 
 export const setAuthToken = () => {
   return (dispatch, getState) => {
@@ -34,7 +34,7 @@ const articleHandler = (
   } else {
     dispatch({type: ACTIONS.ARTICLE_INFO_LOADING});
     if (!forceUpdate) {
-      articles.map(article => {
+      articles.map((article) => {
         if (article.article_id === article_id) {
           found = true;
           dispatch({
@@ -47,13 +47,13 @@ const articleHandler = (
     if (!found) {
       httpClient
         .post(URLS.articleinfo, {article_id: article_id})
-        .then(response => {
+        .then((response) => {
           dispatch({
             type: ACTIONS.GET_ARTICLE_INFO,
             payload: {article: response.data, add: true, forceUpdate},
           });
         })
-        .catch(e =>
+        .catch((e) =>
           logEvent(LOG_EVENT.ERROR, {
             errorLine: 'ARTICLE INFO ACTION - 46',
             description: e.toString(),
@@ -91,7 +91,7 @@ export const submitComment = (to_send, author, author_image) => {
           payload: {...to_send, _id: data.comment_id, author, author_image},
         });
       })
-      .catch(e =>
+      .catch((e) =>
         logEvent(LOG_EVENT.ERROR, {
           errorLine: 'ARTICLE INFO ACTION - 62',
           description: e.toString(),
@@ -101,7 +101,7 @@ export const submitComment = (to_send, author, author_image) => {
 };
 
 export const bookmarkArticle = (article_id, bookmarked) => {
-  return dispatch => {
+  return (dispatch) => {
     httpClient
       .post(URLS.bookmark_article, {article_id, add: !bookmarked})
       .then(() => {
@@ -110,7 +110,7 @@ export const bookmarkArticle = (article_id, bookmarked) => {
           payload: {article_id, bookmarked: !bookmarked},
         });
       })
-      .catch(e =>
+      .catch((e) =>
         logEvent(LOG_EVENT.ERROR, {
           errorLine: 'ARTICLE INFO ACTION - 70',
           description: e.toString(),
@@ -120,14 +120,14 @@ export const bookmarkArticle = (article_id, bookmarked) => {
 };
 
 export const getBookmarkedArticles = () => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({type: ACTIONS.BOOKMARKS_LOADING});
     httpClient
       .get(URLS.get_bookmarked_articles)
-      .then(response => {
+      .then((response) => {
         dispatch({type: ACTIONS.GET_BOOKMARKS, payload: response.data});
       })
-      .catch(e => {
+      .catch((e) => {
         logEvent(LOG_EVENT.ERROR, {
           errorLine: 'ARTICLE INFO ACTION - 80, Database Error',
           description: e.toString(),

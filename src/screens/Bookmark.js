@@ -18,6 +18,9 @@ import {
 import {ArticleTile, ArticleTileAds} from '../components';
 import {FONTS} from '../Constants';
 
+const LOADING_CARD_SIZE = 150;
+const LOADING_CARD_SIZE_RATIO = 4 / 3;
+
 class Bookmark extends React.PureComponent {
   state = {adIndex: 0, adCategoryIndex: []};
 
@@ -67,176 +70,53 @@ class Bookmark extends React.PureComponent {
 
     if (this.props.bookmarks_loading) {
       return (
-        <View style={{flexGrow: 1}}>
-          <ScrollView
-            style={{flexGrow: 1}}
-            nestedScrollEnabled={true}
-            showsVerticalScrollIndicator={false}>
-            {this.renderHeader()}
-            <ShimmerPlaceHolder
-              colorShimmer={COLORS.SHIMMER_COLOR}
-              visible={false}
-              autoRun={true}
-              duration={600}
-              delay={100}
-              style={{
-                height: 35,
-                borderRadius: 5,
-                marginTop: 30,
-                marginLeft: 15,
-                alignItems: 'center',
-                elevation: 6,
-              }}
-            />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <FlatList
+          data={Array(4).fill(0)}
+          keyExtractor={(_, index) => index.toString()}
+          ListHeaderComponent={this.renderHeader()}
+          ListFooterComponent={<View style={{height: 50}} />}
+          showsHorizontalScrollIndicator={false}
+          renderItem={() => (
+            <View>
               <ShimmerPlaceHolder
                 colorShimmer={COLORS.SHIMMER_COLOR}
                 visible={false}
+                autoRun={true}
+                duration={650}
+                delay={30}
                 style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
+                  height: 35,
+                  borderRadius: 5,
+                  marginTop: 30,
+                  marginLeft: 15,
+                  alignItems: 'center',
                   elevation: 6,
                 }}
               />
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
+              <FlatList
+                data={Array(4).fill(0)}
+                keyExtractor={(_, index) => index.toString()}
+                horizontal
+                contentContainerStyle={{paddingHorizontal: 10}}
+                showsHorizontalScrollIndicator={false}
+                renderItem={({index}) => (
+                  <ShimmerPlaceHolder
+                    colorShimmer={COLORS.SHIMMER_COLOR}
+                    visible={false}
+                    style={{
+                      width: LOADING_CARD_SIZE * LOADING_CARD_SIZE_RATIO,
+                      height: LOADING_CARD_SIZE,
+                      borderRadius: 8,
+                      margin: 15,
+                      marginHorizontal: 5,
+                      elevation: 6,
+                    }}
+                  />
+                )}
               />
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-            </ScrollView>
-
-            <ShimmerPlaceHolder
-              colorShimmer={COLORS.SHIMMER_COLOR}
-              visible={false}
-              autoRun={true}
-              duration={650}
-              delay={30}
-              style={{
-                height: 35,
-                borderRadius: 5,
-                marginTop: 30,
-                marginLeft: 15,
-                alignItems: 'center',
-                elevation: 6,
-              }}
-            />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-            </ScrollView>
-
-            <ShimmerPlaceHolder
-              colorShimmer={COLORS.SHIMMER_COLOR}
-              visible={false}
-              autoRun={true}
-              duration={700}
-              delay={0}
-              style={{
-                height: 35,
-                borderRadius: 5,
-                marginTop: 30,
-                marginLeft: 15,
-                alignItems: 'center',
-                elevation: 6,
-              }}
-            />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-            </ScrollView>
-            <View style={{height: 200, width: 1}} />
-          </ScrollView>
-        </View>
+            </View>
+          )}
+        />
       );
     } else {
       const category_list = Object.keys(this.props.bookmarked_articles);

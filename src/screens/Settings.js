@@ -28,7 +28,7 @@ import {
   LevelBar,
   Loading,
 } from '../components';
-import {getRingColor} from '../extraUtilities';
+import {getRingColor} from '../utilities/experience';
 import {FONTS, COLORS_LIGHT_THEME, ALL_CATEGORIES, SCREENS} from '../Constants';
 import {logout} from '../actions/HomeAction';
 import {
