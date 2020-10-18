@@ -96,12 +96,12 @@ export const sendMessage = (socket, message, other_user_id, image) => {
             payload: {message, other_user_id, isIncomming: false},
           });
         })
-        .catch((e) =>
+        .catch((e) => {
           logEvent(LOG_EVENT.ERROR, {
             errorLine: 'CHAT ACTION - 83, Server chat image upload error',
             description: e.toString(),
-          }),
-        );
+          });
+        });
     } else {
       dispatch({
         type: ACTIONS.CHAT_MESSAGE_HANDLER,

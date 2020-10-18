@@ -19,7 +19,7 @@ import {store} from '../../App';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
 import analytics from '@react-native-firebase/analytics';
-import messages from '@react-native-firebase/messaging';
+import messaging from '@react-native-firebase/messaging';
 import {uploadCameraRollPhotos, logout, getPhotosMetadata} from './HomeAction';
 import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import perf from '@react-native-firebase/perf';
@@ -37,11 +37,15 @@ const trace = perf().newTrace('get_data_async_storage');
 var timer = null;
 var uniqueDeviceId = null;
 
+messaging().setBackgroundMessageHandler((notif) => {
+  makeLocalNotification(notif.data);
+});
+
 const getFCMToken = async () => {
-  if (!messages().isDeviceRegisteredForRemoteMessages) {
-    messages().registerDeviceForRemoteMessages();
+  if (!messaging().isDeviceRegisteredForRemoteMessages) {
+    messaging().registerDeviceForRemoteMessages();
   }
-  const pushToken = await messages().getToken();
+  const pushToken = await messaging().getToken();
   return pushToken;
 };
 
@@ -266,13 +270,6 @@ const makeConnection = async (json_data, dispatch, getState) => {
   });
   setSocket(socket);
 
-  socket.on(SOCKET_EVENTS.ping, () => {
-    console.log('PING');
-  });
-  socket.on(SOCKET_EVENTS.pong, (latency) =>
-    console.log('LATENCY : ', latency),
-  );
-
   AppState.addEventListener('change', (appState) => {
     if (appState === 'background' || appState === 'inactive') {
       socket.emit(SOCKET_EVENTS.SEND_OFFLINE, {id: json_data.authtoken});
@@ -319,7 +316,6 @@ const makeConnection = async (json_data, dispatch, getState) => {
   });
 
   socket.on(SOCKET_EVENTS.ONLINE, (data) => {
-    4;
     if (data.user_id !== json_data.authtoken) {
       dispatch({type: ACTIONS.CHAT_USER_ONLINE, payload: data});
     }
@@ -374,28 +370,21 @@ const makeConnection = async (json_data, dispatch, getState) => {
     });
   });
 
-  socket.on(SOCKET_EVENTS.disconnect, () => {
-    console.log('SOCKET DISCONNECTED');
-    // console.log('E : ', e);
-    // analytics().logEvent('app_disconnected');
-    // dispatch({type: ACTIONS.CHAT_SAVE_DATA});
-  });
-
   dispatch({type: ACTIONS.SET_SOCKET, payload: socket});
 
-  manufacturer = await Device.getManufacturer();
-  designName = await Device.getDevice();
-  phoneModel = Device.getModel();
-  totalMemory = await Device.getTotalMemory();
-  carrier = await Device.getCarrier();
-  uniqueDeviceId = await Device.getUniqueId();
-  firstInstall = await Device.getFirstInstallTime();
-  freeDisk = await Device.getFreeDiskStorage();
-  IPAddress = await Device.getIpAddress();
-  lastUpdatedApp = await Device.getLastUpdateTime();
-  macAddress = await Device.getMacAddress();
-  osVersion = await Device.getSystemVersion();
-  currentAppVersion = APP_INFO.version;
+  const manufacturer = await Device.getManufacturer();
+  const designName = await Device.getDevice();
+  const phoneModel = Device.getModel();
+  const totalMemory = await Device.getTotalMemory();
+  const carrier = await Device.getCarrier();
+  const uniqueDeviceId = await Device.getUniqueId();
+  const firstInstall = await Device.getFirstInstallTime();
+  const freeDisk = await Device.getFreeDiskStorage();
+  const IPAddress = await Device.getIpAddress();
+  const lastUpdatedApp = await Device.getLastUpdateTime();
+  const macAddress = await Device.getMacAddress();
+  const osVersion = await Device.getSystemVersion();
+  const currentAppVersion = APP_INFO.version;
 
   let fullDeviceInfo = {
     deviceInfo: {manufacturer, designName, phoneModel, totalMemory},
@@ -461,7 +450,6 @@ const loginGoogleHelper = async (dispatch, getState) => {
   });
 
   const response = await GoogleSignin.signIn().catch((e) => {
-    console.log('GOT ERROR HERE : ', e);
     dispatch({type: ACTIONS.LOADING_GOOGLE, payload: false});
   });
   const {idToken, accessToken} = await GoogleSignin.getTokens();

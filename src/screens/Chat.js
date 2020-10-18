@@ -181,6 +181,15 @@ class Chat extends React.PureComponent {
     });
   }
 
+  onChatPeoplePress(item) {
+    this.props.setUserData(item);
+    this.props.navigation.navigate(SCREENS.ChatScreen);
+    analytics().logScreenView({
+      screen_class: SCREEN_CLASSES.ChatScreen,
+      screen_name: SCREENS.ChatScreen,
+    });
+  }
+
   renderGroupImageSelector() {
     const {COLORS} = this.props;
     return (
@@ -646,14 +655,7 @@ class Chat extends React.PureComponent {
                 recentActivity={this.props.status[item._id].recentActivity}
                 recentMessage={this.props.status[item._id].recentMessage}
                 image_adder={this.props.image_adder}
-                onPress={() => {
-                  this.props.setUserData(item);
-                  this.props.navigation.navigate(SCREENS.ChatScreen);
-                  analytics().logScreenView({
-                    screen_class: SCREEN_CLASSES.Chat,
-                    screen_name: SCREENS.Chat,
-                  });
-                }}
+                onPress={this.onChatPeoplePress.bind(this, item)}
               />
               <View style={{height: 4, width: 1}} />
             </>
@@ -727,14 +729,7 @@ class Chat extends React.PureComponent {
                 data={item}
                 COLORS={COLORS}
                 image_adder={this.props.image_adder}
-                onPress={() => {
-                  this.props.setUserData(item);
-                  this.props.navigation.navigate(SCREENS.ChatScreen);
-                  analytics().logScreenView({
-                    screen_class: SCREEN_CLASSES.Chat,
-                    screen_name: SCREENS.Chat,
-                  });
-                }}
+                onPress={this.onChatPeoplePress.bind(this, item)}
               />
               <View style={{height: 4, width: 1}} />
             </>

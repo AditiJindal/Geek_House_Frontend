@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {Badge, Icon} from 'react-native-elements';
+import {Icon} from 'react-native-elements';
 import {FONTS, SCREENS} from '../Constants';
 import {
   sendMessage,
@@ -32,14 +32,24 @@ class ChatScreen extends React.PureComponent {
     chatInfoVisible: false,
     chatInfoLoading: false,
   };
+
+  navigationListenerUnsubscribe = null;
+  keyboardDidShowListener = null;
+  keyboardDidHideListener = null;
   backHandler = null;
 
   componentDidMount() {
     this.props.setAuthToken();
-    this.props.getCurrentUserMessages(
-      this.props.other_user_data._id,
-      this.props.user_id,
-      this.props.quick_replies_enabled,
+
+    this.navigationListenerUnsubscribe = this.props.navigation.addListener(
+      'focus',
+      () => {
+        this.props.getCurrentUserMessages(
+          this.props.other_user_data._id,
+          this.props.user_id,
+          this.props.quick_replies_enabled,
+        );
+      },
     );
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () =>
       this.keyboardDidShow(),
@@ -56,6 +66,7 @@ class ChatScreen extends React.PureComponent {
   }
 
   componentWillUnmount() {
+    this.navigationListenerUnsubscribe();
     this.keyboardDidHideListener.remove();
     this.keyboardDidShowListener.remove();
     this.backHandler.remove();
@@ -137,15 +148,18 @@ class ChatScreen extends React.PureComponent {
         !other_user_data.isGroup &&
         this.props.status.hasOwnProperty(other_user_data._id) &&
         this.props.status[other_user_data._id].online ? (
-          <Badge
-            status="success"
-            containerStyle={{position: 'absolute', top: 2, right: 2}}
-            badgeStyle={{
+          <View
+            style={{
+              position: 'absolute',
+              right: 3,
+              top: 0,
+              borderColor: COLORS.LIGHT,
+              borderWidth: 0.5,
+              backgroundColor: COLORS.GREEN,
+              elevation: 7,
               height: 10,
               width: 10,
               borderRadius: 5,
-              borderWidth: 1,
-              borderColor: COLORS.LIGHT,
             }}
           />
         ) : null}

@@ -18,7 +18,6 @@ import {FONTS, COLORS_LIGHT_THEME, SCREENS, SCREEN_CLASSES} from '../Constants';
 class NotificationArticle extends React.PureComponent {
   componentDidMount() {
     this.props.setAuthToken();
-    console.log('PROPS IN NA : ', this.props);
     const {article_id} = this.props.route.params;
     this.props.getArticleInfo(article_id, false, false);
     analytics().logScreenView({
