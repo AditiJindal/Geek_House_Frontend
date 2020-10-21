@@ -11,10 +11,7 @@ import {Icon} from 'react-native-elements';
 import _ from 'lodash';
 import {connect} from 'react-redux';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
-import {
-  setAuthToken,
-  getBookmarkedArticles,
-} from '../actions/ArticleInfoAction';
+import {getBookmarkedArticles} from '../actions/ArticleInfoAction';
 import {ArticleTile, ArticleTileAds} from '../components';
 import {FONTS} from '../Constants';
 
@@ -26,7 +23,6 @@ class Bookmark extends React.PureComponent {
 
   componentDidMount() {
     if (Object.keys(this.props.bookmarked_articles).length === 0) {
-      this.props.setAuthToken();
       this.props.getBookmarkedArticles();
     }
   }
@@ -280,9 +276,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, {getBookmarkedArticles, setAuthToken})(
-  Bookmark,
-);
+export default connect(mapStateToProps, {getBookmarkedArticles})(Bookmark);
 
 const styles = StyleSheet.create({
   HeadingTextStyling: {

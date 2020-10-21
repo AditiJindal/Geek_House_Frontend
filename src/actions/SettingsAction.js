@@ -2,27 +2,17 @@ import {ACTIONS} from './types';
 import {URLS, LOG_EVENT} from '../Constants';
 import uuid from 'uuid-random';
 import RNFileSystem from 'react-native-fs';
-import {uploadImage, encrypt, decrypt, httpClient} from '../utilities';
+import {uploadImage, decrypt, httpClient} from '../utilities';
 import {logEvent} from './ChatAction';
 
 var timer = null;
-
-export const setAuthToken = () => {
-  return (dispatch, getState) => {
-    const state = getState();
-    httpClient.defaults.headers.common['Authorization'] = encrypt(
-      state.login.authtoken,
-    );
-  };
-};
-// till here
 
 export const getSettingsData = (reload) => {
   return (dispatch, getState) => {
     const state = getState();
 
     if (reload || !state.settings.gotSettingsData) {
-      httpClient
+      httpClient()
         .get(URLS.settings)
         .then((response) => {
           dispatch({type: ACTIONS.GET_SETTINGS_DATA, payload: response.data});
@@ -103,13 +93,15 @@ export const submitName = (name, callback) => {
   return (dispatch) => {
     const {error} = nameValidator(name);
     if (!error) {
-      httpClient.post(URLS.change_name, {name}).then(() => {
-        dispatch({
-          type: ACTIONS.SETTINGS_CHANGE_NAME,
-          payload: {name, confirmChange: true},
+      httpClient()
+        .post(URLS.change_name, {name})
+        .then(() => {
+          dispatch({
+            type: ACTIONS.SETTINGS_CHANGE_NAME,
+            payload: {name, confirmChange: true},
+          });
+          callback('Name changed successfully');
         });
-        callback('Name changed successfully');
-      });
     } else {
       callback(error);
     }
@@ -127,7 +119,7 @@ export const changeImageUrl = (image_url, callback) => {
       type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
       payload: true,
     });
-    httpClient
+    httpClient()
       .get(URLS.imageupload, {
         params: {type: 'profile_picture', image_type: 'jpeg'},
       })
@@ -140,7 +132,7 @@ export const changeImageUrl = (image_url, callback) => {
         )
           .then(() => {
             aws_image_url = decrypt(response.data.key);
-            httpClient
+            httpClient()
               .post(URLS.change_profile_pic, {image_url: response.data.key}) // sending encrypted url
               .then(() => {
                 // when everything is right, we change the image_url

@@ -17,11 +17,7 @@ import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 
 import {ArticleTile, Ripple} from '../components';
-import {
-  setAuthToken,
-  getMyArticles,
-  clearPublish,
-} from '../actions/WriteAction';
+import {getMyArticles, clearPublish} from '../actions/WriteAction';
 import {FONTS, COLORS_LIGHT_THEME, SCREENS, SCREEN_CLASSES} from '../Constants';
 
 class Write extends React.PureComponent {
@@ -30,7 +26,6 @@ class Write extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.props.setAuthToken();
     analytics().logScreenView({
       screen_class: SCREEN_CLASSES.Write,
       screen_name: SCREENS.Write,
@@ -506,7 +501,6 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, {
-  setAuthToken,
   getMyArticles,
   clearPublish,
 })(Write);

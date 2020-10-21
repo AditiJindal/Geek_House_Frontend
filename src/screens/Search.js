@@ -29,7 +29,6 @@ import {
 } from '../components';
 import {
   getPopularSearches,
-  setAuthToken,
   updateSearchValue,
   selectCategory,
   doSearch,
@@ -50,7 +49,6 @@ class Search extends React.PureComponent {
 
   componentDidMount() {
     if (!this.props.popularSearchesData) {
-      this.props.setAuthToken();
       analytics().logScreenView({
         screen_class: SCREEN_CLASSES.Search,
         screen_name: SCREENS.Search,
@@ -658,7 +656,6 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
   getPopularSearches,
-  setAuthToken,
   updateSearchValue,
   selectCategory,
   doSearch,

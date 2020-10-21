@@ -33,7 +33,6 @@ import {getRingColor} from '../utilities';
 import {FONTS, COLORS_LIGHT_THEME, ALL_CATEGORIES, SCREENS} from '../Constants';
 import {logout} from '../actions/HomeAction';
 import {
-  setAuthToken,
   getSettingsData,
   settingsChangeFavoriteCategory,
   changeTheme,
@@ -55,7 +54,6 @@ class Settings extends React.PureComponent {
   keyboardListener = null;
 
   componentDidMount() {
-    this.props.setAuthToken();
     this.props.getSettingsData();
     this.keyboardListener = Keyboard.addListener('keyboardDidHide', () => {
       this.props.submitName(this.props.data.name, (msg) => {
@@ -1019,7 +1017,6 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
   logout,
-  setAuthToken,
   getSettingsData,
   settingsChangeFavoriteCategory,
   changeTheme,

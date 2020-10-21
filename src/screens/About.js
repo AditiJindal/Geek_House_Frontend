@@ -13,12 +13,11 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import analytics from '@react-native-firebase/analytics';
 import {Loading} from '../components';
-import {setAuthToken, getSettingsData} from '../actions/SettingsAction';
+import {getSettingsData} from '../actions/SettingsAction';
 import {FONTS, SCREENS, SCREEN_CLASSES} from '../Constants';
 
 class Settings extends React.PureComponent {
   componentDidMount() {
-    this.props.setAuthToken();
     analytics().logScreenView({
       screen_class: SCREEN_CLASSES.About,
       screen_name: SCREENS.About,
@@ -166,9 +165,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, {setAuthToken, getSettingsData})(
-  Settings,
-);
+export default connect(mapStateToProps, {getSettingsData})(Settings);
 
 const styles = StyleSheet.create({
   HeadingTextStyling: {

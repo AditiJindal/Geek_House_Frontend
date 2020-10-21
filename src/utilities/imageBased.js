@@ -1,4 +1,6 @@
 import uuid from 'uuid-random';
+
+import {store} from '../reducers';
 import {BASE_URL, URLS} from '../Constants';
 
 const createFormData = ({image_url, mimeType, extension}) => {
@@ -27,14 +29,15 @@ const getBlob = async (file) => {
 };
 
 export const imageUploadServer = async (data) => {
+  const {authtoken} = store.getState().login;
   if (!data.shouldUpload) {
     return data.image_url;
   }
-  // {type:'profile_picture', mimeType:'image/jpeg', image_url, extension:'jpeg', authToken}
+  // {type:'profile_picture', mimeType:'image/jpeg', image_url, extension:'jpeg'}
   const response = await fetch(BASE_URL + URLS.upload_server, {
     method: 'post',
     headers: {
-      authorization: data.authToken,
+      authorization: authtoken,
       filemetadata: JSON.stringify(getFileMetadata(data)),
     },
     body: createFormData(data),

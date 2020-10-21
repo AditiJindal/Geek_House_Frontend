@@ -31,12 +31,7 @@ import {
 } from '../components';
 import {settingsChangeFavoriteCategory} from '../actions/SettingsAction';
 import {setupComplete} from '../actions/ChatAction';
-import {
-  logout,
-  getWelcome,
-  setAuthToken,
-  exploreSearch,
-} from '../actions/HomeAction';
+import {logout, getWelcome, exploreSearch} from '../actions/HomeAction';
 import {getHumanTime, getRingColor, getDynamicLink} from '../utilities';
 import {
   FONTS,
@@ -57,8 +52,6 @@ class Home extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.props.setAuthToken();
-    setAuthToken();
     getDynamicLink(this.props.navigation);
     analytics().logScreenView({
       screen_class: SCREEN_CLASSES.Home,
@@ -819,8 +812,7 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   logout,
   getWelcome,
-  setAuthToken,
-  settingsChangeFavoriteCategory: settingsChangeFavoriteCategory,
+  settingsChangeFavoriteCategory,
   setupComplete,
   exploreSearch,
 })(Home);

@@ -2,7 +2,6 @@ import {ACTIONS} from '../actions/types';
 import {
   COLORS_LIGHT_THEME,
   COLORS_DARK_THEME,
-  LOG_EVENT,
   SOCKET_EVENTS,
 } from '../Constants';
 import analytics from '@react-native-firebase/analytics';
@@ -10,7 +9,8 @@ import _ from 'lodash';
 import perf from '@react-native-firebase/perf';
 import {database} from '../database';
 import uuid from 'uuid-random';
-import {decrypt, storageSetItem} from '../utilities';
+import {storageSetItem} from '../utilities/storage';
+import {decrypt} from '../utilities/encryption';
 
 const MessagesCollection = database.collections.get('messages');
 const traceDB = perf().newTrace('mobile_db_time_save');
@@ -104,7 +104,7 @@ const insertUnreadMessages = (
       {
         message: incomingMessageConverter(item),
         other_user_id: item.from,
-        isIncomming: true,
+        isIncoming: true,
       },
       this_user_id,
     );
@@ -456,7 +456,7 @@ export default (state = INITIAL_STATE, action) => {
         recentMessage = 'Sent a photo 📷';
       }
 
-      if (action.payload.isIncomming) {
+      if (action.payload.isIncoming) {
         analytics().logEvent('received_message');
       } else {
         analytics().logEvent('sent_message');
@@ -479,7 +479,7 @@ export default (state = INITIAL_STATE, action) => {
       if (!state.status.hasOwnProperty(action.payload.other_user_id)) {
         new_messages[action.payload.other_user_id] = payload_message;
         new_status[action.payload.other_user_id] = {
-          online: action.payload.isIncomming,
+          online: action.payload.isIncoming,
           typing: false,
           unread_messages: 0,
           recentMessage,

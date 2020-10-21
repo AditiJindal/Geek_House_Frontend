@@ -16,7 +16,6 @@ import {
   checkMessagesObject,
   sendTyping,
   clearOtherUserData,
-  setAuthToken,
   getChatPeopleExplicitly,
   getCurrentUserMessages,
   onImageSelect,
@@ -39,8 +38,6 @@ class ChatScreen extends React.PureComponent {
   backHandler = null;
 
   componentDidMount() {
-    this.props.setAuthToken();
-
     this.navigationListenerUnsubscribe = this.props.navigation.addListener(
       'focus',
       () => {
@@ -375,7 +372,6 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, {
-  setAuthToken,
   sendMessage,
   getChatPeopleExplicitly,
   checkMessagesObject,

@@ -1,24 +1,13 @@
 import {ACTIONS} from './types';
 import {URLS, LOG_EVENT} from '../Constants';
 import {logEvent} from './ChatAction';
-import {encrypt, decrypt, httpClient, uploadImage} from '../utilities';
-
-export const setAuthToken = () => {
-  return (dispatch, getState) => {
-    const state = getState();
-    httpClient.defaults.headers.common['Authorization'] = encrypt(
-      state.login.authtoken,
-    );
-    dispatch({type: null});
-  };
-};
-// till here
+import {decrypt, httpClient, uploadImage} from '../utilities';
 
 export const getMyArticles = (myArticlesLength, reload) => {
   if (myArticlesLength === 0 || reload) {
     return (dispatch) => {
       dispatch({type: ACTIONS.WRITE_LOADING, payload: true});
-      httpClient
+      httpClient()
         .get(URLS.myarticles)
         .then(({data}) => {
           dispatch({type: ACTIONS.GET_MY_ARTICLES, payload: data});
@@ -57,7 +46,7 @@ export const uploadArticleImages = async (article) => {
     if (!card.image) {
       new_contents.push(card);
     } else {
-      response = await httpClient.get(URLS.imageupload, {
+      response = await httpClient().get(URLS.imageupload, {
         params: {type: 'article', image_type: 'jpeg'},
       });
       preSignedURL = decrypt(response.data.url);
@@ -87,7 +76,7 @@ export const publishArticle = (
     dispatch({type: ACTIONS.WRITE_LOADING, payload: true});
 
     if (article.image && article.image.substring(0, 4) === 'file') {
-      httpClient
+      httpClient()
         .get(URLS.imageupload, {params: {type: 'article', image_type: 'jpeg'}})
         .then((response) => {
           const preSignedURL = decrypt(response.data.url);
@@ -98,7 +87,7 @@ export const publishArticle = (
           )
             .then(() => {
               article.image = decrypt(response.data.key);
-              httpClient
+              httpClient()
                 .post(URLS.publish, {...article, editing_article_id})
                 .then(({data}) => {
                   success_animation.play();
@@ -123,7 +112,7 @@ export const publishArticle = (
           }),
         );
     } else {
-      httpClient
+      httpClient()
         .post(URLS.publish, {...article, editing_article_id})
         .then(({data}) => {
           success_animation.play();

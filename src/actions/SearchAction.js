@@ -4,21 +4,10 @@ import {logEvent} from './ChatAction';
 import analytics from '@react-native-firebase/analytics';
 import {httpClient, encrypt} from '../utilities';
 
-export const setAuthToken = () => {
-  return (dispatch, getState) => {
-    const state = getState();
-    httpClient.defaults.headers.common['Authorization'] = encrypt(
-      state.login.authtoken,
-    );
-    dispatch({type: null});
-  };
-};
-// till here
-
 export const getPopularSearches = () => {
   return (dispatch) => {
     dispatch({type: ACTIONS.SEARCH_LOADING});
-    httpClient
+    httpClient()
       .get(URLS.popularsearches)
       .then(({data}) => {
         dispatch({type: ACTIONS.POPULAR_SEARCHES_SUCCESS, payload: data});
@@ -45,7 +34,7 @@ export const doSearch = (search, category) => {
   return (dispatch) => {
     dispatch({type: ACTIONS.DOING_SEARCH_LOADING});
     analytics().logSearch({search_term: search});
-    httpClient
+    httpClient()
       .post(URLS.search, {search, category})
       .then(({data}) => {
         dispatch({type: ACTIONS.DO_SEARCH, payload: data});

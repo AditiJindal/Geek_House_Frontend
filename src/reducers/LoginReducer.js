@@ -1,4 +1,4 @@
-import {storageSetItem} from '../utilities';
+import {storageSetItem} from '../utilities/storage';
 import {ACTIONS} from '../actions/types';
 
 const INITIAL_STATE = {

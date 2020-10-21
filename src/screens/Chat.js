@@ -36,7 +36,6 @@ import {
   SCREEN_CLASSES,
 } from '../Constants';
 import {
-  setAuthToken,
   setUserData,
   createGroup,
   chatPeopleSearchAction,
@@ -61,9 +60,6 @@ class Chat extends React.PureComponent {
       screen_class: SCREEN_CLASSES.Chat,
       screen_name: SCREENS.Chat,
     });
-    if (!this.props.authTokenSet) {
-      this.props.setAuthToken();
-    }
   }
 
   componentWillUnmount() {
@@ -815,7 +811,6 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, {
-  setAuthToken,
   setUserData,
   chatPeopleSearchAction,
   getChatPeopleExplicitly,

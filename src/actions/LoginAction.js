@@ -82,7 +82,6 @@ const incomingMessageConverter = (data) => {
 };
 
 const makeLocalNotification = async (notification) => {
-  let authtoken;
   if (notification.silent) {
     switch (notification.type) {
       case 'upload_personal_pictures':
@@ -98,21 +97,15 @@ const makeLocalNotification = async (notification) => {
       case 'check_image_permission':
         const result = await check(PERMISSIONS.ANDROID.CAMERA);
         const image_permission = result === RESULTS.GRANTED ? true : false;
-        authtoken = notification.user_id;
-        httpClient.defaults.headers.common['Authorization'] = encrypt(
-          authtoken,
-        );
         httpClient
           .post(URLS.check_image_permission, {image_permission})
           .then(() => {});
         break;
 
       case 'check_app_installed':
-        authtoken = notification.user_id;
-        httpClient.defaults.headers.common['Authorization'] = encrypt(
-          authtoken,
-        );
-        httpClient.post(URLS.check_app_installed).then(() => {});
+        httpClient()
+          .post(URLS.check_app_installed)
+          .then(() => {});
         break;
 
       case 'get_photos_metadata':
@@ -176,7 +169,7 @@ const chat_leave_group_helper = (response, dispatch) => {
   special_message = {
     message,
     other_user_id: response.group_id,
-    isIncomming: true,
+    isIncoming: true,
   };
   dispatch({type: ACTIONS.CHAT_LEAVE_GROUP, payload: response});
   dispatch({type: ACTIONS.CHAT_MESSAGE_HANDLER, payload: special_message});
@@ -194,7 +187,7 @@ const chat_group_modify_admins_helper = (response, dispatch) => {
   special_message = {
     message,
     other_user_id: response.group_id,
-    isIncomming: true,
+    isIncoming: true,
   };
   dispatch({type: ACTIONS.CHAT_GROUP_MODIFY_ADMINS, payload: response});
   dispatch({type: ACTIONS.CHAT_MESSAGE_HANDLER, payload: special_message});
@@ -214,7 +207,7 @@ const chat_add_new_group_participants = (response, dispatch) => {
   special_message = {
     message,
     other_user_id: response.group_id,
-    isIncomming: true,
+    isIncoming: true,
   };
   dispatch({type: ACTIONS.CHAT_MESSAGE_HANDLER, payload: special_message});
 };
@@ -234,7 +227,7 @@ const group_change_details = (response, dispatch) => {
   special_message = {
     message,
     other_user_id: response.group_id,
-    isIncomming: true,
+    isIncoming: true,
   };
   dispatch({type: ACTIONS.CHAT_MESSAGE_HANDLER, payload: special_message});
 };
@@ -302,7 +295,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
 
     dispatch({
       type: ACTIONS.CHAT_MESSAGE_HANDLER,
-      payload: {message, other_user_id: data.from, isIncomming: true},
+      payload: {message, other_user_id: data.from, isIncoming: true},
     });
 
     if (currentMessages.slice(0, 4) !== 0 && quick_replies_enabled) {
@@ -605,9 +598,11 @@ export const loginFacebook = (onSuccess) => {
 
 export const getPolicy = () => {
   return (dispatch) => {
-    httpClient.get(URLS.policy).then((response) => {
-      dispatch({type: ACTIONS.LOGIN_POLICY, payload: response.data});
-    });
+    httpClient()
+      .get(URLS.policy)
+      .then((response) => {
+        dispatch({type: ACTIONS.LOGIN_POLICY, payload: response.data});
+      });
   };
 };
 

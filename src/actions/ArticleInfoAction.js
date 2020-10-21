@@ -1,19 +1,7 @@
 import {ACTIONS} from './types';
 import {URLS, LOG_EVENT} from '../Constants';
 import {logEvent} from './ChatAction';
-import {httpClient, encrypt} from '../utilities';
-
-export const setAuthToken = () => {
-  return (dispatch, getState) => {
-    const state = getState();
-    httpClient.defaults.headers.common['Authorization'] = encrypt(
-      state.login.authtoken,
-    );
-    dispatch({type: null});
-  };
-};
-
-// till here
+import {httpClient} from '../utilities';
 
 const articleHandler = (
   dispatch,
@@ -44,7 +32,7 @@ const articleHandler = (
       });
     }
     if (!found) {
-      httpClient
+      httpClient()
         .post(URLS.articleinfo, {article_id: article_id})
         .then((response) => {
           dispatch({
@@ -80,7 +68,7 @@ export const submitComment = (to_send, author, author_image) => {
       to_send.rating = 0;
     }
 
-    httpClient
+    httpClient()
       .post(URLS.comment, to_send)
       .then(({data}) => {
         // dispatch({type:ACTIONS.ARTICLE_ADD_COMMENT, payload:to_send});
@@ -101,7 +89,7 @@ export const submitComment = (to_send, author, author_image) => {
 
 export const bookmarkArticle = (article_id, bookmarked) => {
   return (dispatch) => {
-    httpClient
+    httpClient()
       .post(URLS.bookmark_article, {article_id, add: !bookmarked})
       .then(() => {
         dispatch({
@@ -121,7 +109,7 @@ export const bookmarkArticle = (article_id, bookmarked) => {
 export const getBookmarkedArticles = () => {
   return (dispatch) => {
     dispatch({type: ACTIONS.BOOKMARKS_LOADING});
-    httpClient
+    httpClient()
       .get(URLS.get_bookmarked_articles)
       .then((response) => {
         dispatch({type: ACTIONS.GET_BOOKMARKS, payload: response.data});

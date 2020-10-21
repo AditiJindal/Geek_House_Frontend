@@ -12,12 +12,11 @@ import {Icon} from 'react-native-elements';
 import analytics from '@react-native-firebase/analytics';
 
 import {ArticleTile, Loading} from '../components';
-import {setAuthToken, getArticleInfo} from '../actions/ArticleInfoAction';
+import {getArticleInfo} from '../actions/ArticleInfoAction';
 import {FONTS, COLORS_LIGHT_THEME, SCREENS, SCREEN_CLASSES} from '../Constants';
 
 class NotificationArticle extends React.PureComponent {
   componentDidMount() {
-    this.props.setAuthToken();
     const {article_id} = this.props.route.params;
     this.props.getArticleInfo(article_id, false, false);
     analytics().logScreenView({
@@ -130,9 +129,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, {setAuthToken, getArticleInfo})(
-  NotificationArticle,
-);
+export default connect(mapStateToProps, {getArticleInfo})(NotificationArticle);
 
 const styles = StyleSheet.create({
   HeadingTextStyling: {

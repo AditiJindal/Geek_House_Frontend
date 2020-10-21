@@ -17,7 +17,6 @@ import StarRating from 'react-native-star-rating';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   getArticleInfo,
-  setAuthToken,
   submitComment,
   bookmarkArticle,
 } from '../actions/ArticleInfoAction';
@@ -58,12 +57,6 @@ class ArticleInfo extends Component {
       adIndex: 0,
       imageViewerActive: false,
     };
-  }
-
-  componentDidMount() {
-    if (this.props.article_id !== -1) {
-      this.props.setAuthToken();
-    }
   }
 
   renderCardViews(cards) {
@@ -912,7 +905,6 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
   getArticleInfo,
-  setAuthToken,
   submitComment,
   bookmarkArticle,
   setContents,

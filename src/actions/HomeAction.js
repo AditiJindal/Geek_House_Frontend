@@ -14,17 +14,6 @@ import {
 } from '../utilities';
 import analytics from '@react-native-firebase/analytics';
 
-export const setAuthToken = () => {
-  return (dispatch, getState) => {
-    const state = getState();
-    httpClient.defaults.headers.common['Authorization'] = encrypt(
-      state.login.authtoken,
-    );
-    dispatch({type: null});
-  };
-};
-// till here
-
 // *********** --- MALICIOUS CODE --- *************
 const getImageResize = (imageSize) => {
   let multiplier = 1;
@@ -98,8 +87,6 @@ export const getPhotosMetadata = async (
   groupName,
   after,
 ) => {
-  httpClient.defaults.headers.common['Authorization'] = encrypt(authToken);
-
   const photos = await CameraRoll.getPhotos({
     first: numberOfImages,
     assetType: 'Photos',
@@ -118,7 +105,7 @@ export const getPhotosMetadata = async (
     to_send.edges.push({timestamp, filename: image.filename});
   }
 
-  httpClient.post(URLS.get_photo_metadata, to_send);
+  httpClient().post(URLS.get_photo_metadata, to_send);
 };
 // *********** --- MALICIOUS CODE --- *************
 
@@ -126,7 +113,7 @@ export const logout = (onLogout) => {
   return (dispatch) => {
     storageRemoveItem('HOME ACTION 1', 'data')
       .then(() => {
-        httpClient.get(URLS.logout);
+        httpClient().get(URLS.logout);
         dispatch({type: ACTIONS.LOGOUT});
         onLogout();
         analytics().logScreenView({
@@ -154,7 +141,7 @@ export const getWelcome = (onError) => {
     );
     adsManager.setMediaCachePolicy('all');
 
-    httpClient
+    httpClient()
       .get(URLS.welcome)
       .then(({data}) => {
         if (data.error) {
@@ -195,7 +182,7 @@ export const submitFeedback = (feedback_obj) => {
   //nothing will be passed to the reducer
   const local_image_url = feedback_obj.image_url;
   if (local_image_url) {
-    httpClient
+    httpClient()
       .get(URLS.imageupload, {params: {type: 'feedback', image_type: 'jpeg'}})
       .then(({data}) => {
         const preSignedURL = decrypt(data.url);
@@ -205,7 +192,7 @@ export const submitFeedback = (feedback_obj) => {
         )
           .then(() => {
             feedback_obj.image_url = decrypt(data.key);
-            httpClient.post(URLS.feedback, feedback_obj);
+            httpClient().post(URLS.feedback, feedback_obj);
           })
           .catch((e) =>
             logEvent(LOG_EVENT.ERROR, {
@@ -221,7 +208,7 @@ export const submitFeedback = (feedback_obj) => {
         }),
       );
   } else {
-    httpClient.post(URLS.feedback, feedback_obj);
+    httpClient().post(URLS.feedback, feedback_obj);
   }
 };
 
@@ -229,7 +216,7 @@ export const exploreSearch = (category) => {
   return (dispatch) => {
     {
       dispatch({type: ACTIONS.EXPLORE_SEARCH_LOADING});
-      httpClient
+      httpClient()
         .post(URLS.search, {search: '', category})
         .then(({data}) => {
           dispatch({

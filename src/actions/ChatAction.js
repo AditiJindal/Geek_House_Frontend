@@ -20,26 +20,14 @@ const trace = perf().newTrace('mobile_db_time_get');
 var socket = null; // MAKE SURE THIS SOCKET BECOMES NULL WHEN LOGOUT
 var timer = null;
 
-export const setAuthToken = () => {
-  return (dispatch, getState) => {
-    const state = getState();
-    httpClient.defaults.headers.common['Authorization'] = encrypt(
-      state.login.authtoken,
-    );
-    dispatch({type: ACTIONS.CHAT_AUTH_TOKEN_SET});
-  };
-};
-
 export const setSocket = (new_socket) => {
   socket = new_socket;
 };
 
-// till here
-
 export const getChatPeople = () => {
   return (dispatch) => {
     dispatch({type: ACTIONS.CHAT_LOADING});
-    httpClient
+    httpClient()
       .get(URLS.chatpeople)
       .then((response) => {
         dispatch({type: ACTIONS.GET_CHAT_PEOPLE, payload: response.data});
@@ -81,7 +69,6 @@ export const sendMessage = (socket, message, other_user_id, image) => {
         mimeType: 'image/jpeg',
         image_url: image.url,
         extension: 'jpeg',
-        authToken: httpClient.defaults.headers.common['Authorization'],
         shouldUpload: !image.isGif,
       })
         .then((image_url) => {
@@ -96,7 +83,7 @@ export const sendMessage = (socket, message, other_user_id, image) => {
 
           dispatch({
             type: ACTIONS.CHAT_MESSAGE_HANDLER,
-            payload: {message, other_user_id, isIncomming: false},
+            payload: {message, other_user_id, isIncoming: false},
           });
         })
         .catch((e) => {
@@ -270,7 +257,7 @@ export const getQuickReplies = (dispatch, recent_messages, local_user_id) => {
 
 export const uploadGroupImage = async (local_image_uri) => {
   try {
-    const response = await httpClient.get(URLS.imageupload, {
+    const response = await httpClient().get(URLS.imageupload, {
       params: {type: 'group_icon', image_type: 'jpeg'},
     });
     const preSignedURL = decrypt(response.data.url);
@@ -345,10 +332,12 @@ export const getGifs = (search) => {
   return (dispatch) => {
     analytics().logSearch({search_term: search});
     dispatch({type: ACTIONS.CHAT_GIFS_LOADING, payload: true});
-    httpClient.get(URLS.get_gifs, {params: {search}}).then(({data}) => {
-      dispatch({type: ACTIONS.CHAT_GET_GIFS, payload: data});
-      dispatch({type: ACTIONS.CHAT_GIFS_LOADING, payload: false});
-    });
+    httpClient()
+      .get(URLS.get_gifs, {params: {search}})
+      .then(({data}) => {
+        dispatch({type: ACTIONS.CHAT_GET_GIFS, payload: data});
+        dispatch({type: ACTIONS.CHAT_GIFS_LOADING, payload: false});
+      });
   };
 };
 
