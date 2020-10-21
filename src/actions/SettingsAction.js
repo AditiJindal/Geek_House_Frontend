@@ -1,10 +1,8 @@
 import {ACTIONS} from './types';
 import {URLS, LOG_EVENT} from '../Constants';
-import {v4 as uuid} from 'uuid';
+import uuid from 'uuid-random';
 import RNFileSystem from 'react-native-fs';
-import {encrypt, decrypt} from '../utilities/encryption';
-import {uploadImage} from './WriteAction';
-import {httpClient} from '../utilities/httpClient';
+import {uploadImage, encrypt, decrypt, httpClient} from '../utilities';
 import {logEvent} from './ChatAction';
 
 var timer = null;

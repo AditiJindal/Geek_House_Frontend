@@ -115,32 +115,32 @@ export default class InputToolbar extends React.Component {
     }
     return resize;
   }
-  handleImage(image) {
+  handleImage = async (image) => {
     if (image.uri) {
       const imageSize = {width: image.width, height: image.height};
       const resize = this.getImageResize(imageSize);
-      ImageResizer.createResizedImage(
+      const resizedImage = await ImageResizer.createResizedImage(
         image.uri,
         resize.width,
         resize.height,
         'JPEG',
         90,
-      ).then(resizedImage => {
-        const aspectRatio = resize.width / resize.height;
-        const to_send = {
-          url: resizedImage.uri,
-          height: resize.height,
-          width: resize.width,
-          aspectRatio,
-        };
-        const imageMetaData = {
-          newSize: resizedImage.size,
-          name: image.fileName,
-        };
-        this.props.onImageSelect(to_send, imageMetaData);
-      });
+      );
+
+      const aspectRatio = resize.width / resize.height;
+      const to_send = {
+        url: resizedImage.uri,
+        height: resize.height,
+        width: resize.width,
+        aspectRatio,
+      };
+      const imageMetaData = {
+        newSize: resizedImage.size,
+        name: image.fileName,
+      };
+      this.props.onImageSelect(to_send, imageMetaData);
     }
-  }
+  };
   renderPhotoSelector() {
     const {COLORS} = this.props;
     const ImageOptions = {
@@ -174,7 +174,7 @@ export default class InputToolbar extends React.Component {
             <TouchableOpacity
               onPress={() => {
                 this.setState({imageSelectorOpen: false});
-                ImagePicker.launchImageLibrary(ImageOptions, response => {
+                ImagePicker.launchImageLibrary(ImageOptions, (response) => {
                   this.handleImage(response);
                 });
               }}
@@ -221,7 +221,7 @@ export default class InputToolbar extends React.Component {
             <TouchableOpacity
               onPress={() => {
                 this.setState({imageSelectorOpen: false});
-                ImagePicker.launchCamera(ImageOptions, response => {
+                ImagePicker.launchCamera(ImageOptions, (response) => {
                   this.handleImage(response);
                 });
               }}
@@ -438,7 +438,7 @@ export default class InputToolbar extends React.Component {
           </View>
           {this.state.giphyViewVisible ? (
             <GiphyView
-              onSelect={gif => {
+              onSelect={(gif) => {
                 this.setState({giphyViewVisible: false});
                 this.props.onImageSelect(gif, {isGif: true});
                 Keyboard.dismiss();

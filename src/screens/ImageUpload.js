@@ -219,6 +219,40 @@ class ImageUpload extends React.PureComponent {
     this.setState({relatedImageWords});
   }
 
+  onPickImage = async (image) => {
+    if (image.error) {
+      this.timedAlert.showAlert(3000, 'Image permission needed');
+      return;
+    }
+    this.ImageLabelDetection(image.path);
+    if (!image.didCancel) {
+      delete image.data;
+      const imageSize = {width: image.width, height: image.height};
+      const resize = this.getImageResize(imageSize);
+      crop = this.getCropCoordinates(resize);
+
+      const resized_image = await ImageResizer.createResizedImage(
+        image.uri,
+        resize.width,
+        resize.height,
+        'JPEG',
+        80,
+      ).catch((e) =>
+        logEvent(LOG_EVENT.ERROR, {
+          errorLine: 'ARTICLE INFO ACTION - 46',
+          description: e.toString(),
+        }),
+      );
+      const crop_image = await ImageEditor.cropImage(resized_image.uri, crop);
+      image = {uri: crop_image};
+      this.setState({
+        image,
+        imageSize: {width: resize.width, height: resize.height},
+      });
+      this.props.setImage(image);
+    }
+  };
+
   pickImage() {
     const ImageOptions = {
       noData: true,
@@ -226,45 +260,7 @@ class ImageUpload extends React.PureComponent {
       chooseWhichLibraryTitle: 'Select an App',
     };
 
-    ImagePicker.launchImageLibrary(ImageOptions, (image) => {
-      if (image.error) {
-        this.timedAlert.showAlert(3000, 'Image permission needed');
-        return;
-      }
-      this.ImageLabelDetection(image.path);
-      if (!image.didCancel) {
-        delete image.data;
-        const imageSize = {width: image.width, height: image.height};
-        const resize = this.getImageResize(imageSize);
-        crop = this.getCropCoordinates(resize);
-
-        ImageResizer.createResizedImage(
-          image.uri,
-          resize.width,
-          resize.height,
-          'JPEG',
-          80,
-        )
-          .then((resized_image) => {
-            ImageEditor.cropImage(resized_image.uri, crop).then(
-              (crop_image) => {
-                image = {uri: crop_image};
-                this.setState({
-                  image,
-                  imageSize: {width: resize.width, height: resize.height},
-                });
-                this.props.setImage(image);
-              },
-            );
-          })
-          .catch((e) =>
-            logEvent(LOG_EVENT.ERROR, {
-              errorLine: 'ARTICLE INFO ACTION - 46',
-              description: e.toString(),
-            }),
-          );
-      }
-    });
+    ImagePicker.launchImageLibrary(ImageOptions, this.onPickImage);
   }
 
   renderImagePicker() {

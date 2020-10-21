@@ -2,7 +2,8 @@ import React from 'react';
 import {TouchableOpacity, Dimensions, View} from 'react-native';
 import {connect} from 'react-redux';
 import Image from 'react-native-fast-image';
-import {Loading, ImageViewer} from './index';
+import Loading from './Loading';
+import ImageViewer from './ImageViewer';
 
 const screenWidth = Dimensions.get('screen').width;
 

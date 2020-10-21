@@ -15,7 +15,7 @@ import {
   LATEST_APP_VERSION,
   LOG_EVENT,
 } from '../Constants';
-import {getRingColor} from '../utilities/experience';
+import {getRingColor} from '../utilities';
 import {Avatar, LevelBar, Ripple} from '../components';
 import {changeTheme} from '../actions/SettingsAction';
 

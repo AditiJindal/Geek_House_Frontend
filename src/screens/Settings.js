@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   TextInput,
+  Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
@@ -28,7 +29,7 @@ import {
   LevelBar,
   Loading,
 } from '../components';
-import {getRingColor} from '../utilities/experience';
+import {getRingColor} from '../utilities';
 import {FONTS, COLORS_LIGHT_THEME, ALL_CATEGORIES, SCREENS} from '../Constants';
 import {logout} from '../actions/HomeAction';
 import {
@@ -51,13 +52,21 @@ class Settings extends React.PureComponent {
     blur: this.props.chat_background.blur,
   };
 
+  keyboardListener = null;
+
   componentDidMount() {
     this.props.setAuthToken();
     this.props.getSettingsData();
+    this.keyboardListener = Keyboard.addListener('keyboardDidHide', () => {
+      this.props.submitName(this.props.data.name, (msg) => {
+        this.timedAlert.showAlert(3000, msg, false);
+      });
+    });
   }
 
   componentWillUnmount() {
     this.props.revertName();
+    this.keyboardListener.remove();
   }
 
   getImageResize(imageSize) {
@@ -100,7 +109,7 @@ class Settings extends React.PureComponent {
     return crop;
   }
 
-  pickImage(image) {
+  pickImage = async (image) => {
     if (image.didCancel) {
       return null;
     }
@@ -109,20 +118,18 @@ class Settings extends React.PureComponent {
     const resize = this.getImageResize(imageSize);
     crop = this.getCropCoordinates(resize);
 
-    ImageResizer.createResizedImage(
+    const resized_image = await ImageResizer.createResizedImage(
       image.uri,
       resize.width,
       resize.height,
       'JPEG',
       80,
-    ).then((resized_image) => {
-      ImageEditor.cropImage(resized_image.uri, crop).then((crop_image) => {
-        this.props.changeImageUrl(crop_image, (msg) => {
-          this.timedAlert.showAlert(3000, msg, false);
-        });
-      });
+    );
+    const crop_image = await ImageEditor.cropImage(resized_image.uri, crop);
+    this.props.changeImageUrl(crop_image, (msg) => {
+      this.timedAlert.showAlert(3000, msg, false);
     });
-  }
+  };
 
   renderRating(rating) {
     const {COLORS} = this.props;

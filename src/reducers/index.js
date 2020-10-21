@@ -1,3 +1,6 @@
+import {createStore, applyMiddleware} from 'redux';
+import ReduxThunk from 'redux-thunk';
+
 import {combineReducers} from 'redux';
 import LoginReducer from '../reducers/LoginReducer';
 import HomeReducer from '../reducers/HomeReducer';
@@ -7,7 +10,7 @@ import WriteReducer from '../reducers/WriteReducer';
 import ChatReducer from '../reducers/ChatReducer';
 import SettingsReducer from '../reducers/SettingsReducer';
 
-export default combineReducers({
+const reducers = combineReducers({
   login: LoginReducer,
   home: HomeReducer,
   search: SearchReducer,
@@ -16,3 +19,5 @@ export default combineReducers({
   chat: ChatReducer,
   settings: SettingsReducer,
 });
+
+export const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));

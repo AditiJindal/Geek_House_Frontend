@@ -4,7 +4,7 @@ import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {Icon} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import SView from 'react-native-simple-shadow-view';
-import {Typing} from './index';
+import Typing from './Typing';
 import {
   ICON_SIZE,
   SELECTED_ICON_SIZE,

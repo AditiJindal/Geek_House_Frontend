@@ -11,7 +11,10 @@ import SView from 'react-native-simple-shadow-view';
 import Image from 'react-native-fast-image';
 import vision from '@react-native-firebase/ml-vision';
 import ImageResizer from 'react-native-image-resizer';
-import {Loading, Ripple, ImageSelector, CustomAlert} from './index';
+import Loading from './Loading';
+import Ripple from './Ripple';
+import ImageSelector from './ImageSelector';
+import CustomAlert from './CustomAlert';
 import {
   FONTS,
   ERROR_MESSAGES,
@@ -45,34 +48,33 @@ export default class WriteView extends Component {
     return image_url;
   }
 
-  async doTextRecognition(image_path) {
+  doTextRecognition = async (image_path) => {
     if (!image_path) {
       return;
     }
     this.setState({visionLoading: true});
-    vision()
+    const response = await vision()
       .textRecognizerProcessImage(image_path)
-      .then((response) => {
-        if (response.text.length === 0) {
-          this.props.timedAlert.showAlert(
-            3000,
-            'Could not identify text in this image',
-          );
-          this.setState({visionLoading: false});
-          return;
-        } else if (response.text.length < 10) {
-          this.timedAlert.showAlert(3000, 'Could not identify enough text');
-        }
-        this.props.onContentChange(response.text, this.props.index);
-        this.setState({visionLoading: false});
-      })
       .catch((e) =>
         logEvent(LOG_EVENT.ERROR, {
           errorLine: 'WRITE VIEW - 42',
           description: e.toString(),
         }),
       );
-  }
+
+    if (response.text.length === 0) {
+      this.props.timedAlert.showAlert(
+        3000,
+        'Could not identify text in this image',
+      );
+      this.setState({visionLoading: false});
+      return;
+    } else if (response.text.length < 10) {
+      this.timedAlert.showAlert(3000, 'Could not identify enough text');
+    }
+    this.props.onContentChange(response.text, this.props.index);
+    this.setState({visionLoading: false});
+  };
 
   getImageResize(response) {
     const MAX_WIDTH = 512;

@@ -9,7 +9,7 @@ import {
   Text,
 } from 'react-native';
 import Image from 'react-native-fast-image';
-import {v4 as uuid} from 'uuid';
+import uuid from 'uuid-random';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import RNFileSystem from 'react-native-fs';
 import ImageViewer from '../ImageViewer';

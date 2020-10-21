@@ -5,7 +5,7 @@ import {
   TWITTER_KEYS,
   ANDROID_CLIENT_ID,
   WEB_CLIENT_ID,
-} from '../prod_keys';
+} from '../prod_keys.config';
 
 export {
   KEYCODE_PROD,
@@ -104,7 +104,7 @@ export const COLORS_DARK_THEME = {
   IS_LIGHT_THEME: false,
 };
 
-export const BASE_URL_PROD = 'https://tjproductions.xyz'; // 'http://13.235.176.50:8000';
+export const BASE_URL_PROD = 'https://tjproductions.xyz';
 export const BASE_URL_DEBUG = 'http://192.168.0.103:8000';
 export const BASE_URL = __DEV__ ? BASE_URL_DEBUG : BASE_URL_PROD;
 

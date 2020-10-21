@@ -11,8 +11,10 @@ import {Icon} from 'react-native-elements';
 import TimeAgo from 'react-native-timeago';
 import {FONTS, COLORS_LIGHT_THEME, MESSAGE_SPECIAL_ADDER} from '../Constants';
 import SView from 'react-native-simple-shadow-view';
-import {Avatar, ImageViewer, Typing} from './index';
-import {getRingColor} from '../utilities/experience';
+import Avatar from './Avatar';
+import ImageViewer from './ImageViewer';
+import Typing from './Typing';
+import {getRingColor} from '../utilities';
 
 const screenWidth = Dimensions.get('screen').width;
 

@@ -83,26 +83,26 @@ class Feedback extends React.PureComponent {
     }
     return resize;
   }
-  handleImage(image) {
+  handleImage = async (image) => {
     if (image.uri) {
       const imageSize = {width: image.width, height: image.height};
       const resize = this.getImageResize(imageSize);
-      ImageResizer.createResizedImage(
+      const resizedImage = await ImageResizer.createResizedImage(
         image.uri,
         resize.width,
         resize.height,
         'JPEG',
         50,
-      ).then((resizedImage) => {
-        const image_url = resizedImage.uri;
-        this.setState({
-          image_url,
-          image_name: image.fileName,
-          image_size: prettysize(resizedImage.size),
-        });
+      );
+
+      const image_url = resizedImage.uri;
+      this.setState({
+        image_url,
+        image_name: image.fileName,
+        image_size: prettysize(resizedImage.size),
       });
     }
-  }
+  };
 
   selectImage() {
     if (this.state.image_url) {

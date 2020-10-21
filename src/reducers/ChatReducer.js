@@ -1,5 +1,4 @@
 import {ACTIONS} from '../actions/types';
-import {storageSetItem} from '../utilities/storage';
 import {
   COLORS_LIGHT_THEME,
   COLORS_DARK_THEME,
@@ -10,8 +9,8 @@ import analytics from '@react-native-firebase/analytics';
 import _ from 'lodash';
 import perf from '@react-native-firebase/perf';
 import {database} from '../database';
-import {v4 as uuid} from 'uuid';
-import {decrypt} from '../utilities/encryption';
+import uuid from 'uuid-random';
+import {decrypt, storageSetItem} from '../utilities';
 
 const MessagesCollection = database.collections.get('messages');
 const traceDB = perf().newTrace('mobile_db_time_save');
@@ -60,7 +59,7 @@ const INITIAL_STATE = {
 };
 
 const incomingMessageConverter = (item) => {
-  new_message = [
+  const new_message = [
     {
       _id: uuid(),
       createdAt: item.createdAt,
@@ -69,6 +68,7 @@ const incomingMessageConverter = (item) => {
       image: item.image,
     },
   ];
+
   return new_message;
 };
 
@@ -126,7 +126,7 @@ const reorderChatsList = (list, elem) => {
   return new_list;
 };
 
-const saveMessageInDB = (payload, this_user_id) => {
+const saveMessageInDB = async (payload, this_user_id) => {
   const {message, other_user_id} = payload;
   let text_to_save = null;
   let image_to_save = {
@@ -145,28 +145,27 @@ const saveMessageInDB = (payload, this_user_id) => {
   // saving message to database
   traceDB.start();
   var t = Date.now();
-  database
-    .action(async () => {
-      MessagesCollection.create((new_message) => {
-        (new_message.other_user_id = other_user_id.toString()),
-          (new_message.message_id = message[0]._id),
-          (new_message.created_at = Date.parse(message[0].createdAt)),
-          (new_message.user_id = message[0].user._id),
-          (new_message.user_name = message[0].user.name),
-          (new_message.this_user_id = this_user_id);
+  const response = await database.action(async () => {
+    MessagesCollection.create((new_message) => {
+      (new_message.other_user_id = other_user_id.toString()),
+        (new_message.message_id = message[0]._id),
+        (new_message.created_at = Date.parse(message[0].createdAt)),
+        (new_message.user_id = message[0].user._id),
+        (new_message.user_name = message[0].user.name),
+        (new_message.this_user_id = this_user_id);
 
-        (new_message.text = text_to_save),
-          (new_message.image_url = image_to_save.url),
-          (new_message.image_height = image_to_save.height),
-          (new_message.image_width = image_to_save.width),
-          (new_message.image_ar = image_to_save.aspectRatio),
-          (new_message.image_name = image_to_save.name);
-      });
-    })
-    .then(() => {
-      traceDB.stop();
-      traceDB.putMetric('mobile_db_time_save', Date.now() - t);
+      (new_message.text = text_to_save),
+        (new_message.image_url = image_to_save.url),
+        (new_message.image_height = image_to_save.height),
+        (new_message.image_width = image_to_save.width),
+        (new_message.image_ar = image_to_save.aspectRatio),
+        (new_message.image_name = image_to_save.name);
     });
+  });
+
+  traceDB.stop();
+  traceDB.putMetric('mobile_db_time_save', Date.now() - t);
+  return response;
 };
 
 const saveData = async (action_type, state, recordPerf = false) => {
@@ -217,6 +216,10 @@ const mergeChats = (new_chats, old_chats) => {
 export default (state = INITIAL_STATE, action) => {
   let new_users, new_admins, other_user_data, all_users;
   let new_state, recentMessage, group, new_chatGroupsLeft;
+  let total_unread_messages, new_status, user_id, new_total_typing;
+  let new_messages, duplicate_status, new_chatInfoGroupDetails;
+  let new_chat_group_participants, currentMessages, new_currentMessages;
+  let payload_message, isGif, user;
 
   switch (action.type) {
     case ACTIONS.LOGOUT:
@@ -755,7 +758,7 @@ export default (state = INITIAL_STATE, action) => {
     case ACTIONS.CHAT_GROUP_CHANGE_DETAILS:
       const {groupName, groupImage} = action.payload;
 
-      let new_chatInfoGroupDetails = state.chatInfoGroupDetails;
+      new_chatInfoGroupDetails = state.chatInfoGroupDetails;
       if (state.other_user_data._id === action.payload.group_id) {
         // means user has this group currently open
         state.other_user_data.name = groupName;

@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {getLevel} from '../utilities/experience';
+import {getLevel} from '../utilities';
 import {FONTS} from '../Constants';
 
 const LevelBar = (props) => {

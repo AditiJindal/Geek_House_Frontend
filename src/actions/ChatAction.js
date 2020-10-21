@@ -1,14 +1,17 @@
 import {ACTIONS} from './types';
 import {URLS, LOG_EVENT, SOCKET_EVENTS} from '../Constants';
 import _ from 'lodash';
-import {uploadImage} from './WriteAction';
 import {database} from '../database';
 import {Q} from '@nozbe/watermelondb';
 import naturalLanguage from '@react-native-firebase/ml-natural-language';
 import perf from '@react-native-firebase/perf';
-import {encrypt, decrypt} from '../utilities/encryption';
-import {handleUpload} from '../utilities/imageBased';
-import {httpClient} from '../utilities/httpClient';
+import {
+  uploadImage,
+  encrypt,
+  decrypt,
+  imageUploadServer,
+  httpClient,
+} from '../utilities';
 import analytics from '@react-native-firebase/analytics';
 
 const MessagesCollection = database.collections.get('messages');
@@ -73,7 +76,7 @@ export const sendMessage = (socket, message, other_user_id, image) => {
       payload: {imageUploading: true},
     });
     if (image) {
-      handleUpload({
+      imageUploadServer({
         type: 'chat',
         mimeType: 'image/jpeg',
         image_url: image.url,

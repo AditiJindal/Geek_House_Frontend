@@ -1,8 +1,7 @@
 import {ACTIONS} from './types';
 import {URLS, LOG_EVENT} from '../Constants';
 import {logEvent} from './ChatAction';
-import {encrypt, decrypt} from '../utilities/encryption';
-import {httpClient} from '../utilities/httpClient';
+import {encrypt, decrypt, httpClient, uploadImage} from '../utilities';
 
 export const setAuthToken = () => {
   return (dispatch, getState) => {
@@ -46,43 +45,6 @@ export const setContents = (contents, topic, category, article_id = null) => {
 export const setImage = (image) => {
   return {type: ACTIONS.SET_IMAGE, payload: image};
 };
-
-export const getBlob = async (file) => {
-  const response = await fetch(file);
-  const image = await response.blob();
-  return image;
-};
-
-export const uploadImage = async (resourceData, file) => {
-  const image = await getBlob(file);
-
-  return fetch(resourceData.uploadUrl, {
-    method: 'PUT',
-    body: image,
-  });
-};
-
-// export const uploadImage = async (resourceData, file) => {
-//   return new Promise((resolver, rejecter) => {
-//     const xhr = new XMLHttpRequest();
-
-//     xhr.onload = () => {
-//       if (xhr.status < 400) {
-//         resolver(true);
-//       } else {
-//         const error = new Error(xhr.response);
-//         rejecter(error);
-//       }
-//     };
-//     xhr.onerror = error => {
-//       rejecter(error);
-//     };
-
-//     xhr.open('PUT', resourceData.uploadUrl);
-//     xhr.setRequestHeader('Content-Type', resourceData.contentType);
-//     xhr.send({uri: file});
-//   });
-// };
 
 export const uploadArticleImages = async (article) => {
   let promises = [];

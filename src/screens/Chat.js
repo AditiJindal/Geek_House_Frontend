@@ -157,7 +157,7 @@ class Chat extends React.PureComponent {
     return crop;
   }
 
-  pickImage(image) {
+  pickImage = async (image) => {
     if (image.didCancel) {
       return null;
     }
@@ -166,20 +166,18 @@ class Chat extends React.PureComponent {
     const resize = this.getImageResize(imageSize);
     crop = this.getCropCoordinates(resize);
 
-    ImageResizer.createResizedImage(
+    const resized_image = await ImageResizer.createResizedImage(
       image.uri,
       resize.width,
       resize.height,
       'JPEG',
       80,
-    ).then((resized_image) => {
-      ImageEditor.cropImage(resized_image.uri, crop).then((crop_image) => {
-        this.setState({
-          newGroupData: {...this.state.newGroupData, group_image: crop_image},
-        });
-      });
+    );
+    const crop_image = await ImageEditor.cropImage(resized_image.uri, crop);
+    this.setState({
+      newGroupData: {...this.state.newGroupData, group_image: crop_image},
     });
-  }
+  };
 
   onChatPeoplePress(item) {
     this.props.setUserData(item);

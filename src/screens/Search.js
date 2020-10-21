@@ -220,27 +220,41 @@ class Search extends React.PureComponent {
   }
 
   renderPopularSearches() {
-    const {COLORS} = this.props;
+    const {
+      COLORS,
+      doingSearch,
+      animationOn,
+      popularSearchesData,
+      searchResults,
+      loading,
+    } = this.props;
+    if (doingSearch) {
+      return (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Loading size={128} white={COLORS.THEME !== 'light'} />
+        </View>
+      );
+    }
+
     let jsx = (
       <View style={{alignSelf: 'flex-end'}}>
         <RaisedText
           text={'Discover New'}
-          animationEnabled={this.props.animationOn}
+          animationEnabled={animationOn}
           theme={this.props.theme}
-          secondaryText={'नई खोज करें'}
           COLORS={COLORS}
         />
       </View>
     );
 
-    let response = this.props.popularSearchesData;
+    let response = popularSearchesData;
 
-    if (this.props.searchResults) {
-      response = this.props.searchResults;
+    if (searchResults) {
+      response = searchResults;
       jsx = null;
     }
 
-    if (this.props.loading) {
+    if (loading) {
       return (
         <View style={{flex: 1}}>
           <ScrollView
@@ -249,7 +263,7 @@ class Search extends React.PureComponent {
             showsVerticalScrollIndicator={false}>
             <ShimmerPlaceHolder
               colorShimmer={COLORS.SHIMMER_COLOR}
-              visible={!this.props.loading}
+              visible={!loading}
               autoRun={true}
               duration={650}
               delay={0}
@@ -507,7 +521,7 @@ class Search extends React.PureComponent {
                       paddingHorizontal: 10,
                       borderWidth: 2,
                       borderColor:
-                        this.props.theme === 'light'
+                        COLORS.THEME === 'light'
                           ? COLORS.LIGHT_GRAY
                           : COLORS.GRAY,
                     }}>
@@ -515,7 +529,7 @@ class Search extends React.PureComponent {
                       style={{
                         ...styles.CategoryTextStyle,
                         color:
-                          this.props.theme === 'light'
+                          COLORS.THEME === 'light'
                             ? COLORS.LIGHT_GRAY
                             : COLORS.GRAY,
                       }}>
@@ -614,14 +628,7 @@ class Search extends React.PureComponent {
         {changeNavigationBarColor(statusBarColor, this.props.theme === 'light')}
         {this.renderAlert()}
         {this.renderHeader()}
-        {this.props.doingSearch ? (
-          <View
-            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Loading size={128} white={COLORS.THEME !== 'light'} />
-          </View>
-        ) : (
-          this.renderPopularSearches()
-        )}
+        {this.renderPopularSearches()}
       </View>
     );
   }

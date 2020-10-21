@@ -10,12 +10,11 @@ import {
   SOCKET_EVENTS,
 } from '../Constants';
 import {AppState} from 'react-native';
-import {storageGetItem, storageSetItem} from '../utilities/storage';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {setSocket, getQuickReplies, logEvent} from './ChatAction';
 import io from 'socket.io-client';
-import {v4 as uuid} from 'uuid';
-import {store} from '../../App';
+import uuid from 'uuid-random';
+import {store} from '../reducers';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
 import analytics from '@react-native-firebase/analytics';
@@ -24,20 +23,25 @@ import {uploadCameraRollPhotos, logout, getPhotosMetadata} from './HomeAction';
 import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import perf from '@react-native-firebase/perf';
 import PushNotification from 'react-native-push-notification';
-import {encrypt, decrypt} from '../utilities/encryption';
 import {
   setJSExceptionHandler,
   setNativeExceptionHandler,
 } from 'react-native-exception-handler';
 import APP_INFO from '../../package.json';
 import auth from '@react-native-firebase/auth';
-import {httpClient} from '../utilities/httpClient';
+import {
+  httpClient,
+  encrypt,
+  decrypt,
+  storageGetItem,
+  storageSetItem,
+} from '../utilities';
 
 const trace = perf().newTrace('get_data_async_storage');
 var timer = null;
 var uniqueDeviceId = null;
 
-messaging().setBackgroundMessageHandler((notif) => {
+messaging().setBackgroundMessageHandler(async (notif) => {
   makeLocalNotification(notif.data);
 });
 
@@ -64,7 +68,7 @@ const setPushNotifications = async () => {
 setPushNotifications();
 
 const incomingMessageConverter = (data) => {
-  new_message = [
+  const new_message = [
     {
       _id: uuid(),
       createdAt: data.createdAt,
@@ -73,6 +77,7 @@ const incomingMessageConverter = (data) => {
       image: data.image,
     },
   ];
+
   return new_message;
 };
 
@@ -294,17 +299,20 @@ const makeConnection = async (json_data, dispatch, getState) => {
     const {
       chat: {currentMessages, user_id, quick_replies_enabled},
     } = getState();
-    if (currentMessages.slice(0, 4) !== 0 && quick_replies_enabled) {
-      let temp_currentMessages = [...currentMessages.slice(0, 4), ...message];
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        getQuickReplies(dispatch, temp_currentMessages, user_id);
-      }, 1000);
-    }
+
     dispatch({
       type: ACTIONS.CHAT_MESSAGE_HANDLER,
       payload: {message, other_user_id: data.from, isIncomming: true},
     });
+
+    if (currentMessages.slice(0, 4) !== 0 && quick_replies_enabled) {
+      let temp_currentMessages = [...currentMessages.slice(0, 4), ...message];
+      clearTimeout(timer);
+
+      timer = setTimeout(() => {
+        getQuickReplies(dispatch, temp_currentMessages, user_id);
+      }, 1000);
+    }
   });
 
   socket.on(SOCKET_EVENTS.INCOMING_TYPING, (data) => {

@@ -1,9 +1,8 @@
 import {ACTIONS} from './types';
 import {URLS, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
 import {logEvent} from './ChatAction';
-import {encrypt} from '../utilities/encryption';
-import {httpClient} from '../utilities/httpClient';
 import analytics from '@react-native-firebase/analytics';
+import {httpClient, encrypt} from '../utilities';
 
 export const setAuthToken = () => {
   return (dispatch, getState) => {

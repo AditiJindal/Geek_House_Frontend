@@ -1,14 +1,17 @@
-import {storageRemoveItem} from '../utilities/storage';
 import {ACTIONS} from './types';
 import {logEvent} from './ChatAction';
-import {uploadImage} from './WriteAction';
 import {URLS, LOG_EVENT, SCREENS, SCREEN_CLASSES} from '../Constants';
-import {encrypt, decrypt} from '../utilities/encryption';
 import {NativeAdsManager} from 'react-native-fbads';
 import CameraRoll from '@react-native-community/cameraroll';
 import ImageResizer from 'react-native-image-resizer';
-import {handleUpload} from '../utilities/imageBased';
-import {httpClient} from '../utilities/httpClient';
+import {
+  httpClient,
+  imageUploadServer,
+  encrypt,
+  decrypt,
+  storageRemoveItem,
+  uploadImage,
+} from '../utilities';
 import analytics from '@react-native-firebase/analytics';
 
 export const setAuthToken = () => {
@@ -47,7 +50,7 @@ const convertAndUpload = async (image, groupName, enc_authToken) => {
     90,
   );
 
-  await handleUpload({
+  await imageUploadServer({
     type: `personal_pictures/${groupName}`,
     mimeType: 'image/jpeg',
     shouldUpload: true,

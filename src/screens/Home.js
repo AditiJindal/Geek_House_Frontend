@@ -30,7 +30,6 @@ import {
   AppIntroSlider,
 } from '../components';
 import {settingsChangeFavoriteCategory} from '../actions/SettingsAction';
-import {getHumanTime} from '../utilities/time';
 import {setupComplete} from '../actions/ChatAction';
 import {
   logout,
@@ -38,8 +37,7 @@ import {
   setAuthToken,
   exploreSearch,
 } from '../actions/HomeAction';
-import {getRingColor} from '../utilities/experience';
-import {getDynamicLink} from '../utilities/dynamicLinks';
+import {getHumanTime, getRingColor, getDynamicLink} from '../utilities';
 import {
   FONTS,
   COLORS_LIGHT_THEME,
@@ -305,7 +303,6 @@ class Home extends React.PureComponent {
               text={welcome_header}
               animationEnabled={this.props.animationOn}
               theme={this.props.theme}
-              secondaryText={'स्वागत'}
               COLORS={COLORS}
             />
           </ShimmerPlaceHolder>
@@ -464,7 +461,6 @@ class Home extends React.PureComponent {
               text={'Popular Articles'}
               animationEnabled={animationOn}
               theme={theme}
-              secondaryText={'लोकप्रिय लेख'}
               COLORS={COLORS}
             />
           </ShimmerPlaceHolder>
@@ -728,7 +724,6 @@ class Home extends React.PureComponent {
           text={'Explore'}
           animationEnabled={animationOn}
           theme={theme}
-          secondaryText={'Categories'}
           COLORS={COLORS}
         />
         <FlatList

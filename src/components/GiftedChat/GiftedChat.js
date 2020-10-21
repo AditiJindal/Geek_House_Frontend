@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Animated, Platform, StyleSheet, View, SafeAreaView} from 'react-native';
 import moment from 'moment';
-import {v4 as uuid} from 'uuid';
+import uuid from 'uuid-random';
 import * as utils from './utils';
 import Actions from './Actions';
 import Avatar from './Avatar';
@@ -99,12 +99,13 @@ class GiftedChat extends React.Component {
       if (!Array.isArray(messages)) {
         messages = [messages];
       }
-      const newMessages = messages.map((message) => {
+      let newMessages = [];
+      newMessages = messages.map((message) => {
         return {
           ...message,
           user: this.props.user,
           createdAt: new Date(),
-          _id: this.props.messageIdGenerator && this.props.messageIdGenerator(),
+          _id: uuid(),
         };
       });
       if (shouldResetInputToolbar === true) {
@@ -445,7 +446,9 @@ GiftedChat.defaultProps = {
   messages: [],
   text: undefined,
   placeholder: DEFAULT_PLACEHOLDER,
-  messageIdGenerator: () => uuid(),
+  messageIdGenerator: () => {
+    uuid();
+  },
   user: {},
   onSend: () => {},
   locale: null,

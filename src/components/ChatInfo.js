@@ -30,16 +30,14 @@ import {
   groupDetailsChange,
   chatInfoGroupIconUploadingAction,
 } from '../actions/ChatAction';
-import {
-  TimedAlert,
-  Loading,
-  Ripple,
-  ImageSelector,
-  Avatar,
-  ChatPeople,
-} from './index';
+import TimedAlert from './TimedAlert';
+import Loading from './Loading';
+import Ripple from './Ripple';
+import ImageSelector from './ImageSelector';
+import Avatar from './Avatar';
+import ChatPeople from './ChatPeople';
 import {FONTS, MAX_USERS_IN_A_GROUP, COLORS_LIGHT_THEME} from '../Constants';
-import {getRingColor} from '../utilities/experience';
+import {getRingColor} from '../utilities';
 
 const overlayWidth = Dimensions.get('screen').width * 0.86;
 
