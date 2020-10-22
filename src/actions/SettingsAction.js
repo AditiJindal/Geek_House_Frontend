@@ -4,14 +4,51 @@ import uuid from 'uuid-random';
 import RNFileSystem from 'react-native-fs';
 import {uploadImage, decrypt, httpClient} from '../utilities';
 import {logEvent} from './ChatAction';
+import {socketEmit} from '../socket';
 
-var timer = null;
+const changeImageUrlHelper = async (dispatch, image_url, callback) => {
+  dispatch({
+    type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
+    payload: true,
+  });
+  const aws_image_url = await uploadImage(image_url, {
+    type: 'profile_picture',
+    image_type: 'jpeg',
+  }).catch((e) => {
+    callback('Unable to change profile pic');
+    dispatch({
+      type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
+      payload: false,
+    });
+  });
+
+  await httpClient()
+    .post(URLS.change_profile_pic, {image_url: aws_image_url})
+    .catch((e) => {
+      callback('Not able to change profile pic');
+      dispatch({
+        type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
+        payload: false,
+      });
+    });
+
+  // when everything is right, we change the image_url
+  callback('Profile pic changed successfully');
+  dispatch({
+    type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE,
+    payload: {image_url: aws_image_url},
+  });
+  dispatch({
+    type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
+    payload: false,
+  });
+};
 
 export const getSettingsData = (reload) => {
   return (dispatch, getState) => {
-    const state = getState();
+    const {gotSettingsData} = getState().settings;
 
-    if (reload || !state.settings.gotSettingsData) {
+    if (reload || !gotSettingsData) {
       httpClient()
         .get(URLS.settings)
         .then((response) => {
@@ -28,6 +65,7 @@ export const getSettingsData = (reload) => {
 };
 
 export const settingsChangeFavoriteCategory = (selected_category) => {
+  socketEmit(SOCKET_EVENTS.CHANGE_FAVORITE_CATEGORY, selected_category);
   return {
     type: ACTIONS.CHAT_SOCKET_CHANGE_CATEGORY,
     payload: selected_category,
@@ -114,60 +152,5 @@ export const revertName = () => {
 
 export const changeImageUrl = (image_url, callback) => {
   // this goes into LoginReducer as image_url remains with LoginReducer
-  return (dispatch) => {
-    dispatch({
-      type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
-      payload: true,
-    });
-    httpClient()
-      .get(URLS.imageupload, {
-        params: {type: 'profile_picture', image_type: 'jpeg'},
-      })
-      .then((response) => {
-        const preSignedURL = decrypt(response.data.url);
-
-        uploadImage(
-          {contentType: 'image/jpeg', uploadUrl: preSignedURL},
-          image_url,
-        )
-          .then(() => {
-            aws_image_url = decrypt(response.data.key);
-            httpClient()
-              .post(URLS.change_profile_pic, {image_url: response.data.key}) // sending encrypted url
-              .then(() => {
-                // when everything is right, we change the image_url
-                callback('Profile pic changed successfully');
-                dispatch({
-                  type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE,
-                  payload: {image_url: aws_image_url},
-                });
-                dispatch({
-                  type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
-                  payload: false,
-                });
-              })
-              .catch((e) => {
-                callback('Not able to change profile pic');
-                dispatch({
-                  type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
-                  payload: false,
-                });
-              });
-          })
-          .catch((e) => {
-            callback("Couldn't change profile pic");
-            dispatch({
-              type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
-              payload: false,
-            });
-          });
-      })
-      .catch((e) => {
-        callback('Unable to change profile pic');
-        dispatch({
-          type: ACTIONS.SETTINGS_CHANGE_PROFILE_IMAGE_LOADING,
-          payload: false,
-        });
-      });
-  };
+  return (dispatch) => changeImageUrlHelper(dispatch, image_url, callback);
 };

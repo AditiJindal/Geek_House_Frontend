@@ -30,6 +30,7 @@ import {
   Loading,
 } from '../components';
 import {getRingColor} from '../utilities';
+import {socketDisconnect} from '../socket';
 import {FONTS, COLORS_LIGHT_THEME, ALL_CATEGORIES, SCREENS} from '../Constants';
 import {logout} from '../actions/HomeAction';
 import {
@@ -207,7 +208,7 @@ class Settings extends React.PureComponent {
           onPress={() => {
             if (this.props.internetReachable) {
               // disconnect socket form server
-              this.props.socket.disconnect(true);
+              socketDisconnect();
               this.props.logout(() =>
                 this.props.navigation.replace(SCREENS.Login),
               );
@@ -1007,7 +1008,6 @@ const mapStateToProps = (state) => {
     profile_pic_loading: state.settings.profile_pic_loading,
 
     theme: state.chat.theme,
-    socket: state.chat.socket,
     COLORS: state.chat.COLORS,
     animationOn: state.chat.animationOn,
     chat_background: state.chat.chat_background,

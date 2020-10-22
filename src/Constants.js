@@ -437,8 +437,11 @@ export const SOCKET_EVENTS = {
 
   // built-in commands
   connect: 'connect',
+  connecting: 'connecting',
   disconnect: 'disconnect',
+  disconnecting: 'disconnecting',
   reconnect: 'reconnect',
+  reconnecting: 'reconnecting',
   error: 'error',
   connect_error: 'connect_error',
   connect_timeout: 'connect_timeout',

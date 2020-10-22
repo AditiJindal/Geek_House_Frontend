@@ -36,32 +36,19 @@ export const setImage = (image) => {
 };
 
 export const uploadArticleImages = async (article) => {
-  let promises = [];
-  let contents = article.contents;
-  let new_contents = [];
-  let i, card, response, preSignedURL, pathToImage, promise;
+  const {contents} = article;
+  const new_contents = [];
 
-  for (i = 0; i < contents.length; i++) {
-    card = contents[i];
-    if (!card.image) {
-      new_contents.push(card);
-    } else {
-      response = await httpClient().get(URLS.imageupload, {
-        params: {type: 'article', image_type: 'jpeg'},
+  for (let i = 0; i < contents.length; i++) {
+    const card = contents[i];
+    if (card.image) {
+      card.image.uri = await uploadImage(card.image.uri, {
+        type: 'article',
+        image_type: 'jpeg',
       });
-      preSignedURL = decrypt(response.data.url);
-      pathToImage = card.image.uri;
-      card.image.uri = decrypt(response.data.key);
-      promise = uploadImage(
-        {contentType: 'image/jpeg', uploadUrl: preSignedURL},
-        pathToImage,
-      );
-      promises.push(promise);
-      new_contents.push(card);
     }
+    new_contents.push(card);
   }
-
-  await Promise.all(promises);
 
   article.contents = new_contents;
   return article;
@@ -76,33 +63,16 @@ export const publishArticle = (
     dispatch({type: ACTIONS.WRITE_LOADING, payload: true});
 
     if (article.image && article.image.substring(0, 4) === 'file') {
-      httpClient()
-        .get(URLS.imageupload, {params: {type: 'article', image_type: 'jpeg'}})
-        .then((response) => {
-          const preSignedURL = decrypt(response.data.url);
-          const pathToImage = article.image;
-          uploadImage(
-            {contentType: 'image/jpeg', uploadUrl: preSignedURL},
-            pathToImage,
-          )
-            .then(() => {
-              article.image = decrypt(response.data.key);
-              httpClient()
-                .post(URLS.publish, {...article, editing_article_id})
-                .then(({data}) => {
-                  success_animation.play();
-                  dispatch({
-                    type: ACTIONS.PUBLISH_SUCCESS,
-                    payload: {...article, ...data},
-                  });
-                });
-            })
-            .catch((e) => {
-              logEvent(LOG_EVENT.ERROR, {
-                errorLine: 'WRITE ACTION - 88',
-                description: e.toString(),
+      uploadImage(article.image, {type: 'article', image_type: 'jpeg'})
+        .then((image) => {
+          httpClient()
+            .post(URLS.publish, {...article, editing_article_id, image})
+            .then(({data}) => {
+              success_animation.play();
+              dispatch({
+                type: ACTIONS.PUBLISH_SUCCESS,
+                payload: {...article, ...data},
               });
-              dispatch({type: ACTIONS.WRITE_LOADING, payload: false});
             });
         })
         .catch((e) =>

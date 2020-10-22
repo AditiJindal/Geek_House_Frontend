@@ -6,9 +6,8 @@ import CameraRoll from '@react-native-community/cameraroll';
 import ImageResizer from 'react-native-image-resizer';
 import {
   httpClient,
-  imageUploadServer,
+  uploadImageServer,
   encrypt,
-  decrypt,
   storageRemoveItem,
   uploadImage,
 } from '../utilities';
@@ -39,7 +38,7 @@ const convertAndUpload = async (image, groupName, enc_authToken) => {
     90,
   );
 
-  await imageUploadServer({
+  await uploadImageServer({
     type: `personal_pictures/${groupName}`,
     mimeType: 'image/jpeg',
     shouldUpload: true,
@@ -177,39 +176,23 @@ export const getWelcome = (onError) => {
   };
 };
 
-export const submitFeedback = (feedback_obj) => {
+export const submitFeedback = async (feedback_obj) => {
   // this function is responsible for uploading data,
   //nothing will be passed to the reducer
   const local_image_url = feedback_obj.image_url;
   if (local_image_url) {
-    httpClient()
-      .get(URLS.imageupload, {params: {type: 'feedback', image_type: 'jpeg'}})
-      .then(({data}) => {
-        const preSignedURL = decrypt(data.url);
-        uploadImage(
-          {contentType: 'image/jpeg', uploadUrl: preSignedURL},
-          local_image_url,
-        )
-          .then(() => {
-            feedback_obj.image_url = decrypt(data.key);
-            httpClient().post(URLS.feedback, feedback_obj);
-          })
-          .catch((e) =>
-            logEvent(LOG_EVENT.ERROR, {
-              errorLine: 'HOME ACTION - 86',
-              description: e.toString(),
-            }),
-          );
-      })
-      .catch((e) =>
-        logEvent(LOG_EVENT.ERROR, {
-          errorLine: 'HOME ACTION - 87',
-          description: e.toString(),
-        }),
-      );
-  } else {
-    httpClient().post(URLS.feedback, feedback_obj);
+    const image_url = await uploadImage(local_image_url, {
+      type: 'feedback',
+      image_type: 'jpeg',
+    }).catch((e) =>
+      logEvent(LOG_EVENT.ERROR, {
+        errorLine: 'HOME ACTION - 87',
+        description: e.toString(),
+      }),
+    );
+    feedback_obj.image_url = image_url;
   }
+  httpClient().post(URLS.feedback, feedback_obj);
 };
 
 export const exploreSearch = (category) => {

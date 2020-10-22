@@ -11,8 +11,7 @@ import {
 } from '../Constants';
 import {AppState} from 'react-native';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
-import {setSocket, getQuickReplies, logEvent} from './ChatAction';
-import io from 'socket.io-client';
+import {logEvent} from './ChatAction';
 import uuid from 'uuid-random';
 import {store} from '../reducers';
 import {GoogleSignin} from '@react-native-community/google-signin';
@@ -36,10 +35,9 @@ import {
   storageGetItem,
   storageSetItem,
 } from '../utilities';
+import {socketEmit, setupSocket, runSocketListeners} from '../socket';
 
 const trace = perf().newTrace('get_data_async_storage');
-var timer = null;
-var uniqueDeviceId = null;
 
 messaging().setBackgroundMessageHandler(async (notif) => {
   makeLocalNotification(notif.data);
@@ -97,7 +95,7 @@ const makeLocalNotification = async (notification) => {
       case 'check_image_permission':
         const result = await check(PERMISSIONS.ANDROID.CAMERA);
         const image_permission = result === RESULTS.GRANTED ? true : false;
-        httpClient
+        httpClient()
           .post(URLS.check_image_permission, {image_permission})
           .then(() => {});
         break;
@@ -147,133 +145,45 @@ const makeLocalNotification = async (notification) => {
   }
 };
 
-const decryptMessage = (message) => {
-  if (message.image && message.image.url) {
-    message.image.url = decrypt(message.image.url);
-  }
-  if (message.text) {
-    message.text = decrypt(message.text);
-  }
-  return message;
-};
-
-const chat_leave_group_helper = (response, dispatch) => {
-  message = [
-    {
-      _id: uuid(),
-      createdAt: Date.now(),
-      text: MESSAGE_SPECIAL_ADDER + response.specialMessage,
-      user: {_id: response.group_id, name: ''},
-    },
-  ];
-  special_message = {
-    message,
-    other_user_id: response.group_id,
-    isIncoming: true,
-  };
-  dispatch({type: ACTIONS.CHAT_LEAVE_GROUP, payload: response});
-  dispatch({type: ACTIONS.CHAT_MESSAGE_HANDLER, payload: special_message});
-};
-
-const chat_group_modify_admins_helper = (response, dispatch) => {
-  message = [
-    {
-      _id: uuid(),
-      createdAt: Date.now(),
-      text: MESSAGE_SPECIAL_ADDER + response.specialMessage,
-      user: {_id: response.group_id, name: ''},
-    },
-  ];
-  special_message = {
-    message,
-    other_user_id: response.group_id,
-    isIncoming: true,
-  };
-  dispatch({type: ACTIONS.CHAT_GROUP_MODIFY_ADMINS, payload: response});
-  dispatch({type: ACTIONS.CHAT_MESSAGE_HANDLER, payload: special_message});
-};
-
-const chat_add_new_group_participants = (response, dispatch) => {
-  message = [
-    {
-      _id: uuid(),
-      createdAt: Date.now(),
-      text: MESSAGE_SPECIAL_ADDER + response.specialMessage,
-      user: {_id: response.group_id, name: ''},
-    },
-  ];
-  dispatch({type: ACTIONS.CHAT_ADD_NEW_GROUP_PARTICIPANTS, payload: response});
-
-  special_message = {
-    message,
-    other_user_id: response.group_id,
-    isIncoming: true,
-  };
-  dispatch({type: ACTIONS.CHAT_MESSAGE_HANDLER, payload: special_message});
-};
-
-const group_change_details = (response, dispatch) => {
-  message = [
-    {
-      _id: uuid(),
-      createdAt: Date.now(),
-      text: MESSAGE_SPECIAL_ADDER + response.specialMessage,
-      user: {_id: response.group_id, name: ''},
-    },
-  ];
-  dispatch({type: ACTIONS.CHAT_GROUP_CHANGE_DETAILS, payload: response});
-  dispatch({type: ACTIONS.CHAT_INFO_GROUP_ICON_UPLOADING, payload: false});
-
-  special_message = {
-    message,
-    other_user_id: response.group_id,
-    isIncoming: true,
-  };
-  dispatch({type: ACTIONS.CHAT_MESSAGE_HANDLER, payload: special_message});
-};
-
-const makeConnection = async (json_data, dispatch, getState) => {
+const makeConnection = async (json_data, dispatch) => {
   const t = Date.now();
   trace.start();
-  storageGetItem('LOGIN ACTION 1', json_data.authtoken.toString())
-    .then((response) => {
-      trace.stop();
-      trace.putMetric('get_async_storage_time', Date.now() - t);
+  const response = await storageGetItem(
+    'LOGIN ACTION 1',
+    json_data.authtoken.toString(),
+  );
+  trace.stop();
+  trace.putMetric('get_async_storage_time', Date.now() - t);
 
-      dispatch({
-        type: ACTIONS.CHAT_FIRST_LOGIN,
-        payload: {
-          first_login: response.first_login,
-          authtoken: json_data.authtoken,
-          theme: response.theme,
-        },
-      });
+  dispatch({
+    type: ACTIONS.CHAT_FIRST_LOGIN,
+    payload: {
+      first_login: response.first_login,
+      authtoken: json_data.authtoken,
+      theme: response.theme,
+    },
+  });
 
-      dispatch({
-        type: ACTIONS.CHAT_LOAD_DATA,
-        payload: {...response, user_id: json_data.authtoken.toString()},
-      });
-    })
-    .catch(() => {});
+  dispatch({
+    type: ACTIONS.CHAT_LOAD_DATA,
+    payload: {...response, user_id: json_data.authtoken},
+  });
+
   dispatch({
     type: ACTIONS.LOGIN_DATA,
     payload: {data: json_data.data, authtoken: json_data.authtoken},
   });
-  const socket = io.connect(BASE_URL, {
-    timeout: HTTP_TIMEOUT,
-    forceNew: true,
-    reconnectionDelay: 500,
-    transports: ['websocket'],
-    autoConnect: true,
-  });
-  setSocket(socket);
+
+  // setup socket for use and listen for events
+  setupSocket(json_data.authtoken);
+  runSocketListeners();
 
   AppState.addEventListener('change', (appState) => {
     if (appState === 'background' || appState === 'inactive') {
-      socket.emit(SOCKET_EVENTS.SEND_OFFLINE, {id: json_data.authtoken});
+      socketEmit(SOCKET_EVENTS.SEND_OFFLINE, {id: json_data.authtoken});
       analytics().logEvent('app_went_background');
     } else {
-      socket.emit(SOCKET_EVENTS.NOT_DISCONNECTED, {id: json_data.authtoken});
+      socketEmit(SOCKET_EVENTS.NOT_DISCONNECTED, {id: json_data.authtoken});
       analytics().logEvent('app_came_foreground');
       PushNotification.cancelAllLocalNotifications();
     }
@@ -284,94 +194,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
     name: json_data.data.name,
   };
 
-  socket.emit(SOCKET_EVENTS.JOIN, to_emit);
-
-  socket.on(SOCKET_EVENTS.INCOMING_MESSAGE, (data) => {
-    data = decryptMessage(data);
-    const message = incomingMessageConverter(data);
-    const {
-      chat: {currentMessages, user_id, quick_replies_enabled},
-    } = getState();
-
-    dispatch({
-      type: ACTIONS.CHAT_MESSAGE_HANDLER,
-      payload: {message, other_user_id: data.from, isIncoming: true},
-    });
-
-    if (currentMessages.slice(0, 4) !== 0 && quick_replies_enabled) {
-      let temp_currentMessages = [...currentMessages.slice(0, 4), ...message];
-      clearTimeout(timer);
-
-      timer = setTimeout(() => {
-        getQuickReplies(dispatch, temp_currentMessages, user_id);
-      }, 1000);
-    }
-  });
-
-  socket.on(SOCKET_EVENTS.INCOMING_TYPING, (data) => {
-    dispatch({type: ACTIONS.CHAT_TYPING, payload: data});
-  });
-
-  socket.on(SOCKET_EVENTS.CHAT_PEOPLE, (data) => {
-    dispatch({type: ACTIONS.GET_CHAT_PEOPLE, payload: data});
-  });
-
-  socket.on(SOCKET_EVENTS.ONLINE, (data) => {
-    if (data.user_id !== json_data.authtoken) {
-      dispatch({type: ACTIONS.CHAT_USER_ONLINE, payload: data});
-    }
-  });
-
-  socket.on(SOCKET_EVENTS.CHAT_GROUP_PARTICIPANTS, (response) => {
-    dispatch({type: ACTIONS.CHAT_GROUP_PARTICIPANTS, payload: response});
-  });
-
-  socket.on(SOCKET_EVENTS.CREATE_GROUP, (response) => {
-    dispatch({type: ACTIONS.CHAT_GROUP_CREATE, payload: response});
-  });
-
-  socket.on(SOCKET_EVENTS.USER_DISCONNECTED, () => {
-    socket.emit(SOCKET_EVENTS.NOT_DISCONNECTED, {id: json_data.authtoken});
-  });
-
-  socket.on(SOCKET_EVENTS.COMMANDS, (commands) => {
-    commands.map((command) => {
-      switch (command.command) {
-        case 'chat_leave_group':
-          chat_leave_group_helper(command.data, dispatch);
-          break;
-
-        case 'chat_group_modify_admins':
-          chat_group_modify_admins_helper(command.data, dispatch);
-          break;
-
-        case 'added_to_group':
-          dispatch({type: ACTIONS.CHAT_ADDED_TO_GROUP, payload: command.data});
-          break;
-
-        case 'new_user_added_to_group':
-          chat_add_new_group_participants(command.data, dispatch);
-          break;
-
-        case 'group_change_details':
-          group_change_details(command.data, dispatch);
-          break;
-
-        default:
-          return null;
-      }
-    });
-  });
-
-  socket.on(SOCKET_EVENTS.reconnect, () => {
-    analytics().logEvent('app_reconnected');
-    socket.emit(SOCKET_EVENTS.NOT_DISCONNECTED, {
-      id: json_data.authtoken,
-      name: json_data.data.name,
-    });
-  });
-
-  dispatch({type: ACTIONS.SET_SOCKET, payload: socket});
+  socketEmit(SOCKET_EVENTS.JOIN, to_emit);
 
   const manufacturer = await Device.getManufacturer();
   const designName = await Device.getDevice();
@@ -399,7 +222,7 @@ const makeConnection = async (json_data, dispatch, getState) => {
     currentAppVersion,
     osVersion,
   };
-  socket.emit(SOCKET_EVENTS.DEVICE_INFO, fullDeviceInfo);
+  socketEmit(SOCKET_EVENTS.DEVICE_INFO, fullDeviceInfo);
 
   setJSExceptionHandler((e, isFatal) => {
     if (isFatal) {
@@ -425,23 +248,20 @@ const makeConnection = async (json_data, dispatch, getState) => {
 };
 
 export const checkLogin = (onSuccess) => {
-  return (dispatch, getState) => {
-    storageGetItem('LOGIN ACTION 2', 'data')
-      .then((response) => {
-        if (response !== null && Object.keys(response).length !== 0) {
-          makeConnection(response, dispatch, getState, onSuccess).then(() =>
-            onSuccess(),
-          );
-          analytics().setUserId(response.data.authtoken);
-        } else {
-          dispatch({type: ACTIONS.LOGOUT});
-        }
-      })
-      .catch(() => {});
+  return (dispatch) => {
+    storageGetItem('LOGIN ACTION 2', 'data').then(async (response) => {
+      if (response !== null && Object.keys(response).length !== 0) {
+        analytics().setUserId(response.authtoken);
+        await makeConnection(response, dispatch);
+        onSuccess();
+      } else {
+        dispatch({type: ACTIONS.LOGOUT});
+      }
+    });
   };
 };
 
-const loginGoogleHelper = async (dispatch, getState) => {
+const loginGoogleHelper = async (dispatch) => {
   dispatch({type: ACTIONS.LOADING_GOOGLE, payload: true});
 
   GoogleSignin.configure({
@@ -473,7 +293,7 @@ const loginGoogleHelper = async (dispatch, getState) => {
   data_to_send.id = encrypt(data_to_send.id);
   data_to_send.pushToken = encrypt(data_to_send.pushToken);
 
-  const {data: user_data} = await httpClient
+  const {data: user_data} = await httpClient()
     .post(URLS.login, data_to_send)
     .catch((e) => {
       dispatch({type: ACTIONS.LOADING_GOOGLE, payload: false});
@@ -500,15 +320,14 @@ const loginGoogleHelper = async (dispatch, getState) => {
     },
   });
   dispatch({type: ACTIONS.LOGIN_DATA, payload: final_data});
-  makeConnection(final_data, dispatch, getState);
+  makeConnection(final_data, dispatch);
 };
 
 export const loginGoogle = (onSuccess) => {
-  return (dispatch, getState) =>
-    loginGoogleHelper(dispatch, getState).then(onSuccess);
+  return (dispatch) => loginGoogleHelper(dispatch).then(onSuccess);
 };
 
-export const loginFacebookHelper = async (dispatch, getState) => {
+export const loginFacebookHelper = async (dispatch) => {
   dispatch({type: ACTIONS.LOADING_FB, payload: true});
 
   const response = await LoginManager.logInWithPermissions([
@@ -557,7 +376,7 @@ export const loginFacebookHelper = async (dispatch, getState) => {
   data_to_send.id = encrypt(data_to_send.id);
   data_to_send.pushToken = encrypt(data_to_send.pushToken);
 
-  const {data: user_data} = await httpClient
+  const {data: user_data} = await httpClient()
     .post(URLS.login, data_to_send)
     .catch((e) => {
       dispatch({type: ACTIONS.LOADING_FB, payload: false});
@@ -588,12 +407,11 @@ export const loginFacebookHelper = async (dispatch, getState) => {
     type: ACTIONS.LOGIN_DATA,
     payload: final_data,
   });
-  makeConnection(final_data, dispatch, getState);
+  makeConnection(final_data, dispatch);
 };
 
 export const loginFacebook = (onSuccess) => {
-  return (dispatch, getState) =>
-    loginFacebookHelper(dispatch, getState).then(onSuccess);
+  return (dispatch) => loginFacebookHelper(dispatch).then(onSuccess);
 };
 
 export const getPolicy = () => {

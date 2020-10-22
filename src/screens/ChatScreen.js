@@ -44,7 +44,6 @@ class ChatScreen extends React.PureComponent {
         this.props.getCurrentUserMessages(
           this.props.other_user_data._id,
           this.props.user_id,
-          this.props.quick_replies_enabled,
         );
       },
     );
@@ -70,19 +69,11 @@ class ChatScreen extends React.PureComponent {
   }
 
   keyboardDidShow() {
-    this.props.sendTyping(
-      this.props.socket,
-      true,
-      this.props.other_user_data._id,
-    );
+    this.props.sendTyping(true, this.props.other_user_data._id);
   }
 
   keyboardDidHide() {
-    this.props.sendTyping(
-      this.props.socket,
-      false,
-      this.props.other_user_data._id,
-    );
+    this.props.sendTyping(false, this.props.other_user_data._id);
   }
 
   renderStatus(status) {
@@ -305,7 +296,6 @@ class ChatScreen extends React.PureComponent {
                 messages={this.props.currentMessages}
                 onSend={(message) => {
                   this.props.sendMessage(
-                    this.props.socket,
                     [{...message[0], isGroup: other_user_data.isGroup}],
                     other_user_data._id,
                     chatScreenState.selectedImage,
@@ -356,7 +346,6 @@ const mapStateToProps = (state) => {
     loading: state.chat.loading,
     other_user_data: state.chat.other_user_data,
     user_id: state.chat.user_id,
-    socket: state.chat.socket,
     status: state.chat.status,
     theme: state.chat.theme,
     COLORS: state.chat.COLORS,

@@ -24,7 +24,6 @@ import {
 import {
   modifyAdmins,
   leaveGroup,
-  uploadGroupImage,
   chatInfoGroupDetailsUpdateAction,
   addGroupParticipants,
   groupDetailsChange,
@@ -37,7 +36,7 @@ import ImageSelector from './ImageSelector';
 import Avatar from './Avatar';
 import ChatPeople from './ChatPeople';
 import {FONTS, MAX_USERS_IN_A_GROUP, COLORS_LIGHT_THEME} from '../Constants';
-import {getRingColor} from '../utilities';
+import {getRingColor, uploadImage} from '../utilities';
 
 const overlayWidth = Dimensions.get('screen').width * 0.86;
 
@@ -123,7 +122,10 @@ class ChatInfo extends Component {
     const crop_image = await ImageEditor.cropImage(resized_image.uri, crop);
 
     // now upload this image to the server
-    const aws_image = await uploadGroupImage(crop_image);
+    const aws_image = uploadImage(crop_image, {
+      type: 'group_image',
+      image_type: 'jpeg',
+    });
     if (aws_image.error) {
       // means upload fail
       return;

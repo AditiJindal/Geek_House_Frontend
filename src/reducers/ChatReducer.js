@@ -24,7 +24,6 @@ const INITIAL_CHAT_SCREEN_STATE = {
 };
 
 const INITIAL_STATE = {
-  socket: null,
   loading: true,
   chats: [],
   messages: {}, // {"user_id": [ {_id:Number, text:String, created_at: Date, user: {_id:String}} ,{}, {} ]}
@@ -224,9 +223,6 @@ export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ACTIONS.LOGOUT:
       return {...INITIAL_STATE};
-
-    case ACTIONS.SET_SOCKET:
-      return {...state, socket: action.payload};
 
     case ACTIONS.CHAT_LOAD_DATA:
       user_id = action.payload.user_id;
@@ -471,7 +467,7 @@ export default (state = INITIAL_STATE, action) => {
         state.other_user_data._id.toString() ===
           action.payload.other_user_id.toString()
       ) {
-        // means the user has opened a chat which is diffenenr and the message he received is
+        // means the user has opened a chat which is different and the message he received is
         // from the same user
         new_currentMessages = [...payload_message, ...state.currentMessages];
       }
@@ -486,7 +482,7 @@ export default (state = INITIAL_STATE, action) => {
           recentActivity: payload_message[0].createdAt,
         };
 
-        state.socket.emit(SOCKET_EVENTS.CHAT_PEOPLE_EXPLICITLY);
+        // socketEmit(SOCKET_EVENTS.CHAT_PEOPLE_EXPLICITLY);
       } else {
         new_status[action.payload.other_user_id].recentActivity =
           payload_message[0].createdAt;
@@ -553,12 +549,7 @@ export default (state = INITIAL_STATE, action) => {
     case ACTIONS.CHAT_PEOPLE_SEARCH:
       return {...state, chatPeopleSearch: action.payload, loading: false};
 
-    case ACTIONS.CHAT_SOCKET_CHANGE_CATEGORY:
-      state.socket.emit(SOCKET_EVENTS.CHANGE_FAVORITE_CATEGORY, action.payload);
-      return state;
-
     case ACTIONS.CHAT_SETUP_COMPLETE:
-      state.socket.emit(SOCKET_EVENTS.USER_SETUP_DONE);
       new_state = {...state, first_login: false};
       saveData(action.type, new_state);
       return new_state;

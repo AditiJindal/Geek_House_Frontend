@@ -48,7 +48,6 @@ export const ACTIONS = {
   WRITE_SET_DRAFT: 'write.set_draft',
 
   // CHAT
-  SET_SOCKET: 'chat.socket',
   CHAT_LOADING: 'chat.loading',
   GOT_CHAT_MESSAGE: 'chat.got_message',
   CHECK_MESSAGES_OBJECT: 'chat.check_messages_obj',

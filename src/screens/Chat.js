@@ -43,17 +43,14 @@ import {
 } from '../actions/ChatAction';
 
 class Chat extends React.PureComponent {
-  constructor() {
-    super();
-    this.state = {
-      showStartTime: Date.now(),
-      chatPeopleSearchText: '',
-      peopleSelectorVisible: false,
-      newGroupData: {name: '', group_image: null, users: []},
-      groupPeopleSelectorLoading: false,
-      chatInfoVisible: false,
-    };
-  }
+  state = {
+    showStartTime: Date.now(),
+    chatPeopleSearchText: '',
+    peopleSelectorVisible: false,
+    newGroupData: {name: '', group_image: null, users: []},
+    groupPeopleSelectorLoading: false,
+    chatInfoVisible: false,
+  };
 
   componentDidMount() {
     analytics().logScreenView({

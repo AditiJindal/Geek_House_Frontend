@@ -186,7 +186,7 @@ class WriteArticle extends React.Component {
                   this.state.category,
                   this.props.editing_article_id,
                 );
-                this.props.navigation.navigate(SCREENS.ImageUpload);
+                this.props.navigation.replace(SCREENS.ImageUpload);
               }
             : () => {
                 this.props.showAlert(true, error);
