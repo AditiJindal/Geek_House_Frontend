@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import {connect} from 'react-redux';
-import {Overlay, Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import StarRating from 'react-native-star-rating';
 import LinearGradient from 'react-native-linear-gradient';
 import {
@@ -30,6 +30,7 @@ import {
 } from '../Constants';
 import CardView from './CardView';
 import Loading from './Loading';
+import Overlay from './Overlay';
 import NativeAdsComponent from './NativeAdsComponent';
 import Avatar from './Avatar';
 import moment from 'moment';
@@ -213,13 +214,7 @@ class ArticleInfo extends Component {
               );
             }
           }}>
-          <Icon
-            name="send"
-            activeOpacity={0}
-            type="material-community"
-            color={COLORS_LIGHT_THEME.LIGHT}
-            size={20}
-          />
+          <Icon name="send" color={COLORS_LIGHT_THEME.LIGHT} size={20} />
         </TouchableOpacity>
       </View>
     );
@@ -278,12 +273,7 @@ class ArticleInfo extends Component {
             this.props.setImage({uri: image});
             this.props.navigation.navigate(SCREENS.WriteArticle, {article_id});
           }}>
-          <Icon
-            name={'create'}
-            type="material"
-            size={18}
-            color={COLORS.YELLOW}
-          />
+          <Icon name="pencil" size={18} color={COLORS.YELLOW} />
           <Text
             style={{
               fontFamily: FONTS.RALEWAY,
@@ -325,8 +315,7 @@ class ArticleInfo extends Component {
             this.props.bookmarkArticle(article_id, bookmarked);
           }}>
           <Icon
-            name={bookmarked ? 'bookmark' : 'bookmark-border'}
-            type="material"
+            name={bookmarked ? 'bookmark' : 'bookmark-outline'}
             size={20}
             color={bookmarked ? COLORS.STAR_YELLOW : COLORS.LESSER_DARK}
           />
@@ -362,7 +351,7 @@ class ArticleInfo extends Component {
               message: `View this article on ${topic} in Geek House using this link ${dynamicLink}`,
             });
           }}>
-          <Icon name={'share'} type="material" size={20} color={COLORS.LIGHT} />
+          <Icon name="share-variant" size={20} color={COLORS.LIGHT} />
           <Text
             style={{
               fontFamily: FONTS.RALEWAY,
@@ -492,12 +481,7 @@ class ArticleInfo extends Component {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Icon
-                type="material-community"
-                name="comment-outline"
-                size={18}
-                color={COLORS.LESS_DARK}
-              />
+              <Icon name="comment-outline" size={18} color={COLORS.LESS_DARK} />
               <Text
                 style={{
                   fontFamily: FONTS.LATO,
@@ -914,10 +898,10 @@ export default connect(mapStateToProps, {
 const styles = StyleSheet.create({
   OverlayStyle: {
     borderRadius: BORDER_RADIUS,
-    elevation: 0,
-    paddingHorizontal: 0,
     overflow: 'hidden',
-    paddingVertical: 0,
-    marginBottom: 27,
+    marginHorizontal: 25,
+    marginBottom: 30,
+    marginTop: 20,
+    flex: 1,
   },
 });

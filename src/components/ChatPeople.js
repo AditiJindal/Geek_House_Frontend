@@ -7,7 +7,7 @@ import {
   Dimensions,
 } from 'react-native';
 import toMaterialStyle from 'material-color-hash';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import TimeAgo from 'react-native-timeago';
 import {FONTS, COLORS_LIGHT_THEME, MESSAGE_SPECIAL_ADDER} from '../Constants';
 import SView from 'react-native-simple-shadow-view';
@@ -133,14 +133,9 @@ const getAppropriateAccessory = (props) => {
 
   if (isSelector && !isAddedToGroup) {
     return isSelected ? (
-      <Icon
-        type={'feather'}
-        name={'check-square'}
-        color={COLORS.GREEN}
-        size={20}
-      />
+      <Icon name={'check-square'} color={COLORS.GREEN} size={20} />
     ) : (
-      <Icon type={'feather'} name={'square'} color={COLORS.GRAY} size={20} />
+      <Icon name={'square'} color={COLORS.GRAY} size={20} />
     );
   }
   return null;

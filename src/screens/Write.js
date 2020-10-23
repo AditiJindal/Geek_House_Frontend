@@ -14,7 +14,6 @@ import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics';
 
 import {ArticleTile, Ripple} from '../components';
 import {getMyArticles, clearPublish} from '../actions/WriteAction';
@@ -26,10 +25,6 @@ class Write extends React.PureComponent {
   }
 
   componentDidMount() {
-    analytics().logScreenView({
-      screen_class: SCREEN_CLASSES.Write,
-      screen_name: SCREENS.Write,
-    });
     this.props.getMyArticles(
       Object.keys(this.props.myArticles).length,
       this.props.reload,
@@ -342,10 +337,6 @@ class Write extends React.PureComponent {
         onPress={() => {
           this.props.isDraft ? () => {} : this.props.clearPublish();
           this.props.navigation.navigate(SCREENS.WriteArticle);
-          analytics().logScreenView({
-            screen_class: SCREEN_CLASSES.Write,
-            screen_name: SCREENS.Write,
-          });
         }}>
         <SView
           style={{

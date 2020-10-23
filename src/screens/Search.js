@@ -17,7 +17,6 @@ import _ from 'lodash';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import SView from 'react-native-simple-shadow-view';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import analytics from '@react-native-firebase/analytics';
 
 import {
   ArticleTileAds,
@@ -49,10 +48,6 @@ class Search extends React.PureComponent {
 
   componentDidMount() {
     if (!this.props.popularSearchesData) {
-      analytics().logScreenView({
-        screen_class: SCREEN_CLASSES.Search,
-        screen_name: SCREENS.Search,
-      });
       this.props.getPopularSearches();
     }
   }
@@ -182,7 +177,6 @@ class Search extends React.PureComponent {
                 ERROR_MESSAGES.LET_PREVIOUS_SEARCH_COMPLETE,
               );
             } else if (this.props.searchValue.length > 1) {
-              analytics().logSearch({search_term: this.props.searchValue});
               this.props.doSearch(
                 this.props.searchValue,
                 this.props.categorySelected,

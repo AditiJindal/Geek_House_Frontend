@@ -5,3 +5,4 @@ export * from './httpClient';
 export * from './imageBased';
 export * from './storage';
 export * from './time';
+export * from './test';

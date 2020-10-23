@@ -1,7 +1,6 @@
 import {ACTIONS} from './types';
 import {URLS, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
 import {logEvent} from './ChatAction';
-import analytics from '@react-native-firebase/analytics';
 import {httpClient, encrypt} from '../utilities';
 
 export const getPopularSearches = () => {
@@ -33,7 +32,6 @@ export const selectCategory = (category) => {
 export const doSearch = (search, category) => {
   return (dispatch) => {
     dispatch({type: ACTIONS.DOING_SEARCH_LOADING});
-    analytics().logSearch({search_term: search});
     httpClient()
       .post(URLS.search, {search, category})
       .then(({data}) => {

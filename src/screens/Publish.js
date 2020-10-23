@@ -5,7 +5,6 @@ import LottieView from 'lottie-react-native';
 import {Icon} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics';
 
 import {Loading, ArticleTile, Ripple} from '../components';
 import {
@@ -18,19 +17,7 @@ import {FONTS, COLORS_LIGHT_THEME, SCREENS, SCREEN_CLASSES} from '../Constants';
 const ConfettiData = require('../../assets/animations/confetti.json');
 
 class Publish extends React.PureComponent {
-  constructor() {
-    super();
-    this.state = {
-      value: 180,
-    };
-  }
-
-  componentDidMount() {
-    analytics().logScreenView({
-      screen_class: SCREEN_CLASSES.Publish,
-      screen_name: SCREENS.Publish,
-    });
-  }
+  state = {value: 180};
 
   imageUrlCorrector(image_url) {
     if (!image_url) {

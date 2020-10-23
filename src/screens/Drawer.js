@@ -1,7 +1,6 @@
 import React from 'react';
 import {View, Text, Linking} from 'react-native';
 import {connect} from 'react-redux';
-import analytics from '@react-native-firebase/analytics';
 import {Icon} from 'react-native-elements';
 import InAppReview from 'react-native-in-app-review';
 import {Switch} from 'react-native-switch';
@@ -10,12 +9,10 @@ import {
   APP_VERSION,
   FONTS,
   SCREENS,
-  SCREEN_CLASSES,
   COLORS_LIGHT_THEME,
   LATEST_APP_VERSION,
-  LOG_EVENT,
 } from '../Constants';
-import {getRingColor} from '../utilities';
+import {getRingColor, onTest} from '../utilities';
 import {Avatar, LevelBar, Ripple} from '../components';
 import {changeTheme} from '../actions/SettingsAction';
 
@@ -32,30 +29,17 @@ class Drawer extends React.Component {
 
   onSettings() {
     this.props.navigation.navigate(SCREENS.Settings);
-    analytics().logScreenView({
-      screen_class: SCREEN_CLASSES.Settings,
-      screen_name: SCREENS.Settings,
-    });
   }
 
   onFeedback() {
     this.props.navigation.navigate(SCREENS.Feedback);
-    analytics().logScreenView({
-      screen_class: SCREEN_CLASSES.Feedback,
-      screen_name: SCREENS.Feedback,
-    });
   }
 
   onAboutUs() {
     this.props.navigation.navigate(SCREENS.About);
-    analytics().logScreenView({
-      screen_class: SCREEN_CLASSES.About,
-      screen_name: SCREENS.About,
-    });
   }
 
   onRate() {
-    analytics().logEvent('app_rating');
     InAppReview.RequestInAppReview();
   }
 
@@ -132,7 +116,6 @@ class Drawer extends React.Component {
       <Ripple
         rippleColor={COLORS.DARK}
         onPress={() => {
-          analytics().logEvent('app_updating');
           Linking.openURL(welcomeData.playStoreUrl);
         }}
         style={{
@@ -265,7 +248,6 @@ class Drawer extends React.Component {
         <Switch
           value={COLORS.THEME === 'dark'}
           onValueChange={() => {
-            analytics().setUserProperties({Theme: oppositeTheme});
             this.props.changeTheme(oppositeTheme);
           }}
           backgroundActive={COLORS_LIGHT_THEME.GREEN}
@@ -304,6 +286,7 @@ class Drawer extends React.Component {
         )}
         {this.renderButton('about us', 'user', this.onAboutUs.bind(this))}
         {this.renderButton('rate', 'thumbs-up', this.onRate.bind(this))}
+        {__DEV__ ? this.renderButton('test button', 'code', onTest) : null}
 
         {this.renderAppVersion()}
       </View>

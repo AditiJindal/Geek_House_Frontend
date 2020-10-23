@@ -17,8 +17,7 @@ import {
   LayoutAnimation,
 } from 'react-native';
 import {FONTS} from '../../../../../Constants';
-import SView from 'react-native-simple-shadow-view';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 
 import DropdownItem from '../item';
 import styles from './styles';
@@ -574,7 +573,6 @@ export default class Dropdown extends PureComponent {
           style={{marginBottom: 3, marginHorizontal: 2}}
           color={COLORS.LESS_DARK}
           size={16}
-          type={'feather'}
         />
         <TextInput
           placeholder="Search for a Category"
@@ -608,7 +606,6 @@ export default class Dropdown extends PureComponent {
               style={{marginBottom: 3, marginHorizontal: 2}}
               color={COLORS.LESS_DARK}
               size={16}
-              type={'feather'}
             />
           </TouchableOpacity>
         ) : null}

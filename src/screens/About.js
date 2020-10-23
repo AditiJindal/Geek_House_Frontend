@@ -11,17 +11,12 @@ import {connect} from 'react-redux';
 import {Icon} from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics';
 import {Loading} from '../components';
 import {getSettingsData} from '../actions/SettingsAction';
 import {FONTS, SCREENS, SCREEN_CLASSES} from '../Constants';
 
 class Settings extends React.PureComponent {
   componentDidMount() {
-    analytics().logScreenView({
-      screen_class: SCREEN_CLASSES.About,
-      screen_name: SCREENS.About,
-    });
     this.props.getSettingsData();
   }
 

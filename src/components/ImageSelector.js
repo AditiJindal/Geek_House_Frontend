@@ -1,9 +1,11 @@
 import React from 'react';
 import {View, Keyboard, Text, StatusBar} from 'react-native';
-import {Overlay, Icon} from 'react-native-elements';
-import {FONTS} from '../Constants';
-import Ripple from './Ripple';
 import ImagePicker from 'react-native-image-picker';
+import Icon from 'react-native-vector-icons/Feather';
+
+import Overlay from './Overlay';
+import Ripple from './Ripple';
+import {FONTS} from '../Constants';
 
 // USAGE : write this in render() of the component
 // <ImageSelector
@@ -52,8 +54,6 @@ class ImageSelector extends React.Component {
     return (
       <Overlay
         isVisible={this.state.imageSelectorOpen}
-        height="auto"
-        width="auto"
         overlayStyle={{
           flexDirection: 'row',
           backgroundColor: 'rgba(0,0,0,0)',
@@ -71,7 +71,7 @@ class ImageSelector extends React.Component {
             rippleContainerBorderRadius={15}
             onPress={() => {
               this.setState({imageSelectorOpen: false});
-              ImagePicker.launchImageLibrary(ImageOptions, response => {
+              ImagePicker.launchImageLibrary(ImageOptions, (response) => {
                 if (!response.didCancel) {
                   this.state.callbackFunc(response);
                 }
@@ -98,12 +98,7 @@ class ImageSelector extends React.Component {
                 Gallery
               </Text>
             </View>
-            <Icon
-              size={72}
-              name="image"
-              type="feather"
-              color={COLORS.LESSER_DARK}
-            />
+            <Icon size={72} name="image" color={COLORS.LESSER_DARK} />
             <View style={{height: 50, justifyContent: 'center'}}>
               <Text
                 style={{
@@ -119,7 +114,7 @@ class ImageSelector extends React.Component {
           <Ripple
             onPress={() => {
               this.setState({imageSelectorOpen: false});
-              ImagePicker.launchCamera(ImageOptions, response => {
+              ImagePicker.launchCamera(ImageOptions, (response) => {
                 if (!response.didCancel) {
                   this.state.callbackFunc(response);
                 }
@@ -146,12 +141,7 @@ class ImageSelector extends React.Component {
                 Camera
               </Text>
             </View>
-            <Icon
-              size={72}
-              name="camera"
-              type="feather"
-              color={COLORS.LESSER_DARK}
-            />
+            <Icon size={72} name="camera" color={COLORS.LESSER_DARK} />
             <View style={{height: 50, justifyContent: 'center'}}>
               <Text
                 style={{

@@ -23,3 +23,4 @@ export {default as AppIntroSlider} from './AppIntroSlider';
 export {default as Dropdown} from './Dropdown';
 export {default as GiftedChat} from './GiftedChat';
 export {default as Ripple} from './Ripple';
+export {default as Overlay} from './Overlay';

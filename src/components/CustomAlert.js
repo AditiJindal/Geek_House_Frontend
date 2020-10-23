@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {FONTS, ERROR_BUTTONS} from '../Constants';
-import {Overlay} from 'react-native-elements';
 import Image from 'react-native-fast-image';
+
+import {FONTS, ERROR_BUTTONS} from '../Constants';
+import {Overlay} from '../components';
 // import console = require('console');
 
 export default class CustomAlert extends Component {
@@ -111,9 +112,7 @@ export default class CustomAlert extends Component {
           animationType="none"
           overlayBackgroundColor={
             this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT
-          }
-          width="auto"
-          height="auto">
+          }>
           <View
             style={{
               padding: 10,

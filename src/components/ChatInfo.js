@@ -10,7 +10,7 @@ import {
   TextInput,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {Overlay, Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import Image from 'react-native-fast-image';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from '@react-native-community/image-editor';
@@ -35,6 +35,7 @@ import Ripple from './Ripple';
 import ImageSelector from './ImageSelector';
 import Avatar from './Avatar';
 import ChatPeople from './ChatPeople';
+import Overlay from './Overlay';
 import {FONTS, MAX_USERS_IN_A_GROUP, COLORS_LIGHT_THEME} from '../Constants';
 import {getRingColor, uploadImage} from '../utilities';
 
@@ -485,7 +486,6 @@ class ChatInfo extends Component {
                           }}
                           onPress={this.onPressAdd.bind(this)}>
                           <Icon
-                            type={'feather'}
                             name={'check'}
                             size={22}
                             color={
@@ -595,7 +595,7 @@ class ChatInfo extends Component {
             }}>
             Resign from Admin
           </Text>
-          <Icon name="user-x" size={18} color={COLORS.LIGHT} type="feather" />
+          <Icon name="user-x" size={18} color={COLORS.LIGHT} />
         </Ripple>
       );
     }
@@ -618,12 +618,7 @@ class ChatInfo extends Component {
               height: 40,
               marginRight: 5,
             }}>
-            <Icon
-              type={'feather'}
-              name={'check'}
-              size={18}
-              color={COLORS_LIGHT_THEME.LIGHT}
-            />
+            <Icon name={'check'} size={18} color={COLORS_LIGHT_THEME.LIGHT} />
           </Ripple>
           <Ripple
             onPress={() => {
@@ -640,12 +635,7 @@ class ChatInfo extends Component {
               flex: 1,
               height: 40,
             }}>
-            <Icon
-              type={'feather'}
-              name={'x'}
-              size={18}
-              color={COLORS_LIGHT_THEME.LIGHT}
-            />
+            <Icon name={'x'} size={18} color={COLORS_LIGHT_THEME.LIGHT} />
           </Ripple>
         </View>
       );
@@ -673,7 +663,7 @@ class ChatInfo extends Component {
           }}>
           Edit Group Name
         </Text>
-        <Icon type={'feather'} name={'edit-2'} size={12} color={COLORS.LIGHT} />
+        <Icon name={'edit-2'} size={12} color={COLORS.LIGHT} />
       </Ripple>
     );
   }
@@ -712,12 +702,7 @@ class ChatInfo extends Component {
               }}>
               Change Group Icon
             </Text>
-            <Icon
-              type={'feather'}
-              name={'image'}
-              size={13}
-              color={COLORS.LIGHT}
-            />
+            <Icon name={'image'} size={13} color={COLORS.LIGHT} />
           </Ripple>
         ) : (
           <View
@@ -756,12 +741,7 @@ class ChatInfo extends Component {
           }}>
           Add a new member
         </Text>
-        <Icon
-          type={'feather'}
-          name={'user-plus'}
-          size={18}
-          color={COLORS.LIGHT}
-        />
+        <Icon name={'user-plus'} size={18} color={COLORS.LIGHT} />
       </Ripple>
     );
   }
@@ -789,7 +769,7 @@ class ChatInfo extends Component {
           }}>
           Leave Group
         </Text>
-        <Icon name="log-out" size={18} color={COLORS.LIGHT} type="feather" />
+        <Icon name="log-out" size={18} color={COLORS.LIGHT} />
       </Ripple>
     );
   }

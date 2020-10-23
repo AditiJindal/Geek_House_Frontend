@@ -3,7 +3,6 @@ import {URLS, LOG_EVENT, SOCKET_EVENTS} from '../Constants';
 import _ from 'lodash';
 import {database} from '../database';
 import {Q} from '@nozbe/watermelondb';
-import perf from '@react-native-firebase/perf';
 import {
   uploadImage,
   encrypt,
@@ -11,11 +10,9 @@ import {
   uploadImageServer,
   httpClient,
 } from '../utilities';
-import analytics from '@react-native-firebase/analytics';
 import {socketEmit} from '../socket';
 
 const MessagesCollection = database.collections.get('messages');
-const trace = perf().newTrace('mobile_db_time_get');
 
 export const getChatPeople = () => {
   return (dispatch) => {
@@ -166,7 +163,6 @@ const messageConverter = (item) => {
 
 export const getCurrentUserMessages = (other_user_id, this_user_id) => {
   var t = Date.now();
-  trace.start();
   return (dispatch) => {
     MessagesCollection.query(Q.where('other_user_id', other_user_id))
       .fetch()
@@ -179,8 +175,6 @@ export const getCurrentUserMessages = (other_user_id, this_user_id) => {
             new_response.unshift(messageConverter(item, this_user_id));
           }
         });
-        trace.stop();
-        trace.putMetric('mobile_db_time_get', Date.now() - t);
 
         dispatch({type: ACTIONS.CHAT_GET_USER_MESSAGES, payload: new_response});
       });
@@ -264,7 +258,6 @@ export const getGifs = (search) => {
     search = '';
   }
   return (dispatch) => {
-    analytics().logSearch({search_term: search});
     dispatch({type: ACTIONS.CHAT_GIFS_LOADING, payload: true});
     httpClient()
       .get(URLS.get_gifs, {params: {search}})

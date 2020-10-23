@@ -16,7 +16,6 @@ import StarRating from 'react-native-star-rating';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import {Switch} from 'react-native-switch';
 import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from '@react-native-community/image-editor';
 
@@ -288,7 +287,6 @@ class Settings extends React.PureComponent {
           style={{alignSelf: 'flex-start'}}
           activeOpacity={0.4}
           onPress={() => {
-            analytics().setUserProperties({Theme: oppositeTheme});
             this.props.changeTheme(oppositeTheme);
           }}>
           <View
@@ -691,7 +689,6 @@ class Settings extends React.PureComponent {
             <Switch
               value={theme === 'dark'}
               onValueChange={() => {
-                analytics().setUserProperties({Theme: oppositeTheme});
                 this.props.changeTheme(oppositeTheme);
               }}
               backgroundActive={COLORS_LIGHT_THEME.GREEN}

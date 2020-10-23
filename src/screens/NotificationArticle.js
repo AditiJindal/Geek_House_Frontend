@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {Icon} from 'react-native-elements';
-import analytics from '@react-native-firebase/analytics';
 
 import {ArticleTile, Loading} from '../components';
 import {getArticleInfo} from '../actions/ArticleInfoAction';
@@ -19,10 +18,6 @@ class NotificationArticle extends React.PureComponent {
   componentDidMount() {
     const {article_id} = this.props.route.params;
     this.props.getArticleInfo(article_id, false, false);
-    analytics().logScreenView({
-      screen_class: SCREEN_CLASSES.NotificationArticle,
-      screen_name: SCREENS.NotificationArticle,
-    });
   }
 
   imageUrlCorrector(image_url) {

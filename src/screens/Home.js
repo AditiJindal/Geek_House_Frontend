@@ -17,7 +17,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics';
 
 import {
   Avatar,
@@ -40,7 +39,6 @@ import {
   LATEST_APP_VERSION,
   ALL_CATEGORIES,
   SCREENS,
-  SCREEN_CLASSES,
 } from '../Constants';
 
 class Home extends React.PureComponent {
@@ -53,13 +51,8 @@ class Home extends React.PureComponent {
 
   componentDidMount() {
     getDynamicLink(this.props.navigation);
-    analytics().logScreenView({
-      screen_class: SCREEN_CLASSES.Home,
-      screen_name: SCREENS.Home,
-    });
     if (this.props.loading) {
       this.props.getWelcome(() => this.props.navigation.replace(SCREENS.Login));
-      analytics().logTutorialBegin();
     }
     let new_data = [];
     ALL_CATEGORIES.map((item) => {
@@ -691,7 +684,6 @@ class Home extends React.PureComponent {
           renderNextButton={this._renderNextButton}
           renderDoneButton={this._renderDoneButton}
           onDone={() => {
-            analytics().logTutorialComplete();
             this._onDone();
           }}
         />

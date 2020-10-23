@@ -12,7 +12,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import Image from 'react-native-fast-image';
 import SplashScreen from 'react-native-splash-screen';
-import analytics from '@react-native-firebase/analytics';
 
 import {Loading} from '../components';
 import {
@@ -29,7 +28,6 @@ class Login extends React.PureComponent {
       this.props.navigation.replace(SCREENS.Main);
     });
     SplashScreen.hide();
-    analytics().logAppOpen();
     NetInfo.fetch().then((state) =>
       this.props.internetHandler(state.isInternetReachable),
     );

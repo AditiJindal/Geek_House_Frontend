@@ -2,9 +2,11 @@ import React from 'react';
 import {View, StatusBar, TouchableOpacity} from 'react-native';
 import Image from 'react-native-fast-image';
 import ImageZoom from 'react-native-image-pan-zoom';
-import {Overlay, Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 
-const ImageViewer = props => {
+import Overlay from './Overlay';
+
+const ImageViewer = (props) => {
   const {isVisible, onClose, COLORS, imageHeight, imageWidth, source} = props;
   return (
     <Overlay
@@ -33,12 +35,7 @@ const ImageViewer = props => {
                 right: -3,
                 position: 'absolute',
               }}>
-              <Icon
-                name="x-circle"
-                size={22}
-                color={COLORS.RED}
-                type={'feather'}
-              />
+              <Icon name="x-circle" size={22} color={COLORS.RED} />
             </TouchableOpacity>
             <ImageZoom
               imageHeight={imageHeight}

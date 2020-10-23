@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import SView from 'react-native-simple-shadow-view';
 import Image from 'react-native-fast-image';
 import vision from '@react-native-firebase/ml-vision';
@@ -129,12 +129,7 @@ export default class WriteView extends Component {
         style={styles.RemoveImageButton}
         activeOpacity={0.8}
         onPress={() => onCardImageChange(null, index)}>
-        <Icon
-          type="feather"
-          name="x"
-          size={16}
-          color={COLORS_LIGHT_THEME.LIGHT}
-        />
+        <Icon name="x" size={16} color={COLORS_LIGHT_THEME.LIGHT} />
         <Text style={styles.RemoveImageText}>Remove Image</Text>
       </TouchableOpacity>
     );
@@ -170,7 +165,7 @@ export default class WriteView extends Component {
         }}
         rippleContainerBorderRadius={7}
         onPress={this.handleAddCardImage.bind(this)}>
-        <Icon type="feather" name="image" size={14} color={COLORS.LESS_DARK} />
+        <Icon name="image" size={14} color={COLORS.LESS_DARK} />
         <Text style={{...styles.CardImageText, color: COLORS.LESS_DARK}}>
           Optionally add an image for this card
         </Text>
@@ -215,12 +210,7 @@ export default class WriteView extends Component {
             borderTopRightRadius: 15,
             elevation: 2,
           }}>
-          <Icon
-            type="feather"
-            name="camera"
-            size={15}
-            color={COLORS.LESS_DARK}
-          />
+          <Icon name="camera" size={15} color={COLORS.LESS_DARK} />
           <Text
             style={{
               fontFamily: FONTS.RALEWAY_LIGHT,
@@ -298,12 +288,7 @@ export default class WriteView extends Component {
             placeholder={'Enter a heading'}
           />
           <TouchableOpacity onPress={this.handleOnClose.bind(this)}>
-            <Icon
-              size={24}
-              name="close-circle"
-              type="material-community"
-              color={COLORS.RED}
-            />
+            <Icon size={24} name="x-circle" color={COLORS.RED} />
           </TouchableOpacity>
         </View>
         {this.renderCardImage()}

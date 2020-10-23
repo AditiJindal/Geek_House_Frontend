@@ -13,7 +13,6 @@ import {connect} from 'react-redux';
 import {Icon} from 'react-native-elements';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
-import analytics from '@react-native-firebase/analytics';
 
 import {Loading} from '../components';
 import {getPolicy} from '../actions/LoginAction';
@@ -24,10 +23,6 @@ class Policy extends React.PureComponent {
     if (!this.props.policy) {
       this.props.getPolicy();
     }
-    analytics().logScreenView({
-      screen_class: SCREEN_CLASSES.Policy,
-      screen_name: SCREENS.Policy,
-    });
 
     const {navBar} = this.props.route.params;
     BackHandler.addEventListener('hardwareBackPress', () => {

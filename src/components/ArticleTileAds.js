@@ -9,7 +9,6 @@ import {
   TriggerableView,
   withNativeAd,
 } from 'react-native-fbads';
-import analytics from '@react-native-firebase/analytics';
 
 class NativeAdsComponent extends Component {
   state = {size: 150};
@@ -65,7 +64,6 @@ class NativeAdsComponent extends Component {
           </View>
           <TriggerableView
             onPress={() => {
-              analytics().logEvent('ad_clicked');
               logEvent(LOG_EVENT.AD_CLICKED);
             }}
             style={{

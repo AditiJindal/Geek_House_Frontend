@@ -9,17 +9,18 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from 'react-native';
-import Composer from './Composer';
-import Image from 'react-native-fast-image';
-import Send from './Send';
-import Actions from './Actions';
-import {COLORS_DARK_THEME, FONTS} from '../../Constants';
-import Loading from '../Loading';
-import {Overlay, Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import prettysize from 'prettysize';
+
+import Overlay from '../Overlay';
+import Composer from './Composer';
+import Send from './Send';
+import Actions from './Actions';
+import Loading from '../Loading';
 import GiphyView from '../GiphyView';
+import {COLORS_DARK_THEME, FONTS} from '../../Constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -200,12 +201,7 @@ export default class InputToolbar extends React.Component {
                   Gallery
                 </Text>
               </View>
-              <Icon
-                size={72}
-                name="image"
-                type={'feather'}
-                color={COLORS.LESSER_DARK}
-              />
+              <Icon size={72} name="image" color={COLORS.LESSER_DARK} />
               <View style={{height: 50, justifyContent: 'center'}}>
                 <Text
                   style={{
@@ -246,12 +242,7 @@ export default class InputToolbar extends React.Component {
                   Camera
                 </Text>
               </View>
-              <Icon
-                size={72}
-                name="camera"
-                type={'feather'}
-                color={COLORS.LESSER_DARK}
-              />
+              <Icon size={72} name="camera" color={COLORS.LESSER_DARK} />
               <View style={{height: 50, justifyContent: 'center'}}>
                 <Text
                   style={{
@@ -272,12 +263,7 @@ export default class InputToolbar extends React.Component {
             onPress={() => {
               this.setState({imageSelectorOpen: true});
             }}>
-            <Icon
-              size={22}
-              name="image"
-              type={'feather'}
-              color={COLORS.LESSER_DARK}
-            />
+            <Icon size={22} name="image" color={COLORS.LESSER_DARK} />
           </TouchableOpacity>
         ) : null}
       </View>
@@ -294,12 +280,7 @@ export default class InputToolbar extends React.Component {
           onPress={() => {
             this.setState({giphyViewVisible: false});
           }}>
-          <Icon
-            size={26}
-            name="chevron-down"
-            type={'material-community'}
-            color={COLORS.LESSER_DARK}
-          />
+          <Icon size={26} name="chevron-down" color={COLORS.LESSER_DARK} />
         </TouchableOpacity>
       );
     }
@@ -311,12 +292,7 @@ export default class InputToolbar extends React.Component {
         onPress={() => {
           this.setState({giphyViewVisible: true});
         }}>
-        <Icon
-          size={30}
-          name="gif"
-          type={'material-community'}
-          color={COLORS.LESSER_DARK}
-        />
+        <Icon size={30} name="smile" color={COLORS.LESSER_DARK} />
       </TouchableOpacity>
     );
   }
@@ -370,7 +346,6 @@ export default class InputToolbar extends React.Component {
             <Icon
               size={24}
               name="x"
-              type={'feather'}
               onPress={() => {
                 this.props.onImageCross();
               }}

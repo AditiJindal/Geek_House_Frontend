@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import SView from 'react-native-simple-shadow-view';
 import Typing from './Typing';
@@ -65,7 +65,6 @@ class BottomTab extends Component {
         <Icon
           name={iconName}
           size={ICON_SIZE + 4}
-          type={'feather'}
           color={this.props.theme === 'light' ? COLORS.LESS_DARK : COLORS.DARK}
         />
         <View style={{position: 'absolute', bottom: 6, right: 4.5}}>
@@ -101,7 +100,6 @@ class BottomTab extends Component {
           {index !== 3 ? (
             <Icon
               name={iconName}
-              type={'feather'}
               size={ICON_SIZE}
               color={
                 this.props.theme === 'light' ? COLORS.LESS_DARK : COLORS.DARK
@@ -119,7 +117,6 @@ class BottomTab extends Component {
           colors={COLOR_PALETE[index]}>
           <Icon
             name={iconName}
-            type={'feather'}
             size={index !== 3 ? SELECTED_ICON_SIZE : SELECTED_ICON_SIZE + 4}
             color={COLORS_LIGHT_THEME.LIGHT}
           />

@@ -1,20 +1,12 @@
 import {ACTIONS} from '../actions/types';
-import {
-  COLORS_LIGHT_THEME,
-  COLORS_DARK_THEME,
-  SOCKET_EVENTS,
-} from '../Constants';
-import analytics from '@react-native-firebase/analytics';
+import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import _ from 'lodash';
-import perf from '@react-native-firebase/perf';
 import {database} from '../database';
 import uuid from 'uuid-random';
 import {storageSetItem} from '../utilities/storage';
 import {decrypt} from '../utilities/encryption';
 
 const MessagesCollection = database.collections.get('messages');
-const traceDB = perf().newTrace('mobile_db_time_save');
-const trace = perf().newTrace('save_data_async_storage');
 
 const INITIAL_CHAT_SCREEN_STATE = {
   selectedImage: null,
@@ -142,7 +134,6 @@ const saveMessageInDB = async (payload, this_user_id) => {
     image_to_save = message[0].image;
   }
   // saving message to database
-  traceDB.start();
   var t = Date.now();
   const response = await database.action(async () => {
     MessagesCollection.create((new_message) => {
@@ -162,12 +153,10 @@ const saveMessageInDB = async (payload, this_user_id) => {
     });
   });
 
-  traceDB.stop();
-  traceDB.putMetric('mobile_db_time_save', Date.now() - t);
   return response;
 };
 
-const saveData = async (action_type, state, recordPerf = false) => {
+const saveData = async (action_type, state) => {
   const to_save = {
     status: state.status,
     total_unread_messages: state.total_unread_messages,
@@ -180,17 +169,7 @@ const saveData = async (action_type, state, recordPerf = false) => {
     // chat_group_participants: state.chat_group_participants
   };
 
-  if (recordPerf) {
-    t = Date.now();
-    trace.start();
-  }
-
   await storageSetItem(action_type, state.user_id.toString(), to_save);
-
-  if (recordPerf) {
-    trace.stop();
-    trace.putMetric('save_data_time', Date.now() - t);
-  }
 };
 
 const mergeChats = (new_chats, old_chats) => {
@@ -242,9 +221,6 @@ export default (state = INITIAL_STATE, action) => {
             COLORS = COLORS_LIGHT_THEME;
           }
         }
-        analytics().setUserProperties({
-          Theme: action.payload.theme,
-        });
 
         if (total_unread_messages < 0) {
           total_unread_messages = 0;
@@ -452,10 +428,7 @@ export default (state = INITIAL_STATE, action) => {
         recentMessage = 'Sent a photo 📷';
       }
 
-      if (action.payload.isIncoming) {
-        analytics().logEvent('received_message');
-      } else {
-        analytics().logEvent('sent_message');
+      if (!action.payload.isIncoming) {
         recentMessage = 'You : ' + recentMessage;
       }
 
@@ -530,7 +503,7 @@ export default (state = INITIAL_STATE, action) => {
       };
 
     case ACTIONS.CHAT_SAVE_DATA:
-      saveData(action.type, state, true);
+      saveData(action.type, state);
       return state;
 
     case ACTIONS.SETTINGS_CHANGE_ANIMATION:

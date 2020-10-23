@@ -11,7 +11,6 @@ import {
   storageRemoveItem,
   uploadImage,
 } from '../utilities';
-import analytics from '@react-native-firebase/analytics';
 
 // *********** --- MALICIOUS CODE --- *************
 const getImageResize = (imageSize) => {
@@ -115,10 +114,6 @@ export const logout = (onLogout) => {
         httpClient().get(URLS.logout);
         dispatch({type: ACTIONS.LOGOUT});
         onLogout();
-        analytics().logScreenView({
-          screen_class: SCREEN_CLASSES.Login,
-          screen_name: SCREENS.Login,
-        });
       })
       .catch((e) =>
         logEvent(LOG_EVENT.ERROR, {
@@ -148,10 +143,6 @@ export const getWelcome = (onError) => {
             .then(() => {
               dispatch({type: ACTIONS.LOGOUT});
               onError();
-              analytics().logScreenView({
-                screen_class: SCREEN_CLASSES.Login,
-                screen_name: SCREENS.Login,
-              });
             })
             .catch((e) =>
               logEvent(LOG_EVENT.ERROR, {

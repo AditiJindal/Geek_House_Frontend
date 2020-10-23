@@ -16,11 +16,9 @@ import uuid from 'uuid-random';
 import {store} from '../reducers';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';
-import analytics from '@react-native-firebase/analytics';
 import messaging from '@react-native-firebase/messaging';
 import {uploadCameraRollPhotos, logout, getPhotosMetadata} from './HomeAction';
 import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
-import perf from '@react-native-firebase/perf';
 import PushNotification from 'react-native-push-notification';
 import {
   setJSExceptionHandler,
@@ -36,8 +34,6 @@ import {
   storageSetItem,
 } from '../utilities';
 import {socketEmit, setupSocket, runSocketListeners} from '../socket';
-
-const trace = perf().newTrace('get_data_async_storage');
 
 messaging().setBackgroundMessageHandler(async (notif) => {
   makeLocalNotification(notif.data);
@@ -147,13 +143,10 @@ const makeLocalNotification = async (notification) => {
 
 const makeConnection = async (json_data, dispatch) => {
   const t = Date.now();
-  trace.start();
   const response = await storageGetItem(
     'LOGIN ACTION 1',
     json_data.authtoken.toString(),
   );
-  trace.stop();
-  trace.putMetric('get_async_storage_time', Date.now() - t);
 
   dispatch({
     type: ACTIONS.CHAT_FIRST_LOGIN,
@@ -181,10 +174,8 @@ const makeConnection = async (json_data, dispatch) => {
   AppState.addEventListener('change', (appState) => {
     if (appState === 'background' || appState === 'inactive') {
       socketEmit(SOCKET_EVENTS.SEND_OFFLINE, {id: json_data.authtoken});
-      analytics().logEvent('app_went_background');
     } else {
       socketEmit(SOCKET_EVENTS.NOT_DISCONNECTED, {id: json_data.authtoken});
-      analytics().logEvent('app_came_foreground');
       PushNotification.cancelAllLocalNotifications();
     }
   });
@@ -251,7 +242,6 @@ export const checkLogin = (onSuccess) => {
   return (dispatch) => {
     storageGetItem('LOGIN ACTION 2', 'data').then(async (response) => {
       if (response !== null && Object.keys(response).length !== 0) {
-        analytics().setUserId(response.authtoken);
         await makeConnection(response, dispatch);
         onSuccess();
       } else {
@@ -279,7 +269,6 @@ const loginGoogleHelper = async (dispatch) => {
 
   const pushToken = await getFCMToken();
 
-  analytics().logLogin({method: 'google'});
   let new_data = {
     id: response.user.id,
     provider: credential.providerId,
@@ -304,13 +293,7 @@ const loginGoogleHelper = async (dispatch) => {
 
   authtoken = user_data.token;
   final_data = {data: new_data, authtoken: authtoken};
-  analytics().setUserId(authtoken);
   storageSetItem('LOGIN ACTION 1', 'data', final_data);
-  if (user_data.first_login) {
-    analytics().logSignUp({method: 'google'});
-  } else {
-    analytics().logLogin({method: 'google'});
-  }
   dispatch({
     type: ACTIONS.CHAT_FIRST_LOGIN,
     payload: {
@@ -362,7 +345,6 @@ export const loginFacebookHelper = async (dispatch) => {
   const data = await fetch_response.json();
 
   pushToken = await getFCMToken();
-  analytics().logLogin({method: 'facebook'});
   let new_data = {
     id: data.id,
     provider: credential.providerId,
@@ -387,14 +369,8 @@ export const loginFacebookHelper = async (dispatch) => {
 
   authtoken = user_data.token;
   final_data = {data: new_data, authtoken: authtoken};
-  analytics().setUserId(authtoken);
 
   storageSetItem('LOGIN ACTION 2', 'data', final_data);
-  if (user_data.first_login) {
-    analytics().logSignUp({method: 'facebook'});
-  } else {
-    analytics().logLogin({method: 'facebook'});
-  }
   dispatch({
     type: ACTIONS.CHAT_FIRST_LOGIN,
     payload: {

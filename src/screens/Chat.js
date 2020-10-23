@@ -10,8 +10,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import {Overlay, Icon} from 'react-native-elements';
-import analytics from '@react-native-firebase/analytics';
+import {Icon} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
@@ -25,6 +24,7 @@ import {
   Loading,
   TimedAlert,
   Avatar,
+  Overlay,
 } from '../components';
 import {logEvent} from '../actions/ChatAction';
 import {
@@ -51,13 +51,6 @@ class Chat extends React.PureComponent {
     groupPeopleSelectorLoading: false,
     chatInfoVisible: false,
   };
-
-  componentDidMount() {
-    analytics().logScreenView({
-      screen_class: SCREEN_CLASSES.Chat,
-      screen_name: SCREENS.Chat,
-    });
-  }
 
   componentWillUnmount() {
     logEvent(LOG_EVENT.TIME_IN_CHAT, {
@@ -175,10 +168,6 @@ class Chat extends React.PureComponent {
   onChatPeoplePress(item) {
     this.props.setUserData(item);
     this.props.navigation.navigate(SCREENS.ChatScreen);
-    analytics().logScreenView({
-      screen_class: SCREEN_CLASSES.ChatScreen,
-      screen_name: SCREENS.ChatScreen,
-    });
   }
 
   renderGroupImageSelector() {
@@ -357,17 +346,11 @@ class Chat extends React.PureComponent {
 
     return (
       <Overlay
-        overlayStyle={{
-          backgroundColor: 'transparent',
-          padding: 0,
-          elevation: 0,
-        }}
+        overlayStyle={{flex: 1}}
         isVisible={this.state.peopleSelectorVisible}
         onBackdropPress={() => {
           this.setState({peopleSelectorVisible: false});
-        }}
-        height="100%"
-        width="100%">
+        }}>
         <>
           <TimedAlert
             theme={this.props.theme}

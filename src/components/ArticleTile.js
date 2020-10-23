@@ -3,7 +3,7 @@ import {Text, StyleSheet, TouchableOpacity, View} from 'react-native';
 import Loading from './Loading';
 import ArticleInfo from './ArticleInfo';
 import {logEvent} from '../actions/ChatAction';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import Image from 'react-native-fast-image';
 import {
   FONTS,
@@ -73,12 +73,7 @@ export default class ArticleTile extends Component {
           }}>
           {rating}
         </Text>
-        <Icon
-          type="font-awesome"
-          name="star"
-          color={COLORS_DARK_THEME.STAR_YELLOW}
-          size={size}
-        />
+        <Icon name="star" color={COLORS_DARK_THEME.STAR_YELLOW} size={size} />
       </View>
     );
   }
