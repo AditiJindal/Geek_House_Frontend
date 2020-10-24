@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import _ from 'lodash';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import SView from 'react-native-simple-shadow-view';
@@ -126,7 +126,6 @@ class Search extends React.PureComponent {
           size={20}
           style={{marginVertical: 5, marginHorizontal: 5}}
           color={COLORS.LESS_DARK}
-          type={'feather'}
         />
         <TextInput
           textAlignVertical="top"
@@ -165,7 +164,6 @@ class Search extends React.PureComponent {
             color={COLORS.LESS_DARK}
             size={20}
             style={{marginLeft: 10, marginRight: 10}}
-            type={'feather'}
           />
         ) : null}
         <TouchableOpacity

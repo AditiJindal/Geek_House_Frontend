@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, Linking} from 'react-native';
 import {connect} from 'react-redux';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import InAppReview from 'react-native-in-app-review';
 import {Switch} from 'react-native-switch';
 
@@ -150,12 +150,7 @@ class Drawer extends React.Component {
             You are using outdated version
           </Text>
         </View>
-        <Icon
-          name="chevron-right"
-          color={COLORS.DARK}
-          size={24}
-          type={'feather'}
-        />
+        <Icon name="chevron-right" color={COLORS.DARK} size={24} />
       </Ripple>
     );
   }
@@ -178,7 +173,7 @@ class Drawer extends React.Component {
           paddingVertical: 10,
           paddingHorizontal: 18,
         }}>
-        <Icon name={icon} color={COLORS.DARK} size={18} type={'feather'} />
+        <Icon name={icon} color={COLORS.DARK} size={18} />
         <Text
           style={{
             fontFamily: FONTS.RALEWAY_BOLD,

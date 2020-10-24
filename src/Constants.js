@@ -450,3 +450,23 @@ export const SOCKET_EVENTS = {
   ping: 'ping',
   pong: 'pong',
 };
+
+export const EXPERIENCE_TEXT =
+  'In Geek House, you can can get various rewards and perks based on your usage.\
+The more you use Geek House for reading articles, the more you will get XP \
+or experience. Once you reach a certain level of experience, you will unlock certain\
+perks and rewards.';
+
+export const HOW_TO_GET_XP = [
+  'XP or Experience is gained by using the app regularly, reading and writing articles and using chat.',
+  'You get 10 XP for reading an article. You can get a maximum of 100 XP every hour from this method.',
+  'You get a minimum of 150 XP for writing an article. The longer and better your article is, the more XP you get',
+  'You get 1 XP for every view on your articles. You can get a maximum of 500 XP every hour using this method, till a certain number of views.',
+  'You get XP for using the chat based on the time spent. You can get a maximum of 200 XP every hour from this method.',
+  'You get additional 100 XP for using the app every hour.',
+];
+
+export const REWARDS = [
+  {level: 'Level 5', reward: 'Silver Avatar Ring'},
+  {level: 'Level 10', reward: 'Golden Avatar Ring'},
+];

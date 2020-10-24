@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import StarRating from 'react-native-star-rating';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import {Switch} from 'react-native-switch';
@@ -178,7 +178,6 @@ class Settings extends React.PureComponent {
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
-            type="material-community"
             size={26}
             containerStyle={{marginVertical: 5, marginRight: 15}}
             color={COLORS.LESS_DARK}
@@ -241,7 +240,6 @@ class Settings extends React.PureComponent {
             </Text>
             <Icon
               name="log-out"
-              type="feather"
               size={20}
               color={
                 this.props.internetReachable
@@ -875,12 +873,7 @@ class Settings extends React.PureComponent {
               this.timedAlert.showAlert(3000, 'Image applied', false);
             });
           }}>
-          <Icon
-            name="plus-circle"
-            type="feather"
-            size={20}
-            color={COLORS.LESSER_DARK}
-          />
+          <Icon name="plus-circle" size={20} color={COLORS.LESSER_DARK} />
           <Text
             style={{
               fontFamily: FONTS.PRODUCT_SANS,
@@ -918,7 +911,7 @@ class Settings extends React.PureComponent {
                 this.handleBlurOption(false);
               }}
               style={{padding: 10}}>
-              <Icon name="minus" type="feather" size={18} color={COLORS.GRAY} />
+              <Icon name="minus" size={18} color={COLORS.GRAY} />
             </TouchableOpacity>
             <Text
               style={{
@@ -933,7 +926,7 @@ class Settings extends React.PureComponent {
                 this.handleBlurOption(true);
               }}
               style={{padding: 10}}>
-              <Icon name="plus" type="feather" size={18} color={COLORS.GRAY} />
+              <Icon name="plus" size={18} color={COLORS.GRAY} />
             </TouchableOpacity>
           </View>
         </View>

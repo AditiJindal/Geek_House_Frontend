@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, StatusBar} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
@@ -21,7 +21,6 @@ import {
   LOG_EVENT,
   SCREENS,
 } from '../Constants';
-import Publish from './Publish';
 
 class ImageUpload extends React.PureComponent {
   constructor() {
@@ -281,12 +280,7 @@ class ImageUpload extends React.PureComponent {
           this.pickImage();
         }}>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Icon
-            name="image"
-            type="material-community"
-            size={128}
-            color={COLORS.LESSER_DARK}
-          />
+          <Icon name="image" size={128} color={COLORS.LESSER_DARK} />
           <Text
             style={{
               color: COLORS.LESSER_DARK,
@@ -329,8 +323,7 @@ class ImageUpload extends React.PureComponent {
                 width: '60%',
               }}>
               <Icon
-                name="comment"
-                type="octicon"
+                name="message-square"
                 size={15}
                 color={COLORS.GRAY}
                 containerStyle={{marginTop: 2}}
@@ -386,18 +379,7 @@ class ImageUpload extends React.PureComponent {
               alignItems: 'center',
               flexDirection: 'row',
             }}>
-            <Icon
-              name="arrow-left"
-              type="material-community"
-              size={26}
-              containerStyle={{
-                height: 26,
-                width: 26,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              color={COLORS.LESS_DARK}
-            />
+            <Icon name="arrow-left" size={26} color={COLORS.LESS_DARK} />
             <Text
               style={{
                 color: COLORS.LESS_DARK,

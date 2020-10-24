@@ -9,8 +9,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {Icon} from 'react-native-elements';
-import {FONTS, SCREENS} from '../Constants';
+import Icon from 'react-native-vector-icons/Feather';
+
 import {
   sendMessage,
   checkMessagesObject,
@@ -24,6 +24,7 @@ import {
 } from '../actions/ChatAction';
 import {Avatar, ChatInfo, TimedAlert, GiftedChat} from '../components';
 import {getRingColor} from '../utilities';
+import {FONTS} from '../Constants';
 
 class ChatScreen extends React.PureComponent {
   state = {
@@ -224,12 +225,7 @@ class ChatScreen extends React.PureComponent {
                 this.props.navigation.goBack();
                 this.props.clearOtherUserData();
               }}>
-              <Icon
-                name="x-circle"
-                size={22}
-                color={COLORS.RED}
-                type={'feather'}
-              />
+              <Icon name="x-circle" size={22} color={COLORS.RED} />
             </TouchableOpacity>
           ) : (
             <View style={{height: 32, width: 48}} />

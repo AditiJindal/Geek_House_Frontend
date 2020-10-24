@@ -10,7 +10,7 @@ import {
   FlatList,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
@@ -99,12 +99,7 @@ class WriteArticle extends React.Component {
               alignItems: 'center',
             }}
             colors={['#fc6767', '#ec008c']}>
-            <Icon
-              name="plus"
-              type="entypo"
-              size={32}
-              color={COLORS_LIGHT_THEME.LIGHT}
-            />
+            <Icon name="plus" size={32} color={COLORS_LIGHT_THEME.LIGHT} />
           </LinearGradient>
         </Ripple>
       );
@@ -420,7 +415,6 @@ class WriteArticle extends React.Component {
           }}>
           <Icon
             name="arrow-left"
-            type="material-community"
             size={26}
             containerStyle={{marginVertical: 5, marginRight: 15}}
             color={COLORS.LESS_DARK}

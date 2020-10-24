@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import SView from 'react-native-simple-shadow-view';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
@@ -54,10 +54,8 @@ class Feedback extends React.PureComponent {
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
-            type="material-community"
             size={26}
-            type={'feather'}
-            containerStyle={{marginVertical: 5, marginRight: 15}}
+            style={{marginVertical: 5, marginRight: 15}}
             color={COLORS.LESS_DARK}
           />
         </TouchableOpacity>
@@ -261,7 +259,6 @@ class Feedback extends React.PureComponent {
                 name={this.state.image_url ? 'x' : 'plus'}
                 size={22}
                 color={COLORS.GRAY}
-                type={'feather'}
               />
               {!this.state.image_url ? (
                 <Text

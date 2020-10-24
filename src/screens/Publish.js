@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {connect} from 'react-redux';
 import LottieView from 'lottie-react-native';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import SView from 'react-native-simple-shadow-view';
 
@@ -12,7 +12,7 @@ import {
   getMyArticles,
   uploadArticleImages,
 } from '../actions/WriteAction';
-import {FONTS, COLORS_LIGHT_THEME, SCREENS, SCREEN_CLASSES} from '../Constants';
+import {FONTS, COLORS_LIGHT_THEME, SCREENS} from '../Constants';
 
 const ConfettiData = require('../../assets/animations/confetti.json');
 
@@ -64,18 +64,7 @@ class Publish extends React.PureComponent {
               alignItems: 'center',
               flexDirection: 'row',
             }}>
-            <Icon
-              name="arrow-left"
-              type="material-community"
-              size={26}
-              containerStyle={{
-                height: 26,
-                width: 26,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              color={COLORS.LESS_DARK}
-            />
+            <Icon name="arrow-left" size={26} color={COLORS.LESS_DARK} />
             <Text
               style={{
                 color: COLORS.LESS_DARK,
@@ -119,18 +108,7 @@ class Publish extends React.PureComponent {
             alignItems: 'center',
             flexDirection: 'row',
           }}>
-          <Icon
-            name="close"
-            type="material-community"
-            size={26}
-            containerStyle={{
-              height: 26,
-              width: 26,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            color={COLORS.LESS_DARK}
-          />
+          <Icon name="close" size={26} color={COLORS.LESS_DARK} />
         </TouchableOpacity>
         <Text style={{...styles.TextStyle, color: COLORS.DARK}}>published</Text>
       </View>

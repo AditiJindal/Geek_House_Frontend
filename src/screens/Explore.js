@@ -9,7 +9,7 @@ import {
   ImageBackground,
   BackHandler,
 } from 'react-native';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import {connect} from 'react-redux';
 import {clearSearch} from '../actions/SearchAction';
 import {ArticleTile, Loading} from '../components';
@@ -46,7 +46,6 @@ class Explore extends React.PureComponent {
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
-            type="material-community"
             size={26}
             containerStyle={{marginVertical: 5, marginRight: 15}}
             color={COLORS.LESS_DARK}

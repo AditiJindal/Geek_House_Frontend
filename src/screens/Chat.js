@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
@@ -273,12 +273,7 @@ class Chat extends React.PureComponent {
               }}>
               {'new group  '}
             </Text>
-            <Icon
-              name="user-plus"
-              type="feather"
-              size={18}
-              color={COLORS_LIGHT_THEME.LIGHT}
-            />
+            <Icon name="user-plus" size={18} color={COLORS_LIGHT_THEME.LIGHT} />
           </LinearGradient>
         </Ripple>
       </SView>
@@ -491,8 +486,7 @@ class Chat extends React.PureComponent {
                             <Loading size={40} white={true} />
                           ) : (
                             <Icon
-                              type={'feather'}
-                              name={'check'}
+                              name="check"
                               size={22}
                               color={
                                 this.state.newGroupData.users.length < 2

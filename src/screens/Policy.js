@@ -10,13 +10,13 @@ import {
   BackHandler,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 
 import {Loading} from '../components';
 import {getPolicy} from '../actions/LoginAction';
-import {FONTS, SCREENS, SCREEN_CLASSES} from '../Constants';
+import {FONTS} from '../Constants';
 
 class Policy extends React.PureComponent {
   componentDidMount() {
@@ -57,9 +57,8 @@ class Policy extends React.PureComponent {
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
-            type="material-community"
             size={26}
-            containerStyle={{marginVertical: 5, marginRight: 15}}
+            style={{marginVertical: 5, marginRight: 15}}
             color={COLORS.LESS_DARK}
           />
         </TouchableOpacity>

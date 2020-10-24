@@ -9,7 +9,7 @@ import {
   RefreshControl,
   ScrollView,
 } from 'react-native';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
@@ -384,12 +384,7 @@ class Write extends React.PureComponent {
                   ]}>
                   NEW
                 </Text>
-                <Icon
-                  name="plus-circle"
-                  type="material-community"
-                  size={24}
-                  color={COLORS_LIGHT_THEME.LIGHT}
-                />
+                <Icon name="plus" size={28} color={COLORS_LIGHT_THEME.LIGHT} />
               </View>
             )}
           </LinearGradient>
@@ -463,7 +458,6 @@ class Write extends React.PureComponent {
               </Text>
               <Icon
                 name="arrow-right"
-                type="feather"
                 size={20}
                 color={COLORS_LIGHT_THEME.LIGHT}
               />

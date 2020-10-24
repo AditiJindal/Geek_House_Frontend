@@ -10,6 +10,7 @@ import {
   ImageBackground,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import prettysize from 'prettysize';
@@ -292,7 +293,7 @@ export default class InputToolbar extends React.Component {
         onPress={() => {
           this.setState({giphyViewVisible: true});
         }}>
-        <Icon size={30} name="smile" color={COLORS.LESSER_DARK} />
+        <IconMaterial size={30} name="gif" color={COLORS.LESSER_DARK} />
       </TouchableOpacity>
     );
   }

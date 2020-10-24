@@ -12,7 +12,7 @@ import {connect} from 'react-redux';
 import _ from 'lodash';
 import Image from 'react-native-fast-image';
 import LottieView from 'lottie-react-native';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
@@ -181,7 +181,7 @@ class Home extends React.PureComponent {
               this.props.theme === 'light' ? '#F8F8F8' : '#282828',
             borderRadius: 100,
           }}>
-          <Icon name="menu" color={COLORS.DARK} size={16} type={'feather'} />
+          <Icon name="menu" color={COLORS.DARK} size={16} />
         </TouchableOpacity>
         <View style={{flex: 1, marginLeft: 10}}>
           <Text style={{...styles.TextStyle, color: COLORS.DARK}}>home</Text>

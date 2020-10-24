@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 import {connect} from 'react-redux';
 import SView from 'react-native-simple-shadow-view';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 
 import {Ripple} from '../components';
 import {FONTS, SCREENS} from '../Constants';
@@ -27,10 +27,9 @@ class Notification extends React.Component {
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
-            type="material-community"
             size={26}
             type={'feather'}
-            containerStyle={{marginVertical: 5, marginRight: 15}}
+            style={{marginVertical: 5, marginRight: 15}}
             color={COLORS.LESS_DARK}
           />
         </TouchableOpacity>

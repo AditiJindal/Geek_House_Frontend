@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import {connect} from 'react-redux';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/Feather';
+import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import StarRating from 'react-native-star-rating';
 import LinearGradient from 'react-native-linear-gradient';
 import {
@@ -214,7 +215,11 @@ class ArticleInfo extends Component {
               );
             }
           }}>
-          <Icon name="send" color={COLORS_LIGHT_THEME.LIGHT} size={20} />
+          <IconMaterial
+            name="send"
+            color={COLORS_LIGHT_THEME.LIGHT}
+            size={20}
+          />
         </TouchableOpacity>
       </View>
     );
@@ -273,13 +278,13 @@ class ArticleInfo extends Component {
             this.props.setImage({uri: image});
             this.props.navigation.navigate(SCREENS.WriteArticle, {article_id});
           }}>
-          <Icon name="pencil" size={18} color={COLORS.YELLOW} />
+          <Icon name="edit-2" size={16} color={COLORS.YELLOW} />
           <Text
             style={{
               fontFamily: FONTS.RALEWAY,
               color: COLORS.YELLOW,
               fontSize: 16,
-              marginLeft: 5,
+              marginLeft: 7,
             }}>
             Edit
           </Text>
@@ -314,7 +319,7 @@ class ArticleInfo extends Component {
           onPress={() => {
             this.props.bookmarkArticle(article_id, bookmarked);
           }}>
-          <Icon
+          <IconMaterial
             name={bookmarked ? 'bookmark' : 'bookmark-outline'}
             size={20}
             color={bookmarked ? COLORS.STAR_YELLOW : COLORS.LESSER_DARK}
@@ -351,7 +356,7 @@ class ArticleInfo extends Component {
               message: `View this article on ${topic} in Geek House using this link ${dynamicLink}`,
             });
           }}>
-          <Icon name="share-variant" size={20} color={COLORS.LIGHT} />
+          <IconMaterial name="share" size={20} color={COLORS.LIGHT} />
           <Text
             style={{
               fontFamily: FONTS.RALEWAY,
@@ -481,7 +486,7 @@ class ArticleInfo extends Component {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Icon name="comment-outline" size={18} color={COLORS.LESS_DARK} />
+              <Icon name="message-square" size={18} color={COLORS.LESS_DARK} />
               <Text
                 style={{
                   fontFamily: FONTS.LATO,

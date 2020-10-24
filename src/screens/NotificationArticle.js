@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 
 import {ArticleTile, Loading} from '../components';
 import {getArticleInfo} from '../actions/ArticleInfoAction';
@@ -48,9 +48,8 @@ class NotificationArticle extends React.PureComponent {
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
-            type="material-community"
             size={26}
-            containerStyle={styles.IconStyles}
+            style={styles.IconStyles}
             color={styles.HeadingTextStyling.color}
           />
         </TouchableOpacity>

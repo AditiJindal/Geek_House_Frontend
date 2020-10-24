@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  ScrollView,
-} from 'react-native';
-import {Icon} from 'react-native-elements';
+import {View, Text, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
 import _ from 'lodash';
 import {connect} from 'react-redux';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
@@ -46,7 +39,6 @@ class Bookmark extends React.PureComponent {
           style={{justifyContent: 'center', alignItems: 'center', padding: 3}}>
           <Icon
             name="arrow-left"
-            type="material-community"
             size={26}
             containerStyle={{marginVertical: 5, marginRight: 15}}
             color={COLORS.LESS_DARK}
