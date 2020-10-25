@@ -1,6 +1,6 @@
 {
   "name": "Geek_House",
-  "version": "1.37",
+  "version": "1.38",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
