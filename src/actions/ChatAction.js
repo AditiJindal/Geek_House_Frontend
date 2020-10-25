@@ -75,7 +75,7 @@ const sendMessageHelper = async (dispatch, message, other_user_id, image) => {
   } else {
     dispatch({
       type: ACTIONS.CHAT_MESSAGE_HANDLER,
-      payload: {message, other_user_id},
+      payload: {message, other_user_id, isIncoming: false},
     });
     socketEmit(SOCKET_EVENTS.MESSAGE, encryptMessage(message_to_send));
   }
@@ -191,21 +191,18 @@ export const createGroup = async (
   successCallback,
   errorCallback,
 ) => {
-  if (!newGroupInfo.group_image) {
-    socketEmit(SOCKET_EVENTS.CREATE_GROUP, newGroupInfo);
-    successCallback();
+  if (newGroupInfo.group_image) {
+    // upload image
+    const aws_image = await uploadImage(newGroupInfo.group_image, {
+      type: 'group_image',
+      image_type: 'jpeg',
+    });
+    if (aws_image.error) {
+      errorCallback('Could not upload image, group not created');
+      return;
+    }
+    newGroupInfo.group_image = aws_image;
   }
-
-  // upload image
-  const aws_image = await uploadImage(newGroupInfo.group_image, {
-    type: 'group_image',
-    image_type: 'jpeg',
-  });
-  if (aws_image.error) {
-    errorCallback('Could not upload image, group not created');
-    return;
-  }
-  newGroupInfo.group_image = aws_image;
   socketEmit(SOCKET_EVENTS.CREATE_GROUP, newGroupInfo);
   successCallback();
 };

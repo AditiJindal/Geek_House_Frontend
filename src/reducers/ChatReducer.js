@@ -1,5 +1,4 @@
 import uuid from 'uuid-random';
-import fastClone from 'rfdc';
 
 import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
 import {ACTIONS} from '../actions/types';
@@ -213,7 +212,7 @@ export default (state = INITIAL_STATE, action) => {
       if (Object.keys(payload).length !== 1) {
         new_messages = {...payload.messages};
         total_unread_messages = payload.total_unread_messages;
-        new_status = fastClone(payload.status);
+        new_status = {...payload.status};
         new_chats = [...payload.chats];
 
         if (!payload.theme) {
@@ -270,7 +269,7 @@ export default (state = INITIAL_STATE, action) => {
       return {...state, authTokenSet: true};
 
     case ACTIONS.CHAT_TYPING:
-      new_status = fastClone(state.status);
+      new_status = {...state.status};
       if (payload.value) {
         new_total_typing = state.total_typing + 1;
       } else {
@@ -287,13 +286,12 @@ export default (state = INITIAL_STATE, action) => {
       return {...state, status: new_status, total_typing: new_total_typing};
 
     case ACTIONS.CHAT_USER_ONLINE:
-      new_status = fastClone(state.status);
+      new_status = {...state.status};
       if (!new_status[payload.user_id]) {
         new_status[payload.user_id] = {unread_messages: 0};
       }
       new_status[payload.user_id].online = payload.value;
       new_status[payload.user_id].typing = false;
-      console.log('NEW STATUS HERE : ', new_status);
       return {...state, status: new_status};
 
     case ACTIONS.CHAT_LOADING:
@@ -301,7 +299,7 @@ export default (state = INITIAL_STATE, action) => {
 
     case ACTIONS.SET_CHAT_USER_DATA:
       other_user_data = payload;
-      new_status = fastClone(state.status);
+      new_status = {...state.status};
 
       if (state.status.hasOwnProperty(payload._id)) {
         // means if the user is already present/ we know the user
@@ -314,7 +312,7 @@ export default (state = INITIAL_STATE, action) => {
         // we assume the person is just looking at the user
         total_unread_messages = state.total_unread_messages;
       }
-      other_user_data = fastClone(other_user_data);
+      other_user_data = {...other_user_data};
       other_user_data.newEntry = false;
 
       if (total_unread_messages < 0) {
@@ -338,8 +336,8 @@ export default (state = INITIAL_STATE, action) => {
 
       // const all_users = [...payload.chats]
       all_users = mergeChats(payload.chats, [...state.chats]);
-      new_messages = fastClone(state.messages);
-      duplicate_status = fastClone(state.status);
+      new_messages = {...state.messages};
+      duplicate_status = {...state.status};
       total_unread_messages = state.total_unread_messages;
 
       if (state.loaded_from_storage && Object.keys(state.status).length !== 0) {
@@ -417,12 +415,12 @@ export default (state = INITIAL_STATE, action) => {
       return new_state;
 
     case ACTIONS.CHAT_MESSAGE_HANDLER:
-      console.log('STATE IN ACTIONS.CHAT_MESSAGE_HANDLER : ', state);
-      new_messages = fastClone(state.messages);
-      new_status = fastClone(state.status);
+      new_messages = {...state.messages};
+      new_status = {...state.status};
       total_unread_messages = state.total_unread_messages;
-      new_currentMessages = [];
+      new_currentMessages = [...state.currentMessages];
       payload_message = payload.message;
+
       recentMessage = payload_message[0].text;
       isGif = payload_message[0].image ? payload_message[0].image.isGif : false;
 
@@ -443,7 +441,6 @@ export default (state = INITIAL_STATE, action) => {
 
       saveMessageInDB(payload, state.user_id);
 
-      new_currentMessages = fastClone(state.currentMessages);
       if (
         state.other_user_data._id &&
         state.other_user_data._id.toString() ===
@@ -451,7 +448,7 @@ export default (state = INITIAL_STATE, action) => {
       ) {
         // means the user has opened a chat which is different and the message he received is
         // from the same user
-        new_currentMessages.unshift(payload_message);
+        new_currentMessages.unshift(payload_message[0]);
       }
 
       if (!state.status.hasOwnProperty(payload.other_user_id)) {
@@ -487,7 +484,7 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         loading: false,
         currentMessages: new_currentMessages,
-        chats: fastClone(state.chats),
+        chats: [...state.chats],
         status: new_status,
         total_unread_messages,
         quick_replies: [],
@@ -498,7 +495,7 @@ export default (state = INITIAL_STATE, action) => {
       return new_state;
 
     case ACTIONS.CHAT_CLEAR_OTHER_USER:
-      new_status = fastClone(state.status);
+      new_status = {...state.status};
       new_status[state.other_user_data._id].unread_messages = 0;
       return {
         ...state,
@@ -604,7 +601,7 @@ export default (state = INITIAL_STATE, action) => {
         }
       }
 
-      new_chat_group_participants = fastClone(state.chat_group_participants);
+      new_chat_group_participants = {...state.chat_group_participants};
       new_chat_group_participants[payload.group_id] = payload;
 
       new_state = {
@@ -637,10 +634,10 @@ export default (state = INITIAL_STATE, action) => {
         new_state = {
           ...state,
           chatGroupsLeft: new_chatGroupsLeft,
-          chats: fastClone(state.chats),
+          chats: [...state.chats],
         };
       } else {
-        new_state = {...state, chats: [group, ...fastClone(state.chats)]};
+        new_state = {...state, chats: [group, ...state.chats]};
       }
 
       saveData(action.type, new_state);
@@ -673,8 +670,8 @@ export default (state = INITIAL_STATE, action) => {
 
       new_state = {
         ...state,
-        chatGroupsLeft: fastClone(state.chatGroupsLeft),
-        chat_group_participants: fastClone(state.chat_group_participants),
+        chatGroupsLeft: [...state.chatGroupsLeft],
+        chat_group_participants: {...state.chat_group_participants},
       };
       saveData(action.type, new_state);
       return new_state;
@@ -696,7 +693,7 @@ export default (state = INITIAL_STATE, action) => {
 
       return {
         ...state,
-        chat_group_participants: fastClone(state.chat_group_participants),
+        chat_group_participants: {...state.chat_group_participants},
       };
 
     case ACTIONS.CHAT_ADD_NEW_GROUP_PARTICIPANTS:
@@ -707,7 +704,7 @@ export default (state = INITIAL_STATE, action) => {
       ];
       new_state = {
         ...state,
-        chat_group_participants: fastClone(state.chat_group_participants),
+        chat_group_participants: {...state.chat_group_participants},
       };
       return new_state;
 
@@ -740,8 +737,8 @@ export default (state = INITIAL_STATE, action) => {
 
       new_state = {
         ...state,
-        chats: fastClone(state.chats),
-        other_user_data: fastClone(state.other_user_data),
+        chats: [...state.chats],
+        other_user_data: {...state.other_user_data},
         chatInfoGroupDetails: new_chatInfoGroupDetails,
       };
       return new_state;

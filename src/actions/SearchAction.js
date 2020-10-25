@@ -3,13 +3,14 @@ import {URLS, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
 import {logEvent} from './ChatAction';
 import {httpClient, encrypt} from '../utilities';
 
-export const getPopularSearches = () => {
+export const getPopularSearches = (onSuccess) => {
   return (dispatch) => {
     dispatch({type: ACTIONS.SEARCH_LOADING});
     httpClient()
       .get(URLS.popularsearches)
       .then(({data}) => {
         dispatch({type: ACTIONS.POPULAR_SEARCHES_SUCCESS, payload: data});
+        onSuccess();
       })
       .catch(() => {
         showAlert(true, {});

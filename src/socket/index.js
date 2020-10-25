@@ -1,5 +1,6 @@
 import io from 'socket.io-client';
 
+import {store} from '../reducers';
 import {
   onChatGroupParticipants,
   onCreateGroup,
@@ -14,6 +15,7 @@ import {BASE_URL, HTTP_TIMEOUT, SOCKET_EVENTS} from '../Constants';
 
 let socket = io.Socket;
 let authtoken = null;
+const {getState} = store;
 
 // 2 layered function
 const socketOnEventLogger = (socket) => {
@@ -25,9 +27,11 @@ const socketOnEventLogger = (socket) => {
 };
 
 const onSocketConnect = () => {
-  console.log(
-    `SOCKET CONNECTED : ${socket.connected} SOCKET_ID : ${socket.id}`,
-  );
+  if (__DEV__) {
+    console.log(
+      `SOCKET CONNECTED : ${socket.connected} SOCKET_ID : ${socket.id}`,
+    );
+  }
 };
 
 const onSocketDisconnect = () => {
@@ -61,9 +65,8 @@ export const setupSocket = (local_authtoken) => {
 };
 
 export const runSocketListeners = () => {
-  console.log('SOCKET LISTENING');
-
   if (__DEV__) {
+    console.log('SOCKET LISTENING');
     socketOnEventLogger(socket);
   }
 
@@ -85,11 +88,16 @@ export const runSocketListeners = () => {
 
 export const socketEmit = (socket_event, data) => {
   // use this function whenever we want to emit to server
-  console.log(`SOCKET EVENT :  ${socket_event} AUTHTOKEN : ${authtoken}`);
+  console.log(
+    `SOCKET EVENT :  ${socket_event} AUTHTOKEN : ${authtoken}  DATA : `,
+    data,
+  );
   socket.emit(socket_event, {data, authtoken});
 };
 
 export const disconnectSocket = () => {
-  console.log(`SOCKET DISCONNECTED :  ${socket.disconnected}`);
+  if (__DEV__) {
+    console.log(`SOCKET DISCONNECTED :  ${socket.disconnected}`);
+  }
   socket.disconnect(true);
 };

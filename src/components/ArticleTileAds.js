@@ -84,7 +84,7 @@ class NativeAdsComponent extends Component {
   }
 }
 
-export default withNativeAd(NativeAdsComponent);
+export default __DEV__ ? null : withNativeAd(NativeAdsComponent);
 
 const styles = StyleSheet.create({
   TileViewStyle: {

@@ -127,9 +127,6 @@ class Login extends React.PureComponent {
   }
 
   renderPolicy() {
-    if (this.state.forceUpdate) {
-      return null;
-    }
     return (
       <TouchableOpacity
         style={{alignSelf: 'center'}}

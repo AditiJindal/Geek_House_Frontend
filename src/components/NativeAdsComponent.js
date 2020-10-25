@@ -13,9 +13,6 @@ import SView from 'react-native-simple-shadow-view';
 
 class NativeAdsComponent extends Component {
   render() {
-    if (__DEV__) {
-      return null;
-    }
     // return null;
     const {COLORS} = this.props;
     return (
@@ -89,4 +86,4 @@ class NativeAdsComponent extends Component {
   }
 }
 
-export default withNativeAd(NativeAdsComponent);
+export default __DEV__ ? null : withNativeAd(NativeAdsComponent);

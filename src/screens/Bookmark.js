@@ -3,13 +3,9 @@ import {View, Text, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import _ from 'lodash';
 import {connect} from 'react-redux';
-import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import {getBookmarkedArticles} from '../actions/ArticleInfoAction';
-import {ArticleTile, ArticleTileAds} from '../components';
+import {ArticleTile, ArticleTileAds, ShimmerScreen} from '../components';
 import {FONTS} from '../Constants';
-
-const LOADING_CARD_SIZE = 150;
-const LOADING_CARD_SIZE_RATIO = 4 / 3;
 
 class Bookmark extends React.PureComponent {
   state = {adIndex: 0, adCategoryIndex: []};
@@ -58,52 +54,11 @@ class Bookmark extends React.PureComponent {
 
     if (this.props.bookmarks_loading) {
       return (
-        <FlatList
-          data={Array(4).fill(0)}
-          keyExtractor={(_, index) => index.toString()}
-          ListHeaderComponent={this.renderHeader()}
-          ListFooterComponent={<View style={{height: 50}} />}
-          showsHorizontalScrollIndicator={false}
-          renderItem={() => (
-            <View>
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                autoRun={true}
-                duration={650}
-                delay={30}
-                style={{
-                  height: 35,
-                  borderRadius: 5,
-                  marginTop: 30,
-                  marginLeft: 15,
-                  alignItems: 'center',
-                  elevation: 6,
-                }}
-              />
-              <FlatList
-                data={Array(4).fill(0)}
-                keyExtractor={(_, index) => index.toString()}
-                horizontal
-                contentContainerStyle={{paddingHorizontal: 10}}
-                showsHorizontalScrollIndicator={false}
-                renderItem={({index}) => (
-                  <ShimmerPlaceHolder
-                    colorShimmer={COLORS.SHIMMER_COLOR}
-                    visible={false}
-                    style={{
-                      width: LOADING_CARD_SIZE * LOADING_CARD_SIZE_RATIO,
-                      height: LOADING_CARD_SIZE,
-                      borderRadius: 8,
-                      margin: 15,
-                      marginHorizontal: 5,
-                      elevation: 6,
-                    }}
-                  />
-                )}
-              />
-            </View>
-          )}
+        <ShimmerScreen
+          header={this.renderHeader()}
+          rows={4}
+          columns={5}
+          COLORS={COLORS}
         />
       );
     } else {

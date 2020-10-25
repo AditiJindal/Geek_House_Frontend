@@ -13,7 +13,6 @@ const logger = createLogger({
 middleware.push(ReduxThunk); // for async actions
 if (__DEV__) {
   middleware.push(logger); // for logging redux state
-  middleware.push(freeze); // prevents redux state from mutating
 }
 
 export default middleware;

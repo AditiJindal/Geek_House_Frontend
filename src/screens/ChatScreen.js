@@ -292,7 +292,7 @@ class ChatScreen extends React.PureComponent {
                 messages={this.props.currentMessages}
                 onSend={(message) => {
                   this.props.sendMessage(
-                    [{...message[0], isGroup: other_user_data.isGroup}],
+                    [{...message[0], isGroup: !!other_user_data.isGroup}],
                     other_user_data._id,
                     chatScreenState.selectedImage,
                   );

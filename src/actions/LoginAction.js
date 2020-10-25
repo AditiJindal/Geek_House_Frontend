@@ -226,8 +226,7 @@ export const checkLogin = (onSuccess, onForceUpdate) => {
             }
           });
         }
-      })
-      .catch((e) => console.log(e));
+      });
   };
 };
 

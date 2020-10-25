@@ -21,11 +21,13 @@ const httpClient = () => {
   instance.interceptors.response.use((res) => {
     analysis.responseTime = new Date();
     res.analysis = analysis;
-    console.log(
-      `${analysis.url} : ${
-        (analysis.responseTime - analysis.requestTime) / 1000
-      }s `,
-    );
+    if (__DEV__) {
+      console.log(
+        `${analysis.url} : ${
+          (analysis.responseTime - analysis.requestTime) / 1000
+        }s `,
+      );
+    }
     return res;
   });
 

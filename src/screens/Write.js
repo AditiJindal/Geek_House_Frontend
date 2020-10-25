@@ -10,12 +10,11 @@ import {
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 
-import {ArticleTile, Ripple} from '../components';
+import {ArticleTile, Ripple, ShimmerScreen} from '../components';
 import {getMyArticles, clearPublish} from '../actions/WriteAction';
 import {FONTS, COLORS_LIGHT_THEME, SCREENS, SCREEN_CLASSES} from '../Constants';
 
@@ -65,176 +64,13 @@ class Write extends React.PureComponent {
 
     if (this.props.loading) {
       return (
-        <View style={{width: '100%'}}>
-          <ScrollView
-            style={{flexGrow: 1}}
-            nestedScrollEnabled={true}
-            showsVerticalScrollIndicator={false}>
-            <View style={{height: 70, width: 1}} />
-            <ShimmerPlaceHolder
-              colorShimmer={COLORS.SHIMMER_COLOR}
-              visible={false}
-              autoRun={true}
-              duration={600}
-              delay={100}
-              style={{
-                height: 35,
-                borderRadius: 5,
-                marginTop: 30,
-                marginLeft: 15,
-                alignItems: 'center',
-                elevation: 6,
-              }}
-            />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-            </ScrollView>
-
-            <ShimmerPlaceHolder
-              colorShimmer={COLORS.SHIMMER_COLOR}
-              visible={false}
-              autoRun={true}
-              duration={650}
-              delay={30}
-              style={{
-                height: 35,
-                borderRadius: 5,
-                marginTop: 30,
-                marginLeft: 15,
-                alignItems: 'center',
-                elevation: 6,
-              }}
-            />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-            </ScrollView>
-
-            <ShimmerPlaceHolder
-              colorShimmer={COLORS.SHIMMER_COLOR}
-              visible={false}
-              autoRun={true}
-              duration={700}
-              delay={0}
-              style={{
-                height: 35,
-                borderRadius: 5,
-                marginTop: 30,
-                marginLeft: 15,
-                alignItems: 'center',
-                elevation: 6,
-              }}
-            />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-              <ShimmerPlaceHolder
-                colorShimmer={COLORS.SHIMMER_COLOR}
-                visible={false}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 8,
-                  margin: 15,
-                  marginHorizontal: 5,
-                  elevation: 6,
-                }}
-              />
-            </ScrollView>
-            <View style={{height: 200, width: 1}} />
-          </ScrollView>
-        </View>
+        <ShimmerScreen
+          rows={4}
+          columns={5}
+          COLORS={COLORS}
+          header={<View style={{height: 50}} />}
+          footer={<View style={{height: 125}} />}
+        />
       );
     } else {
       const category_list = Object.keys(data);
