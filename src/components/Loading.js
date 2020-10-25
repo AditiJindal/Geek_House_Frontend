@@ -9,7 +9,7 @@ let new_data_white = data_white;
 new_data.fr = 120;
 new_data_white.fr = 120;
 
-export default Loading = props => {
+export default Loading = (props) => {
   return (
     <View>
       <LottieView

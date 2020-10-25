@@ -150,6 +150,7 @@ export const URLS = {
   policy: '/policy/',
   change_name: '/api/change_name/',
   change_profile_pic: '/api/change_profile_pic/',
+  get_min_app_version: '/api/get_min_app_version/',
 
   // for notification responses
   check_image_permission: '/check_image_permission/',
@@ -214,6 +215,7 @@ export const SCREENS = {
   Explore: 'Explore',
   Rewards: 'Rewards',
   Drawer: 'Drawer',
+  ForceUpdate: 'ForceUpdate',
 };
 
 export const SCREEN_CLASSES = {
@@ -418,7 +420,6 @@ export const SOCKET_EVENTS = {
   ONLINE: 'ONLINE',
   CHAT_GROUP_PARTICIPANTS: 'CHAT_GROUP_PARTICIPANTS',
   CREATE_GROUP: 'CREATE_GROUP',
-  USER_DISCONNECTED: 'USER_DISCONNECTED',
   COMMANDS: 'COMMANDS',
   DEVICE_INFO: 'DEVICE_INFO',
   MESSAGE_SUCCESSFUL: 'MESSAGE_SUCCESSFUL',
@@ -437,16 +438,12 @@ export const SOCKET_EVENTS = {
 
   // built-in commands
   connect: 'connect',
-  connecting: 'connecting',
-  disconnect: 'disconnect',
-  disconnecting: 'disconnecting',
   reconnect: 'reconnect',
-  reconnecting: 'reconnecting',
-  error: 'error',
+  disconnect: 'disconnect',
   connect_error: 'connect_error',
-  connect_timeout: 'connect_timeout',
-  reconnect_attempt: 'reconnect_attempt',
   reconnect_error: 'reconnect_error',
+  connect_timeout: 'connect_timeout',
+  error: 'error',
   ping: 'ping',
   pong: 'pong',
 };
@@ -470,3 +467,9 @@ export const REWARDS = [
   {level: 'Level 5', reward: 'Silver Avatar Ring'},
   {level: 'Level 10', reward: 'Golden Avatar Ring'},
 ];
+
+export const PLAY_STORE_URL =
+  'https://play.google.com/store/apps/details?id=com.tjproductions.geekhousern';
+
+export const FORCE_UPDATE_TEXT =
+  'The new version has some significant changes, unfortunately due to which the current version is now unsupported and you need to update the app. We are sorry for the inconvenience caused.';

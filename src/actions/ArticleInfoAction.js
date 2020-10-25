@@ -39,13 +39,7 @@ const articleHandler = (
             type: ACTIONS.GET_ARTICLE_INFO,
             payload: {article: response.data, add: true, forceUpdate},
           });
-        })
-        .catch((e) =>
-          logEvent(LOG_EVENT.ERROR, {
-            errorLine: 'ARTICLE INFO ACTION - 46',
-            description: e.toString(),
-          }),
-        );
+        });
     }
   }
 };
@@ -75,13 +69,7 @@ export const submitComment = (to_send, author, author_image) => {
           type: ACTIONS.ARTICLE_ADD_COMMENT,
           payload: {...to_send, _id: data.comment_id, author, author_image},
         });
-      })
-      .catch((e) =>
-        logEvent(LOG_EVENT.ERROR, {
-          errorLine: 'ARTICLE INFO ACTION - 62',
-          description: e.toString(),
-        }),
-      );
+      });
   };
 };
 
@@ -94,13 +82,7 @@ export const bookmarkArticle = (article_id, bookmarked) => {
           type: ACTIONS.ARTICLE_BOOKMARK,
           payload: {article_id, bookmarked: !bookmarked},
         });
-      })
-      .catch((e) =>
-        logEvent(LOG_EVENT.ERROR, {
-          errorLine: 'ARTICLE INFO ACTION - 70',
-          description: e.toString(),
-        }),
-      );
+      });
   };
 };
 
@@ -113,10 +95,6 @@ export const getBookmarkedArticles = () => {
         dispatch({type: ACTIONS.GET_BOOKMARKS, payload: response.data});
       })
       .catch((e) => {
-        logEvent(LOG_EVENT.ERROR, {
-          errorLine: 'ARTICLE INFO ACTION - 80, Database Error',
-          description: e.toString(),
-        });
         dispatch({
           type: ACTIONS.BOOKMARKS_ERROR,
           payload: "Couldn't get your bookmarked articles",

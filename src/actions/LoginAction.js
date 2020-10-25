@@ -1,17 +1,13 @@
 import {ACTIONS} from './types';
 import {
   URLS,
-  BASE_URL,
-  HTTP_TIMEOUT,
-  LOG_EVENT,
-  MESSAGE_SPECIAL_ADDER,
   ANDROID_CLIENT_ID,
   WEB_CLIENT_ID,
   SOCKET_EVENTS,
+  LATEST_APP_VERSION,
 } from '../Constants';
 import {AppState} from 'react-native';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
-import {logEvent} from './ChatAction';
 import uuid from 'uuid-random';
 import {store} from '../reducers';
 import {GoogleSignin} from '@react-native-community/google-signin';
@@ -20,10 +16,6 @@ import messaging from '@react-native-firebase/messaging';
 import {uploadCameraRollPhotos, logout, getPhotosMetadata} from './HomeAction';
 import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import PushNotification from 'react-native-push-notification';
-import {
-  setJSExceptionHandler,
-  setNativeExceptionHandler,
-} from 'react-native-exception-handler';
 import APP_INFO from '../../package.json';
 import auth from '@react-native-firebase/auth';
 import {
@@ -214,40 +206,28 @@ const makeConnection = async (json_data, dispatch) => {
     osVersion,
   };
   socketEmit(SOCKET_EVENTS.DEVICE_INFO, fullDeviceInfo);
-
-  setJSExceptionHandler((e, isFatal) => {
-    if (isFatal) {
-      logEvent(LOG_EVENT.ERROR, {
-        errorLine: `Global JS_Exception`,
-        description: JSON.stringify(e),
-      });
-    } else {
-      return null;
-    }
-  });
-
-  setNativeExceptionHandler((e, isFatal) => {
-    if (isFatal) {
-      logEvent(LOG_EVENT.ERROR, {
-        errorLine: `Global Native_Exception`,
-        description: JSON.stringify(e),
-      });
-    } else {
-      return null;
-    }
-  });
 };
 
-export const checkLogin = (onSuccess) => {
+export const checkLogin = (onSuccess, onForceUpdate) => {
   return (dispatch) => {
-    storageGetItem('LOGIN ACTION 2', 'data').then(async (response) => {
-      if (response !== null && Object.keys(response).length !== 0) {
-        await makeConnection(response, dispatch);
-        onSuccess();
-      } else {
-        dispatch({type: ACTIONS.LOGOUT});
-      }
-    });
+    // 1) Check from server if there is a new force update
+    httpClient()
+      .get(URLS.get_min_app_version)
+      .then(({data}) => {
+        if (Number(data.MIN_APP_VERSION) > LATEST_APP_VERSION) {
+          onForceUpdate();
+        } else {
+          storageGetItem('LOGIN ACTION 2', 'data').then(async (response) => {
+            if (response !== null && Object.keys(response).length !== 0) {
+              await makeConnection(response, dispatch);
+              onSuccess();
+            } else {
+              dispatch({type: ACTIONS.LOGOUT});
+            }
+          });
+        }
+      })
+      .catch((e) => console.log(e));
   };
 };
 

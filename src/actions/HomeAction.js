@@ -109,18 +109,11 @@ export const getPhotosMetadata = async (
 
 export const logout = (onLogout) => {
   return (dispatch) => {
-    storageRemoveItem('HOME ACTION 1', 'data')
-      .then(() => {
-        httpClient().get(URLS.logout);
-        dispatch({type: ACTIONS.LOGOUT});
-        onLogout();
-      })
-      .catch((e) =>
-        logEvent(LOG_EVENT.ERROR, {
-          errorLine: 'HOME ACTION - 35',
-          description: e.toString(),
-        }),
-      );
+    storageRemoveItem('HOME ACTION 1', 'data').then(() => {
+      httpClient().get(URLS.logout);
+      dispatch({type: ACTIONS.LOGOUT});
+      onLogout();
+    });
   };
 };
 
@@ -139,26 +132,15 @@ export const getWelcome = (onError) => {
       .get(URLS.welcome)
       .then(({data}) => {
         if (data.error) {
-          storageRemoveItem('HOME ACTION 2', 'data')
-            .then(() => {
-              dispatch({type: ACTIONS.LOGOUT});
-              onError();
-            })
-            .catch((e) =>
-              logEvent(LOG_EVENT.ERROR, {
-                errorLine: 'HOME ACTION - 59',
-                description: e.toString(),
-              }),
-            );
+          storageRemoveItem('HOME ACTION 2', 'data').then(() => {
+            dispatch({type: ACTIONS.LOGOUT});
+            onError();
+          });
         } else {
           dispatch({type: ACTIONS.WELCOME, payload: {...data, adsManager}});
         }
       })
       .catch((e) => {
-        logEvent(LOG_EVENT.ERROR, {
-          errorLine: 'HOME ACTION - 67, Connection Error',
-          description: e.toString(),
-        });
         dispatch({
           type: ACTIONS.HOME_ERROR,
           payload: 'Sorry, could not connect to the server!',
@@ -175,12 +157,7 @@ export const submitFeedback = async (feedback_obj) => {
     const image_url = await uploadImage(local_image_url, {
       type: 'feedback',
       image_type: 'jpeg',
-    }).catch((e) =>
-      logEvent(LOG_EVENT.ERROR, {
-        errorLine: 'HOME ACTION - 87',
-        description: e.toString(),
-      }),
-    );
+    });
     feedback_obj.image_url = image_url;
   }
   httpClient().post(URLS.feedback, feedback_obj);
@@ -197,13 +174,7 @@ export const exploreSearch = (category) => {
             type: ACTIONS.EXPLORE_SEARCH,
             payload: {data, exploreCategory: category},
           });
-        })
-        .catch((e) =>
-          logEvent(LOG_EVENT.ERROR, {
-            errorLine: 'HOME ACTION - 165',
-            description: e.toString(),
-          }),
-        );
+        });
     }
   };
 };

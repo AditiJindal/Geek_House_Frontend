@@ -23,6 +23,7 @@ import Policy from './screens/Policy';
 import Explore from './screens/Explore';
 import Rewards from './screens/Rewards';
 import Drawer from './screens/Drawer';
+import ForceUpdate from './screens/ForceUpdate';
 import {BottomTab} from './components';
 
 import {COLORS_DARK_THEME, SCREENS} from './Constants';
@@ -41,6 +42,7 @@ const LoginNavigator = () => {
   return (
     <LoginStack.Navigator headerMode="none">
       <LoginStack.Screen name={SCREENS.Login} component={Login} />
+      <LoginStack.Screen name={SCREENS.ForceUpdate} component={ForceUpdate} />
       <LoginStack.Screen name={SCREENS.Policy} component={Policy} />
     </LoginStack.Navigator>
   );

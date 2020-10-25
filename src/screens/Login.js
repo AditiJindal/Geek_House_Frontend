@@ -1,32 +1,36 @@
-import React from 'react';
+import {COLORS_LIGHT_THEME, FONTS, SCREENS} from '../Constants';
 import {
-  View,
+  StatusBar,
   StyleSheet,
   Text,
-  StatusBar,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import {connect} from 'react-redux';
-import NetInfo from '@react-native-community/netinfo';
-import LinearGradient from 'react-native-linear-gradient';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import Image from 'react-native-fast-image';
-import SplashScreen from 'react-native-splash-screen';
-
-import {Loading} from '../components';
 import {
-  loginGoogle,
-  loginFacebook,
   checkLogin,
   internetHandler,
+  loginFacebook,
+  loginGoogle,
 } from '../actions/LoginAction';
-import {FONTS, COLORS_LIGHT_THEME, SCREENS} from '../Constants';
+
+import Image from 'react-native-fast-image';
+import LinearGradient from 'react-native-linear-gradient';
+import {Loading} from '../components';
+import NetInfo from '@react-native-community/netinfo';
+import React from 'react';
+import SplashScreen from 'react-native-splash-screen';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import {connect} from 'react-redux';
 
 class Login extends React.PureComponent {
   componentDidMount = async () => {
-    this.props.checkLogin(() => {
-      this.props.navigation.replace(SCREENS.Main);
-    });
+    changeNavigationBarColor(COLORS_LIGHT_THEME.THEME2, false);
+    this.props.checkLogin(
+      () => {
+        this.props.navigation.replace(SCREENS.Main);
+      },
+      () => this.props.navigation.replace(SCREENS.ForceUpdate),
+    );
     SplashScreen.hide();
     NetInfo.fetch().then((state) =>
       this.props.internetHandler(state.isInternetReachable),
@@ -122,7 +126,10 @@ class Login extends React.PureComponent {
     );
   }
 
-  _renderPolicy() {
+  renderPolicy() {
+    if (this.state.forceUpdate) {
+      return null;
+    }
     return (
       <TouchableOpacity
         style={{alignSelf: 'center'}}
@@ -144,9 +151,16 @@ class Login extends React.PureComponent {
     );
   }
 
-  _renderLogin() {
+  renderLogin() {
+    if (this.props.loading) {
+      return (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Loading white size={128} />
+        </View>
+      );
+    }
     return (
-      <View style={{flex: 1}}>
+      <View style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}>
         <View
           style={{
             flex: 2,
@@ -165,6 +179,7 @@ class Login extends React.PureComponent {
             </Text>
           )}
         </View>
+
         <View
           style={{
             padding: 10,
@@ -176,7 +191,8 @@ class Login extends React.PureComponent {
           {this.renderFacebookButton()}
           {/* {this.renderTwitterButton()} */}
         </View>
-        {this._renderPolicy()}
+
+        {this.renderPolicy()}
       </View>
     );
   }
@@ -185,20 +201,13 @@ class Login extends React.PureComponent {
     return (
       <LinearGradient
         colors={[COLORS_LIGHT_THEME.THEME1, COLORS_LIGHT_THEME.THEME2]}
-        style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}>
+        style={{flex: 1}}>
         <StatusBar
           barStyle="light-content"
           backgroundColor={COLORS_LIGHT_THEME.THEME1}
         />
-        {changeNavigationBarColor(COLORS_LIGHT_THEME.THEME2, false)}
-        {this.props.loading ? (
-          <View
-            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Loading white size={128} />
-          </View>
-        ) : (
-          this._renderLogin()
-        )}
+
+        {this.renderLogin()}
       </LinearGradient>
     );
   }

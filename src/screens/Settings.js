@@ -29,7 +29,7 @@ import {
   Loading,
 } from '../components';
 import {getRingColor} from '../utilities';
-import {socketDisconnect} from '../socket';
+import {disconnectSocket} from '../socket';
 import {FONTS, COLORS_LIGHT_THEME, ALL_CATEGORIES, SCREENS} from '../Constants';
 import {logout} from '../actions/HomeAction';
 import {
@@ -206,7 +206,7 @@ class Settings extends React.PureComponent {
           onPress={() => {
             if (this.props.internetReachable) {
               // disconnect socket form server
-              socketDisconnect();
+              disconnectSocket();
               this.props.logout(() =>
                 this.props.navigation.replace(SCREENS.Login),
               );

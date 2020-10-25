@@ -6,8 +6,6 @@ import {
   onIncomingMessage,
   onIncomingTyping,
   onOnline,
-  onUserDisconnected,
-  onReconnect,
   onChatPeople,
   onChatPeopleSearch,
   onCommands,
@@ -17,9 +15,39 @@ import {BASE_URL, HTTP_TIMEOUT, SOCKET_EVENTS} from '../Constants';
 let socket = io.Socket;
 let authtoken = null;
 
+// 2 layered function
+const socketOnEventLogger = (socket) => {
+  Object.keys(SOCKET_EVENTS).map((socket_event) => {
+    socket.addEventListener(socket_event, (data) => {
+      console.log(`SOCKET ON :  ${socket_event} DATA : `, data);
+    });
+  });
+};
+
+const onSocketConnect = () => {
+  console.log(
+    `SOCKET CONNECTED : ${socket.connected} SOCKET_ID : ${socket.id}`,
+  );
+};
+
+const onSocketDisconnect = () => {
+  const {authtoken, data} = getState().login;
+  socket.emit(SOCKET_EVENTS.NOT_DISCONNECTED, {
+    id: authtoken,
+    name: data.name,
+  });
+};
+
+const onSocketReconnect = () => {
+  const {authtoken, data} = getState().login;
+  socket.emit(SOCKET_EVENTS.NOT_DISCONNECTED, {
+    id: authtoken,
+    name: data.name,
+  });
+};
+
 export const setupSocket = (local_authtoken) => {
   // sets the socket and listens to routes
-  console.log('SETTING UP SOCKET');
   const local_socket = io.connect(BASE_URL, {
     timeout: HTTP_TIMEOUT,
     forceNew: true,
@@ -35,6 +63,10 @@ export const setupSocket = (local_authtoken) => {
 export const runSocketListeners = () => {
   console.log('SOCKET LISTENING');
 
+  if (__DEV__) {
+    socketOnEventLogger(socket);
+  }
+
   // custom events
   socket.on(SOCKET_EVENTS.INCOMING_MESSAGE, onIncomingMessage);
   socket.on(SOCKET_EVENTS.INCOMING_TYPING, onIncomingTyping);
@@ -42,14 +74,13 @@ export const runSocketListeners = () => {
   socket.on(SOCKET_EVENTS.ONLINE, onOnline);
   socket.on(SOCKET_EVENTS.CHAT_GROUP_PARTICIPANTS, onChatGroupParticipants);
   socket.on(SOCKET_EVENTS.CREATE_GROUP, onCreateGroup);
-  socket.on(SOCKET_EVENTS.USER_DISCONNECTED, onUserDisconnected);
   socket.on(SOCKET_EVENTS.COMMANDS, onCommands);
   socket.on(SOCKET_EVENTS.CHAT_PEOPLE_SEARCH, onChatPeopleSearch);
 
   // in built events
-  socket.on(SOCKET_EVENTS.connect, socketConnect);
-  socket.on(SOCKET_EVENTS.disconnect, socketDisconnect);
-  socket.on(SOCKET_EVENTS.reconnect, onReconnect);
+  socket.on(SOCKET_EVENTS.connect, onSocketConnect);
+  socket.on(SOCKET_EVENTS.reconnect, onSocketReconnect);
+  socket.on(SOCKET_EVENTS.disconnect, onSocketDisconnect);
 };
 
 export const socketEmit = (socket_event, data) => {
@@ -58,11 +89,7 @@ export const socketEmit = (socket_event, data) => {
   socket.emit(socket_event, {data, authtoken});
 };
 
-export const socketConnect = () => {
-  console.log(`SOCKET CONNECTED :  ${socket.connected}`);
-};
-
-export const socketDisconnect = () => {
+export const disconnectSocket = () => {
   console.log(`SOCKET DISCONNECTED :  ${socket.disconnected}`);
   socket.disconnect(true);
 };

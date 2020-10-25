@@ -1,8 +1,9 @@
-import {ACTIONS} from '../actions/types';
-import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
-import _ from 'lodash';
-import {database} from '../database';
 import uuid from 'uuid-random';
+import fastClone from 'rfdc';
+
+import {COLORS_LIGHT_THEME, COLORS_DARK_THEME} from '../Constants';
+import {ACTIONS} from '../actions/types';
+import {database} from '../database';
 import {storageSetItem} from '../utilities/storage';
 import {decrypt} from '../utilities/encryption';
 
@@ -192,6 +193,8 @@ const mergeChats = (new_chats, old_chats) => {
 };
 
 export default (state = INITIAL_STATE, action) => {
+  let {type, payload} = action;
+
   let new_users, new_admins, other_user_data, all_users;
   let new_state, recentMessage, group, new_chatGroupsLeft;
   let total_unread_messages, new_status, user_id, new_total_typing;
@@ -199,25 +202,25 @@ export default (state = INITIAL_STATE, action) => {
   let new_chat_group_participants, currentMessages, new_currentMessages;
   let payload_message, isGif, user;
 
-  switch (action.type) {
+  switch (type) {
     case ACTIONS.LOGOUT:
       return {...INITIAL_STATE};
 
     case ACTIONS.CHAT_LOAD_DATA:
-      user_id = action.payload.user_id;
+      user_id = payload.user_id;
       COLORS = COLORS_DARK_THEME;
 
-      if (Object.keys(action.payload).length !== 1) {
-        new_messages = {...action.payload.messages};
-        total_unread_messages = action.payload.total_unread_messages;
-        new_status = {...action.payload.status};
-        new_chats = [...action.payload.chats];
+      if (Object.keys(payload).length !== 1) {
+        new_messages = {...payload.messages};
+        total_unread_messages = payload.total_unread_messages;
+        new_status = fastClone(payload.status);
+        new_chats = [...payload.chats];
 
-        if (!action.payload.theme) {
-          action.payload.theme = INITIAL_STATE.theme;
+        if (!payload.theme) {
+          payload.theme = INITIAL_STATE.theme;
           COLORS = COLORS_LIGHT_THEME;
         } else {
-          if (action.payload.theme === 'light') {
+          if (payload.theme === 'light') {
             COLORS = COLORS_LIGHT_THEME;
           }
         }
@@ -227,11 +230,11 @@ export default (state = INITIAL_STATE, action) => {
         }
         new_state = {
           ...state,
-          theme: action.payload.theme,
-          animationOn: action.payload.animationOn,
-          quick_replies_enabled: action.payload.quick_replies_enabled,
-          chat_background: action.payload.chat_background,
-          // chat_group_participants: action.payload.chat_group_participants,
+          theme: payload.theme,
+          animationOn: payload.animationOn,
+          quick_replies_enabled: payload.quick_replies_enabled,
+          chat_background: payload.chat_background,
+          // chat_group_participants: payload.chat_group_participants,
           user_id,
           messages: new_messages,
           COLORS,
@@ -248,14 +251,14 @@ export default (state = INITIAL_STATE, action) => {
       }
 
     case ACTIONS.CHECK_MESSAGES_OBJECT:
-      return {...state, messages: action.payload};
+      return {...state, messages: payload};
 
     case ACTIONS.CHANGE_THEME:
       COLORS = COLORS_DARK_THEME;
-      if (action.payload === 'light') {
+      if (payload === 'light') {
         COLORS = COLORS_LIGHT_THEME;
       }
-      new_state = {...state, theme: action.payload, COLORS};
+      new_state = {...state, theme: payload, COLORS};
 
       saveData(action.type, new_state);
       return new_state;
@@ -267,8 +270,8 @@ export default (state = INITIAL_STATE, action) => {
       return {...state, authTokenSet: true};
 
     case ACTIONS.CHAT_TYPING:
-      new_status = {...state.status};
-      if (action.payload.value) {
+      new_status = fastClone(state.status);
+      if (payload.value) {
         new_total_typing = state.total_typing + 1;
       } else {
         new_total_typing = state.total_typing - 1;
@@ -276,46 +279,43 @@ export default (state = INITIAL_STATE, action) => {
           new_total_typing = 0;
         }
       }
-      new_status[action.payload.from].typing = action.payload.value;
-      if (action.payload.value) {
-        new_status[action.payload.from].online = true;
+      new_status[payload.from].typing = payload.value;
+      if (payload.value) {
+        new_status[payload.from].online = true;
       }
 
       return {...state, status: new_status, total_typing: new_total_typing};
 
     case ACTIONS.CHAT_USER_ONLINE:
-      new_status = {...state.status};
-      if (!new_status[action.payload.user_id]) {
-        new_status[action.payload.user_id] = {
-          online: false,
-          typing: false,
-          unread_messages: 0,
-        };
+      new_status = fastClone(state.status);
+      if (!new_status[payload.user_id]) {
+        new_status[payload.user_id] = {unread_messages: 0};
       }
-      new_status[action.payload.user_id].online = action.payload.value;
-      new_status[action.payload.user_id].typing = false;
+      new_status[payload.user_id].online = payload.value;
+      new_status[payload.user_id].typing = false;
+      console.log('NEW STATUS HERE : ', new_status);
       return {...state, status: new_status};
 
     case ACTIONS.CHAT_LOADING:
       return {...state, loading: true};
 
     case ACTIONS.SET_CHAT_USER_DATA:
-      other_user_data = action.payload;
-      new_status = {...state.status};
+      other_user_data = payload;
+      new_status = fastClone(state.status);
 
-      if (state.status.hasOwnProperty(action.payload._id)) {
+      if (state.status.hasOwnProperty(payload._id)) {
         // means if the user is already present/ we know the user
         total_unread_messages =
           state.total_unread_messages -
-          state.status[action.payload._id].unread_messages;
-        state.status[action.payload._id].unread_messages = 0;
-        other_user_data = {...other_user_data, newEntry: false};
+          state.status[payload._id].unread_messages;
+        state.status[payload._id].unread_messages = 0;
       } else {
         // if we don't know the user beforehand, don't add it in status for now
         // we assume the person is just looking at the user
         total_unread_messages = state.total_unread_messages;
-        other_user_data = {...other_user_data, newEntry: false};
       }
+      other_user_data = fastClone(other_user_data);
+      other_user_data.newEntry = false;
 
       if (total_unread_messages < 0) {
         total_unread_messages = 0;
@@ -336,10 +336,10 @@ export default (state = INITIAL_STATE, action) => {
       // status: {'<other_user_id>': {online:bool, typing:bool, unread_messages:Array}}
       // messages: {'<other_user_id>': [message_objects]}
 
-      // const all_users = [...action.payload.chats]
-      all_users = mergeChats(action.payload.chats, [...state.chats]);
-      new_messages = {...state.messages};
-      duplicate_status = {...state.status};
+      // const all_users = [...payload.chats]
+      all_users = mergeChats(payload.chats, [...state.chats]);
+      new_messages = fastClone(state.messages);
+      duplicate_status = fastClone(state.status);
       total_unread_messages = state.total_unread_messages;
 
       if (state.loaded_from_storage && Object.keys(state.status).length !== 0) {
@@ -352,7 +352,7 @@ export default (state = INITIAL_STATE, action) => {
               unread_messages: 0,
             };
           }
-          action.payload.allOnline.includes(item._id)
+          payload.allOnline.includes(item._id)
             ? (online = true)
             : (online = false);
           status[item._id] = {
@@ -366,7 +366,7 @@ export default (state = INITIAL_STATE, action) => {
       } else {
         status = {};
         all_users.map((item) => {
-          action.payload.allOnline.includes(item._id)
+          payload.allOnline.includes(item._id)
             ? (online = true)
             : (online = false);
           status[item._id] = {
@@ -379,46 +379,55 @@ export default (state = INITIAL_STATE, action) => {
         });
       }
 
-      let {status, total_unread_messages, new_chats} = insertUnreadMessages(
-        action.payload.unread_messages,
+      insertUnreadMessagesResult = insertUnreadMessages(
+        payload.unread_messages,
         state.user_id,
         status,
         total_unread_messages,
         all_users,
       );
 
+      {
+        status, total_unread_messages, new_chats;
+      }
+
+      new_status = insertUnreadMessagesResult.status;
+      total_unread_messages = insertUnreadMessagesResult.total_unread_messages;
+      new_chats = insertUnreadMessagesResult.new_chats;
+
       if (total_unread_messages < 0) {
         total_unread_messages = 0;
       }
-      if (action.payload.explicitly) {
-        status = duplicate_status;
+      if (payload.explicitly) {
+        new_status = duplicate_status;
       }
 
       new_state = {
         ...state,
         chats: new_chats,
-        chatGroupsLeft: action.payload.chatGroupsLeft,
+        chatGroupsLeft: payload.chatGroupsLeft,
         loading: false,
-        status,
+        status: new_status,
         total_unread_messages,
       };
 
-      // delete action.payload.chats
+      // delete payload.chats
 
       saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_MESSAGE_HANDLER:
-      // new_messages = {...state.messages};
-      new_status = {...state.status};
+      console.log('STATE IN ACTIONS.CHAT_MESSAGE_HANDLER : ', state);
+      new_messages = fastClone(state.messages);
+      new_status = fastClone(state.status);
       total_unread_messages = state.total_unread_messages;
       new_currentMessages = [];
-      payload_message = action.payload.message;
+      payload_message = payload.message;
       recentMessage = payload_message[0].text;
       isGif = payload_message[0].image ? payload_message[0].image.isGif : false;
 
-      // action.payload.message is [ { ... } ], is an array containing one object
-      state.chats = reorderChatsList(state.chats, action.payload.other_user_id);
+      // payload.message is [ { ... } ], is an array containing one object
+      state.chats = reorderChatsList(state.chats, payload.other_user_id);
 
       if (isGif) {
         recentMessage = 'Sent a GIF 🌈';
@@ -428,46 +437,44 @@ export default (state = INITIAL_STATE, action) => {
         recentMessage = 'Sent a photo 📷';
       }
 
-      if (!action.payload.isIncoming) {
+      if (!payload.isIncoming) {
         recentMessage = 'You : ' + recentMessage;
       }
 
-      saveMessageInDB(action.payload, state.user_id);
+      saveMessageInDB(payload, state.user_id);
 
-      new_currentMessages = state.currentMessages;
+      new_currentMessages = fastClone(state.currentMessages);
       if (
         state.other_user_data._id &&
         state.other_user_data._id.toString() ===
-          action.payload.other_user_id.toString()
+          payload.other_user_id.toString()
       ) {
         // means the user has opened a chat which is different and the message he received is
         // from the same user
-        new_currentMessages = [...payload_message, ...state.currentMessages];
+        new_currentMessages.unshift(payload_message);
       }
 
-      if (!state.status.hasOwnProperty(action.payload.other_user_id)) {
-        new_messages[action.payload.other_user_id] = payload_message;
-        new_status[action.payload.other_user_id] = {
-          online: action.payload.isIncoming,
+      if (!state.status.hasOwnProperty(payload.other_user_id)) {
+        new_messages[payload.other_user_id] = payload_message;
+        new_status[payload.other_user_id] = {
+          online: payload.isIncoming,
           typing: false,
           unread_messages: 0,
           recentMessage,
           recentActivity: payload_message[0].createdAt,
         };
-
-        // socketEmit(SOCKET_EVENTS.CHAT_PEOPLE_EXPLICITLY);
       } else {
-        new_status[action.payload.other_user_id].recentActivity =
+        new_status[payload.other_user_id].recentActivity =
           payload_message[0].createdAt;
-        new_status[action.payload.other_user_id].recentMessage = recentMessage;
+        new_status[payload.other_user_id].recentMessage = recentMessage;
       }
 
       if (
-        action.payload.other_user_id !== state.other_user_data._id ||
+        payload.other_user_id !== state.other_user_data._id ||
         !state.chatScreenOpen
       ) {
-        if (new_status.hasOwnProperty(action.payload.other_user_id)) {
-          new_status[action.payload.other_user_id].unread_messages += 1;
+        if (new_status.hasOwnProperty(payload.other_user_id)) {
+          new_status[payload.other_user_id].unread_messages += 1;
           total_unread_messages += 1;
         }
       }
@@ -480,7 +487,7 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         loading: false,
         currentMessages: new_currentMessages,
-        chats: [...state.chats],
+        chats: fastClone(state.chats),
         status: new_status,
         total_unread_messages,
         quick_replies: [],
@@ -491,7 +498,7 @@ export default (state = INITIAL_STATE, action) => {
       return new_state;
 
     case ACTIONS.CHAT_CLEAR_OTHER_USER:
-      new_status = {...state.status};
+      new_status = fastClone(state.status);
       new_status[state.other_user_data._id].unread_messages = 0;
       return {
         ...state,
@@ -520,7 +527,7 @@ export default (state = INITIAL_STATE, action) => {
       return new_state;
 
     case ACTIONS.CHAT_PEOPLE_SEARCH:
-      return {...state, chatPeopleSearch: action.payload, loading: false};
+      return {...state, chatPeopleSearch: payload, loading: false};
 
     case ACTIONS.CHAT_SETUP_COMPLETE:
       new_state = {...state, first_login: false};
@@ -529,27 +536,27 @@ export default (state = INITIAL_STATE, action) => {
 
     case ACTIONS.CHAT_FIRST_LOGIN:
       COLORS = COLORS_DARK_THEME;
-      if (action.payload.theme === 'light') {
+      if (payload.theme === 'light') {
         COLORS = COLORS_LIGHT_THEME;
       }
       new_state = {
         ...state,
-        first_login: action.payload.first_login,
+        first_login: payload.first_login,
         COLORS,
-        user_id: action.payload.authtoken,
-        theme: action.payload.theme,
+        user_id: payload.authtoken,
+        theme: payload.theme,
       };
       saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_GET_USER_MESSAGES:
-      currentMessages = action.payload;
+      currentMessages = payload;
       return {...state, currentMessages};
 
     case ACTIONS.CHANGE_CHAT_BACKGROUND:
       new_state = {
         ...state,
-        chat_background: {...state.chat_background, image: action.payload},
+        chat_background: {...state.chat_background, image: payload},
       };
       saveData(action.type, new_state);
       return new_state;
@@ -557,48 +564,48 @@ export default (state = INITIAL_STATE, action) => {
     case ACTIONS.CHANGE_CHAT_BACKGROUND_BLUR:
       new_state = {
         ...state,
-        chat_background: {...state.chat_background, blur: action.payload},
+        chat_background: {...state.chat_background, blur: payload},
       };
       saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_QUICK_REPLIES:
-      new_state = {...state, quick_replies: action.payload};
+      new_state = {...state, quick_replies: payload};
       return new_state;
 
     case ACTIONS.CHAT_SCREEN_IMAGE_SELECT:
       new_state = {
         ...state,
-        chatScreenState: {...state.chatScreenState, ...action.payload},
+        chatScreenState: {...state.chatScreenState, ...payload},
       };
       return new_state;
 
     case ACTIONS.CHAT_IMAGE_UPLOADING:
       new_state = {
         ...state,
-        chatScreenState: {...state.chatScreenState, ...action.payload},
+        chatScreenState: {...state.chatScreenState, ...payload},
       };
       return new_state;
 
     case ACTIONS.CHAT_COMPOSER_TEXT_CHANGED:
       new_state = {
         ...state,
-        chatScreenState: {...state.chatScreenState, ...action.payload},
+        chatScreenState: {...state.chatScreenState, ...payload},
       };
       return new_state;
 
     case ACTIONS.CHAT_GROUP_PARTICIPANTS:
-      for (i = 0; i < action.payload.users.length; i++) {
-        user = action.payload.users[i];
-        if (action.payload.admins.includes(user._id)) {
+      for (i = 0; i < payload.users.length; i++) {
+        user = payload.users[i];
+        if (payload.admins.includes(user._id)) {
           user.isAdmin = true;
         } else {
           user.isAdmin = false;
         }
       }
 
-      new_chat_group_participants = {...state.chat_group_participants};
-      new_chat_group_participants[action.payload.group_id] = action.payload;
+      new_chat_group_participants = fastClone(state.chat_group_participants);
+      new_chat_group_participants[payload.group_id] = payload;
 
       new_state = {
         ...state,
@@ -609,15 +616,15 @@ export default (state = INITIAL_STATE, action) => {
       return new_state;
 
     case ACTIONS.CHAT_GROUP_INFO_LOADING:
-      return {...state, chatInfoLoading: action.payload};
+      return {...state, chatInfoLoading: payload};
 
     case ACTIONS.CHAT_GROUP_CREATE:
-      new_state = {...state, chats: [action.payload, ...state.chats]};
+      new_state = {...state, chats: [payload, ...state.chats]};
       saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_ADDED_TO_GROUP:
-      group = action.payload;
+      group = payload;
       if (state.chatGroupsLeft.includes(group._id)) {
         // means user was earlier in this group, is now being re-added
         new_chatGroupsLeft = [];
@@ -630,108 +637,99 @@ export default (state = INITIAL_STATE, action) => {
         new_state = {
           ...state,
           chatGroupsLeft: new_chatGroupsLeft,
-          chats: [...state.chats],
+          chats: fastClone(state.chats),
         };
       } else {
-        new_state = {...state, chats: [group, ...state.chats]};
+        new_state = {...state, chats: [group, ...fastClone(state.chats)]};
       }
 
       saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_LEAVE_GROUP:
-      // const {group_id, user_id, specialMessage} = action.payload
-      if (state.user_id === action.payload.user_id) {
-        state.chatGroupsLeft.push(action.payload.group_id);
+      // const {group_id, user_id, specialMessage} = payload
+      if (state.user_id === payload.user_id) {
+        state.chatGroupsLeft.push(payload.group_id);
       }
 
       // remove user_id from users and admins in chat_group_participants
       new_users = [];
-      if (state.chat_group_participants[action.payload.group_id]) {
-        state.chat_group_participants[action.payload.group_id].users.map(
-          (item) => {
-            if (item._id !== action.payload.user_id) {
-              new_users.push(item);
-            }
-          },
-        );
-        state.chat_group_participants[
-          action.payload.group_id
-        ].users = new_users;
+      if (state.chat_group_participants[payload.group_id]) {
+        state.chat_group_participants[payload.group_id].users.map((item) => {
+          if (item._id !== payload.user_id) {
+            new_users.push(item);
+          }
+        });
+        state.chat_group_participants[payload.group_id].users = new_users;
 
         new_admins = [];
-        state.chat_group_participants[action.payload.group_id].admins.map(
-          (item) => {
-            if (item._id !== action.payload.user_id) {
-              new_admins.push(item);
-            }
-          },
-        );
-        state.chat_group_participants[
-          action.payload.group_id
-        ].admins = new_admins;
+        state.chat_group_participants[payload.group_id].admins.map((item) => {
+          if (item._id !== payload.user_id) {
+            new_admins.push(item);
+          }
+        });
+        state.chat_group_participants[payload.group_id].admins = new_admins;
       }
 
       new_state = {
         ...state,
-        chatGroupsLeft: [...state.chatGroupsLeft],
-        chat_group_participants: {...state.chat_group_participants},
+        chatGroupsLeft: fastClone(state.chatGroupsLeft),
+        chat_group_participants: fastClone(state.chat_group_participants),
       };
       saveData(action.type, new_state);
       return new_state;
 
     case ACTIONS.CHAT_GROUP_MODIFY_ADMINS:
-      new_users = state.chat_group_participants[
-        action.payload.group_id
-      ].users.map((user) => {
-        if (action.payload.admins.includes(user._id)) {
-          user.isAdmin = true;
-        } else {
-          user.isAdmin = false;
-        }
-        return user;
-      });
+      new_users = state.chat_group_participants[payload.group_id].users.map(
+        (user) => {
+          if (payload.admins.includes(user._id)) {
+            user.isAdmin = true;
+          } else {
+            user.isAdmin = false;
+          }
+          return user;
+        },
+      );
 
-      state.chat_group_participants[action.payload.group_id].users = new_users;
-      state.chat_group_participants[action.payload.group_id].admins =
-        action.payload.admins;
+      state.chat_group_participants[payload.group_id].users = new_users;
+      state.chat_group_participants[payload.group_id].admins = payload.admins;
 
       return {
         ...state,
-        chat_group_participants: {...state.chat_group_participants},
+        chat_group_participants: fastClone(state.chat_group_participants),
       };
 
     case ACTIONS.CHAT_ADD_NEW_GROUP_PARTICIPANTS:
-      const {new_group_participants} = action.payload;
-      state.chat_group_participants[action.payload.group_id].users = [
-        ...state.chat_group_participants[action.payload.group_id].users,
+      const {new_group_participants} = payload;
+      state.chat_group_participants[payload.group_id].users = [
+        ...state.chat_group_participants[payload.group_id].users,
         ...new_group_participants,
       ];
       new_state = {
         ...state,
-        chat_group_participants: {...state.chat_group_participants},
+        chat_group_participants: fastClone(state.chat_group_participants),
       };
       return new_state;
 
     case ACTIONS.CHAT_INFO_GROUP_ICON_UPLOADING:
-      return {...state, chatInfoGroupIconUploading: action.payload};
+      return {...state, chatInfoGroupIconUploading: payload};
 
     case ACTIONS.CHAT_INFO_GROUP_DETAILS_UPDATE:
-      return {...state, chatInfoGroupDetails: action.payload};
+      return {...state, chatInfoGroupDetails: payload};
 
     case ACTIONS.CHAT_GROUP_CHANGE_DETAILS:
-      const {groupName, groupImage} = action.payload;
+      const {groupName, groupImage} = payload;
 
       new_chatInfoGroupDetails = state.chatInfoGroupDetails;
-      if (state.other_user_data._id === action.payload.group_id) {
+      if (state.other_user_data._id === payload.group_id) {
         // means user has this group currently open
         state.other_user_data.name = groupName;
         state.other_user_data.image_url = groupImage;
-        new_chatInfoGroupDetails = action.payload;
+        new_chatInfoGroupDetails = payload;
       }
 
       state.chats.map((chat, index) => {
-        if (chat._id === action.payload.group_id) {
+        if (chat._id === payload.group_id) {
           state.chats[index] = {
             ...chat,
             name: groupName,
@@ -742,22 +740,22 @@ export default (state = INITIAL_STATE, action) => {
 
       new_state = {
         ...state,
-        chats: [...state.chats],
-        other_user_data: {...state.other_user_data},
+        chats: fastClone(state.chats),
+        other_user_data: fastClone(state.other_user_data),
         chatInfoGroupDetails: new_chatInfoGroupDetails,
       };
       return new_state;
 
     case ACTIONS.CHAT_GIFS_LOADING:
-      new_state = {...state, gifs_loading: action.payload};
+      new_state = {...state, gifs_loading: payload};
       return new_state;
 
     case ACTIONS.CHAT_GET_GIFS:
-      new_state = {...state, gifs: {...state.gifs, data: action.payload}};
+      new_state = {...state, gifs: {...state.gifs, data: payload}};
       return new_state;
 
     case ACTIONS.CHAT_GIF_SEARCH:
-      new_state = {...state, gifs: {...state.gifs, search: action.payload}};
+      new_state = {...state, gifs: {...state.gifs, search: payload}};
       return new_state;
 
     default:

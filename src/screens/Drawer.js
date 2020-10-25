@@ -11,6 +11,7 @@ import {
   SCREENS,
   COLORS_LIGHT_THEME,
   LATEST_APP_VERSION,
+  PLAY_STORE_URL,
 } from '../Constants';
 import {getRingColor, onTest} from '../utilities';
 import {Avatar, LevelBar, Ripple} from '../components';
@@ -116,7 +117,7 @@ class Drawer extends React.Component {
       <Ripple
         rippleColor={COLORS.DARK}
         onPress={() => {
-          Linking.openURL(welcomeData.playStoreUrl);
+          Linking.openURL(PLAY_STORE_URL);
         }}
         style={{
           elevation: 3,

@@ -236,11 +236,6 @@ class ImageUpload extends React.PureComponent {
         resize.height,
         'JPEG',
         80,
-      ).catch((e) =>
-        logEvent(LOG_EVENT.ERROR, {
-          errorLine: 'ARTICLE INFO ACTION - 46',
-          description: e.toString(),
-        }),
       );
       const crop_image = await ImageEditor.cropImage(resized_image.uri, crop);
       image = {uri: crop_image};

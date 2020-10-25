@@ -43,6 +43,7 @@ const getBadge = (props) => {
           height: 12,
           width: 16,
           borderRadius: 6,
+          elevation: 7,
           backgroundColor: COLORS.YELLOW,
         }}>
         <Typing size={14} />
@@ -62,7 +63,8 @@ const getBadge = (props) => {
           height: 12,
           width: 12,
           borderRadius: 6,
-        }}></View>
+        }}
+      />
     );
   } else {
     return null;

@@ -1,7 +1,7 @@
 import {createStore, applyMiddleware} from 'redux';
-import ReduxThunk from 'redux-thunk';
 import {combineReducers} from 'redux';
 
+import middleware from './middleware';
 import LoginReducer from '../reducers/LoginReducer';
 import HomeReducer from '../reducers/HomeReducer';
 import SearchReducer from '../reducers/SearchReducer';
@@ -20,4 +20,4 @@ const reducers = combineReducers({
   settings: SettingsReducer,
 });
 
-export const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
+export const store = createStore(reducers, {}, applyMiddleware(...middleware));

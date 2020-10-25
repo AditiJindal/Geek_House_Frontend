@@ -15,7 +15,6 @@ const {getState, dispatch} = store;
 
 export const onIncomingMessage = async (data) => {
   data = decryptMessage(data);
-  console.log('DATA IS : ', data);
   const message = incomingMessageConverter(data);
   const {currentMessages, user_id, quick_replies_enabled} = getState().chat;
 
@@ -52,11 +51,6 @@ export const onCreateGroup = (response) => {
   dispatch({type: ACTIONS.CHAT_GROUP_CREATE, payload: response});
 };
 
-export const onUserDisconnected = () => {
-  const {authtoken} = getState().login;
-  socket.emit(SOCKET_EVENTS.NOT_DISCONNECTED, {id: authtoken});
-};
-
 export const onChatPeopleSearch = (response) => {
   dispatch({
     type: ACTIONS.CHAT_PEOPLE_SEARCH,
@@ -90,13 +84,5 @@ export const onCommands = (commands) => {
       default:
         return null;
     }
-  });
-};
-
-export const onReconnect = () => {
-  const {authtoken, data} = getState().login;
-  socket.emit(SOCKET_EVENTS.NOT_DISCONNECTED, {
-    id: authtoken,
-    name: data.name,
   });
 };

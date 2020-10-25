@@ -12,10 +12,6 @@ export const getPopularSearches = () => {
         dispatch({type: ACTIONS.POPULAR_SEARCHES_SUCCESS, payload: data});
       })
       .catch(() => {
-        logEvent(LOG_EVENT.ERROR, {
-          errorLine: 'SEARCH ACTION - 31',
-          description: e.toString(),
-        });
         showAlert(true, {});
       });
   };
@@ -36,13 +32,7 @@ export const doSearch = (search, category) => {
       .post(URLS.search, {search, category})
       .then(({data}) => {
         dispatch({type: ACTIONS.DO_SEARCH, payload: data});
-      })
-      .catch((e) =>
-        logEvent(LOG_EVENT.ERROR, {
-          errorLine: 'SEARCH ACTION - 452',
-          description: e.toString(),
-        }),
-      );
+      });
   };
 };
 

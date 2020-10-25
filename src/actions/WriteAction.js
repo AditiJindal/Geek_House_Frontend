@@ -11,13 +11,7 @@ export const getMyArticles = (myArticlesLength, reload) => {
         .get(URLS.myarticles)
         .then(({data}) => {
           dispatch({type: ACTIONS.GET_MY_ARTICLES, payload: data});
-        })
-        .catch((e) =>
-          logEvent(LOG_EVENT.ERROR, {
-            errorLine: 'WRITE ACTION - 32',
-            description: e.toString(),
-          }),
-        );
+        });
     };
   } else {
     return {type: null};
@@ -63,8 +57,8 @@ export const publishArticle = (
     dispatch({type: ACTIONS.WRITE_LOADING, payload: true});
 
     if (article.image && article.image.substring(0, 4) === 'file') {
-      uploadImage(article.image, {type: 'article', image_type: 'jpeg'})
-        .then((image) => {
+      uploadImage(article.image, {type: 'article', image_type: 'jpeg'}).then(
+        (image) => {
           httpClient()
             .post(URLS.publish, {...article, editing_article_id, image})
             .then(({data}) => {
@@ -74,13 +68,8 @@ export const publishArticle = (
                 payload: {...article, ...data},
               });
             });
-        })
-        .catch((e) =>
-          logEvent(LOG_EVENT.ERROR, {
-            errorLine: 'WRITE ACTION - 89',
-            description: e.toString(),
-          }),
-        );
+        },
+      );
     } else {
       httpClient()
         .post(URLS.publish, {...article, editing_article_id})
@@ -89,12 +78,6 @@ export const publishArticle = (
           dispatch({
             type: ACTIONS.PUBLISH_SUCCESS,
             payload: {...article, ...data},
-          });
-        })
-        .catch((e) => {
-          logEvent(LOG_EVENT.ERROR, {
-            errorLine: 'WRITE ACTION - 97',
-            description: e.toString(),
           });
         });
     }

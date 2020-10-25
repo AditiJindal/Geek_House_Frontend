@@ -564,7 +564,7 @@ class Home extends React.PureComponent {
     );
   }
 
-  _renderItem(item) {
+  renderItem(item) {
     if (item.fullyCustom) {
       return item.source;
     }
@@ -621,7 +621,7 @@ class Home extends React.PureComponent {
     );
   }
 
-  _renderNextButton() {
+  renderNextButton() {
     return (
       <View
         style={{
@@ -639,7 +639,7 @@ class Home extends React.PureComponent {
     );
   }
 
-  _renderDoneButton() {
+  renderDoneButton() {
     return (
       <View
         style={{
@@ -678,11 +678,11 @@ class Home extends React.PureComponent {
         )}
         <AppIntroSlider
           ref={(appIntroSlider) => (this.appIntroSlider = appIntroSlider)}
-          renderItem={({item}) => this._renderItem(item)}
+          renderItem={({item}) => this.renderItem(item)}
           slides={this.slides}
           activeDotStyle={{backgroundColor: COLORS_LIGHT_THEME.LIGHT_BLUE}}
-          renderNextButton={this._renderNextButton}
-          renderDoneButton={this._renderDoneButton}
+          renderNextButton={this.renderNextButton}
+          renderDoneButton={this.renderDoneButton}
           onDone={() => {
             this._onDone();
           }}

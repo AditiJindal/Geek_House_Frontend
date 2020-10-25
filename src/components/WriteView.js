@@ -53,14 +53,7 @@ export default class WriteView extends Component {
       return;
     }
     this.setState({visionLoading: true});
-    const response = await vision()
-      .textRecognizerProcessImage(image_path)
-      .catch((e) =>
-        logEvent(LOG_EVENT.ERROR, {
-          errorLine: 'WRITE VIEW - 42',
-          description: e.toString(),
-        }),
-      );
+    const response = await vision().textRecognizerProcessImage(image_path);
 
     if (response.text.length === 0) {
       this.props.timedAlert.showAlert(

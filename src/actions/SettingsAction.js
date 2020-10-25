@@ -53,13 +53,7 @@ export const getSettingsData = (reload) => {
         .get(URLS.settings)
         .then((response) => {
           dispatch({type: ACTIONS.GET_SETTINGS_DATA, payload: response.data});
-        })
-        .catch((e) =>
-          logEvent(LOG_EVENT.ERROR, {
-            errorLine: 'SEARCH ACTION - 30',
-            description: e.toString(),
-          }),
-        );
+        });
     }
   };
 };

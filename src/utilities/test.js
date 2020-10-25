@@ -1,5 +1,6 @@
-import {Vibration} from 'react-native';
+import ASt from '@react-native-community/async-storage';
 
-export const onTest = () => {
-  Vibration.vibrate(100);
+export const onTest = async () => {
+  await ASt.clear();
+  alert('CLEARED');
 };

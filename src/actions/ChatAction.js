@@ -21,13 +21,7 @@ export const getChatPeople = () => {
       .get(URLS.chatpeople)
       .then((response) => {
         dispatch({type: ACTIONS.GET_CHAT_PEOPLE, payload: response.data});
-      })
-      .catch((e) =>
-        logEvent(LOG_EVENT.ERROR, {
-          errorLine: 'CHAT ACTION - 43',
-          description: e.toString(),
-        }),
-      );
+      });
   };
 };
 
@@ -46,7 +40,12 @@ const encryptMessage = (message) => {
 };
 
 const sendMessageHelper = async (dispatch, message, other_user_id, image) => {
-  let message_to_send = {text: '', to: '', image: null, ...message[0]};
+  let message_to_send = {
+    text: message[0].text,
+    to: other_user_id,
+    image: null,
+    ...message[0],
+  };
 
   if (image) {
     dispatch({
@@ -60,33 +59,24 @@ const sendMessageHelper = async (dispatch, message, other_user_id, image) => {
       image_url: image.url,
       extension: 'jpeg',
       shouldUpload: !image.isGif,
-    }).catch((e) => {
-      logEvent(LOG_EVENT.ERROR, {
-        errorLine: 'CHAT ACTION - 83, Server chat image upload error',
-        description: e.toString(),
-      });
     });
 
     image.url = image_url;
     image.name = image.name;
-    message_to_send.text = message[0].text;
-    message_to_send.to = other_user_id;
     message_to_send = {...message_to_send, image};
 
-    socketEmit(SOCKET_EVENTS.MESSAGE, encryptMessage(message_to_send));
     message[0].image.url = decrypt(message[0].image.url);
 
     dispatch({
       type: ACTIONS.CHAT_MESSAGE_HANDLER,
       payload: {message, other_user_id, isIncoming: false},
     });
+    socketEmit(SOCKET_EVENTS.MESSAGE, encryptMessage(message_to_send));
   } else {
     dispatch({
       type: ACTIONS.CHAT_MESSAGE_HANDLER,
       payload: {message, other_user_id},
     });
-    message_to_send.text = message[0].text;
-    message_to_send.to = other_user_id;
     socketEmit(SOCKET_EVENTS.MESSAGE, encryptMessage(message_to_send));
   }
 };
