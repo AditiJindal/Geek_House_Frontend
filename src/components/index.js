@@ -19,7 +19,6 @@ export {default as RaisedText} from './RaisedText';
 export {default as TimedAlert} from './TimedAlert';
 export {default as Typing} from './Typing';
 export {default as WriteView} from './WriteView';
-export {default as AppIntroSlider} from './AppIntroSlider';
 export {default as Dropdown} from './Dropdown';
 export {default as GiftedChat} from './GiftedChat';
 export {default as Ripple} from './Ripple';

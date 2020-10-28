@@ -55,6 +55,10 @@ export const getArticleInfo = (article_id, preview_article, forceUpdate) => {
   };
 };
 
+export const resetSelectedArticleInfo = () => ({
+  type: ACTIONS.RESET_SELECTED_ARTICLE_INFO,
+});
+
 export const submitComment = (to_send, author, author_image) => {
   return (dispatch) => {
     if (to_send.rating < 0) {

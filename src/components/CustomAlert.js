@@ -108,17 +108,14 @@ export default class CustomAlert extends Component {
           isVisible={this.props.isVisible}
           borderRadius={15}
           onBackdropPress={this.props.onBackdropPress.bind(this)}
-          overlayStyle={{margin: 25, elevation: 0}}
-          animationType="none"
-          overlayBackgroundColor={
-            this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT
-          }>
-          <View
-            style={{
-              padding: 10,
-              backgroundColor:
-                this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
-            }}>
+          overlayStyle={{
+            margin: 25,
+            padding: 10,
+            borderRadius: 15,
+            backgroundColor:
+              this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
+          }}>
+          <View>
             <Text style={{...styles.TitleStyle, color: COLORS.DARK}}>
               {this.props.message.title}
             </Text>

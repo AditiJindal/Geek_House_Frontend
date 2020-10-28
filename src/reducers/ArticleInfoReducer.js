@@ -14,7 +14,7 @@ const insertCommentInArticle = (article, new_comment) => {
   let commentFound = false;
   let new_comments = [];
 
-  comments.map(comment => {
+  comments.map((comment) => {
     if (comment._id.toString() === new_comment._id.toString()) {
       new_comment.comment = new_comment.comment || comment.comment;
       new_comment.rating = new_comment.rating || comment.rating;
@@ -45,7 +45,7 @@ export default (state = INITIAL_STATE, action) => {
     case ACTIONS.GET_ARTICLE_INFO:
       let new_articles = [...state.articles];
       if (action.payload.forceUpdate) {
-        new_articles = state.articles.map(article => {
+        new_articles = state.articles.map((article) => {
           if (article.article_id.to === action.payload.article_id) {
             return action.payload.article;
           } else {
@@ -63,6 +63,9 @@ export default (state = INITIAL_STATE, action) => {
       };
       return new_state;
 
+    case ACTIONS.RESET_SELECTED_ARTICLE_INFO:
+      return {...state, selectedArticleInfo: {}};
+
     case ACTIONS.ARTICLE_ADD_COMMENT:
       new_selectedArticleInfo = insertCommentInArticle(
         state.selectedArticleInfo,
@@ -75,7 +78,7 @@ export default (state = INITIAL_STATE, action) => {
       selectedArticleInfo = {...state.selectedArticleInfo};
       selectedArticleInfo.bookmarked = action.payload.bookmarked;
 
-      new_articles = state.articles.map(article => {
+      new_articles = state.articles.map((article) => {
         if (article.article_id.toString() === action.payload.article_id) {
           article.bookmarked = action.payload.bookmarked;
           return article;
@@ -94,7 +97,7 @@ export default (state = INITIAL_STATE, action) => {
       return {...state, bookmarks_error: action.payload};
 
     case ACTIONS.PUBLISH_SUCCESS:
-      state.articles = state.articles.map(article => {
+      state.articles = state.articles.map((article) => {
         if (article.article_id === action.payload.article_id) {
           article.category = action.payload.category;
           article.contents = action.payload.contents;

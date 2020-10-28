@@ -76,3 +76,13 @@ export const uploadImageServer = async (data) => {
   const json = await response.json();
   return json.image_url;
 };
+
+export const imageUrlCorrector = (image_url, image_adder) => {
+  if (!image_adder || !image_url) {
+    return '';
+  }
+  if (image_url.substring(0, 4) !== 'http') {
+    image_url = image_adder + image_url;
+  }
+  return image_url;
+};

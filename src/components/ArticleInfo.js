@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  StatusBar,
   Share,
   Animated,
   TextInput,
@@ -17,9 +16,10 @@ import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import StarRating from 'react-native-star-rating';
 import LinearGradient from 'react-native-linear-gradient';
 import {
-  getArticleInfo,
   submitComment,
+  getArticleInfo,
   bookmarkArticle,
+  resetSelectedArticleInfo,
 } from '../actions/ArticleInfoAction';
 import {setContents, setImage} from '../actions/WriteAction';
 import {
@@ -29,6 +29,7 @@ import {
   COLORS_DARK_THEME,
   SCREENS,
   ADS_MANAGER,
+  CATEGORY_IMAGES,
 } from '../Constants';
 import CardView from './CardView';
 import Loading from './Loading';
@@ -36,10 +37,9 @@ import Overlay from './Overlay';
 import NativeAdsComponent from './NativeAdsComponent';
 import Avatar from './Avatar';
 import moment from 'moment';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import TimedAlert from './TimedAlert';
 import Ripple from './Ripple';
-import {getRingColor} from '../utilities';
+import {getRingColor, changeBarColors, imageUrlCorrector} from '../utilities';
 
 const screenWidth = Dimensions.get('screen').width;
 const OVERLAY_WIDTH_PERCENT = 88;
@@ -51,20 +51,17 @@ const BORDER_RADIUS = 25; // PROFILE_IMAGE_MAX_HEIGHT/2;
 const TOPIC_SMALL_SIZE = 18;
 
 class ArticleInfo extends Component {
-  constructor() {
-    super();
-    this.state = {
-      scrollY: new Animated.Value(0),
-      userCommentRating: -1,
-      commentText: '',
-      adIndex: 0,
-      imageViewerActive: false,
-    };
-  }
+  state = {
+    scrollY: new Animated.Value(0),
+    userCommentRating: -1,
+    commentText: '',
+    adIndex: 0,
+    imageViewerActive: false,
+  };
 
   renderCardViews(cards) {
     const {adIndex} = this.state;
-    const {canShowAdsRemote, theme, COLORS, image_adder} = this.props;
+    const {canShowAdsRemote, COLORS, image_adder} = this.props;
 
     if (!adIndex && cards) {
       this.setState({adIndex: _.random(1, cards.length - 1)});
@@ -78,15 +75,12 @@ class ArticleInfo extends Component {
               <View key={i.toString()}>
                 {i === adIndex && canShowAdsRemote ? (
                   <NativeAdsComponent
-                    theme={theme}
                     COLORS={COLORS}
                     adsManager={ADS_MANAGER}
                   />
                 ) : null}
                 <CardView
-                  theme={theme}
                   COLORS={COLORS}
-                  key={item.sub_heading}
                   cardData={item}
                   image_adder={image_adder}
                 />
@@ -266,9 +260,10 @@ class ArticleInfo extends Component {
             borderColor: COLORS.YELLOW,
           }}
           onPress={() => {
-            this.props.getArticleInfo(article_id, false);
+            // this.props.getArticleInfo(article_id, false);
             this.setState({scrollY: new Animated.Value(0), adIndex: _.random});
             this.props.onBackdropPress();
+            changeBarColors(COLORS.LIGHT, COLORS.IS_LIGHT_THEME);
             this.props.setContents(contents, topic, category, article_id);
             this.props.setImage({uri: image});
             this.props.navigation.navigate(SCREENS.WriteArticle, {article_id});
@@ -513,7 +508,7 @@ class ArticleInfo extends Component {
   }
 
   renderArticle() {
-    const {COLORS, imageSource, article_id, loading} = this.props;
+    const {COLORS, article_id, loading, image_adder} = this.props;
     const {
       author,
       author_image,
@@ -526,8 +521,14 @@ class ArticleInfo extends Component {
       topic,
       cannotComment,
       date_created,
+      image,
     } = this.props.selectedArticleInfo;
 
+    const imageSource = image
+      ? {uri: imageUrlCorrector(image, image_adder)}
+      : CATEGORY_IMAGES[category];
+
+    console.log('IMAGE CURSE HERE : IMAGE ADDER', imageSource);
     const date = moment(date_created);
 
     const ring_color = getRingColor(author_userXP);
@@ -810,9 +811,13 @@ class ArticleInfo extends Component {
   }
 
   render() {
+    const {COLORS, isVisible} = this.props;
+
+    if (!isVisible) {
+      return null;
+    }
+
     const {
-      COLORS,
-      isVisible,
       loading,
       article_id,
       topic,
@@ -821,12 +826,6 @@ class ArticleInfo extends Component {
       preview_contents,
       selectedArticleInfo,
     } = this.props;
-
-    console.log({PROPS: this.props, STATE: this.state});
-
-    if (!isVisible) {
-      return null;
-    }
 
     let preview_article = false;
     if (article_id === -1) {
@@ -850,20 +849,16 @@ class ArticleInfo extends Component {
         isVisible={isVisible}
         overlayStyle={{...styles.OverlayStyle, backgroundColor: COLORS.LIGHT}}
         onBackdropPress={() => {
-          this.props.getArticleInfo(article_id, false);
+          // this.props.getArticleInfo(article_id, false);
           this.setState({scrollY: new Animated.Value(0), adIndex: _.random});
           this.props.onBackdropPress();
+          changeBarColors(COLORS.LIGHT, COLORS.IS_LIGHT_THEME);
         }}
         width={`${OVERLAY_WIDTH_PERCENT}%`}
         height="90%">
         <>
-          <StatusBar
-            barStyle={'light-content'}
-            backgroundColor={COLORS.OVERLAY_COLOR}
-          />
-          {changeNavigationBarColor(COLORS.LIGHT, COLORS.THEME === 'light')}
+          {changeBarColors(COLORS.OVERLAY_COLOR, COLORS.IS_LIGHT_THEME)}
           <TimedAlert
-            theme={COLORS.THEME}
             onRef={(ref) => (this.timedAlert = ref)}
             COLORS={COLORS}
           />
@@ -884,17 +879,17 @@ const mapStateToProps = (state) => {
     selectedArticleInfo: state.articleInfo.selectedArticleInfo,
     loading: state.articleInfo.loading,
 
-    theme: state.chat.theme,
     COLORS: state.chat.COLORS,
   };
 };
 
 export default connect(mapStateToProps, {
-  getArticleInfo,
-  submitComment,
-  bookmarkArticle,
-  setContents,
   setImage,
+  setContents,
+  submitComment,
+  getArticleInfo,
+  bookmarkArticle,
+  resetSelectedArticleInfo,
 })(ArticleInfo);
 
 const styles = StyleSheet.create({
@@ -905,5 +900,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     marginTop: 20,
     flex: 1,
+    elevation: 10,
   },
 });

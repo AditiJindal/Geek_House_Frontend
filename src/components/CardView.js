@@ -42,10 +42,11 @@ export default class CardView extends React.Component {
       <SView
         style={{
           ...styles.CardViewStyle,
-          backgroundColor:
-            COLORS.THEME === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
+          backgroundColor: COLORS.IS_LIGHT_THEME
+            ? COLORS.LIGHT
+            : COLORS.LESS_LIGHT,
         }}
-        onLayout={event => {
+        onLayout={(event) => {
           if (!this.state.cardWidth) {
             this.setState({cardWidth: event.nativeEvent.layout.width});
           }

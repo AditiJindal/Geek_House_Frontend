@@ -11,24 +11,13 @@ import {
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import Image from 'react-native-fast-image';
-import LottieView from 'lottie-react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
 
-import {
-  Avatar,
-  Ripple,
-  Loading,
-  RaisedText,
-  ArticleTile,
-  Dropdown,
-  AppIntroSlider,
-} from '../components';
-import {settingsChangeFavoriteCategory} from '../actions/SettingsAction';
-import {setupComplete} from '../actions/ChatAction';
+import {Avatar, Ripple, Loading, RaisedText, ArticleTile} from '../components';
 import {logout, getWelcome, exploreSearch} from '../actions/HomeAction';
 import {getHumanTime, getRingColor, getDynamicLink} from '../utilities';
 import {
@@ -41,120 +30,11 @@ import {
 } from '../Constants';
 
 class Home extends React.PureComponent {
-  constructor() {
-    super();
-    this.slides = [];
-  }
-
   componentDidMount() {
     getDynamicLink(this.props.navigation);
     if (this.props.loading) {
       this.props.getWelcome(() => this.props.navigation.replace(SCREENS.Login));
     }
-    let new_data = [];
-    ALL_CATEGORIES.map((item) => {
-      new_data.push({value: item});
-    });
-    this.slides = [
-      {
-        fullyCustom: true,
-        source: (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: COLORS_LIGHT_THEME.LIGHT,
-            }}>
-            <Text
-              style={{
-                fontFamily: FONTS.RALEWAY_LIGHT,
-                fontSize: 20,
-                color: COLORS_LIGHT_THEME.DARK,
-              }}>
-              WELCOME
-            </Text>
-            <Text
-              style={{
-                fontFamily: FONTS.RALEWAY_BOLD,
-                fontSize: 42,
-                color: COLORS_LIGHT_THEME.LESSER_DARK,
-              }}>
-              {this.props.data.name.split(' ')[0]}
-            </Text>
-          </View>
-        ),
-      },
-      {
-        key: '1',
-        title: 'What is Geek House?',
-        customSource: true,
-        text: 'Geek House is a knowledge\nplatform in simple terms',
-        source: (
-          <View
-            style={{
-              width: 256,
-              height: 256,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Image
-              style={{width: 128, height: 128}}
-              source={require('../../assets/images/welcome/light-bulb.png')}
-            />
-          </View>
-        ),
-        color: COLORS_LIGHT_THEME.LIGHT,
-        boxColors: ['rgb(255, 218, 45)', 'rgb(253, 191,0)'],
-      },
-      {
-        key: '2',
-        title: 'Before we Begin',
-        customSource: true,
-        text:
-          'Select your favourite category of topic from the given ones, you can change this easily in the settings later',
-        source: (
-          <View
-            style={{
-              width: '100%',
-              height: 256,
-              paddingHorizontal: 20,
-              justifyContent: 'center',
-            }}>
-            <Dropdown
-              COLORS={COLORS_LIGHT_THEME}
-              data={new_data}
-              label="Category Selection"
-              value="Select One"
-              itemCount={6}
-              onChangeText={(selected_category) => {
-                this.props.settingsChangeFavoriteCategory(selected_category);
-              }}
-            />
-          </View>
-        ),
-        color: COLORS_LIGHT_THEME.LIGHT,
-        boxColors: ['#ec008c', '#fc6767'],
-      },
-      {
-        key: '3',
-        title: 'Concept of Articles',
-        text:
-          'You can simply search the articles of your choice and read them. You can also write your own articles',
-        source: require('../../assets/animations/welcome/book.json'),
-        color: COLORS_LIGHT_THEME.LIGHT,
-        boxColors: ['#4776E6', '#3931ac'], //"#8E54E9"]
-      },
-      {
-        key: '4',
-        title: 'Get in Touch',
-        text:
-          'Geek House lets you chat with people having similar interest ar yours, so you can never stop talking',
-        source: require('../../assets/animations/welcome/chat.json'),
-        color: COLORS_LIGHT_THEME.LIGHT,
-        boxColors: ['#2193b0', '#6dd5ed'],
-      },
-    ];
   }
 
   renderHeader() {
@@ -546,133 +426,6 @@ class Home extends React.PureComponent {
     );
   }
 
-  _renderItem(item) {
-    if (item.fullyCustom) {
-      return item.source;
-    }
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          backgroundColor: item.color,
-        }}>
-        <Text
-          style={{
-            fontFamily: FONTS.RALEWAY,
-            color: COLORS_LIGHT_THEME.LESSER_DARK,
-            fontSize: 24,
-          }}>
-          {item.title}
-        </Text>
-        {item.customSource ? (
-          item.source
-        ) : (
-          <LottieView
-            autoPlay
-            source={item.source}
-            style={{height: 256, width: 256}}
-          />
-        )}
-        <LinearGradient
-          start={{x: 0, y: 1}}
-          end={{x: 1, y: 1}}
-          colors={item.boxColors}
-          style={{
-            backgroundColor: COLORS_LIGHT_THEME.LIGHT,
-            height: 150,
-            width: '80%',
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 8,
-            marginBottom: 40,
-            paddingHorizontal: 15,
-          }}>
-          <Text
-            style={{
-              fontFamily: FONTS.LATO_BOLD,
-              color: COLORS_LIGHT_THEME.LIGHT,
-              fontSize: 18,
-              textAlign: 'center',
-            }}>
-            {item.text}
-          </Text>
-        </LinearGradient>
-      </View>
-    );
-  }
-
-  _renderNextButton() {
-    return (
-      <View
-        style={{
-          padding: 10,
-          borderWidth: 2,
-          borderColor: '#f953c6',
-          borderRadius: 10,
-          elevation: 4,
-          backgroundColor: COLORS_LIGHT_THEME.LIGHT,
-        }}>
-        <Text style={{fontFamily: FONTS.GOTHAM_BLACK, color: '#f953c6'}}>
-          NEXT
-        </Text>
-      </View>
-    );
-  }
-
-  _renderDoneButton() {
-    return (
-      <View
-        style={{
-          padding: 10,
-          borderWidth: 2,
-          borderColor: '#32cd32',
-          borderRadius: 10,
-          elevation: 4,
-          backgroundColor: COLORS_LIGHT_THEME.LIGHT,
-        }}>
-        <Text style={{fontFamily: FONTS.GOTHAM_BLACK, color: '#32cd32'}}>
-          DONE
-        </Text>
-      </View>
-    );
-  }
-
-  _onDone() {
-    if (this.props.selected_category) {
-      this.props.setupComplete();
-    } else {
-      this.appIntroSlider.goToSlide(2);
-    }
-  }
-
-  renderTour() {
-    return (
-      <View style={{flex: 1, backgroundColor: COLORS_LIGHT_THEME.LIGHT}}>
-        <StatusBar
-          barStyle={'dark-content'}
-          backgroundColor={COLORS_LIGHT_THEME.LIGHT}
-        />
-        {changeNavigationBarColor(
-          COLORS_LIGHT_THEME.LIGHT,
-          this.props.theme === 'light',
-        )}
-        <AppIntroSlider
-          ref={(appIntroSlider) => (this.appIntroSlider = appIntroSlider)}
-          renderItem={({item}) => this._renderItem(item)}
-          slides={this.slides}
-          activeDotStyle={{backgroundColor: COLORS_LIGHT_THEME.LIGHT_BLUE}}
-          renderNextButton={this._renderNextButton}
-          renderDoneButton={this._renderDoneButton}
-          onDone={() => {
-            this._onDone();
-          }}
-        />
-      </View>
-    );
-  }
-
   getStatusBarColor() {
     const {COLORS, theme} = this.props;
     let barStyle = theme === 'light' ? 'dark-content' : 'light-content';
@@ -739,27 +492,18 @@ class Home extends React.PureComponent {
   render() {
     const {COLORS} = this.props;
     const {statusBarColor} = this.getStatusBarColor();
-    if (!this.props.first_login) {
-      return (
-        <View style={{flex: 1, backgroundColor: COLORS.LIGHT}}>
-          <StatusBar
-            barStyle={
-              COLORS.THEME === 'light' ? 'dark-content' : 'light-content'
-            }
-            backgroundColor={COLORS.LIGHT}
-          />
-          {changeNavigationBarColor(COLORS.LIGHT, this.props.theme === 'light')}
-          {changeNavigationBarColor(
-            statusBarColor,
-            this.props.theme === 'light',
-          )}
-          {this.renderHeader()}
-          {this.renderHome()}
-        </View>
-      );
-    } else {
-      return this.renderTour();
-    }
+    return (
+      <View style={{flex: 1, backgroundColor: COLORS.LIGHT}}>
+        <StatusBar
+          barStyle={COLORS.THEME === 'light' ? 'dark-content' : 'light-content'}
+          backgroundColor={COLORS.LIGHT}
+        />
+        {changeNavigationBarColor(COLORS.LIGHT, this.props.theme === 'light')}
+        {changeNavigationBarColor(statusBarColor, this.props.theme === 'light')}
+        {this.renderHeader()}
+        {this.renderHome()}
+      </View>
+    );
   }
 }
 
@@ -767,7 +511,6 @@ const mapStateToProps = (state) => {
   return {
     data: state.login.data,
     authtoken: state.login.authtoken,
-    first_login: state.chat.first_login,
 
     error: state.home.error,
     loading: state.home.loading,
@@ -785,8 +528,6 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   logout,
   getWelcome,
-  settingsChangeFavoriteCategory,
-  setupComplete,
   exploreSearch,
 })(Home);
 

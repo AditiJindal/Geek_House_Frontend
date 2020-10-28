@@ -6,6 +6,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 
 import Login from './screens/Login';
 import Home from './screens/Home';
+import AppIntroSlider from './screens/AppIntroSlider';
 import Search from './screens/Search';
 import Write from './screens/Write';
 import Chat from './screens/Chat';
@@ -26,7 +27,7 @@ import Drawer from './screens/Drawer';
 import ForceUpdate from './screens/ForceUpdate';
 import {BottomTab} from './components';
 
-import {COLORS_DARK_THEME, SCREENS} from './Constants';
+import {SCREENS} from './Constants';
 
 //Create Navigators
 const LoginStack = createStackNavigator();
@@ -42,6 +43,10 @@ const LoginNavigator = () => {
   return (
     <LoginStack.Navigator headerMode="none">
       <LoginStack.Screen name={SCREENS.Login} component={Login} />
+      <LoginStack.Screen
+        name={SCREENS.AppIntroSlider}
+        component={AppIntroSlider}
+      />
       <LoginStack.Screen name={SCREENS.ForceUpdate} component={ForceUpdate} />
       <LoginStack.Screen name={SCREENS.Policy} component={Policy} />
     </LoginStack.Navigator>

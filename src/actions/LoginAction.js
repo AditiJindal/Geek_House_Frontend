@@ -8,7 +8,6 @@ import {
 } from '../Constants';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {AppState} from 'react-native';
-import uuid from 'uuid-random';
 import {store} from '../reducers';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import Device from 'react-native-device-info';

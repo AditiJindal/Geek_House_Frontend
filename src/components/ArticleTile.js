@@ -18,6 +18,10 @@ export default class ArticleTile extends Component {
     failColors: COLOR_COMBOS[Math.floor(Math.random() * COLOR_COMBOS.length)],
   };
 
+  onTilePress() {
+    this.setState({infoVisible: true});
+  }
+
   renderStarRating(rating, size = 12) {
     if (!rating) {
       return null;
@@ -30,8 +34,10 @@ export default class ArticleTile extends Component {
     );
   }
 
-  renderImageTile(imageSource) {
+  renderImageTile() {
     const {COLORS, data, size} = this.props;
+    const {topic, rating, image} = data;
+
     return (
       <TouchableOpacity
         activeOpacity={0.8}
@@ -43,9 +49,7 @@ export default class ArticleTile extends Component {
           elevation: 4,
           borderRadius: 10,
         }}
-        onPress={() => {
-          this.setState({infoVisible: true});
-        }}>
+        onPress={this.onTilePress.bind(this)}>
         <Image
           style={{
             flex: 1,
@@ -53,9 +57,9 @@ export default class ArticleTile extends Component {
             paddingHorizontal: 10,
             paddingVertical: 7,
           }}
-          source={imageSource}>
-          <Text style={styles.ImageText}>{data.topic}</Text>
-          {this.renderStarRating(data.rating)}
+          source={{uri: image}}>
+          <Text style={styles.ImageText}>{topic}</Text>
+          {this.renderStarRating(rating)}
         </Image>
       </TouchableOpacity>
     );
@@ -74,9 +78,7 @@ export default class ArticleTile extends Component {
           borderRadius: 10,
           overflow: 'hidden',
         }}
-        onPress={() => {
-          this.setState({infoVisible: true});
-        }}>
+        onPress={this.onTilePress.bind(this)}>
         <LinearGradient
           style={{flex: 1, justifyContent: 'space-between', padding: 10}}
           colors={this.state.failColors}>
@@ -89,15 +91,10 @@ export default class ArticleTile extends Component {
 
   render() {
     const {data} = this.props;
-    const imageSource = data.image
-      ? {uri: data.image}
-      : CATEGORY_IMAGES[data.category];
 
     return (
       <>
-        {data.image
-          ? this.renderImageTile(imageSource)
-          : this.renderGradientTile()}
+        {data.image ? this.renderImageTile() : this.renderGradientTile()}
         <ArticleInfo
           theme={this.props.theme}
           navigation={this.props.navigation}
@@ -106,7 +103,6 @@ export default class ArticleTile extends Component {
           }}
           isVisible={this.state.infoVisible}
           article_id={data.article_id}
-          imageSource={imageSource}
           loadSuccessful={true}
           // for preview
           preview_contents={data.preview_contents}

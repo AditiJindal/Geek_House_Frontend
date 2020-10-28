@@ -25,12 +25,7 @@ import {connect} from 'react-redux';
 class Login extends React.PureComponent {
   componentDidMount = async () => {
     changeNavigationBarColor(COLORS_LIGHT_THEME.THEME2, false);
-    this.props.checkLogin(
-      () => {
-        this.props.navigation.replace(SCREENS.Main);
-      },
-      () => this.props.navigation.replace(SCREENS.ForceUpdate),
-    );
+    this.props.checkLogin(this.onLoginSuccess, this.onForceUpdate);
     SplashScreen.hide();
     NetInfo.fetch().then((state) =>
       this.props.internetHandler(state.isInternetReachable),
@@ -40,6 +35,18 @@ class Login extends React.PureComponent {
     );
   };
 
+  onLoginSuccess = () => {
+    if (this.props.first_login) {
+      this.props.navigation.replace(SCREENS.AppIntroSlider);
+    } else {
+      this.props.navigation.replace(SCREENS.Main);
+    }
+  };
+
+  onForceUpdate = () => {
+    this.props.navigation.replace(SCREENS.ForceUpdate);
+  };
+
   renderGoogleButton() {
     return (
       <TouchableOpacity
@@ -47,9 +54,7 @@ class Login extends React.PureComponent {
         style={styles.GoogleButtonStyle}
         onPress={() => {
           if (!this.props.facebookLoading && !this.props.googleLoading)
-            this.props.loginGoogle(() => {
-              this.props.navigation.replace(SCREENS.Main);
-            });
+            this.props.loginGoogle(this.onLoginSuccess);
         }}>
         <View
           style={{
@@ -90,9 +95,7 @@ class Login extends React.PureComponent {
         style={styles.FacebookButtonStyle}
         onPress={() => {
           if (!this.props.facebookLoading && !this.props.googleLoading)
-            this.props.loginFacebook(() => {
-              this.props.navigation.replace(SCREENS.Main);
-            });
+            this.props.loginFacebook(this.onLoginSuccess);
         }}>
         <View
           style={{
@@ -215,6 +218,8 @@ const mapStateToProps = (state) => {
     googleLoading: state.login.googleLoading,
     facebookLoading: state.login.facebookLoading,
     loading: state.login.loading,
+
+    first_login: state.chat.first_login,
   };
 };
 

@@ -39,7 +39,7 @@ import Overlay from './Overlay';
 import {FONTS, MAX_USERS_IN_A_GROUP, COLORS_LIGHT_THEME} from '../Constants';
 import {getRingColor, uploadImage} from '../utilities';
 
-const overlayWidth = Dimensions.get('screen').width * 0.86;
+const overlayWidth = Dimensions.get('screen').width * 0.85;
 
 const imageUrlCorrector = (image_url, image_adder) => {
   if (!image_adder) {
@@ -319,8 +319,8 @@ class ChatInfo extends Component {
   }
 
   getSelectedUsers(user_id, shouldRemove) {
+    let new_users = [];
     if (shouldRemove) {
-      new_users = [];
       this.state.peopleToAdd.map((item) => {
         if (item !== user_id) {
           new_users.push(item);
@@ -345,6 +345,26 @@ class ChatInfo extends Component {
     }
   }
 
+  renderEmptyChatSelector() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Text
+          style={{
+            fontFamily: FONTS.PRODUCT_SANS_BOLD,
+            fontSize: 18,
+            color: COLORS.LESS_DARK,
+          }}>
+          No one To add
+        </Text>
+      </View>
+    );
+  }
+
   renderChatPeopleSelector() {
     const {COLORS, chat_group_participants, other_user_data} = this.props;
     const group_participants = chat_group_participants[other_user_data._id];
@@ -363,184 +383,145 @@ class ChatInfo extends Component {
 
     return (
       <Overlay
-        overlayStyle={{
-          backgroundColor: 'transparent',
-          padding: 0,
-          elevation: 0,
-        }}
         isVisible={this.state.peopleSelectorVisible}
+        overlayStyle={{
+          width: '75%',
+          height: '50%',
+          borderRadius: 20,
+          overflow: 'hidden',
+          alignSelf: 'center',
+          backgroundColor: COLORS.LIGHT,
+        }}
         onBackdropPress={() => {
           this.setState({peopleSelectorVisible: false});
-        }}
-        height="100%"
-        width="100%">
+        }}>
         <>
           <TimedAlert
             theme={this.props.theme}
             onRef={(ref) => (this.timedAlert2 = ref)}
             COLORS={COLORS}
           />
-          <TouchableOpacity
-            style={{
-              flexGrow: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            activeOpacity={1}
-            onPress={() => {
-              this.setState({peopleSelectorVisible: false});
-            }}>
-            <TouchableOpacity
-              style={{
-                maxHeight: '70%',
-                width: '75%',
-                borderRadius: 20,
-                elevation: 10,
-                backgroundColor: COLORS.LIGHT,
-                overflow: 'hidden',
-              }}
-              activeOpacity={1}>
-              <FlatList
-                data={DATA}
-                keyboardShouldPersistTaps="always"
-                showsVerticalScrollIndicator={false}
-                ListEmptyComponent={
+
+          <FlatList
+            data={DATA}
+            keyboardShouldPersistTaps="always"
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={this.renderEmptyChatSelector()}
+            ListHeaderComponent={
+              <>
+                <View
+                  style={{
+                    width: '100%',
+                    padding: 10,
+                    backgroundColor: COLORS.GRAY,
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: FONTS.GOTHAM_BLACK,
+                      fontSize: 20,
+                      color: COLORS.LIGHT,
+                      alignSelf: 'center',
+                      marginLeft: 10,
+                    }}>
+                    ADD PARTICIPANTS
+                  </Text>
+                </View>
+                <View style={{marginHorizontal: 20, marginVertical: 5}}>
                   <View
                     style={{
-                      flex: 1,
-                      justifyContent: 'center',
+                      flexDirection: 'row',
                       alignItems: 'center',
+                      justifyContent: 'space-between',
+                      paddingTop: 10,
+                      paddingBottom: 5,
                     }}>
-                    <Text
-                      style={{
-                        fontFamily: FONTS.PRODUCT_SANS_BOLD,
-                        fontSize: 18,
-                        color: COLORS.LESS_DARK,
-                      }}>
-                      No person To add
-                    </Text>
-                  </View>
-                }
-                ListHeaderComponent={
-                  <>
-                    <View
-                      style={{
-                        width: '100%',
-                        padding: 10,
-                        backgroundColor: COLORS.GRAY,
-                      }}>
+                    <View>
                       <Text
                         style={{
-                          fontFamily: FONTS.GOTHAM_BLACK,
-                          fontSize: 20,
-                          color: COLORS.LIGHT,
-                          alignSelf: 'center',
-                          marginLeft: 10,
+                          color: COLORS.LESS_DARK,
+                          fontFamily: FONTS.RALEWAY,
+                          fontSize: 18,
+                          marginRight: 10,
                         }}>
-                        ADD PARTICIPANTS
+                        Select People To Add
                       </Text>
-                    </View>
-                    <View style={{marginHorizontal: 20, marginVertical: 5}}>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          paddingTop: 10,
-                          paddingBottom: 5,
-                        }}>
-                        <View>
-                          <Text
-                            style={{
-                              color: COLORS.LESS_DARK,
-                              fontFamily: FONTS.RALEWAY,
-                              fontSize: 18,
-                              marginRight: 10,
-                            }}>
-                            Select People To Add
-                          </Text>
-                          {this.state.peopleToAdd.length ? (
-                            <Text
-                              style={{
-                                color: COLORS.LESS_DARK,
-                                fontFamily: FONTS.RALEWAY,
-                                fontSize: 12,
-                              }}>
-                              {`${this.state.peopleToAdd.length} participants selected`}
-                            </Text>
-                          ) : null}
-                        </View>
-                        <Ripple
-                          rippleContainerBorderRadius={30}
+                      {this.state.peopleToAdd.length ? (
+                        <Text
                           style={{
-                            height: 42,
-                            width: 42,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            borderRadius: 30,
-                            elevation: 3,
-                            backgroundColor: !this.state.peopleToAdd.length
-                              ? COLORS.GRAY
-                              : COLORS.GREEN,
-                          }}
-                          onPress={this.onPressAdd.bind(this)}>
-                          <Icon
-                            name={'check'}
-                            size={22}
-                            color={
-                              !this.state.peopleToAdd.length
-                                ? COLORS.LIGHT
-                                : COLORS_LIGHT_THEME.LIGHT
-                            }
-                          />
-                        </Ripple>
-                      </View>
+                            color: COLORS.LESS_DARK,
+                            fontFamily: FONTS.RALEWAY,
+                            fontSize: 12,
+                          }}>
+                          {`${this.state.peopleToAdd.length} participants selected`}
+                        </Text>
+                      ) : null}
                     </View>
-                  </>
-                }
-                ListFooterComponent={<View style={{height: 8, width: 1}} />}
-                keyExtractor={(item, index) => {
-                  if (!item._id.toString()) {
-                    return index.toString();
-                  } else {
-                    return item._id.toString();
+                    <TouchableOpacity
+                      onPress={this.onPressAdd.bind(this)}
+                      activeOpacity={0.5}
+                      style={{
+                        height: 42,
+                        width: 42,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 30,
+                        elevation: 3,
+                        backgroundColor: !this.state.peopleToAdd.length
+                          ? COLORS.GRAY
+                          : COLORS.GREEN,
+                      }}>
+                      <Icon
+                        name={'check'}
+                        size={22}
+                        color={
+                          !this.state.peopleToAdd.length
+                            ? COLORS.LIGHT
+                            : COLORS_LIGHT_THEME.LIGHT
+                        }
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </>
+            }
+            ListFooterComponent={<View style={{height: 8, width: 1}} />}
+            keyExtractor={(item, index) => {
+              if (!item._id.toString()) {
+                return index.toString();
+              } else {
+                return item._id.toString();
+              }
+            }}
+            renderItem={({item, index}) => {
+              if (!this.props.status.hasOwnProperty(item._id)) {
+                this.props.status[item._id] = {
+                  online: true,
+                  typing: false,
+                  unread_messages: 0,
+                };
+              }
+              if (item.isGroup) {
+                return null;
+              }
+              itemsRendered += 1;
+              return (
+                <ChatPeople
+                  data={item}
+                  COLORS={COLORS}
+                  theme={this.props.theme}
+                  image_adder={this.props.image_adder}
+                  isSelector={true}
+                  isSelected={this.state.peopleToAdd.includes(DATA[index]._id)}
+                  isAddedToGroup={group_participants_user_ids.includes(
+                    DATA[index]._id,
+                  )}
+                  onPress={(user_id, shouldRemove) =>
+                    this.getSelectedUsers(user_id, shouldRemove)
                   }
-                }}
-                renderItem={({item, index}) => {
-                  if (!this.props.status.hasOwnProperty(item._id)) {
-                    this.props.status[item._id] = {
-                      online: true,
-                      typing: false,
-                      unread_messages: 0,
-                    };
-                  }
-                  if (item.isGroup) {
-                    return null;
-                  }
-                  itemsRendered += 1;
-                  return (
-                    <ChatPeople
-                      data={item}
-                      COLORS={COLORS}
-                      theme={this.props.theme}
-                      image_adder={this.props.image_adder}
-                      isSelector={true}
-                      isSelected={this.state.peopleToAdd.includes(
-                        DATA[index]._id,
-                      )}
-                      isAddedToGroup={group_participants_user_ids.includes(
-                        DATA[index]._id,
-                      )}
-                      onPress={(user_id, shouldRemove) =>
-                        this.getSelectedUsers(user_id, shouldRemove)
-                      }
-                    />
-                  );
-                }}
-              />
-            </TouchableOpacity>
-          </TouchableOpacity>
+                />
+              );
+            }}
+          />
         </>
       </Overlay>
     );
@@ -774,6 +755,14 @@ class ChatInfo extends Component {
     );
   }
 
+  renderLoading() {
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <Loading white={COLORS.THEME !== 'light'} size={108} />
+      </View>
+    );
+  }
+
   render() {
     const {
       COLORS,
@@ -796,18 +785,17 @@ class ChatInfo extends Component {
         borderRadius={20}
         onBackdropPress={this.props.onBackdropPress}
         overlayStyle={{
-          marginBottom: 25,
-          elevation: 0,
-          padding: 0,
-          overflow: 'hidden',
+          flex: 1,
           width: overlayWidth,
-          height: '82%',
-        }}
-        containerStyle={{padding: 0}}
-        animationType="none"
-        overlayBackgroundColor={
-          COLORS.THEME === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT
-        }>
+          marginTop: 30,
+          marginBottom: 40,
+          borderRadius: 20,
+          elevation: 7,
+          overflow: 'hidden',
+          alignSelf: 'center',
+          backgroundColor:
+            COLORS.THEME === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
+        }}>
         <>
           {this.renderChatPeopleSelector()}
           <TimedAlert
@@ -820,10 +808,7 @@ class ChatInfo extends Component {
             onRef={(ref) => (this.imageSelector = ref)}
           />
           {isLoading || !group_participants ? (
-            <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Loading white={COLORS.THEME !== 'light'} size={108} />
-            </View>
+            this.renderLoading()
           ) : (
             <MenuProvider>
               <ScrollView

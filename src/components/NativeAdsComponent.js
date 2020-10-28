@@ -21,8 +21,9 @@ class NativeAdsComponent extends Component {
           shadowOpacity: 0.25,
           shadowOffset: {width: 0, height: 8},
           shadowRadius: 6,
-          backgroundColor:
-            this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
+          backgroundColor: COLORS.IS_LIGHT_THEME
+            ? COLORS.LIGHT
+            : COLORS.LESS_LIGHT,
           borderRadius: 15,
           margin: 10,
           padding: 7,
