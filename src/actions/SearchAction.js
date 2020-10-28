@@ -1,7 +1,6 @@
 import {ACTIONS} from './types';
-import {URLS, LOG_EVENT, COLORS_LIGHT_THEME} from '../Constants';
-import {logEvent} from './ChatAction';
-import {httpClient, encrypt} from '../utilities';
+import {URLS, COLORS_LIGHT_THEME} from '../Constants';
+import {httpClient} from '../utilities';
 
 export const getPopularSearches = (onSuccess) => {
   return (dispatch) => {

@@ -257,6 +257,8 @@ class Drawer extends React.Component {
           circleBorderWidth={0}
           circleActiveColor={COLORS_LIGHT_THEME.LIGHT}
           circleInActiveColor={COLORS_LIGHT_THEME.LIGHT}
+          renderActiveText={false}
+          renderInActiveText={false}
         />
       </View>
     );

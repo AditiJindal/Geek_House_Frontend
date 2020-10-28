@@ -46,6 +46,7 @@ class Write extends React.PureComponent {
                 marginHorizontal: 5,
               }}>
               <ArticleTile
+                size={150}
                 data={{...item, category}}
                 theme={this.props.theme}
                 navigation={this.props.navigation}

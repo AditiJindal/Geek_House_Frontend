@@ -20,7 +20,6 @@ import ShadowView from 'react-native-simple-shadow-view';
 
 import {
   Avatar,
-  ArticleTileAds,
   Ripple,
   Loading,
   RaisedText,
@@ -42,8 +41,6 @@ import {
 } from '../Constants';
 
 class Home extends React.PureComponent {
-  state = {adIndex: 0};
-
   constructor() {
     super();
     this.slides = [];
@@ -371,10 +368,7 @@ class Home extends React.PureComponent {
 
   renderArticleTiles() {
     data_list = this.props.welcomeData.popular_topics;
-    const {COLORS, theme, adsManager, canShowAdsRemote} = this.props;
-    if (!this.state.adIndex && data_list && data_list.length > 2) {
-      this.setState({adIndex: _.random(2, data_list.length - 1)});
-    }
+    const {COLORS, theme} = this.props;
     return (
       <>
         <FlatList
@@ -391,18 +385,6 @@ class Home extends React.PureComponent {
                   flexDirection: 'row',
                   alignItems: 'center',
                 }}>
-                {index === this.state.adIndex &&
-                adsManager &&
-                canShowAdsRemote ? (
-                  <View style={{marginRight: 10}}>
-                    <ArticleTileAds
-                      theme={theme}
-                      size={180}
-                      COLORS={COLORS}
-                      adsManager={adsManager}
-                    />
-                  </View>
-                ) : null}
                 <ArticleTile
                   data={item}
                   size={180}
@@ -789,7 +771,6 @@ const mapStateToProps = (state) => {
 
     error: state.home.error,
     loading: state.home.loading,
-    adsManager: state.home.adsManager,
     image_adder: state.home.image_adder,
     welcomeData: state.home.welcomeData,
     selected_category: state.home.selected_category,

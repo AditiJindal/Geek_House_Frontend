@@ -1,9 +1,8 @@
 import {ACTIONS} from './types';
-import {URLS, LOG_EVENT} from '../Constants';
+import {URLS, SOCKET_EVENTS} from '../Constants';
 import uuid from 'uuid-random';
 import RNFileSystem from 'react-native-fs';
-import {uploadImage, decrypt, httpClient} from '../utilities';
-import {logEvent} from './ChatAction';
+import {uploadImage, httpClient} from '../utilities';
 import {socketEmit} from '../socket';
 
 const changeImageUrlHelper = async (dispatch, image_url, callback) => {
@@ -75,7 +74,7 @@ export const changeQuickRepliesSettings = () => {
 };
 
 export const changeTheme = (value) => {
-  logEvent(LOG_EVENT.CURRENT_VIEW_MODE, value);
+  socketEmit(SOCKET_EVENTS.THEME_CHANGE, value);
   return {type: ACTIONS.CHANGE_THEME, payload: value};
 };
 

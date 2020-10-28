@@ -1,7 +1,6 @@
 import {ACTIONS} from './types';
-import {URLS, LOG_EVENT} from '../Constants';
-import {logEvent} from './ChatAction';
-import {decrypt, httpClient, uploadImage} from '../utilities';
+import {URLS} from '../Constants';
+import {httpClient, uploadImage} from '../utilities';
 
 export const getMyArticles = (myArticlesLength, reload) => {
   if (myArticlesLength === 0 || reload) {

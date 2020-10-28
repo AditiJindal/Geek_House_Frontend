@@ -1,6 +1,5 @@
 import io from 'socket.io-client';
 
-import {store} from '../reducers';
 import {
   onChatGroupParticipants,
   onCreateGroup,
@@ -15,7 +14,6 @@ import {BASE_URL, HTTP_TIMEOUT, SOCKET_EVENTS} from '../Constants';
 
 let socket = io.Socket;
 let authtoken = null;
-const {getState} = store;
 
 // 2 layered function
 const socketOnEventLogger = (socket) => {
@@ -27,27 +25,21 @@ const socketOnEventLogger = (socket) => {
 };
 
 const onSocketConnect = () => {
-  if (__DEV__) {
-    console.log(
-      `SOCKET CONNECTED : ${socket.connected} SOCKET_ID : ${socket.id}`,
-    );
-  }
+  console.log(
+    `SOCKET CONNECTED : ${socket.connected} SOCKET_ID : ${socket.id}`,
+  );
 };
 
 const onSocketDisconnect = () => {
-  const {authtoken, data} = getState().login;
-  socket.emit(SOCKET_EVENTS.NOT_DISCONNECTED, {
-    id: authtoken,
-    name: data.name,
-  });
+  console.log(
+    `SOCKET DISCONNECTED : ${socket.disconnected} SOCKET_ID : ${socket.id}`,
+  );
 };
 
 const onSocketReconnect = () => {
-  const {authtoken, data} = getState().login;
-  socket.emit(SOCKET_EVENTS.NOT_DISCONNECTED, {
-    id: authtoken,
-    name: data.name,
-  });
+  console.log(
+    `SOCKET RECONNECTED : ${socket.connected} SOCKET_ID : ${socket.id}`,
+  );
 };
 
 export const setupSocket = (local_authtoken) => {
@@ -81,13 +73,18 @@ export const runSocketListeners = () => {
   socket.on(SOCKET_EVENTS.CHAT_PEOPLE_SEARCH, onChatPeopleSearch);
 
   // in built events
-  socket.on(SOCKET_EVENTS.connect, onSocketConnect);
-  socket.on(SOCKET_EVENTS.reconnect, onSocketReconnect);
-  socket.on(SOCKET_EVENTS.disconnect, onSocketDisconnect);
+  if (__DEV__) {
+    socket.on(SOCKET_EVENTS.connect, onSocketConnect);
+    socket.on(SOCKET_EVENTS.reconnect, onSocketReconnect);
+    socket.on(SOCKET_EVENTS.disconnect, onSocketDisconnect);
+  }
 };
 
 export const socketEmit = (socket_event, data) => {
   // use this function whenever we want to emit to server
+  if (!socket) {
+    return null;
+  }
   console.log(
     `SOCKET EVENT :  ${socket_event} AUTHTOKEN : ${authtoken}  DATA : `,
     data,

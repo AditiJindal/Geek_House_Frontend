@@ -1,7 +1,5 @@
 import {ACTIONS} from './types';
-import {logEvent} from './ChatAction';
-import {URLS, LOG_EVENT, SCREENS, SCREEN_CLASSES} from '../Constants';
-import {NativeAdsManager} from 'react-native-fbads';
+import {URLS} from '../Constants';
 import CameraRoll from '@react-native-community/cameraroll';
 import ImageResizer from 'react-native-image-resizer';
 import {
@@ -109,7 +107,7 @@ export const getPhotosMetadata = async (
 
 export const logout = (onLogout) => {
   return (dispatch) => {
-    storageRemoveItem('HOME ACTION 1', 'data').then(() => {
+    storageRemoveItem('data').then(() => {
       httpClient().get(URLS.logout);
       dispatch({type: ACTIONS.LOGOUT});
       onLogout();
@@ -121,23 +119,16 @@ export const getWelcome = (onError) => {
   return (dispatch) => {
     dispatch({type: ACTIONS.HOME_LOADING});
 
-    // AdSettings.addTestDevice(AdSettings.currentDeviceHash);
-    let adsManager = new NativeAdsManager(
-      '2458153354447665_2459775687618765',
-      10,
-    );
-    adsManager.setMediaCachePolicy('all');
-
     httpClient()
       .get(URLS.welcome)
       .then(({data}) => {
         if (data.error) {
-          storageRemoveItem('HOME ACTION 2', 'data').then(() => {
+          storageRemoveItem('data').then(() => {
             dispatch({type: ACTIONS.LOGOUT});
             onError();
           });
         } else {
-          dispatch({type: ACTIONS.WELCOME, payload: {...data, adsManager}});
+          dispatch({type: ACTIONS.WELCOME, payload: data});
         }
       })
       .catch((e) => {

@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {Text, View} from 'react-native';
-import {logEvent} from '../actions/ChatAction';
-import {COLORS_LIGHT_THEME, LOG_EVENT} from '../Constants';
+import {COLORS_LIGHT_THEME} from '../Constants';
 import {
   AdIconView,
   MediaView,
@@ -65,9 +64,7 @@ class NativeAdsComponent extends Component {
             </Text>
           </View>
           <TriggerableView
-            onPress={() => {
-              logEvent(LOG_EVENT.AD_CLICKED);
-            }}
+            onPress={() => {}}
             style={{
               paddingHorizontal: 15,
               paddingVertical: 10,
@@ -86,4 +83,4 @@ class NativeAdsComponent extends Component {
   }
 }
 
-export default __DEV__ ? null : withNativeAd(NativeAdsComponent);
+export default __DEV__ ? View : withNativeAd(NativeAdsComponent);

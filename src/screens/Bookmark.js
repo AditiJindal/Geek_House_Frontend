@@ -4,12 +4,10 @@ import Icon from 'react-native-vector-icons/Feather';
 import _ from 'lodash';
 import {connect} from 'react-redux';
 import {getBookmarkedArticles} from '../actions/ArticleInfoAction';
-import {ArticleTile, ArticleTileAds, ShimmerScreen} from '../components';
+import {ArticleTile, ShimmerScreen} from '../components';
 import {FONTS} from '../Constants';
 
 class Bookmark extends React.PureComponent {
-  state = {adIndex: 0, adCategoryIndex: []};
-
   componentDidMount() {
     if (Object.keys(this.props.bookmarked_articles).length === 0) {
       this.props.getBookmarkedArticles();
@@ -63,17 +61,6 @@ class Bookmark extends React.PureComponent {
       );
     } else {
       const category_list = Object.keys(this.props.bookmarked_articles);
-      if (!this.state.adCategoryIndex.length) {
-        this.setState({
-          adCategoryIndex: [
-            _.random(0, category_list.length),
-            _.random(0, category_list.length),
-            _.random(0, category_list.length),
-            _.random(0, category_list.length),
-            _.random(0, category_list.length),
-          ],
-        });
-      }
 
       return (
         <View style={{flexGrow: 1}}>
@@ -81,8 +68,8 @@ class Bookmark extends React.PureComponent {
             data={category_list}
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={this.renderHeader()}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({item, index}) => {
+            keyExtractor={(index) => index.toString()}
+            renderItem={({item}) => {
               return (
                 <View
                   style={{
@@ -114,10 +101,7 @@ class Bookmark extends React.PureComponent {
                       </Text>
                     </View>
                   </View>
-                  {this.renderTopics(
-                    data[item],
-                    this.state.adCategoryIndex.includes(index),
-                  )}
+                  {this.renderTopics(data[item])}
                 </View>
               );
             }}
@@ -127,19 +111,16 @@ class Bookmark extends React.PureComponent {
     }
   }
 
-  renderTopics(articles, canShowAds) {
-    const {COLORS, theme, adsManager, canShowAdsRemote} = this.props;
+  renderTopics(articles) {
+    const {COLORS, theme} = this.props;
 
-    if (!this.state.adIndex && articles && articles.length > 2) {
-      this.setState({adIndex: _.random(2, articles.length - 1)});
-    }
     return (
       <FlatList
         data={articles}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({item, index}) => {
+        keyExtractor={(index) => index.toString()}
+        renderItem={({item}) => {
           return (
             <View
               style={{
@@ -148,20 +129,8 @@ class Bookmark extends React.PureComponent {
                 marginHorizontal: 5,
                 alignItems: 'center',
               }}>
-              {index === this.state.adIndex &&
-              index &&
-              adsManager &&
-              canShowAds &&
-              canShowAdsRemote ? (
-                <View style={{marginRight: 10}}>
-                  <ArticleTileAds
-                    theme={theme}
-                    COLORS={COLORS}
-                    adsManager={adsManager}
-                  />
-                </View>
-              ) : null}
               <ArticleTile
+                size={150}
                 data={item}
                 theme={theme}
                 COLORS={COLORS}
@@ -211,7 +180,6 @@ class Bookmark extends React.PureComponent {
 
 const mapStateToProps = (state) => {
   return {
-    adsManager: state.home.adsManager,
     canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
 
     bookmarks_loading: state.articleInfo.bookmarks_loading,

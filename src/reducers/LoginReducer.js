@@ -21,7 +21,7 @@ const saveLoginData = (state) => {
     authtoken: state.authtoken,
   };
 
-  storageSetItem('LOGIN REDUCER 1', 'data', final_data);
+  storageSetItem('data', final_data);
 };
 
 export default (state = INITIAL_STATE, action) => {

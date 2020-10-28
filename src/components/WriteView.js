@@ -15,13 +15,7 @@ import Loading from './Loading';
 import Ripple from './Ripple';
 import ImageSelector from './ImageSelector';
 import CustomAlert from './CustomAlert';
-import {
-  FONTS,
-  ERROR_MESSAGES,
-  LOG_EVENT,
-  COLORS_LIGHT_THEME,
-} from '../Constants';
-import {logEvent} from '../actions/ChatAction';
+import {FONTS, ERROR_MESSAGES, COLORS_LIGHT_THEME} from '../Constants';
 
 const MIN_TI_HEIGHT = 120;
 export default class WriteView extends Component {

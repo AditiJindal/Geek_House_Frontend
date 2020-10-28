@@ -1,6 +1,5 @@
 import {ACTIONS} from './types';
-import {URLS, LOG_EVENT} from '../Constants';
-import {logEvent} from './ChatAction';
+import {URLS} from '../Constants';
 import {httpClient} from '../utilities';
 
 const articleHandler = (

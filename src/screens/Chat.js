@@ -26,14 +26,11 @@ import {
   Avatar,
   Overlay,
 } from '../components';
-import {logEvent} from '../actions/ChatAction';
 import {
   FONTS,
-  LOG_EVENT,
   COLORS_LIGHT_THEME,
   MAX_USERS_IN_A_GROUP,
   SCREENS,
-  SCREEN_CLASSES,
 } from '../Constants';
 import {
   setUserData,
@@ -44,20 +41,12 @@ import {
 
 class Chat extends React.PureComponent {
   state = {
-    showStartTime: Date.now(),
     chatPeopleSearchText: '',
     peopleSelectorVisible: false,
     newGroupData: {name: '', group_image: null, users: []},
     groupPeopleSelectorLoading: false,
     chatInfoVisible: false,
   };
-
-  componentWillUnmount() {
-    logEvent(LOG_EVENT.TIME_IN_CHAT, {
-      mili_seconds: Date.now() - this.state.showStartTime,
-      endTime: Date.now(),
-    });
-  }
 
   renderSection(title) {
     const {COLORS} = this.props;

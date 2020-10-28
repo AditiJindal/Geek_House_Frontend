@@ -1,5 +1,5 @@
 import {ACTIONS} from './types';
-import {URLS, LOG_EVENT, SOCKET_EVENTS} from '../Constants';
+import {URLS, SOCKET_EVENTS, USER_EVENTS} from '../Constants';
 import _ from 'lodash';
 import {database} from '../database';
 import {Q} from '@nozbe/watermelondb';
@@ -95,10 +95,6 @@ export const chatPeopleSearchAction = (value) => {
       socketEmit(SOCKET_EVENTS.CHAT_PEOPLE_SEARCH, value);
     }
   };
-};
-
-export const logEvent = (eventType, data) => {
-  socketEmit(SOCKET_EVENTS.LOG_EVENT, {eventType, data});
 };
 
 export const setupComplete = () => {

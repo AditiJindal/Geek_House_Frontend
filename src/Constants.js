@@ -1,3 +1,4 @@
+import {NativeAdsManager} from 'react-native-fbads';
 import {
   KEYCODE_PROD,
   FACEBOOK_ADS_ID,
@@ -116,10 +117,10 @@ export const HTTP_TIMEOUT = 12000;
 
 export const MESSAGE_SPECIAL_ADDER = 'PO54zUMrndr4Z4yKoK13lQBEKaFGic1V';
 
-export const LOG_EVENT = {
+export const USER_EVENTS = {
+  CHANGE_THEME: 'CHANGE_THEME',
   SCREEN_CHANGE: 'screen_change',
   AD_CLICKED: 'ad_clicked',
-  CURRENT_VIEW_MODE: 'current_view_mode',
   TIME_IN_CHAT: 'time_in_chat',
   TIME_IN_ARTICLE_INFO: 'time_in_article_info',
   ASYNC_STORAGE_TIME: 'async_storage_time',
@@ -410,41 +411,52 @@ export const LATEST_APP_VERSION = 38;
 export const APP_VERSION = require('../package.json').version;
 
 export const SOCKET_EVENTS = {
-  SEND_OFFLINE: 'SEND_OFFLINE',
-  NOT_DISCONNECTED: 'NOT_DISCONNECTED',
-  JOIN: 'JOIN',
-  INCOMING_MESSAGE: 'INCOMING_MESSAGE',
-  INCOMING_TYPING: 'INCOMING_TYPING',
+  CHANGE_FAVORITE_CATEGORY: 'CHANGE_FAVORITE_CATEGORY',
+  CHAT_ADD_PARTICIPANTS: 'CHAT_ADD_PARTICIPANTS',
+  CHAT_GROUP_PARTICIPANTS: 'CHAT_GROUP_PARTICIPANTS',
+  CHAT_GROUP_MODIFY_ADMINS: 'CHAT_GROUP_MODIFY_ADMINS',
+  CHAT_LEAVE_GROUP: 'CHAT_LEAVE_GROUP',
   CHAT_PEOPLE: 'CHAT_PEOPLE',
   CHAT_PEOPLE_EXPLICITLY: 'CHAT_PEOPLE_EXPLICITLY',
-  ONLINE: 'ONLINE',
-  CHAT_GROUP_PARTICIPANTS: 'CHAT_GROUP_PARTICIPANTS',
-  CREATE_GROUP: 'CREATE_GROUP',
-  COMMANDS: 'COMMANDS',
-  DEVICE_INFO: 'DEVICE_INFO',
-  MESSAGE_SUCCESSFUL: 'MESSAGE_SUCCESSFUL',
-  LOG_EVENT: 'LOG_EVENT',
-  TYPING: 'TYPING',
-  MESSAGE: 'MESSAGE',
-  CHANGE_FAVORITE_CATEGORY: 'CHANGE_FAVORITE_CATEGORY',
-  USER_SETUP_DONE: 'USER_SETUP_DONE',
-  IS_ONLINE: 'IS_ONLINE',
   CHAT_PEOPLE_SEARCH: 'CHAT_PEOPLE_SEARCH',
-  CHAT_LEAVE_GROUP: 'CHAT_LEAVE_GROUP',
-  CHAT_ADD_PARTICIPANTS: 'CHAT_ADD_PARTICIPANTS',
+  COMMANDS: 'COMMANDS',
+  CREATE_GROUP: 'CREATE_GROUP',
+
+  DEVICE_INFO: 'DEVICE_INFO',
+
   GROUP_CHANGE_DETAILS: 'GROUP_CHANGE_DETAILS',
-  CHAT_GROUP_MODIFY_ADMINS: 'CHAT_GROUP_MODIFY_ADMINS',
+
+  INCOMING_MESSAGE: 'INCOMING_MESSAGE',
+  INCOMING_TYPING: 'INCOMING_TYPING',
+
+  JOIN: 'JOIN',
+
+  MESSAGE: 'MESSAGE',
+  MESSAGE_SUCCESSFUL: 'MESSAGE_SUCCESSFUL',
+
+  ONLINE: 'ONLINE',
+
+  SEND_ONLINE: 'SEND_ONLINE',
+
+  THEME_CHANGE: 'THEME_CHANGE',
+  TYPING: 'TYPING',
+
+  USER_SETUP_DONE: 'USER_SETUP_DONE',
 
   // built-in commands
   connect: 'connect',
-  reconnect: 'reconnect',
-  disconnect: 'disconnect',
   connect_error: 'connect_error',
-  reconnect_error: 'reconnect_error',
   connect_timeout: 'connect_timeout',
+
+  disconnect: 'disconnect',
+
   error: 'error',
+
   ping: 'ping',
   pong: 'pong',
+
+  reconnect: 'reconnect',
+  reconnect_error: 'reconnect_error',
 };
 
 export const EXPERIENCE_TEXT =
@@ -472,3 +484,10 @@ export const PLAY_STORE_URL =
 
 export const FORCE_UPDATE_TEXT =
   'The new version has some significant changes, unfortunately due to which the current version is now unsupported and you need to update the app. We are sorry for the inconvenience caused.';
+
+const ADS_MANAGER = new NativeAdsManager(
+  '2458153354447665_2459775687618765',
+  10,
+);
+ADS_MANAGER.setMediaCachePolicy('all');
+export {ADS_MANAGER};

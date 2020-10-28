@@ -6,8 +6,8 @@ import {
   SOCKET_EVENTS,
   LATEST_APP_VERSION,
 } from '../Constants';
-import {AppState} from 'react-native';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
+import {AppState} from 'react-native';
 import uuid from 'uuid-random';
 import {store} from '../reducers';
 import {GoogleSignin} from '@react-native-community/google-signin';
@@ -45,27 +45,12 @@ const setPushNotifications = async () => {
   PushNotification.configure({
     onNotification: (notification) => {
       makeLocalNotification(notification);
-      // handleNotification(notification)
     },
     popInitialNotification: false,
   });
 };
 
 setPushNotifications();
-
-const incomingMessageConverter = (data) => {
-  const new_message = [
-    {
-      _id: uuid(),
-      createdAt: data.createdAt,
-      text: data.text,
-      user: {_id: data.from, name: data.groupSender},
-      image: data.image,
-    },
-  ];
-
-  return new_message;
-};
 
 const makeLocalNotification = async (notification) => {
   if (notification.silent) {
@@ -134,11 +119,7 @@ const makeLocalNotification = async (notification) => {
 };
 
 const makeConnection = async (json_data, dispatch) => {
-  const t = Date.now();
-  const response = await storageGetItem(
-    'LOGIN ACTION 1',
-    json_data.authtoken.toString(),
-  );
+  const response = await storageGetItem(json_data.authtoken.toString());
 
   dispatch({
     type: ACTIONS.CHAT_FIRST_LOGIN,
@@ -164,10 +145,9 @@ const makeConnection = async (json_data, dispatch) => {
   runSocketListeners();
 
   AppState.addEventListener('change', (appState) => {
-    if (appState === 'background' || appState === 'inactive') {
-      socketEmit(SOCKET_EVENTS.SEND_OFFLINE, {id: json_data.authtoken});
-    } else {
-      socketEmit(SOCKET_EVENTS.NOT_DISCONNECTED, {id: json_data.authtoken});
+    const isOnline = appState === 'active';
+    socketEmit(SOCKET_EVENTS.SEND_ONLINE, {value: isOnline});
+    if (isOnline) {
       PushNotification.cancelAllLocalNotifications();
     }
   });
@@ -208,27 +188,25 @@ const makeConnection = async (json_data, dispatch) => {
   socketEmit(SOCKET_EVENTS.DEVICE_INFO, fullDeviceInfo);
 };
 
-export const checkLogin = (onSuccess, onForceUpdate) => {
-  return (dispatch) => {
-    // 1) Check from server if there is a new force update
-    httpClient()
-      .get(URLS.get_min_app_version)
-      .then(({data}) => {
-        if (Number(data.MIN_APP_VERSION) > LATEST_APP_VERSION) {
-          onForceUpdate();
-        } else {
-          storageGetItem('LOGIN ACTION 2', 'data').then(async (response) => {
-            if (response !== null && Object.keys(response).length !== 0) {
-              await makeConnection(response, dispatch);
-              onSuccess();
-            } else {
-              dispatch({type: ACTIONS.LOGOUT});
-            }
-          });
-        }
-      });
-  };
+const checkLoginHelper = async (dispatch, onSuccess, onForceUpdate) => {
+  // 1) Check from server if there is a new force update
+  const {data} = await httpClient().get(URLS.get_min_app_version);
+  if (Number(data.MIN_APP_VERSION) > LATEST_APP_VERSION) {
+    onForceUpdate();
+    return null;
+  }
+
+  const response = await storageGetItem('data');
+  if (response !== null && Object.keys(response).length !== 0) {
+    await makeConnection(response, dispatch);
+    onSuccess();
+  } else {
+    dispatch({type: ACTIONS.LOGOUT});
+  }
 };
+
+export const checkLogin = (onSuccess, onForceUpdate) => (dispatch) =>
+  checkLoginHelper(dispatch, onSuccess, onForceUpdate);
 
 const loginGoogleHelper = async (dispatch) => {
   dispatch({type: ACTIONS.LOADING_GOOGLE, payload: true});
@@ -272,7 +250,7 @@ const loginGoogleHelper = async (dispatch) => {
 
   authtoken = user_data.token;
   final_data = {data: new_data, authtoken: authtoken};
-  storageSetItem('LOGIN ACTION 1', 'data', final_data);
+  storageSetItem('data', final_data);
   dispatch({
     type: ACTIONS.CHAT_FIRST_LOGIN,
     payload: {
@@ -349,7 +327,7 @@ export const loginFacebookHelper = async (dispatch) => {
   authtoken = user_data.token;
   final_data = {data: new_data, authtoken: authtoken};
 
-  storageSetItem('LOGIN ACTION 2', 'data', final_data);
+  storageSetItem('data', final_data);
   dispatch({
     type: ACTIONS.CHAT_FIRST_LOGIN,
     payload: {

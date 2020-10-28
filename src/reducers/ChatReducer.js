@@ -169,7 +169,7 @@ const saveData = async (action_type, state) => {
     // chat_group_participants: state.chat_group_participants
   };
 
-  await storageSetItem(action_type, state.user_id.toString(), to_save);
+  await storageSetItem(state.user_id.toString(), to_save);
 };
 
 const mergeChats = (new_chats, old_chats) => {

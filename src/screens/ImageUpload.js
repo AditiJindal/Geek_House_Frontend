@@ -13,14 +13,7 @@ import vision from '@react-native-firebase/ml-vision';
 
 import {TimedAlert, CustomAlert, ArticleTile, Ripple} from '../components';
 import {setImage} from '../actions/WriteAction';
-import {logEvent} from '../actions/ChatAction';
-import {
-  FONTS,
-  ERROR_BUTTONS,
-  COLORS_LIGHT_THEME,
-  LOG_EVENT,
-  SCREENS,
-} from '../Constants';
+import {FONTS, ERROR_BUTTONS, COLORS_LIGHT_THEME, SCREENS} from '../Constants';
 
 class ImageUpload extends React.PureComponent {
   constructor() {

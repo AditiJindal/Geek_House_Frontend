@@ -28,6 +28,7 @@ import {
   COLORS_LIGHT_THEME,
   COLORS_DARK_THEME,
   SCREENS,
+  ADS_MANAGER,
 } from '../Constants';
 import CardView from './CardView';
 import Loading from './Loading';
@@ -63,13 +64,7 @@ class ArticleInfo extends Component {
 
   renderCardViews(cards) {
     const {adIndex} = this.state;
-    const {
-      adsManager,
-      canShowAdsRemote,
-      theme,
-      COLORS,
-      image_adder,
-    } = this.props;
+    const {canShowAdsRemote, theme, COLORS, image_adder} = this.props;
 
     if (!adIndex && cards) {
       this.setState({adIndex: _.random(1, cards.length - 1)});
@@ -81,11 +76,11 @@ class ArticleInfo extends Component {
           {cards.map((item, i) => {
             return (
               <View key={i.toString()}>
-                {i === adIndex && adsManager && canShowAdsRemote ? (
+                {i === adIndex && canShowAdsRemote ? (
                   <NativeAdsComponent
                     theme={theme}
                     COLORS={COLORS}
-                    adsManager={adsManager}
+                    adsManager={ADS_MANAGER}
                   />
                 ) : null}
                 <CardView
@@ -518,7 +513,7 @@ class ArticleInfo extends Component {
   }
 
   renderArticle() {
-    const {COLORS, imageSource, article_id} = this.props;
+    const {COLORS, imageSource, article_id, loading} = this.props;
     const {
       author,
       author_image,
@@ -590,6 +585,14 @@ class ArticleInfo extends Component {
       ],
       extrapolate: 'clamp',
     });
+
+    if (loading) {
+      return (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Loading size={128} white={COLORS.THEME !== 'light'} />
+        </View>
+      );
+    }
 
     return (
       <View style={{flex: 1, width: '100%'}}>
@@ -819,6 +822,8 @@ class ArticleInfo extends Component {
       selectedArticleInfo,
     } = this.props;
 
+    console.log({PROPS: this.props, STATE: this.state});
+
     if (!isVisible) {
       return null;
     }
@@ -862,14 +867,7 @@ class ArticleInfo extends Component {
             onRef={(ref) => (this.timedAlert = ref)}
             COLORS={COLORS}
           />
-          {loading ? (
-            <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Loading size={128} white={COLORS.THEME !== 'light'} />
-            </View>
-          ) : (
-            this.renderArticle()
-          )}
+          {this.renderArticle()}
         </>
       </Overlay>
     );
@@ -880,7 +878,6 @@ const mapStateToProps = (state) => {
   return {
     userData: state.login.data,
 
-    adsManager: state.home.adsManager,
     image_adder: state.home.image_adder,
     canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
 

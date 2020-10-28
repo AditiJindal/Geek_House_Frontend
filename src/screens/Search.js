@@ -17,7 +17,6 @@ import SView from 'react-native-simple-shadow-view';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 import {
-  ArticleTileAds,
   CustomAlert,
   Dropdown,
   RaisedText,
@@ -41,26 +40,22 @@ import {
 } from '../Constants';
 
 class Search extends React.PureComponent {
-  state = {adIndex: 0, adCategoryIndex: []};
-
   componentDidMount() {
     if (!this.props.popularSearchesData) {
       this.props.getPopularSearches();
     }
   }
 
-  renderTopics(articles, category, canShowAds) {
-    const {theme, COLORS, adsManager, canShowAdsRemote} = this.props;
-    if (!this.state.adIndex && articles && articles.length > 2) {
-      this.setState({adIndex: _.random(2, articles.length - 1)});
-    }
+  renderTopics(articles, category) {
+    const {theme, COLORS} = this.props;
+
     return (
       <FlatList
         data={articles}
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.article_id.toString()}
-        renderItem={({item, index}) => {
+        renderItem={({item}) => {
           return (
             <View
               style={{
@@ -69,24 +64,12 @@ class Search extends React.PureComponent {
                 marginHorizontal: 5,
                 alignItems: 'center',
               }}>
-              {index === this.state.adIndex &&
-              index &&
-              adsManager &&
-              canShowAds &&
-              canShowAdsRemote ? (
-                <View style={{marginRight: 10}}>
-                  <ArticleTileAds
-                    theme={theme}
-                    COLORS={COLORS}
-                    adsManager={adsManager}
-                  />
-                </View>
-              ) : null}
               <ArticleTile
                 data={{...item, category}}
                 theme={theme}
                 COLORS={COLORS}
                 navigation={this.props.navigation}
+                size={150}
               />
             </View>
           );
@@ -223,22 +206,10 @@ class Search extends React.PureComponent {
       );
     }
 
-    let jsx = (
-      <View style={{alignSelf: 'flex-end'}}>
-        <RaisedText
-          text={'Discover New'}
-          animationEnabled={animationOn}
-          theme={this.props.theme}
-          COLORS={COLORS}
-        />
-      </View>
-    );
-
     let response = popularSearchesData;
 
     if (searchResults) {
       response = searchResults;
-      jsx = null;
     }
 
     if (loading) {
@@ -252,18 +223,6 @@ class Search extends React.PureComponent {
       );
     } else {
       const category_list = Object.keys(response);
-      if (!this.state.adCategoryIndex.length) {
-        this.setState({
-          adCategoryIndex: [
-            _.random(0, category_list.length),
-            _.random(0, category_list.length),
-            _.random(0, category_list.length),
-            _.random(0, category_list.length),
-            _.random(0, category_list.length),
-          ],
-        });
-      }
-
       return (
         <FlatList
           data={category_list}
@@ -272,19 +231,20 @@ class Search extends React.PureComponent {
           ListHeaderComponent={
             <View>
               <View style={{height: 70, width: 1}} />
-              {jsx}
+              {searchResults ? (
+                <View style={{alignSelf: 'flex-end'}}>
+                  <RaisedText
+                    text={'Discover New'}
+                    animationEnabled={animationOn}
+                    theme={this.props.theme}
+                    COLORS={COLORS}
+                  />
+                </View>
+              ) : null}
               {this.renderSearchSettings()}
             </View>
           }
-          ListFooterComponent={
-            <>
-              {/* <View style={{height:80, width:1}}/>
-            <View style={{height:80, width:"100%", paddingHorizontal:20}}>
-              <BannerAd/>
-            </View> */}
-              <View style={{height: 80, width: 1}} />
-            </>
-          }
+          ListFooterComponent={<View style={{height: 80, width: 1}} />}
           refreshControl={
             <RefreshControl
               onRefresh={() => {
@@ -347,11 +307,7 @@ class Search extends React.PureComponent {
                     </Text>
                   </View>
                 </View>
-                {this.renderTopics(
-                  response[item],
-                  item,
-                  this.state.adCategoryIndex.includes(index),
-                )}
+                {this.renderTopics(response[item], item)}
               </View>
             );
           }}
@@ -446,7 +402,6 @@ class Search extends React.PureComponent {
 
 const mapStateToProps = (state) => {
   return {
-    adsManager: state.home.adsManager,
     canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
 
     popularSearchesData: state.search.popularSearchesData,

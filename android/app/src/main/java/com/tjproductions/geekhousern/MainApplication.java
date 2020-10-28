@@ -15,7 +15,6 @@ import java.lang.reflect.InvocationTargetException;
 import io.invertase.firebase.dynamiclinks.ReactNativeFirebaseDynamicLinksPackage;
 import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
 import com.reactnativecommunity.cameraroll.CameraRollPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import io.invertase.firebase.ml.naturallanguage.ReactNativeFirebaseMLNaturalLanguagePackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
