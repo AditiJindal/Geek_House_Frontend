@@ -12,16 +12,37 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 import {connect} from 'react-redux';
 import {clearSearch} from '../actions/SearchAction';
-import {ArticleTile, Loading} from '../components';
+import {ArticleTile, Loading, ArticleInfo} from '../components';
 import {FONTS, CATEGORY_IMAGES, COLORS_LIGHT_THEME} from '../Constants';
 
 const screenWidth = Dimensions.get('screen').width;
 
 class Explore extends React.PureComponent {
+  state = {infoVisible: false, articleData: {}};
+
   componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', () => {
       this.props.clearSearch();
     });
+  }
+
+  renderArticleInfo() {
+    const {articleData, infoVisible} = this.state;
+
+    return (
+      <ArticleInfo
+        navigation={this.props.navigation}
+        onBackdropPress={() => {
+          this.setState({infoVisible: false});
+        }}
+        isVisible={infoVisible}
+        article_id={articleData.article_id}
+        // for preview
+        preview_contents={articleData.preview_contents}
+        topic={articleData.topic}
+        category={articleData.category}
+      />
+    );
   }
 
   renderHeader() {
@@ -96,7 +117,7 @@ class Explore extends React.PureComponent {
   }
 
   renderArticle({item}) {
-    const {COLORS, theme} = this.props;
+    const {COLORS} = this.props;
     return (
       <View
         style={{
@@ -105,11 +126,10 @@ class Explore extends React.PureComponent {
           marginBottom: 10,
         }}>
         <ArticleTile
-          data={item}
           size={((screenWidth - 60) * 3) / 4}
-          theme={theme}
+          data={item}
+          onPress={() => this.setState({infoVisible: true, articleData: item})}
           COLORS={COLORS}
-          navigation={this.props.navigation}
         />
       </View>
     );
@@ -162,6 +182,7 @@ class Explore extends React.PureComponent {
         {this.renderHeader()}
         {this.renderBigImage()}
         {this.renderCarousel()}
+        {this.renderArticleInfo()}
       </View>
     );
   }

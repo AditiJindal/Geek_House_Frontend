@@ -4,7 +4,6 @@ import {
   View,
   Text,
   StyleSheet,
-  StatusBar,
   FlatList,
   RefreshControl,
   TouchableOpacity,
@@ -12,10 +11,11 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from '@react-native-community/image-editor';
+
+import {changeBarColors} from '../utilities';
 import {
   ImageSelector,
   Ripple,
@@ -189,15 +189,16 @@ class Chat extends React.PureComponent {
           </Text>
         </View>
         <Ripple
-          rippleContainerBorderRadius={30}
-          style={{
+          containerStyle={{
             backgroundColor: COLORS.GRAY,
             height: 42,
             width: 42,
             borderRadius: 21,
+            elevation: 3,
+          }}
+          style={{
             alignSelf: 'center',
             justifyContent: 'center',
-            elevation: 3,
             alignItems: 'center',
           }}
           onPress={() => {
@@ -240,31 +241,33 @@ class Chat extends React.PureComponent {
           alignSelf: 'center',
         }}>
         <Text style={{...styles.TextStyle, color: COLORS.DARK}}>chat</Text>
-        <Ripple
-          rippleContainerBorderRadius={6}
-          onPress={() => {
-            this.setState({peopleSelectorVisible: true});
-          }}>
-          <LinearGradient
+
+        <LinearGradient
+          style={{borderRadius: 6}}
+          colors={['#EA384D', '#D31027']}>
+          <Ripple
+            containerStyle={{borderRadius: 6}}
             style={{
               paddingHorizontal: 10,
               paddingVertical: 6,
-              borderRadius: 6,
               flexDirection: 'row',
               alignItems: 'center',
             }}
-            colors={['#EA384D', '#D31027']}>
+            onPress={() => {
+              this.setState({peopleSelectorVisible: true});
+            }}>
             <Text
               style={{
                 fontSize: 17,
                 fontFamily: FONTS.RALEWAY_BOLD,
                 color: COLORS_LIGHT_THEME.LIGHT,
+                marginRight: 5,
               }}>
-              {'new group  '}
+              {'new group'}
             </Text>
             <Icon name="user-plus" size={18} color={COLORS_LIGHT_THEME.LIGHT} />
-          </LinearGradient>
-        </Ripple>
+          </Ripple>
+        </LinearGradient>
       </SView>
     );
   }
@@ -332,6 +335,10 @@ class Chat extends React.PureComponent {
       <Overlay
         overlayStyle={{flex: 1}}
         isVisible={this.state.peopleSelectorVisible}
+        onModalShow={() =>
+          changeBarColors(COLORS.OVERLAY_COLOR, COLORS.IS_LIGHT_THEME)
+        }
+        onModalHide={() => changeBarColors(COLORS.LIGHT, COLORS.IS_LIGHT_THEME)}
         onBackdropPress={() => {
           this.setState({peopleSelectorVisible: false});
         }}>
@@ -457,18 +464,19 @@ class Chat extends React.PureComponent {
                           ) : null}
                         </View>
                         <Ripple
-                          rippleContainerBorderRadius={21}
-                          style={{
+                          containerStyle={{
                             height: 42,
                             width: 42,
-                            justifyContent: 'center',
-                            alignItems: 'center',
                             borderRadius: 21,
                             elevation: 3,
                             backgroundColor:
                               this.state.newGroupData.users.length < 2
                                 ? COLORS.GRAY
                                 : COLORS.GREEN,
+                          }}
+                          style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
                           }}
                           onPress={this.onGroupDone.bind(this)}>
                           {this.state.groupPeopleSelectorLoading ? (
@@ -738,13 +746,6 @@ class Chat extends React.PureComponent {
           justifyContent: 'space-between',
           backgroundColor: COLORS.LIGHT,
         }}>
-        <StatusBar
-          backgroundColor={COLORS.LIGHT}
-          barStyle={
-            this.props.theme === 'light' ? 'dark-content' : 'light-content'
-          }
-        />
-        {changeNavigationBarColor(COLORS.LIGHT, this.props.theme === 'light')}
         {this.renderChatPeopleSelector()}
         <TimedAlert
           theme={this.props.theme}

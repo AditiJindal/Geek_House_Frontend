@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, StatusBar} from 'react-native';
+import {View, Text, StyleSheet, ImageBackground} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/Feather';
@@ -7,23 +7,52 @@ import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from '@react-native-community/image-editor';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 import vision from '@react-native-firebase/ml-vision';
 
-import {TimedAlert, CustomAlert, ArticleTile, Ripple} from '../components';
+import {
+  TimedAlert,
+  CustomAlert,
+  ArticleTile,
+  Ripple,
+  ArticleInfo,
+} from '../components';
 import {setImage} from '../actions/WriteAction';
-import {FONTS, ERROR_BUTTONS, COLORS_LIGHT_THEME, SCREENS} from '../Constants';
+import {
+  FONTS,
+  ERROR_BUTTONS,
+  COLORS_LIGHT_THEME,
+  SCREENS,
+  CATEGORY_IMAGES,
+} from '../Constants';
 
 class ImageUpload extends React.PureComponent {
-  constructor() {
-    super();
-    this.state = {
-      image: {},
-      imageSize: {},
-      alertVisible: false,
-      relatedImageWords: '',
-    };
+  state = {
+    image: {},
+    imageSize: {},
+    alertVisible: false,
+    relatedImageWords: '',
+    articleData: {},
+    infoVisible: false,
+  };
+
+  renderArticleInfo() {
+    const {articleData, infoVisible} = this.state;
+
+    return (
+      <ArticleInfo
+        navigation={this.props.navigation}
+        onBackdropPress={() => {
+          this.setState({infoVisible: false});
+        }}
+        isVisible={infoVisible}
+        article_id={articleData.article_id}
+        // for preview
+        preview_contents={articleData.preview_contents}
+        topic={articleData.topic}
+        category={articleData.category}
+      />
+    );
   }
 
   imageUrlCorrector(image_url) {
@@ -53,30 +82,32 @@ class ImageUpload extends React.PureComponent {
   renderChangeImageButton() {
     if (this.state.image.uri) {
       return (
-        <Ripple
+        <LinearGradient
           style={{
             bottom: 15,
             left: 15,
             position: 'absolute',
             elevation: 7,
-            backgroundColor: '#fc521a',
+            height: 58,
             borderRadius: 10,
+            width: 120,
           }}
-          rippleContainerBorderRadius={10}
-          onPress={() => {
-            this.pickImage();
-          }}>
-          <LinearGradient
-            style={{
+          colors={['#fc521a', '#f79c33']}
+          start={{x: 0, y: 1}}
+          end={{x: 1, y: 1}}>
+          <Ripple
+            containerStyle={{
               borderRadius: 10,
-              height: 58,
-              paddingHorizontal: 15,
+              flex: 1,
+            }}
+            style={{
+              flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
             }}
-            colors={['#fc521a', '#f79c33']}
-            start={{x: 0, y: 1}}
-            end={{x: 1, y: 1}}>
+            onPress={() => {
+              this.pickImage();
+            }}>
             <Text
               style={{
                 fontFamily: FONTS.GOTHAM_BLACK,
@@ -93,8 +124,8 @@ class ImageUpload extends React.PureComponent {
               }}>
               Image
             </Text>
-          </LinearGradient>
-        </Ripple>
+          </Ripple>
+        </LinearGradient>
       );
     } else {
       return null;
@@ -105,20 +136,22 @@ class ImageUpload extends React.PureComponent {
     const {COLORS} = this.props;
     return (
       <Ripple
-        style={{
+        containerStyle={{
           borderRadius: 10,
-          height: 58,
-          paddingHorizontal: 15,
+          height: 60,
+          width: 100,
           backgroundColor: COLORS.LIGHT,
           elevation: 7,
-          justifyContent: 'center',
-          alignItems: 'center',
           bottom: 15,
           right: 15,
           position: 'absolute',
           borderColor: COLORS.GREEN,
         }}
-        rippleContainerBorderRadius={10}
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
         onPress={() => {
           this.props.image.uri
             ? this.props.navigation.replace(SCREENS.Publish)
@@ -221,7 +254,7 @@ class ImageUpload extends React.PureComponent {
       delete image.data;
       const imageSize = {width: image.width, height: image.height};
       const resize = this.getImageResize(imageSize);
-      crop = this.getCropCoordinates(resize);
+      const crop = this.getCropCoordinates(resize);
 
       const resized_image = await ImageResizer.createResizedImage(
         image.uri,
@@ -251,33 +284,50 @@ class ImageUpload extends React.PureComponent {
   }
 
   renderImagePicker() {
-    const {COLORS} = this.props;
+    const {COLORS, category} = this.props;
+    const image = CATEGORY_IMAGES[category];
+
     return (
       <Ripple
-        style={{
-          backgroundColor: COLORS.LESSER_LIGHT,
-          borderRadius: 10,
+        containerStyle={{
           alignSelf: 'center',
+          backgroundColor: COLORS.LESSER_LIGHT,
+
+          borderRadius: 10,
           height: 180,
-          width: 180,
-          borderWidth: 3,
-          borderColor: COLORS.LESSER_DARK,
+          width: (180 * 4) / 3,
+          elevation: 10,
         }}
-        rippleContainerBorderRadius={10}
+        style={{flex: 1, padding: 5}}
         onPress={() => {
           this.pickImage();
         }}>
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Icon name="image" size={128} color={COLORS.LESSER_DARK} />
-          <Text
+        <ImageBackground
+          blurRadius={2}
+          style={{
+            flex: 1,
+            borderRadius: 6,
+            overflow: 'hidden',
+            elevation: 7,
+          }}
+          source={image}>
+          <View
             style={{
-              color: COLORS.LESSER_DARK,
-              fontFamily: FONTS.RALEWAY,
-              fontSize: 16,
+              backgroundColor: COLORS_LIGHT_THEME.DARK_GRAY + '60',
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}>
-            Select an Image
-          </Text>
-        </View>
+            <Text
+              style={{
+                color: COLORS_LIGHT_THEME.LIGHT,
+                fontFamily: FONTS.RALEWAY,
+                fontSize: 16,
+              }}>
+              Select an Image
+            </Text>
+          </View>
+        </ImageBackground>
       </Ripple>
     );
   }
@@ -293,14 +343,14 @@ class ImageUpload extends React.PureComponent {
         preview_contents: this.props.contents,
         category: this.props.category,
       };
+      const articleData = {...data, category: this.props.category};
       return (
         <View style={{alignItems: 'center', justifyContent: 'center'}}>
           <ArticleTile
             size={180}
-            data={{...data, category: this.props.category}}
-            theme={this.props.theme}
-            COLORS={this.props.COLORS}
-            navigation={this.props.navigation}
+            data={articleData}
+            COLORS={COLORS}
+            onPress={() => this.setState({articleData, infoVisible: true})}
           />
           {this.state.relatedImageWords ? (
             <View
@@ -350,23 +400,27 @@ class ImageUpload extends React.PureComponent {
           flexDirection: 'row',
           marginRight: 15,
         }}>
-        <Ripple
-          onPress={() => this.props.navigation.navigate(SCREENS.WriteArticle)}
-          rippleContainerBorderRadius={30}>
-          <SView
+        <SView
+          style={{
+            shadowColor: '#202020',
+            shadowOpacity: 0.2,
+            shadowOffset: {width: 0, height: 7.5},
+            shadowRadius: 7,
+            backgroundColor:
+              this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
+            borderRadius: 30,
+          }}>
+          <Ripple
+            containerStyle={{borderRadius: 30}}
             style={{
-              shadowColor: '#202020',
-              shadowOpacity: 0.2,
-              shadowOffset: {width: 0, height: 7.5},
-              shadowRadius: 7,
-              borderRadius: 30,
               padding: 10,
-              backgroundColor:
-                this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
               justifyContent: 'center',
               alignItems: 'center',
               flexDirection: 'row',
-            }}>
+            }}
+            onPress={() =>
+              this.props.navigation.navigate(SCREENS.WriteArticle)
+            }>
             <Icon name="arrow-left" size={26} color={COLORS.LESS_DARK} />
             <Text
               style={{
@@ -376,10 +430,11 @@ class ImageUpload extends React.PureComponent {
                 fontSize: 16,
                 textAlignVertical: 'center',
               }}>
-              edit <Text style={{fontSize: 14}}>article</Text>
+              edit
+              <Text style={{fontSize: 14}}>{' article'}</Text>
             </Text>
-          </SView>
-        </Ripple>
+          </Ripple>
+        </SView>
 
         <Text style={{...styles.TextStyle, color: COLORS.DARK}}>
           upload image
@@ -388,26 +443,11 @@ class ImageUpload extends React.PureComponent {
     );
   }
 
-  getStatusBarColor() {
-    const {COLORS, theme} = this.props;
-    let barStyle = theme === 'light' ? 'dark-content' : 'light-content';
-    let statusBarColor = COLORS.LIGHT;
-    if (this.props.overlayVisible) {
-      statusBarColor = COLORS.OVERLAY_COLOR;
-      barStyle = 'light-content';
-    }
-    return {statusBarColor, barStyle};
-  }
-
   renderAlert() {
     const {COLORS} = this.props;
-    const {statusBarColor, barStyle} = this.getStatusBarColor();
     return (
       <View>
-        <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
-        {changeNavigationBarColor(statusBarColor, this.props.theme === 'light')}
         <CustomAlert
-          theme={this.props.theme}
           COLORS={COLORS}
           isVisible={this.state.alertVisible}
           onFirstButtonPress={() => {
@@ -464,6 +504,7 @@ class ImageUpload extends React.PureComponent {
         </View>
         {this.renderNextButton()}
         {this.renderChangeImageButton()}
+        {this.renderArticleInfo()}
       </View>
     );
   }

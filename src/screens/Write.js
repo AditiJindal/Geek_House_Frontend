@@ -7,26 +7,42 @@ import {
   StatusBar,
   FlatList,
   RefreshControl,
-  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 
-import {ArticleTile, Ripple, ShimmerScreen} from '../components';
+import {ArticleTile, Ripple, ShimmerScreen, ArticleInfo} from '../components';
 import {getMyArticles, clearPublish} from '../actions/WriteAction';
 import {FONTS, COLORS_LIGHT_THEME, SCREENS, SCREEN_CLASSES} from '../Constants';
 
 class Write extends React.PureComponent {
-  constructor() {
-    super();
-  }
+  state = {infoVisible: false, articleData: {}};
 
   componentDidMount() {
     this.props.getMyArticles(
       Object.keys(this.props.myArticles).length,
       this.props.reload,
+    );
+  }
+
+  renderArticleInfo() {
+    const {articleData, infoVisible} = this.state;
+
+    return (
+      <ArticleInfo
+        navigation={this.props.navigation}
+        onBackdropPress={() => {
+          this.setState({infoVisible: false});
+        }}
+        isVisible={infoVisible}
+        article_id={articleData.article_id}
+        // for preview
+        preview_contents={articleData.preview_contents}
+        topic={articleData.topic}
+        category={articleData.category}
+      />
     );
   }
 
@@ -38,6 +54,7 @@ class Write extends React.PureComponent {
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.article_id.toString()}
         renderItem={({item}) => {
+          const data = {...item, category};
           return (
             <View
               style={{
@@ -47,9 +64,11 @@ class Write extends React.PureComponent {
               }}>
               <ArticleTile
                 size={150}
-                data={{...item, category}}
-                theme={this.props.theme}
+                data={data}
                 navigation={this.props.navigation}
+                onPress={() =>
+                  this.setState({infoVisible: true, articleData: data})
+                }
                 COLORS={this.props.COLORS}
               />
             </View>
@@ -162,71 +181,54 @@ class Write extends React.PureComponent {
 
   renderFloatingButton() {
     return (
-      <Ripple
+      <LinearGradient
         style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          bottom: 70,
-          left: 15,
+          borderRadius: 10,
+          elevation: 4,
+          bottom: 65,
+          left: 20,
           position: 'absolute',
         }}
-        rippleContainerBorderRadius={5}
-        onPress={() => {
-          this.props.isDraft ? () => {} : this.props.clearPublish();
-          this.props.navigation.navigate(SCREENS.WriteArticle);
-        }}>
-        <SView
-          style={{
-            borderRadius: 10,
-            shadowOpacity: 0.4,
-            shadowRadius: 6,
-            shadowOffset: {height: 7},
-            shadowColor: '#202020',
-            backgroundColor: COLORS_LIGHT_THEME.LIGHT,
+        colors={
+          this.props.isDraft ? ['#f12711', '#f5af19'] : ['#fc6767', '#ec008c']
+        }
+        start={{x: 0, y: 1}}
+        end={{x: 1, y: 1}}>
+        <Ripple
+          containerStyle={{borderRadius: 10}}
+          style={{paddingHorizontal: 15, paddingVertical: 10}}
+          onPress={() => {
+            this.props.isDraft ? () => {} : this.props.clearPublish();
+            this.props.navigation.navigate(SCREENS.WriteArticle);
           }}>
-          <LinearGradient
-            style={{
-              flex: 1,
-              paddingHorizontal: 15,
-              paddingVertical: 10,
-              borderRadius: 10,
-            }}
-            colors={
-              this.props.isDraft
-                ? ['#f12711', '#f5af19']
-                : ['#fc6767', '#ec008c']
-            }
-            start={{x: 0, y: 1}}
-            end={{x: 1, y: 1}}>
-            {this.props.isDraft ? (
-              <View style={{alignItems: 'center'}}>
-                <Text style={[styles.ButtonTextStyle, {fontSize: 20}]}>
-                  CONTINUE
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontFamily: FONTS.LATO,
-                    color: COLORS_LIGHT_THEME.LIGHT,
-                  }}>
-                  Previous Article
-                </Text>
-              </View>
-            ) : (
-              <View style={{alignItems: 'center', flexDirection: 'row'}}>
-                <Text
-                  style={[
-                    styles.ButtonTextStyle,
-                    {fontSize: 24, marginHorizontal: 5},
-                  ]}>
-                  NEW
-                </Text>
-                <Icon name="plus" size={28} color={COLORS_LIGHT_THEME.LIGHT} />
-              </View>
-            )}
-          </LinearGradient>
-        </SView>
-      </Ripple>
+          {this.props.isDraft ? (
+            <View style={{alignItems: 'center'}}>
+              <Text style={[styles.ButtonTextStyle, {fontSize: 20}]}>
+                CONTINUE
+              </Text>
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontFamily: FONTS.LATO,
+                  color: COLORS_LIGHT_THEME.LIGHT,
+                }}>
+                Previous Article
+              </Text>
+            </View>
+          ) : (
+            <View style={{alignItems: 'center', flexDirection: 'row'}}>
+              <Text
+                style={[
+                  styles.ButtonTextStyle,
+                  {fontSize: 24, marginHorizontal: 5},
+                ]}>
+                NEW
+              </Text>
+              <Icon name="plus" size={28} color={COLORS_LIGHT_THEME.LIGHT} />
+            </View>
+          )}
+        </Ripple>
+      </LinearGradient>
     );
   }
 
@@ -271,20 +273,21 @@ class Write extends React.PureComponent {
           <Text style={{...styles.TextStyle, color: COLORS.DARK}}>
             my articles
           </Text>
-          <Ripple
-            rippleContainerBorderRadius={6}
-            onPress={() => this.props.navigation.navigate(SCREENS.Bookmark)}>
-            <LinearGradient
+
+          <LinearGradient
+            style={{borderRadius: 6}}
+            colors={['#2193b0', '#6dd5ed']}
+            start={{x: 0, y: 1}}
+            end={{x: 1, y: 1}}>
+            <Ripple
+              containerStyle={{borderRadius: 6}}
               style={{
                 paddingHorizontal: 10,
                 paddingVertical: 6,
-                borderRadius: 6,
                 flexDirection: 'row',
                 alignItems: 'center',
               }}
-              colors={['#2193b0', '#6dd5ed']}
-              start={{x: 0, y: 1}}
-              end={{x: 1, y: 1}}>
+              onPress={() => this.props.navigation.navigate(SCREENS.Bookmark)}>
               <Text
                 style={{
                   fontSize: 16,
@@ -298,11 +301,12 @@ class Write extends React.PureComponent {
                 size={20}
                 color={COLORS_LIGHT_THEME.LIGHT}
               />
-            </LinearGradient>
-          </Ripple>
+            </Ripple>
+          </LinearGradient>
         </SView>
         {this.renderCategory()}
         {this.renderFloatingButton()}
+        {this.renderArticleInfo()}
         {/* <BottomTab icon_index={2}/> */}
       </View>
     );

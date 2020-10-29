@@ -1,9 +1,10 @@
 import React from 'react';
-import {View, StatusBar, TouchableOpacity} from 'react-native';
+import {View, TouchableOpacity} from 'react-native';
 import Image from 'react-native-fast-image';
 import ImageZoom from 'react-native-image-pan-zoom';
 import Icon from 'react-native-vector-icons/Feather';
 
+import {changeBarColors} from '../utilities';
 import Overlay from './Overlay';
 
 const ImageViewer = (props) => {
@@ -14,6 +15,10 @@ const ImageViewer = (props) => {
       isVisible={isVisible}
       onRequestClose={onClose}
       onBackdropPress={onClose}
+      onModalShow={() =>
+        changeBarColors(COLORS.OVERLAY_COLOR, COLORS.IS_LIGHT_THEME)
+      }
+      onModalHide={() => changeBarColors(COLORS.LIGHT, COLORS.IS_LIGHT_THEME)}
       overlayStyle={{
         height: imageHeight,
         width: imageWidth,

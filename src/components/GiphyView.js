@@ -37,7 +37,7 @@ class GiphyView extends React.Component {
             placeholder={'Search Gifs'}
             style={{...styles.SearchTextInput, color: COLORS.DARK}}
             value={gifs.search}
-            onChangeText={text => gifSearch(text)}
+            onChangeText={(text) => gifSearch(text)}
             onSubmitEditing={() => getGifs(gifs.search)}
             placeholderTextColor={COLORS.GRAY}
           />
@@ -62,13 +62,12 @@ class GiphyView extends React.Component {
     item = {...item, aspectRatio, isGif: true};
     return (
       <Ripple
-        style={{
+        containerStyle={{
           height,
           width,
           margin: 5,
           backgroundColor: COLORS_LIGHT_THEME.LIGHT,
           borderRadius: 7,
-          overflow: 'hidden',
           elevation: 7,
         }}
         onPress={() => onSelect(item)}>
@@ -126,7 +125,7 @@ class GiphyView extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     gifs: state.chat.gifs,
     gifs_loading: state.chat.gifs_loading,

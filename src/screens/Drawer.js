@@ -115,21 +115,22 @@ class Drawer extends React.Component {
 
     return (
       <Ripple
-        rippleColor={COLORS.DARK}
         onPress={() => {
           Linking.openURL(PLAY_STORE_URL);
         }}
-        style={{
+        containerStyle={{
           elevation: 3,
-          paddingVertical: 10,
-          paddingHorizontal: 18,
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexDirection: 'row',
           backgroundColor:
             COLORS.THEME === 'light' ? COLORS.LIGHT : COLORS.LESSER_LIGHT,
           borderRadius: 10,
           marginVertical: 5,
+        }}
+        style={{
+          justifyContent: 'space-between',
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingVertical: 10,
+          paddingHorizontal: 18,
         }}>
         <View>
           <Text
@@ -160,17 +161,18 @@ class Drawer extends React.Component {
     const {COLORS} = this.props;
     return (
       <Ripple
-        rippleColor={COLORS.DARK}
         onPress={onPress}
-        style={{
+        containerStyle={{
           elevation: 3,
           marginVertical: 5,
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          flexDirection: 'row',
           backgroundColor:
             COLORS.THEME === 'light' ? COLORS.LIGHT : COLORS.LESSER_LIGHT,
           borderRadius: 10,
+        }}
+        style={{
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          flexDirection: 'row',
           paddingVertical: 10,
           paddingHorizontal: 18,
         }}>

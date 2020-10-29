@@ -2,15 +2,11 @@ import React, {Component} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Image from 'react-native-fast-image';
 
-import {FONTS, ERROR_BUTTONS} from '../Constants';
+import {changeBarColors} from '../utilities';
 import {Overlay} from '../components';
-// import console = require('console');
+import {FONTS, ERROR_BUTTONS} from '../Constants';
 
 export default class CustomAlert extends Component {
-  constructor() {
-    super();
-  }
-
   renderButton(obj) {
     const {COLORS} = this.props;
     if (obj.label === ERROR_BUTTONS.TICK) {
@@ -25,8 +21,9 @@ export default class CustomAlert extends Component {
               borderRadius: 27,
               borderWidth: 2,
               elevation: 2,
-              backgroundColor:
-                this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
+              backgroundColor: COLORS.IS_LIGHT_THEME
+                ? COLORS.LIGHT
+                : COLORS.LESS_LIGHT,
               justifyContent: 'center',
               alignItems: 'center',
               borderColor: COLORS.GREEN,
@@ -50,8 +47,9 @@ export default class CustomAlert extends Component {
               borderRadius: 27,
               borderWidth: 2,
               elevation: 2,
-              backgroundColor:
-                this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
+              backgroundColor: COLORS.IS_LIGHT_THEME
+                ? COLORS.LIGHT
+                : COLORS.LESS_LIGHT,
               justifyContent: 'center',
               alignItems: 'center',
               borderColor: COLORS.RED,
@@ -74,8 +72,9 @@ export default class CustomAlert extends Component {
               borderColor: obj.color,
               borderWidth: 2,
               elevation: 2,
-              backgroundColor:
-                this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
+              backgroundColor: COLORS.IS_LIGHT_THEME
+                ? COLORS.LIGHT
+                : COLORS.LESS_LIGHT,
               alignItems: 'center',
               borderRadius: 8,
               paddingVertical: 12,
@@ -106,6 +105,12 @@ export default class CustomAlert extends Component {
       <View>
         <Overlay
           isVisible={this.props.isVisible}
+          onModalShow={() =>
+            changeBarColors(COLORS.OVERLAY_COLOR, COLORS.IS_LIGHT_THEME)
+          }
+          onModalHide={() =>
+            changeBarColors(COLORS.LIGHT, COLORS.IS_LIGHT_THEME)
+          }
           borderRadius={15}
           onBackdropPress={this.props.onBackdropPress.bind(this)}
           overlayStyle={{

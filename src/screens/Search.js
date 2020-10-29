@@ -23,6 +23,7 @@ import {
   ArticleTile,
   Loading,
   ShimmerScreen,
+  ArticleInfo,
 } from '../components';
 import {
   getPopularSearches,
@@ -40,14 +41,35 @@ import {
 } from '../Constants';
 
 class Search extends React.PureComponent {
+  state = {infoVisible: false, articleData: {}};
+
   componentDidMount() {
     if (!this.props.popularSearchesData) {
       this.props.getPopularSearches();
     }
   }
 
+  renderArticleInfo() {
+    const {articleData, infoVisible} = this.state;
+
+    return (
+      <ArticleInfo
+        navigation={this.props.navigation}
+        onBackdropPress={() => {
+          this.setState({infoVisible: false});
+        }}
+        isVisible={infoVisible}
+        article_id={articleData.article_id}
+        // for preview
+        preview_contents={articleData.preview_contents}
+        topic={articleData.topic}
+        category={articleData.category}
+      />
+    );
+  }
+
   renderTopics(articles, category) {
-    const {theme, COLORS} = this.props;
+    const {COLORS} = this.props;
 
     return (
       <FlatList
@@ -56,6 +78,7 @@ class Search extends React.PureComponent {
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.article_id.toString()}
         renderItem={({item}) => {
+          const data = {...item, category};
           return (
             <View
               style={{
@@ -65,11 +88,13 @@ class Search extends React.PureComponent {
                 alignItems: 'center',
               }}>
               <ArticleTile
-                data={{...item, category}}
-                theme={theme}
+                data={data}
                 COLORS={COLORS}
                 navigation={this.props.navigation}
                 size={150}
+                onPress={() =>
+                  this.setState({infoVisible: true, articleData: data})
+                }
               />
             </View>
           );
@@ -395,6 +420,7 @@ class Search extends React.PureComponent {
         {this.renderAlert()}
         {this.renderHeader()}
         {this.renderPopularSearches()}
+        {this.renderArticleInfo()}
       </View>
     );
   }

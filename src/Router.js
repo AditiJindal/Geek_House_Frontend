@@ -99,12 +99,11 @@ const MainNavigator = () => {
       }}>
       {/* Drawer navigator */}
       <MainStack.Screen name={SCREENS.Drawer} component={DrawerNavigator} />
-
-      {/* Individual Screens */}
-
       <MainStack.Screen name={SCREENS.WriteArticle} component={WriteArticle} />
       <MainStack.Screen name={SCREENS.ImageUpload} component={ImageUpload} />
       <MainStack.Screen name={SCREENS.Publish} component={Publish} />
+
+      {/* Individual Screens */}
       <MainStack.Screen
         name={SCREENS.NotificationArticle}
         component={NotificationArticle}

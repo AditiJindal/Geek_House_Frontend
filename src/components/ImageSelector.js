@@ -1,8 +1,9 @@
 import React from 'react';
-import {View, Keyboard, Text, StatusBar} from 'react-native';
+import {View, Keyboard, Text, StyleSheet} from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/Feather';
 
+import {changeBarColors} from '../utilities';
 import Overlay from './Overlay';
 import Ripple from './Ripple';
 import {FONTS} from '../Constants';
@@ -21,6 +22,20 @@ import {FONTS} from '../Constants';
 // callbackFunc is the function which will be called once the user selects an image
 // and it will be passed a response argument
 
+const ImageOptions = {
+  noData: true,
+  mediaType: 'photo',
+  chooseWhichLibraryTitle: 'Select an App',
+  permissionDenied: {
+    title: 'Permission Required',
+    text:
+      "We need your permission to access your camera/photos. To be able to do that, press 'Grant', and\
+allow the storage and camera permissions",
+    reTryTitle: 'Grant',
+    okTitle: 'Not Now',
+  },
+};
+
 class ImageSelector extends React.Component {
   state = {
     imageSelectorOpen: false,
@@ -36,128 +51,105 @@ class ImageSelector extends React.Component {
     this.setState({imageSelectorOpen: true, callbackFunc});
   }
 
+  onPressGallery() {
+    this.setState({imageSelectorOpen: false});
+    ImagePicker.launchImageLibrary(ImageOptions, (response) => {
+      if (!response.didCancel) {
+        this.state.callbackFunc(response);
+      }
+    });
+  }
+
+  onPressCamera() {
+    this.setState({imageSelectorOpen: false});
+    ImagePicker.launchCamera(ImageOptions, (response) => {
+      if (!response.didCancel) {
+        this.state.callbackFunc(response);
+      }
+    });
+  }
+
+  renderSelector(title, iconName, subTitle, onPress) {
+    return (
+      <Ripple
+        onPress={onPress}
+        containerStyle={{
+          height: 180,
+          width: 120,
+          marginRight: 15,
+          borderRadius: 15,
+          backgroundColor: COLORS.LESSER_LIGHT,
+          elevation: 20,
+        }}
+        style={{
+          justifyContent: 'space-around',
+          alignItems: 'center',
+        }}>
+        <View style={{height: 50, justifyContent: 'center'}}>
+          <Text style={[styles.SelectorTitle, {color: COLORS.LESSER_DARK}]}>
+            {title}
+          </Text>
+        </View>
+        <Icon size={72} name={iconName} color={COLORS.LESSER_DARK} />
+        <View style={{height: 50, justifyContent: 'center'}}>
+          <Text style={[styles.SelectorSubTitle, {color: COLORS.LESSER_DARK}]}>
+            {subTitle}
+          </Text>
+        </View>
+      </Ripple>
+    );
+  }
+
   render() {
     const {COLORS} = this.props;
-    const ImageOptions = {
-      noData: true,
-      mediaType: 'photo',
-      chooseWhichLibraryTitle: 'Select an App',
-      permissionDenied: {
-        title: 'Permission Required',
-        text:
-          "We need your permission to access your camera/photos. To be able to do that, press 'Grant', and\
- allow the storage and camera permissions",
-        reTryTitle: 'Grant',
-        okTitle: 'Not Now',
-      },
-    };
     return (
       <Overlay
         isVisible={this.state.imageSelectorOpen}
-        overlayStyle={{
-          flexDirection: 'row',
-          backgroundColor: 'rgba(0,0,0,0)',
-          elevation: 0,
-        }}
+        overlayStyle={{flexDirection: 'row', alignSelf: 'center'}}
+        onModalShow={() =>
+          changeBarColors(COLORS.OVERLAY_COLOR, COLORS.IS_LIGHT_THEME)
+        }
+        onModalHide={() => changeBarColors(COLORS.LIGHT, COLORS.IS_LIGHT_THEME)}
         onBackdropPress={() => {
           this.setState({imageSelectorOpen: false});
         }}>
-        <>
-          <StatusBar
-            barStyle={'light-content'}
-            backgroundColor={COLORS.OVERLAY_COLOR}
-          />
-          <Ripple
-            rippleContainerBorderRadius={15}
-            onPress={() => {
-              this.setState({imageSelectorOpen: false});
-              ImagePicker.launchImageLibrary(ImageOptions, (response) => {
-                if (!response.didCancel) {
-                  this.state.callbackFunc(response);
-                }
-              });
-            }}
-            style={{
-              height: 180,
-              width: 120,
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              backgroundColor: COLORS.LESSER_LIGHT,
-              marginRight: 15,
-              borderRadius: 15,
-              elevation: 20,
-            }}>
-            <View style={{height: 50, justifyContent: 'center'}}>
-              <Text
-                style={{
-                  color: COLORS.LESSER_DARK,
-                  fontFamily: FONTS.RALEWAY_BOLD,
-                  textAlign: 'center',
-                  fontSize: 16,
-                }}>
-                Gallery
-              </Text>
-            </View>
-            <Icon size={72} name="image" color={COLORS.LESSER_DARK} />
-            <View style={{height: 50, justifyContent: 'center'}}>
-              <Text
-                style={{
-                  color: COLORS.LESSER_DARK,
-                  fontFamily: FONTS.PRODUCT_SANS,
-                  textAlign: 'center',
-                  fontSize: 12,
-                }}>
-                {`Select from\nGallery`}
-              </Text>
-            </View>
-          </Ripple>
-          <Ripple
-            onPress={() => {
-              this.setState({imageSelectorOpen: false});
-              ImagePicker.launchCamera(ImageOptions, (response) => {
-                if (!response.didCancel) {
-                  this.state.callbackFunc(response);
-                }
-              });
-            }}
-            rippleContainerBorderRadius={15}
-            style={{
-              height: 180,
-              width: 120,
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              borderRadius: 15,
-              elevation: 20,
-              backgroundColor: COLORS.LESSER_LIGHT,
-            }}>
-            <View style={{height: 50, justifyContent: 'center'}}>
-              <Text
-                style={{
-                  color: COLORS.LESSER_DARK,
-                  fontFamily: FONTS.RALEWAY_BOLD,
-                  textAlign: 'center',
-                  fontSize: 16,
-                }}>
-                Camera
-              </Text>
-            </View>
-            <Icon size={72} name="camera" color={COLORS.LESSER_DARK} />
-            <View style={{height: 50, justifyContent: 'center'}}>
-              <Text
-                style={{
-                  color: COLORS.LESSER_DARK,
-                  fontFamily: FONTS.PRODUCT_SANS,
-                  textAlign: 'center',
-                  fontSize: 12,
-                }}>
-                {`Click from\nCamera`}
-              </Text>
-            </View>
-          </Ripple>
-        </>
+        {this.renderSelector(
+          'Gallery',
+          'image',
+          'Select from\nGallery',
+          this.onPressGallery.bind(this),
+        )}
+        {this.renderSelector(
+          'Camera',
+          'camera',
+          'Click fromCamera',
+          this.onPressCamera.bind(this),
+        )}
       </Overlay>
     );
   }
 }
 
 export default ImageSelector;
+
+const styles = StyleSheet.create({
+  SelectorView: {
+    height: 180,
+    width: 120,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginRight: 15,
+    borderRadius: 15,
+    elevation: 20,
+  },
+  SelectorTitle: {
+    fontFamily: FONTS.RALEWAY_BOLD,
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  SelectorSubTitle: {
+    fontFamily: FONTS.PRODUCT_SANS,
+    textAlign: 'center',
+    fontSize: 12,
+  },
+});

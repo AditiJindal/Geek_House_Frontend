@@ -37,7 +37,7 @@ import Avatar from './Avatar';
 import ChatPeople from './ChatPeople';
 import Overlay from './Overlay';
 import {FONTS, MAX_USERS_IN_A_GROUP, COLORS_LIGHT_THEME} from '../Constants';
-import {getRingColor, uploadImage} from '../utilities';
+import {getRingColor, uploadImage, changeBarColors} from '../utilities';
 
 const overlayWidth = Dimensions.get('screen').width * 0.85;
 
@@ -392,6 +392,10 @@ class ChatInfo extends Component {
           alignSelf: 'center',
           backgroundColor: COLORS.LIGHT,
         }}
+        onModalShow={() =>
+          changeBarColors(COLORS.OVERLAY_COLOR, COLORS.IS_LIGHT_THEME)
+        }
+        onModalHide={() => changeBarColors(COLORS.LIGHT, COLORS.IS_LIGHT_THEME)}
         onBackdropPress={() => {
           this.setState({peopleSelectorVisible: false});
         }}>
@@ -566,7 +570,18 @@ class ChatInfo extends Component {
               true,
             );
           }}
-          style={{...styles.EndButton, backgroundColor: COLORS.GRAY}}>
+          containerStyle={{
+            height: 40,
+            marginBottom: 5,
+            marginHorizontal: 5,
+            flex: 1,
+            backgroundColor: COLORS.GRAY,
+          }}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
           <Text
             style={{
               fontFamily: FONTS.RALEWAY,
@@ -590,14 +605,16 @@ class ChatInfo extends Component {
         <View style={{flex: 1, flexDirection: 'row', marginRight: 5}}>
           <Ripple
             onPress={this.handleOnNameDone.bind(this)}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
+            containerStyle={{
               backgroundColor: COLORS.GREEN,
-              justifyContent: 'center',
               flex: 1,
               height: 40,
               marginRight: 5,
+            }}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}>
             <Icon name={'check'} size={18} color={COLORS_LIGHT_THEME.LIGHT} />
           </Ripple>
@@ -608,13 +625,11 @@ class ChatInfo extends Component {
                 () => this.textInput.focus(),
               );
             }}
+            containerStyle={{backgroundColor: COLORS.RED, height: 40, flex: 1}}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: COLORS.RED,
               justifyContent: 'center',
-              flex: 1,
-              height: 40,
             }}>
             <Icon name={'x'} size={18} color={COLORS_LIGHT_THEME.LIGHT} />
           </Ripple>
@@ -626,14 +641,16 @@ class ChatInfo extends Component {
         onPress={() => {
           this.setState({editMode: true}, () => this.textInput.focus());
         }}
+        containerStyle={{
+          marginRight: 5,
+          flex: 1,
+          backgroundColor: COLORS.GRAY,
+          height: 40,
+        }}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: COLORS.GRAY,
-          marginRight: 5,
           justifyContent: 'center',
-          flex: 1,
-          height: 40,
         }}>
         <Text
           style={{
@@ -665,14 +682,16 @@ class ChatInfo extends Component {
             onPress={() => {
               this.imageSelector.showImageSelector(this.pickImage);
             }}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
+            containerStyle={{
               backgroundColor: COLORS.GRAY,
-              justifyContent: 'center',
               marginLeft: 0,
               flex: 1,
               height: 40,
+            }}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}>
             <Text
               style={{
@@ -705,13 +724,12 @@ class ChatInfo extends Component {
         onPress={() => {
           this.setState({peopleSelectorVisible: true});
         }}
+        containerStyle={{backgroundColor: COLORS.GRAY, margin: 5}}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: COLORS.GRAY,
-          padding: 10,
           justifyContent: 'center',
-          margin: 5,
+          padding: 10,
         }}>
         <Text
           style={{
@@ -735,11 +753,19 @@ class ChatInfo extends Component {
         onPress={() => {
           leaveGroup(group_id, authtoken);
         }}
-        style={{
-          ...styles.EndButton,
+        containerStyle={{
+          marginBottom: 5,
+          marginHorizontal: 5,
+          height: 40,
+          flex: 1,
           backgroundColor: COLORS.GRAY,
           borderBottomLeftRadius: 15,
           borderBottomRightRadius: 15,
+        }}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}>
         <Text
           style={{
@@ -784,6 +810,10 @@ class ChatInfo extends Component {
         isVisible={this.props.isVisible}
         borderRadius={20}
         onBackdropPress={this.props.onBackdropPress}
+        onModalShow={() =>
+          changeBarColors(COLORS.OVERLAY_COLOR, COLORS.IS_LIGHT_THEME)
+        }
+        onModalHide={() => changeBarColors(COLORS.LIGHT, COLORS.IS_LIGHT_THEME)}
         overlayStyle={{
           flex: 1,
           width: overlayWidth,
@@ -901,14 +931,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignSelf: 'flex-end',
     elevation: 4,
-  },
-  EndButton: {
-    height: 40,
-    marginBottom: 5,
-    marginHorizontal: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
   },
 });

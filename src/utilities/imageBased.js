@@ -78,10 +78,12 @@ export const uploadImageServer = async (data) => {
 };
 
 export const imageUrlCorrector = (image_url, image_adder) => {
-  if (!image_adder || !image_url) {
-    return '';
+  if (!image_url) {
+    return null;
   }
-  if (image_url.substring(0, 4) !== 'http') {
+  const sub_string = image_url.substring(0, 4);
+  // prettier-ignore
+  if ((sub_string !== 'http') && (sub_string !== 'file')) {
     image_url = image_adder + image_url;
   }
   return image_url;

@@ -141,14 +141,16 @@ export default class WriteView extends Component {
     }
     return (
       <Ripple
-        style={{
-          padding: 10,
-          flexDirection: 'row',
-          alignItems: 'center',
+        containerStyle={{
           elevation: 3,
-          backgroundColor: COLORS.LESSER_LIGHT,
           marginHorizontal: 5,
+          backgroundColor: COLORS.LESSER_LIGHT,
           borderRadius: 7,
+        }}
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          padding: 10,
         }}
         rippleContainerBorderRadius={7}
         onPress={this.handleAddCardImage.bind(this)}>

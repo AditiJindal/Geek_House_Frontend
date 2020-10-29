@@ -6,33 +6,37 @@ import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import SView from 'react-native-simple-shadow-view';
 
-import {Loading, ArticleTile, Ripple} from '../components';
+import {Loading, ArticleTile, Ripple, ArticleInfo} from '../components';
 import {
   publishArticle,
   getMyArticles,
   uploadArticleImages,
 } from '../actions/WriteAction';
+import {imageUrlCorrector} from '../utilities';
 import {FONTS, COLORS_LIGHT_THEME, SCREENS} from '../Constants';
 
 const ConfettiData = require('../../assets/animations/confetti.json');
 
 class Publish extends React.PureComponent {
-  state = {value: 180};
+  state = {value: 180, articleData: {}, infoVisible: false};
 
-  imageUrlCorrector(image_url) {
-    if (!image_url) {
-      return null;
-    }
-    if (!this.props.image_adder) {
-      return '';
-    }
-    if (
-      image_url.substring(0, 4) !== 'http' &&
-      image_url.substring(0, 4) !== 'file'
-    ) {
-      image_url = this.props.image_adder + image_url;
-    }
-    return image_url;
+  renderArticleInfo() {
+    const {articleData, infoVisible} = this.state;
+
+    return (
+      <ArticleInfo
+        navigation={this.props.navigation}
+        onBackdropPress={() => {
+          this.setState({infoVisible: false});
+        }}
+        isVisible={infoVisible}
+        article_id={articleData.article_id}
+        // for preview
+        preview_contents={articleData.preview_contents}
+        topic={articleData.topic}
+        category={articleData.category}
+      />
+    );
   }
 
   renderBack() {
@@ -47,23 +51,25 @@ class Publish extends React.PureComponent {
           flexDirection: 'row',
           marginRight: 15,
         }}>
-        <Ripple
-          onPress={() => this.props.navigation.replace(SCREENS.ImageUpload)}
-          rippleContainerBorderRadius={30}>
-          <SView
+        <SView
+          style={{
+            shadowColor: '#202020',
+            shadowOpacity: 0.2,
+            shadowOffset: {width: 0, height: 7.5},
+            shadowRadius: 7,
+            backgroundColor:
+              this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
+            borderRadius: 30,
+          }}>
+          <Ripple
+            containerStyle={{borderRadius: 30}}
             style={{
-              shadowColor: '#202020',
-              shadowOpacity: 0.2,
-              shadowOffset: {width: 0, height: 7.5},
-              shadowRadius: 7,
-              borderRadius: 30,
               padding: 10,
-              backgroundColor:
-                this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
               justifyContent: 'center',
               alignItems: 'center',
               flexDirection: 'row',
-            }}>
+            }}
+            onPress={() => this.props.navigation.replace(SCREENS.ImageUpload)}>
             <Icon name="arrow-left" size={26} color={COLORS.LESS_DARK} />
             <Text
               style={{
@@ -75,8 +81,9 @@ class Publish extends React.PureComponent {
               }}>
               image <Text style={{fontSize: 14}}>upload</Text>
             </Text>
-          </SView>
-        </Ripple>
+          </Ripple>
+        </SView>
+
         <Text style={{...styles.TextStyle, color: COLORS.DARK}}>preview</Text>
       </View>
     );
@@ -108,7 +115,7 @@ class Publish extends React.PureComponent {
             alignItems: 'center',
             flexDirection: 'row',
           }}>
-          <Icon name="close" size={26} color={COLORS.LESS_DARK} />
+          <Icon name="x" size={26} color={COLORS.LESS_DARK} />
         </TouchableOpacity>
         <Text style={{...styles.TextStyle, color: COLORS.DARK}}>published</Text>
       </View>
@@ -116,12 +123,13 @@ class Publish extends React.PureComponent {
   }
 
   renderPreview() {
-    data = {
-      image: this.imageUrlCorrector(this.props.image.uri),
+    const {image, topic, contents, category, image_adder} = this.props;
+    const data = {
+      image: imageUrlCorrector(image.uri, image_adder),
       article_id: -1,
-      topic: this.props.topic,
-      preview_contents: this.props.contents,
-      category: this.props.category,
+      topic: topic,
+      preview_contents: contents,
+      category: category,
     };
 
     return (
@@ -135,11 +143,11 @@ class Publish extends React.PureComponent {
         <View style={{position: 'absolute', zIndex: 10, alignItems: 'center'}}>
           <ArticleTile
             size={this.state.value}
-            data={{...data, category: this.props.category}}
-            animate
-            theme={this.props.theme}
+            data={data}
             COLORS={this.props.COLORS}
-            navigation={this.props.navigation}
+            onPress={() =>
+              this.setState({infoVisible: true, articleData: data})
+            }
           />
           {!this.props.image.uri ? (
             <Text
@@ -169,54 +177,55 @@ class Publish extends React.PureComponent {
       contents: this.props.contents,
       category: this.props.category,
     };
-    return (
-      <Ripple
-        activeOpacity={0.5}
+
+    console.log('PROPS : ', this.props);
+
+    return this.props.loading ? (
+      <View
         style={{
-          borderWidth: 0,
+          width: '100%',
+          height: 58,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Loading size={50} white={COLORS.IS_LIGHT_THEME} />
+      </View>
+    ) : (
+      <SView
+        style={{
+          shadowOffset: {height: 7},
+          shadowOpacity: 0.3,
+          shadowRadius: 6,
+          shadowColor: '#202020',
+
+          borderRadius: 10,
+          height: 58,
+          width: 170,
+          backgroundColor: COLORS_LIGHT_THEME.LIGHT,
           bottom: 15,
           position: 'absolute',
           alignSelf: 'center',
-        }}
-        onPress={() => onPress(data_to_send)}
-        rippleContainerBorderRadius={10}>
-        {this.props.loading ? (
-          <Loading size={50} white={this.props.theme !== 'light'} />
-        ) : (
-          <SView
-            style={{
-              borderRadius: 10,
-              shadowOpacity: 0.3,
-              shadowRadius: 6,
-              height: 58,
-              width: 170,
-              shadowOffset: {height: 7},
-              shadowColor: '#202020',
-              backgroundColor: COLORS_LIGHT_THEME.LIGHT,
-            }}>
-            <LinearGradient
+        }}>
+        <LinearGradient
+          style={{flex: 1, borderRadius: 10}}
+          colors={gradient}
+          start={{x: 0, y: 1}}
+          end={{x: 1, y: 1}}>
+          <Ripple
+            containerStyle={{borderRadius: 10, flex: 1}}
+            style={{justifyContent: 'center', alignItems: 'center', flex: 1}}
+            onPress={() => onPress(data_to_send)}>
+            <Text
               style={{
-                borderRadius: 10,
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: COLORS.GREEN,
-              }}
-              colors={gradient}
-              start={{x: 0, y: 1}}
-              end={{x: 1, y: 1}}>
-              <Text
-                style={{
-                  fontFamily: FONTS.GOTHAM_BLACK,
-                  fontSize: 26,
-                  color: COLORS_LIGHT_THEME.LIGHT,
-                }}>
-                {text}
-              </Text>
-            </LinearGradient>
-          </SView>
-        )}
-      </Ripple>
+                fontFamily: FONTS.GOTHAM_BLACK,
+                fontSize: 26,
+                color: COLORS_LIGHT_THEME.LIGHT,
+              }}>
+              {text}
+            </Text>
+          </Ripple>
+        </LinearGradient>
+      </SView>
     );
   }
 
@@ -258,6 +267,7 @@ class Publish extends React.PureComponent {
                 );
               },
             )}
+        {this.renderArticleInfo()}
       </View>
     );
   }

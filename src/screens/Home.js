@@ -17,7 +17,14 @@ import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import ShadowView from 'react-native-simple-shadow-view';
 
-import {Avatar, Ripple, Loading, RaisedText, ArticleTile} from '../components';
+import {
+  Avatar,
+  Ripple,
+  Loading,
+  RaisedText,
+  ArticleTile,
+  ArticleInfo,
+} from '../components';
 import {logout, getWelcome, exploreSearch} from '../actions/HomeAction';
 import {getHumanTime, getRingColor, getDynamicLink} from '../utilities';
 import {
@@ -30,11 +37,32 @@ import {
 } from '../Constants';
 
 class Home extends React.PureComponent {
+  state = {infoVisible: false, articleData: {}};
+
   componentDidMount() {
     getDynamicLink(this.props.navigation);
     if (this.props.loading) {
       this.props.getWelcome(() => this.props.navigation.replace(SCREENS.Login));
     }
+  }
+
+  renderArticleInfo() {
+    const {articleData, infoVisible} = this.state;
+
+    return (
+      <ArticleInfo
+        navigation={this.props.navigation}
+        onBackdropPress={() => {
+          this.setState({infoVisible: false});
+        }}
+        isVisible={infoVisible}
+        article_id={articleData.article_id}
+        // for preview
+        preview_contents={articleData.preview_contents}
+        topic={articleData.topic}
+        category={articleData.category}
+      />
+    );
   }
 
   renderHeader() {
@@ -266,11 +294,12 @@ class Home extends React.PureComponent {
                   alignItems: 'center',
                 }}>
                 <ArticleTile
-                  data={item}
                   size={180}
-                  theme={theme}
+                  data={item}
+                  onPress={() =>
+                    this.setState({infoVisible: true, articleData: item})
+                  }
                   COLORS={COLORS}
-                  navigation={this.props.navigation}
                 />
               </View>
             );
@@ -375,6 +404,7 @@ class Home extends React.PureComponent {
           {this.renderExploreCategory()}
           {this.renderPopularArticles()}
         </ScrollView>
+        {this.renderArticleInfo()}
       </View>
     );
   }
@@ -392,26 +422,25 @@ class Home extends React.PureComponent {
         <Text style={{...styles.ErrorTextStyle, color: COLORS.GRAY}}>
           {this.props.error}
         </Text>
-        <Ripple
-          onPress={() => {
-            this.props.getWelcome(() =>
-              this.props.navigation.replace(SCREENS.Login),
-            );
-          }}>
-          <LinearGradient
+
+        <LinearGradient
+          style={{borderRadius: 8, margin: 15}}
+          colors={[
+            COLORS_LIGHT_THEME.LIGHT_BLUE,
+            COLORS_LIGHT_THEME.DARK_BLUE,
+          ]}>
+          <Ripple
+            containerStyle={{borderRadius: 8}}
             style={{
               justifyContent: 'center',
               alignItems: 'center',
               padding: 10,
-              elevation: 7,
-              backgroundColor: COLORS.LIGHT_BLUE,
-              borderRadius: 8,
-              margin: 15,
             }}
-            colors={[
-              COLORS_LIGHT_THEME.LIGHT_BLUE,
-              COLORS_LIGHT_THEME.DARK_BLUE,
-            ]}>
+            onPress={() => {
+              this.props.getWelcome(() =>
+                this.props.navigation.replace(SCREENS.Login),
+              );
+            }}>
             <Text
               style={{
                 fontFamily: FONTS.HELVETICA_NEUE,
@@ -420,8 +449,8 @@ class Home extends React.PureComponent {
               }}>
               {'Retry'}
             </Text>
-          </LinearGradient>
-        </Ripple>
+          </Ripple>
+        </LinearGradient>
       </View>
     );
   }
@@ -456,14 +485,14 @@ class Home extends React.PureComponent {
             return (
               <View style={{padding: 5, paddingBottom: 15}}>
                 <Ripple
-                  style={{
+                  containerStyle={{
                     height: 130,
                     width: 160,
                     elevation: 8,
                     backgroundColor: COLORS.DARK_GRAY,
                     borderRadius: 7,
-                    overflow: 'hidden',
                   }}
+                  style={{flex: 1}}
                   onPress={() => {
                     this.props.exploreSearch(item);
                     this.props.navigation.navigate(SCREENS.Explore);

@@ -10,14 +10,35 @@ import {
 import {connect} from 'react-redux';
 import Icon from 'react-native-vector-icons/Feather';
 
-import {ArticleTile, Loading} from '../components';
+import {ArticleTile, Loading, ArticleInfo} from '../components';
 import {getArticleInfo} from '../actions/ArticleInfoAction';
 import {FONTS, COLORS_LIGHT_THEME, SCREENS, SCREEN_CLASSES} from '../Constants';
 
 class NotificationArticle extends React.PureComponent {
+  state = {articleData: {}, infoVisible: false};
+
   componentDidMount() {
     const {article_id} = this.props.route.params;
     this.props.getArticleInfo(article_id, false, false);
+  }
+
+  renderArticleInfo() {
+    const {articleData, infoVisible} = this.state;
+
+    return (
+      <ArticleInfo
+        navigation={this.props.navigation}
+        onBackdropPress={() => {
+          this.setState({infoVisible: false});
+        }}
+        isVisible={infoVisible}
+        article_id={articleData.article_id}
+        // for preview
+        preview_contents={articleData.preview_contents}
+        topic={articleData.topic}
+        category={articleData.category}
+      />
+    );
   }
 
   imageUrlCorrector(image_url) {
@@ -86,11 +107,11 @@ class NotificationArticle extends React.PureComponent {
             }}>
             <ArticleTile
               data={this.props.selectedArticleInfo}
-              notifictionArticle={true}
               size={180}
-              theme={this.props.theme}
               COLORS={this.props.COLORS}
-              navigation={this.props.navigation}
+              onPress={() =>
+                this.setState({infoVisible: true, articleData: data})
+              }
             />
           </View>
         )}
@@ -106,6 +127,7 @@ class NotificationArticle extends React.PureComponent {
         blurRadius={2}>
         <StatusBar barStyle={'dark-content'} backgroundColor={'#f5e8f1'} />
         {this.renderArticle()}
+        {this.renderArticleInfo()}
       </ImageBackground>
     );
   }

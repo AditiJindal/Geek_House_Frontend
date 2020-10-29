@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  StatusBar,
   TouchableOpacity,
   TextInput,
   BackHandler,
@@ -12,7 +11,6 @@ import {
 import {connect} from 'react-redux';
 import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import SView from 'react-native-simple-shadow-view';
 
 import {
@@ -22,6 +20,7 @@ import {
   CustomAlert,
   Dropdown,
   Ripple,
+  ArticleInfo,
 } from '../components';
 import {
   setContents,
@@ -38,17 +37,16 @@ import {
 } from '../Constants';
 
 class WriteArticle extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      contents: [],
-      topic: '',
-      category: '',
-      keys: 0,
-      childAlertVisible: false,
-      backAlertVisible: false,
-    };
-  }
+  state = {
+    contents: [],
+    topic: '',
+    category: '',
+    keys: 0,
+    childAlertVisible: false,
+    backAlertVisible: false,
+    infoVisible: false,
+    articleData: {},
+  };
 
   componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', () => {
@@ -71,20 +69,37 @@ class WriteArticle extends React.Component {
     }
   }
 
+  renderArticleInfo() {
+    const {articleData, infoVisible} = this.state;
+
+    return (
+      <ArticleInfo
+        navigation={this.props.navigation}
+        onBackdropPress={() => {
+          this.setState({infoVisible: false});
+        }}
+        isVisible={infoVisible}
+        article_id={articleData.article_id}
+        // for preview
+        preview_contents={articleData.preview_contents}
+        topic={articleData.topic}
+        category={articleData.category}
+      />
+    );
+  }
+
   renderFloatingButton() {
     const {COLORS} = this.props;
     if (this.state.contents.length <= 9) {
       return (
         <Ripple
-          style={{
+          containerStyle={{
             bottom: 15,
             left: 15,
             borderRadius: 29,
-            overflow: 'hidden',
             position: 'absolute',
             elevation: 7,
             backgroundColor: COLORS.LIGHT,
-            elevation: 7,
           }}
           rippleContainerBorderRadius={29}
           onPress={() => {
@@ -158,18 +173,21 @@ class WriteArticle extends React.Component {
 
     return (
       <Ripple
-        style={{
+        containerStyle={{
           borderRadius: 10,
-          height: 58,
-          paddingHorizontal: 15,
+          height: 60,
+          width: 100,
           backgroundColor: COLORS.LIGHT,
           elevation: 7,
-          justifyContent: 'center',
-          alignItems: 'center',
           bottom: 15,
           right: 15,
           position: 'absolute',
           borderColor: color,
+        }}
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
         rippleContainerBorderRadius={10}
         onPress={
@@ -219,7 +237,7 @@ class WriteArticle extends React.Component {
   }
 
   onClosePressed(remove_index) {
-    new_contents = [];
+    const new_contents = [];
     this.state.contents.map((obj, i) => {
       if (i !== remove_index) {
         new_contents.push(obj);
@@ -229,18 +247,18 @@ class WriteArticle extends React.Component {
   }
 
   renderGuidelines() {
+    const articleData = {
+      image: this.props.image_adder + 'guidlines.jpg',
+      topic: 'Article Guidelines',
+      article_id: 'guidelines',
+    };
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <ArticleTile
-          theme={this.props.theme}
           size={180}
-          navigation={this.props.navigation}
-          data={{
-            image: this.props.image_adder + 'guidlines.jpg',
-            topic: 'Article Guidelines',
-            article_id: 'guidelines',
-          }}
+          data={articleData}
           COLORS={this.props.COLORS}
+          onPress={() => this.setState({infoVisible: true, articleData})}
         />
       </View>
     );
@@ -294,28 +312,17 @@ class WriteArticle extends React.Component {
   }
 
   addWriteView() {
-    contents = this.state.contents;
-    contents.push({
+    const new_content = {
       sub_heading: '',
       content: '',
       key: this.state.keys,
       image: null,
-    });
-    this.setState({contents: contents, keys: this.state.keys + 1});
+    };
+    const contents = [...this.state.contents, new_content];
+    this.setState({contents, keys: this.state.keys + 1});
     if (this.scrollView) {
       this.scrollView.scrollToEnd({animated: true});
     }
-  }
-
-  getStatusBarColor() {
-    const {COLORS, theme} = this.props;
-    let barStyle = theme === 'light' ? 'dark-content' : 'light-content';
-    let statusBarColor = COLORS.LIGHT;
-    if (this.props.overlayVisible) {
-      statusBarColor = COLORS.OVERLAY_COLOR;
-      barStyle = 'light-content';
-    }
-    return {statusBarColor, barStyle};
   }
 
   renderAlertForBack() {
@@ -494,16 +501,13 @@ class WriteArticle extends React.Component {
   }
 
   render() {
-    const {statusBarColor, barStyle} = this.getStatusBarColor();
     return (
       <View style={{flex: 1, backgroundColor: this.props.COLORS.LIGHT}}>
-        <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
         <TimedAlert
           theme={this.props.theme}
           onRef={(ref) => (this.timedAlert = ref)}
           COLORS={COLORS}
         />
-        {changeNavigationBarColor(statusBarColor, this.props.theme === 'light')}
         {this.renderAlert()}
         {this.renderAlertForBack()}
         {this.renderHeader()}
@@ -512,6 +516,7 @@ class WriteArticle extends React.Component {
           : this.renderWriteView()}
         {this.renderFloatingButton()}
         {this.renderNextButton()}
+        {this.renderArticleInfo()}
       </View>
     );
   }

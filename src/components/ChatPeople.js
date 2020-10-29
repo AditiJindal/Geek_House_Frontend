@@ -14,7 +14,7 @@ import SView from 'react-native-simple-shadow-view';
 import Avatar from './Avatar';
 import ImageViewer from './ImageViewer';
 import Typing from './Typing';
-import {getRingColor} from '../utilities';
+import {getRingColor, imageUrlCorrector} from '../utilities';
 
 const screenWidth = Dimensions.get('screen').width;
 
@@ -100,16 +100,6 @@ const getRecentMessage = (message) => {
   return message;
 };
 
-const imageUrlCorrector = (image_url, image_adder) => {
-  if (!image_adder) {
-    return '';
-  }
-  if (image_url.substring(0, 4) !== 'http') {
-    image_url = image_adder + image_url;
-  }
-  return image_url;
-};
-
 const getAppropriateAccessory = (props) => {
   const {
     COLORS,
@@ -159,14 +149,13 @@ export default class ChatPeople extends React.Component {
       isAddedToGroup,
     } = this.props;
     let IMAGE_SIZE = isSelector ? 42 : 56;
-    const OutmostView = TouchableOpacity; //(isAddedToGroup)?TouchableOpacity:Ripple
 
     return (
       <TouchableOpacity
         onPress={() => {
           isAddedToGroup ? null : onPress(data._id, isSelected);
         }}
-        activeOpacity={0.65}
+        activeOpacity={0.9}
         style={{marginVertical: isSelector ? 0 : 5, marginHorizontal: 15}}>
         <ImageViewer
           isVisible={this.state.imageViewerActive}

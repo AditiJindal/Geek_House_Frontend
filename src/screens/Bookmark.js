@@ -4,14 +4,35 @@ import Icon from 'react-native-vector-icons/Feather';
 import _ from 'lodash';
 import {connect} from 'react-redux';
 import {getBookmarkedArticles} from '../actions/ArticleInfoAction';
-import {ArticleTile, ShimmerScreen} from '../components';
+import {ArticleTile, ShimmerScreen, ArticleInfo} from '../components';
 import {FONTS} from '../Constants';
 
 class Bookmark extends React.PureComponent {
+  state = {infoVisible: false, articleData: {}};
+
   componentDidMount() {
     if (Object.keys(this.props.bookmarked_articles).length === 0) {
       this.props.getBookmarkedArticles();
     }
+  }
+
+  renderArticleInfo() {
+    const {articleData, infoVisible} = this.state;
+
+    return (
+      <ArticleInfo
+        navigation={this.props.navigation}
+        onBackdropPress={() => {
+          this.setState({infoVisible: false});
+        }}
+        isVisible={infoVisible}
+        article_id={articleData.article_id}
+        // for preview
+        preview_contents={articleData.preview_contents}
+        topic={articleData.topic}
+        category={articleData.category}
+      />
+    );
   }
 
   renderHeader() {
@@ -106,13 +127,14 @@ class Bookmark extends React.PureComponent {
               );
             }}
           />
+          {this.renderArticleInfo()}
         </View>
       );
     }
   }
 
   renderTopics(articles) {
-    const {COLORS, theme} = this.props;
+    const {COLORS} = this.props;
 
     return (
       <FlatList
@@ -132,9 +154,11 @@ class Bookmark extends React.PureComponent {
               <ArticleTile
                 size={150}
                 data={item}
-                theme={theme}
-                COLORS={COLORS}
                 navigation={this.props.navigation}
+                onPress={() =>
+                  this.setState({infoVisible: true, articleData: item})
+                }
+                COLORS={COLORS}
               />
             </View>
           );

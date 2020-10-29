@@ -196,7 +196,7 @@ class Settings extends React.PureComponent {
       <SView style={{flex: 1}}>
         <Ripple
           rippleContainerBorderRadius={10}
-          style={{
+          containerStyle={{
             alignSelf: 'flex-start',
             marginTop: 50,
             elevation: 6,
@@ -411,7 +411,6 @@ class Settings extends React.PureComponent {
         <View style={{paddingHorizontal: 10, marginBottom: 10}}>
           <LevelBar COLORS={COLORS} userXP={welcomeData.userXP} />
           <Ripple
-            rippleContainerBorderRadius={7}
             onPress={() => this.props.navigation.navigate(SCREENS.Rewards)}>
             <LinearGradient
               style={{
@@ -849,19 +848,20 @@ class Settings extends React.PureComponent {
           Change your chat wallpaper
         </Text>
         <Ripple
-          rippleContainerBorderRadius={10}
-          style={{
+          containerStyle={{
             backgroundColor:
               this.props.theme === 'light' ? COLORS.LIGHT : COLORS.LESS_LIGHT,
-            paddingHorizontal: 12,
-            paddingVertical: 6,
             elevation: 8,
             borderRadius: 10,
             alignSelf: 'flex-start',
             marginVertical: 10,
+            width: 195,
+          }}
+          style={{
+            paddingHorizontal: 12,
+            paddingVertical: 6,
             flexDirection: 'row',
             justifyContent: 'space-between',
-            width: 195,
             alignItems: 'center',
           }}
           onPress={() => {

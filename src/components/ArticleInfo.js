@@ -241,23 +241,24 @@ class ArticleInfo extends Component {
     if (my_article || cannotComment) {
       return (
         <Ripple
-          rippleContainerBorderRadius={7}
-          style={{
+          containerStyle={{
+            borderWidth: 1.2,
             backgroundColor: COLORS.LIGHT,
-            paddingVertical: 10,
             borderRadius: 7,
             marginTop: 15,
             marginLeft: 15,
-            borderWidth: 1.2,
-            alignItems: 'center',
-            flexDirection: 'row',
             width: 100,
-            justifyContent: 'center',
             alignSelf: 'flex-start',
             marginVertical: 10,
             elevation: 4,
             marginBottom: -5,
             borderColor: COLORS.YELLOW,
+          }}
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            paddingVertical: 10,
           }}
           onPress={() => {
             // this.props.getArticleInfo(article_id, false);
@@ -291,20 +292,21 @@ class ArticleInfo extends Component {
           marginTop: 15,
         }}>
         <Ripple
-          rippleContainerBorderRadius={7}
-          style={{
+          containerStyle={{
             borderColor: bookmarked ? COLORS.STAR_YELLOW : COLORS.LESSER_DARK,
             borderWidth: 1.2,
-            paddingVertical: 10,
             borderRadius: 7,
-            alignItems: 'center',
-            flexDirection: 'row',
             width: 130,
-            justifyContent: 'space-evenly',
             alignSelf: 'flex-start',
             marginVertical: 10,
             elevation: 4,
             backgroundColor: COLORS.LIGHT,
+          }}
+          style={{
+            paddingVertical: 10,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
           onPress={() => {
             this.props.bookmarkArticle(article_id, bookmarked);
@@ -319,27 +321,26 @@ class ArticleInfo extends Component {
               fontFamily: FONTS.RALEWAY,
               color: bookmarked ? COLORS.STAR_YELLOW : COLORS.LESSER_DARK,
               fontSize: bookmarked ? 10.5 : 13,
+              marginLeft: 10,
             }}>
             {bookmarked ? 'Bookmarked' : 'Bookmark'}
           </Text>
         </Ripple>
-        <TouchableOpacity
-          activeOpacity={1}
-          style={{
-            borderColor: COLORS.GREEN,
-            paddingHorizontal: 15,
-            borderWidth: 1.2,
-            paddingVertical: 10,
+        <Ripple
+          containerStyle={{
             borderRadius: 7,
-            alignItems: 'center',
-            flexDirection: 'row',
-            width: 130,
-            justifyContent: 'space-evenly',
             alignSelf: 'flex-start',
+            width: 132,
             marginVertical: 10,
             marginLeft: 20,
             elevation: 4,
             backgroundColor: COLORS.GREEN,
+          }}
+          style={{
+            justifyContent: 'center',
+            paddingVertical: 11,
+            alignItems: 'center',
+            flexDirection: 'row',
           }}
           onPress={() => {
             Share.share({
@@ -352,10 +353,11 @@ class ArticleInfo extends Component {
               fontFamily: FONTS.RALEWAY,
               color: COLORS.LIGHT,
               fontSize: 13,
+              marginLeft: 10,
             }}>
             Share
           </Text>
-        </TouchableOpacity>
+        </Ripple>
       </View>
     );
   }
@@ -848,6 +850,10 @@ class ArticleInfo extends Component {
       <Overlay
         isVisible={isVisible}
         overlayStyle={{...styles.OverlayStyle, backgroundColor: COLORS.LIGHT}}
+        onModalShow={() =>
+          changeBarColors(COLORS.OVERLAY_COLOR, COLORS.IS_LIGHT_THEME)
+        }
+        onModalHide={() => changeBarColors(COLORS.LIGHT, COLORS.IS_LIGHT_THEME)}
         onBackdropPress={() => {
           // this.props.getArticleInfo(article_id, false);
           this.setState({scrollY: new Animated.Value(0), adIndex: _.random});
@@ -857,7 +863,6 @@ class ArticleInfo extends Component {
         width={`${OVERLAY_WIDTH_PERCENT}%`}
         height="90%">
         <>
-          {changeBarColors(COLORS.OVERLAY_COLOR, COLORS.IS_LIGHT_THEME)}
           <TimedAlert
             onRef={(ref) => (this.timedAlert = ref)}
             COLORS={COLORS}

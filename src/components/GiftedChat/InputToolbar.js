@@ -15,6 +15,7 @@ import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import prettysize from 'prettysize';
 
+import {changeBarColors} from '../../utilities';
 import Overlay from '../Overlay';
 import Composer from './Composer';
 import Send from './Send';
@@ -162,6 +163,12 @@ export default class InputToolbar extends React.Component {
       <View style={{marginHorizontal: 5}}>
         <Overlay
           isVisible={this.state.imageSelectorOpen}
+          onModalShow={() =>
+            changeBarColors(COLORS.OVERLAY_COLOR, COLORS.IS_LIGHT_THEME)
+          }
+          onModalHide={() =>
+            changeBarColors(COLORS.LIGHT, COLORS.IS_LIGHT_THEME)
+          }
           height="auto"
           width="auto"
           overlayStyle={{

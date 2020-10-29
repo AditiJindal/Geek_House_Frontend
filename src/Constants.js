@@ -38,7 +38,7 @@ export const COLORS_LIGHT_THEME = {
   DARK_BLUE: '#2395b1',
   MIGHTNIGHT_BLUE: '#191970',
   TWITTER_BLUE: '#1da1f2',
-  FACEBOOK_BLUE: 'rgb(24, 119, 242)',
+  FACEBOOK_BLUE: '#1877f2',
 
   GRADIENT_BLUE1: '#2193b0',
   GRADIENT_BLUE2: '#6dd5ed',
@@ -53,7 +53,7 @@ export const COLORS_LIGHT_THEME = {
   WHITE: '#FFFFFF',
   FORCE_DARK: '#2d2d2d',
   STAR_YELLOW: '#f5af19',
-  OVERLAY_COLOR: '#000000',
+  OVERLAY_COLOR: '#4d4d4d',
   SHIMMER_COLOR: ['#ebebeb', '#c5c5c5', '#ebebeb'],
   URM_COLOR: '#cb2d3e',
   THEME: 'light',
@@ -82,7 +82,7 @@ export const COLORS_DARK_THEME = {
   DARK_BLUE: '#2395b1',
   MIGHTNIGHT_BLUE: '#191970',
   TWITTER_BLUE: '#1da1f2',
-  FACEBOOK_BLUE: 'rgb(24, 119, 242)',
+  FACEBOOK_BLUE: '#1877f2',
 
   GRADIENT_BLUE1: '#2193b0',
   GRADIENT_BLUE2: '#6dd5ed',
@@ -97,7 +97,7 @@ export const COLORS_DARK_THEME = {
   WHITE: '#FFFFFF',
   FORCE_DARK: '#2d2d2d',
   STAR_YELLOW: '#f3c921',
-  OVERLAY_COLOR: '#000000',
+  OVERLAY_COLOR: '#0e0e0e',
   SHIMMER_COLOR: ['#323232', '#3c3c3c', '#464646'],
   URM_COLOR: '#63d6a0',
   THEME: 'dark',
@@ -246,10 +246,10 @@ export const SCREEN_CLASSES = {
 };
 
 export const COLOR_COMBOS = [
-  ['rgb(72, 76, 75)', 'rgb(14, 150, 162)'],
-  ['rgb(50, 93, 127)', 'rgb(103, 93, 121)'],
-  ['rgb(0, 76, 112)', 'rgb(0, 147, 209)'],
-  ['rgb(147, 34, 141)', 'rgb(184, 75, 158)'],
+  ['#484c4b', '#0e96a2'],
+  ['#325d7f', '#675d79'],
+  ['#004c70', '#0093d1'],
+  ['#93228d', '#b84b9e'],
   ['#2193b0', '#6dd5ed'],
   ['#cc2b5e', '#753a88'],
   ['#42275a', '#734b6d'],
