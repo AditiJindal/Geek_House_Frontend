@@ -22,6 +22,7 @@ import {
   Ripple,
   ArticleInfo,
 } from '../components';
+import {imageUrlCorrector} from '../utilities';
 import {
   setContents,
   showAlert,
