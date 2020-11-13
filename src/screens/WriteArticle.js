@@ -248,7 +248,7 @@ class WriteArticle extends React.Component {
 
   renderGuidelines() {
     const articleData = {
-      image: this.props.image_adder + 'guidlines.jpg',
+      image: imageUrlCorrector('guidlines.jpg'),
       topic: 'Article Guidelines',
       article_id: 'guidelines',
     };
@@ -271,7 +271,7 @@ class WriteArticle extends React.Component {
   }
 
   renderWriteView() {
-    const {COLORS, theme, image_adder} = this.props;
+    const {COLORS, theme} = this.props;
     return (
       <FlatList
         ref={(scrollView) => (this.scrollView = scrollView)}
@@ -298,7 +298,6 @@ class WriteArticle extends React.Component {
             onClosePressed={() => {
               this.setState({childAlertVisible: true});
             }}
-            image_adder={image_adder}
             onContentChange={this.onContentChange.bind(this)}
             onSubHeadingChange={this.onSubHeadingChange.bind(this)}
             onCardImageChange={this.onCardImageChange.bind(this)}
@@ -524,8 +523,6 @@ class WriteArticle extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    image_adder: state.home.image_adder,
-
     contents: state.write.contents,
     topic: state.write.topic,
     category: state.write.category,

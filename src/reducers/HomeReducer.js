@@ -5,7 +5,6 @@ const INITIAL_STATE = {
   loading: true,
   error: '',
   selected_category: '',
-  image_adder: '',
 
   exploreLoading: true,
   exploreCategory: null,
@@ -18,14 +17,11 @@ export default (state = INITIAL_STATE, action) => {
       return {...INITIAL_STATE};
 
     case ACTIONS.WELCOME:
-      const {image_adder} = action.payload;
-
       return {
         ...state,
         welcomeData: action.payload,
         loading: false,
         error: '',
-        image_adder,
       };
 
     case ACTIONS.HOME_ERROR:

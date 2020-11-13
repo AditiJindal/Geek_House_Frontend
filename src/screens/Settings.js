@@ -28,7 +28,7 @@ import {
   LevelBar,
   Loading,
 } from '../components';
-import {getRingColor} from '../utilities';
+import {getRingColor, imageUrlCorrector} from '../utilities';
 import {disconnectSocket} from '../socket';
 import {FONTS, COLORS_LIGHT_THEME, ALL_CATEGORIES, SCREENS} from '../Constants';
 import {logout} from '../actions/HomeAction';
@@ -313,16 +313,6 @@ class Settings extends React.PureComponent {
     );
   }
 
-  imageUrlCorrector(image_url) {
-    if (!this.props.image_adder) {
-      return '';
-    }
-    if (image_url.substring(0, 4) !== 'http') {
-      image_url = this.props.image_adder + image_url;
-    }
-    return image_url;
-  }
-
   renderProfilePictureEditor() {
     const {data, welcomeData} = this.props;
 
@@ -330,7 +320,7 @@ class Settings extends React.PureComponent {
       <View style={{margin: 10}}>
         <Avatar
           size={64}
-          uri={this.imageUrlCorrector(data.image_url)}
+          uri={imageUrlCorrector(data.image_url)}
           onPress={() => {
             this.imageSelector.showImageSelector(this.pickImage.bind(this));
           }}
@@ -989,7 +979,6 @@ const mapStateToProps = (state) => {
     data: state.login.data,
     internetReachable: state.login.internetReachable,
 
-    image_adder: state.home.image_adder,
     welcomeData: state.home.welcomeData,
 
     loading: state.settings.loading,

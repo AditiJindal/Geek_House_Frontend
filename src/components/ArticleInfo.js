@@ -61,7 +61,7 @@ class ArticleInfo extends Component {
 
   renderCardViews(cards) {
     const {adIndex} = this.state;
-    const {canShowAdsRemote, COLORS, image_adder} = this.props;
+    const {canShowAdsRemote, COLORS} = this.props;
 
     if (!adIndex && cards) {
       this.setState({adIndex: _.random(1, cards.length - 1)});
@@ -79,11 +79,7 @@ class ArticleInfo extends Component {
                     adsManager={ADS_MANAGER}
                   />
                 ) : null}
-                <CardView
-                  COLORS={COLORS}
-                  cardData={item}
-                  image_adder={image_adder}
-                />
+                <CardView COLORS={COLORS} cardData={item} />
               </View>
             );
           })}
@@ -101,16 +97,6 @@ class ArticleInfo extends Component {
       (initials.shift() || '') + (initials.pop() || '')
     ).toUpperCase();
     return initials;
-  }
-
-  imageUrlCorrector(image_url) {
-    if (!this.props.image_adder) {
-      return '';
-    }
-    if (image_url.substring(0, 4) !== 'http') {
-      image_url = this.props.image_adder + image_url;
-    }
-    return image_url;
   }
 
   showStarRating() {
@@ -404,7 +390,7 @@ class ArticleInfo extends Component {
                   <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <Avatar
                       size={48}
-                      uri={this.imageUrlCorrector(item.author_image)}
+                      uri={imageUrlCorrector(item.author_image)}
                     />
                     <View
                       style={{
@@ -510,7 +496,7 @@ class ArticleInfo extends Component {
   }
 
   renderArticle() {
-    const {COLORS, article_id, loading, image_adder} = this.props;
+    const {COLORS, article_id, loading} = this.props;
     const {
       author,
       author_image,
@@ -527,10 +513,9 @@ class ArticleInfo extends Component {
     } = this.props.selectedArticleInfo;
 
     const imageSource = image
-      ? {uri: imageUrlCorrector(image, image_adder)}
+      ? {uri: imageUrlCorrector(image)}
       : CATEGORY_IMAGES[category];
 
-    console.log('IMAGE CURSE HERE : IMAGE ADDER', imageSource);
     const date = moment(date_created);
 
     const ring_color = getRingColor(author_userXP);
@@ -878,7 +863,6 @@ const mapStateToProps = (state) => {
   return {
     userData: state.login.data,
 
-    image_adder: state.home.image_adder,
     canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,
 
     selectedArticleInfo: state.articleInfo.selectedArticleInfo,

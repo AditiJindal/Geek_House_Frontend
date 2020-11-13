@@ -8,7 +8,6 @@ import {changeBarColors} from '../utilities';
 import Overlay from './Overlay';
 
 const ImageViewer = (props) => {
-  console.log('PROPS : ', props);
   const {isVisible, onClose, COLORS, imageHeight, imageWidth, source} = props;
   return (
     <Overlay

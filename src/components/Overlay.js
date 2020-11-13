@@ -19,8 +19,8 @@ export default Overlay = (props) => {
       onModalWillShow={onModalShow}
       onModalWillHide={onModalHide}
       isVisible={isVisible}
-      animationInTiming={500}
-      animationOutTiming={500}
+      animationInTiming={300}
+      animationOutTiming={300}
       avoidKeyboard={true}
       useNativeDriver={true}
       style={{margin: 0}}

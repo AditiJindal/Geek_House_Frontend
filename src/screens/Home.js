@@ -26,7 +26,12 @@ import {
   ArticleInfo,
 } from '../components';
 import {logout, getWelcome, exploreSearch} from '../actions/HomeAction';
-import {getHumanTime, getRingColor, getDynamicLink} from '../utilities';
+import {
+  getHumanTime,
+  getRingColor,
+  getDynamicLink,
+  imageUrlCorrector,
+} from '../utilities';
 import {
   FONTS,
   COLORS_LIGHT_THEME,
@@ -115,16 +120,6 @@ class Home extends React.PureComponent {
     return initials;
   }
 
-  imageUrlCorrector(image_url) {
-    if (!this.props.image_adder) {
-      return '';
-    }
-    if (image_url.substring(0, 4) !== 'http') {
-      image_url = this.props.image_adder + image_url;
-    }
-    return image_url;
-  }
-
   renderAvatar() {
     const {COLORS, loading, theme, error, welcomeData} = this.props;
 
@@ -159,7 +154,7 @@ class Home extends React.PureComponent {
         ) : null}
         <Avatar
           size={42}
-          uri={this.imageUrlCorrector(this.props.data.image_url)}
+          uri={imageUrlCorrector(this.props.data.image_url)}
           onPress={() => this.props.navigation.navigate(SCREENS.Settings)}
           ring_color={getRingColor(welcomeData.userXP)}
         />
@@ -543,7 +538,6 @@ const mapStateToProps = (state) => {
 
     error: state.home.error,
     loading: state.home.loading,
-    image_adder: state.home.image_adder,
     welcomeData: state.home.welcomeData,
     selected_category: state.home.selected_category,
     canShowAdsRemote: state.home.welcomeData.canShowAdsRemote,

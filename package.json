@@ -1,6 +1,6 @@
 {
   "name": "Geek_House",
-  "version": "1.38",
+  "version": "1.39",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -26,6 +26,7 @@
     "@react-native-firebase/ml-natural-language": "^7.4.2",
     "@react-native-firebase/ml-vision": "^7.4.2",
     "@react-native-firebase/perf": "^7.4.2",
+    "@react-native-firebase/remote-config": "^10.0.1",
     "@react-navigation/bottom-tabs": "^5.9.2",
     "@react-navigation/drawer": "^5.9.3",
     "@react-navigation/native": "^5.7.6",

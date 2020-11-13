@@ -1,22 +1,13 @@
 import React from 'react';
 import {Text, StyleSheet, View} from 'react-native';
 import Image from 'react-native-fast-image';
-import {FONTS} from '../Constants';
 import SView from 'react-native-simple-shadow-view';
-// import console = require('console');
+
+import {imageUrlCorrector} from '../utilities';
+import {FONTS} from '../Constants';
 
 export default class CardView extends React.Component {
   state = {cardWidth: 0};
-
-  imageUrlCorrector(image_url) {
-    if (!this.props.image_adder) {
-      return '';
-    }
-    if (image_url.substring(0, 4) !== 'http') {
-      image_url = this.props.image_adder + image_url;
-    }
-    return image_url;
-  }
 
   renderCardImage() {
     const {image} = this.props.cardData;
@@ -29,7 +20,7 @@ export default class CardView extends React.Component {
     return (
       <View style={{width: '100%', height, marginBottom: 10}}>
         <Image
-          source={{uri: this.imageUrlCorrector(image.uri)}}
+          source={{uri: imageUrlCorrector(image.uri)}}
           style={{flex: 1, elevation: 5, borderRadius: 4}}
         />
       </View>
