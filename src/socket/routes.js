@@ -7,7 +7,9 @@ import {
   chat_add_new_group_participants,
   chat_group_modify_admins_helper,
   chat_leave_group_helper,
+  group_change_details,
 } from './helpers';
+import {SOCKET_EVENTS} from '../Constants';
 
 const {getState, dispatch} = store;
 
@@ -59,25 +61,26 @@ export const onChatPeopleSearch = (response) => {
 };
 
 export const onCommands = (commands) => {
+  console.log('COMMANDS HERE : ', commands);
   commands.map((command) => {
     switch (command.command) {
-      case 'chat_leave_group':
+      case SOCKET_EVENTS.CHAT_LEAVE_GROUP:
         chat_leave_group_helper(command.data);
         break;
 
-      case 'chat_group_modify_admins':
+      case SOCKET_EVENTS.CHAT_GROUP_MODIFY_ADMINS:
         chat_group_modify_admins_helper(command.data);
         break;
 
-      case 'added_to_group':
+      case SOCKET_EVENTS.CHAT_USER_ADDED_TO_GROUP:
         dispatch({type: ACTIONS.CHAT_ADDED_TO_GROUP, payload: command.data});
         break;
 
-      case 'new_user_added_to_group':
+      case SOCKET_EVENTS.CHAT_NEW_USER_ADDED_TO_GROUP:
         chat_add_new_group_participants(command.data);
         break;
 
-      case 'group_change_details':
+      case SOCKET_EVENTS.GROUP_CHANGE_DETAILS:
         group_change_details(command.data);
         break;
 

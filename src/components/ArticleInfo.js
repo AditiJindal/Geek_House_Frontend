@@ -59,6 +59,27 @@ class ArticleInfo extends Component {
     imageViewerActive: false,
   };
 
+  componentDidUpdate() {
+    const {selectedArticleInfo, article_id, loading} = this.props;
+
+    let preview_article = false;
+    if (article_id === -1) {
+      preview_article = {
+        article_id: -1,
+        already_viewed: false,
+        topic: topic,
+        category: category,
+        author: userData.name,
+        author_image: userData.image_url,
+        cards: preview_contents,
+      };
+    }
+
+    if (selectedArticleInfo.article_id !== article_id && !loading) {
+      this.props.getArticleInfo(article_id, preview_article);
+    }
+  }
+
   renderCardViews(cards) {
     const {adIndex} = this.state;
     const {canShowAdsRemote, COLORS} = this.props;
@@ -804,33 +825,6 @@ class ArticleInfo extends Component {
       return null;
     }
 
-    const {
-      loading,
-      article_id,
-      topic,
-      category,
-      userData,
-      preview_contents,
-      selectedArticleInfo,
-    } = this.props;
-
-    let preview_article = false;
-    if (article_id === -1) {
-      preview_article = {
-        article_id: -1,
-        already_viewed: false,
-        topic: topic,
-        category: category,
-        author: userData.name,
-        author_image: userData.image_url,
-        cards: preview_contents,
-      };
-    }
-
-    if (selectedArticleInfo.article_id !== article_id && !loading) {
-      this.props.getArticleInfo(article_id, preview_article);
-    }
-
     return (
       <Overlay
         isVisible={isVisible}
@@ -847,13 +841,8 @@ class ArticleInfo extends Component {
         }}
         width={`${OVERLAY_WIDTH_PERCENT}%`}
         height="90%">
-        <>
-          <TimedAlert
-            onRef={(ref) => (this.timedAlert = ref)}
-            COLORS={COLORS}
-          />
-          {this.renderArticle()}
-        </>
+        <TimedAlert onRef={(ref) => (this.timedAlert = ref)} COLORS={COLORS} />
+        {this.renderArticle()}
       </Overlay>
     );
   }

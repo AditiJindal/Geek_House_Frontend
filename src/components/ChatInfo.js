@@ -118,7 +118,7 @@ class ChatInfo extends Component {
     const crop_image = await ImageEditor.cropImage(resized_image.uri, crop);
 
     // now upload this image to the server
-    const aws_image = uploadImage(crop_image, {
+    const aws_image = await uploadImage(crop_image, {
       type: 'group_image',
       image_type: 'jpeg',
     });
