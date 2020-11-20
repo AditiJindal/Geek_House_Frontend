@@ -2,8 +2,9 @@ import uuid from 'uuid-random';
 
 import {decrypt} from './encryption';
 import {httpClient} from './httpClient';
+import {getRemoteParam} from './remoteConfig';
 import {store} from '../reducers';
-import {BASE_URL, URLS} from '../Constants';
+import {BASE_URL, URLS, REMOTE_CONFIG_PARAMS} from '../Constants';
 
 const {getState} = store;
 
@@ -77,7 +78,9 @@ export const uploadImageServer = async (data) => {
   return json.image_url;
 };
 
-export const imageUrlCorrector = (image_url, image_adder) => {
+export const imageUrlCorrector = (image_url) => {
+  const image_adder = getRemoteParam(REMOTE_CONFIG_PARAMS.AWS_IMAGE_ADDER);
+
   if (!image_url) {
     return null;
   }

@@ -11,6 +11,7 @@ import {connect} from 'react-redux';
 import Icon from 'react-native-vector-icons/Feather';
 
 import {ArticleTile, Loading, ArticleInfo} from '../components';
+import {imageUrlCorrector} from '../utilities';
 import {getArticleInfo} from '../actions/ArticleInfoAction';
 import {FONTS, COLORS_LIGHT_THEME, SCREENS, SCREEN_CLASSES} from '../Constants';
 
@@ -39,16 +40,6 @@ class NotificationArticle extends React.PureComponent {
         category={articleData.category}
       />
     );
-  }
-
-  imageUrlCorrector(image_url) {
-    if (!this.props.image_adder) {
-      return '';
-    }
-    if (image_url.substring(0, 4) !== 'http') {
-      image_url = this.props.image_adder + image_url;
-    }
-    return image_url;
   }
 
   renderHeader() {
@@ -85,7 +76,7 @@ class NotificationArticle extends React.PureComponent {
       this.props.selectedArticleInfo &&
       this.props.selectedArticleInfo.image
     ) {
-      this.props.selectedArticleInfo.image = this.imageUrlCorrector(
+      this.props.selectedArticleInfo.image = imageUrlCorrector(
         this.props.selectedArticleInfo.image,
       );
     }
@@ -135,8 +126,6 @@ class NotificationArticle extends React.PureComponent {
 
 const mapStateToProps = (state) => {
   return {
-    image_adder: state.home.image_adder,
-
     selectedArticleInfo: state.articleInfo.selectedArticleInfo,
     loading: state.articleInfo.loading,
 

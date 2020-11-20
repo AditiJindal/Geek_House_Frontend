@@ -143,7 +143,6 @@ export default class ChatPeople extends React.Component {
       isSelected,
       data,
       onPress,
-      image_adder,
       recentMessage,
       recentActivity,
       isAddedToGroup,
@@ -163,12 +162,11 @@ export default class ChatPeople extends React.Component {
           onClose={() => this.setState({imageViewerActive: false})}
           imageHeight={screenWidth * 0.92}
           imageWidth={screenWidth * 0.92}
-          source={{uri: imageUrlCorrector(data.image_url, image_adder)}}
+          source={{uri: imageUrlCorrector(data.image_url)}}
         />
         <SView
           style={{
             ...styles.ViewStyling,
-            borderColor: COLORS.GRAY,
             shadowOpacity: isSelector
               ? 0
               : COLORS.THEME === 'light'
@@ -190,69 +188,64 @@ export default class ChatPeople extends React.Component {
               }}
             />
           ) : null}
+
+          <View style={{marginVertical: 10}}>
+            <Avatar
+              size={IMAGE_SIZE}
+              onPress={() => this.setState({imageViewerActive: true})}
+              uri={imageUrlCorrector(data.image_url)}
+              ring_color={getRingColor(data.userXP)}
+            />
+            {getBadge(this.props)}
+          </View>
+
           <View
             style={{
+              marginHorizontal: 10,
               justifyContent: 'center',
-              flexDirection: 'row',
-              alignItems: 'center',
+              alignItems: 'flex-start',
+              flex: 1,
             }}>
-            <View style={{marginVertical: 10}}>
-              <Avatar
-                size={IMAGE_SIZE}
-                onPress={() => this.setState({imageViewerActive: true})}
-                uri={imageUrlCorrector(data.image_url, image_adder)}
-                ring_color={getRingColor(data.userXP)}
-              />
-              {getBadge(this.props)}
-            </View>
-
-            <View
-              style={{
-                marginHorizontal: 10,
-                justifyContent: 'center',
-                alignItems: 'flex-start',
-              }}>
-              <Text style={{...styles.TextStyle, color: COLORS.LESS_DARK}}>
-                {data.name}
+            <Text style={{...styles.TextStyle, color: COLORS.LESS_DARK}}>
+              {data.name}
+            </Text>
+            {isAddedToGroup ? (
+              <Text
+                style={{
+                  color: COLORS.DARK_GRAY,
+                  fontSize: 11,
+                  fontFamily: FONTS.RALEWAY,
+                  fontStyle: 'italic',
+                }}>
+                Already Added
               </Text>
-              {isAddedToGroup ? (
-                <Text
-                  style={{
-                    color: COLORS.DARK_GRAY,
-                    fontSize: 11,
-                    fontFamily: FONTS.RALEWAY,
-                    fontStyle: 'italic',
-                  }}>
-                  Already Added
-                </Text>
-              ) : null}
-              {data.email ? (
-                <Text
-                  style={{
-                    ...styles.InterestStyle,
-                    fontSize: 12,
-                    color:
-                      COLORS.THEME === 'light'
-                        ? COLORS.LIGHT_GRAY
-                        : COLORS.LESS_DARK,
-                  }}>
-                  {data.email}
-                </Text>
-              ) : null}
-              {recentMessage && recentActivity ? (
-                <Text
-                  style={{
-                    ...styles.InterestStyle,
-                    fontSize: 14,
-                    color: COLORS.DARK_GRAY,
-                  }}>
-                  {getRecentMessage(recentMessage)}
-                </Text>
-              ) : null}
-              {recentMessage && recentActivity
-                ? getRecentTime(recentActivity)
-                : null}
-            </View>
+            ) : null}
+            {data.email ? (
+              <Text
+                style={{
+                  ...styles.InterestStyle,
+                  fontSize: 12,
+                  color:
+                    COLORS.THEME === 'light'
+                      ? COLORS.LIGHT_GRAY
+                      : COLORS.LESS_DARK,
+                }}>
+                {data.email}
+              </Text>
+            ) : null}
+            {recentMessage && recentActivity ? (
+              <Text
+                style={{
+                  ...styles.InterestStyle,
+                  fontSize: 14,
+                  color: COLORS.DARK_GRAY,
+                }}>
+                {getRecentMessage(recentMessage)}
+              </Text>
+            ) : null}
+            {recentMessage && recentActivity
+              ? getRecentTime(recentActivity)
+              : null}
           </View>
 
           {getAppropriateAccessory(this.props)}
@@ -267,8 +260,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: 10,
-    flex: 1,
-    justifyContent: 'space-between',
     shadowColor: '#000000',
     shadowRadius: 6,
     shadowOffset: {height: 4},
@@ -286,12 +277,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   BadgeViewStyle: {
-    borderRadius: 20,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 3,
     elevation: 6,
-    minWidth: 28,
-    minHeight: 28,
+    width: 28,
+    height: 28,
   },
 });

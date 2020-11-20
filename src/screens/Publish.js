@@ -123,9 +123,9 @@ class Publish extends React.PureComponent {
   }
 
   renderPreview() {
-    const {image, topic, contents, category, image_adder} = this.props;
+    const {image, topic, contents, category} = this.props;
     const data = {
-      image: imageUrlCorrector(image.uri, image_adder),
+      image: imageUrlCorrector(image.uri),
       article_id: -1,
       topic: topic,
       preview_contents: contents,
@@ -177,8 +177,6 @@ class Publish extends React.PureComponent {
       contents: this.props.contents,
       category: this.props.category,
     };
-
-    console.log('PROPS : ', this.props);
 
     return this.props.loading ? (
       <View
@@ -275,8 +273,6 @@ class Publish extends React.PureComponent {
 
 const mapStateToProps = (state) => {
   return {
-    image_adder: state.home.image_adder,
-
     contents: state.write.contents,
     topic: state.write.topic,
     category: state.write.category,

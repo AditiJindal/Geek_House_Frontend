@@ -17,6 +17,7 @@ import {
   Ripple,
   ArticleInfo,
 } from '../components';
+import {imageUrlCorrector} from '../utilities';
 import {setImage} from '../actions/WriteAction';
 import {
   FONTS,
@@ -55,26 +56,10 @@ class ImageUpload extends React.PureComponent {
     );
   }
 
-  imageUrlCorrector(image_url) {
-    if (!image_url) {
-      return null;
-    }
-    if (!this.props.image_adder) {
-      return '';
-    }
-    if (
-      image_url.substring(0, 4) !== 'http' &&
-      image_url.substring(0, 4) !== 'file'
-    ) {
-      image_url = this.props.image_adder + image_url;
-    }
-    return image_url;
-  }
-
   componentDidMount() {
     if (this.props.image) {
       this.setState({
-        image: {uri: this.imageUrlCorrector(this.props.image.uri)},
+        image: {uri: imageUrlCorrector(this.props.image.uri)},
       });
     }
   }
@@ -512,8 +497,6 @@ class ImageUpload extends React.PureComponent {
 
 const mapStateToProps = (state) => {
   return {
-    image_adder: state.home.image_adder,
-
     contents: state.write.contents,
     topic: state.write.topic,
     category: state.write.category,

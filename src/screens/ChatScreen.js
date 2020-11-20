@@ -23,7 +23,7 @@ import {
   getChatGroupParticipants,
 } from '../actions/ChatAction';
 import {Avatar, ChatInfo, TimedAlert, GiftedChat} from '../components';
-import {getRingColor} from '../utilities';
+import {getRingColor, imageUrlCorrector} from '../utilities';
 import {FONTS} from '../Constants';
 
 class ChatScreen extends React.PureComponent {
@@ -101,16 +101,6 @@ class ChatScreen extends React.PureComponent {
     );
   }
 
-  imageUrlCorrector(image_url) {
-    if (!this.props.image_adder) {
-      return '';
-    }
-    if (image_url.substring(0, 4) !== 'http') {
-      image_url = this.props.image_adder + image_url;
-    }
-    return image_url;
-  }
-
   handleChatInfo = async () => {
     if (this.props.other_user_data.isGroup) {
       const {chat_group_participants} = this.props;
@@ -129,7 +119,7 @@ class ChatScreen extends React.PureComponent {
       <View>
         <Avatar
           size={48}
-          uri={this.imageUrlCorrector(other_user_data.image_url)}
+          uri={imageUrlCorrector(other_user_data.image_url)}
           ring_color={getRingColor(other_user_data.userXP)}
           onPress={this.handleChatInfo}
         />
@@ -253,7 +243,6 @@ class ChatScreen extends React.PureComponent {
             isLoading={this.props.chatInfoLoading}
             currentUserId={this.props.user_id}
             other_user_data={other_user_data}
-            image_adder={this.props.image_adder}
           />
         ) : null}
         <ImageBackground
@@ -315,7 +304,6 @@ class ChatScreen extends React.PureComponent {
                     newSize: null,
                   });
                 }}
-                image_adder={this.props.image_adder}
                 onViewerSelect={(value) => {
                   this.setState({imageViewerSelected: value});
                 }}
@@ -336,8 +324,6 @@ const mapStateToProps = (state) => {
   return {
     authtoken: state.login.authtoken,
     internetReachable: state.login.internetReachable,
-
-    image_adder: state.home.image_adder,
 
     loading: state.chat.loading,
     other_user_data: state.chat.other_user_data,

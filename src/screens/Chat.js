@@ -15,7 +15,7 @@ import SView from 'react-native-simple-shadow-view';
 import ImageResizer from 'react-native-image-resizer';
 import ImageEditor from '@react-native-community/image-editor';
 
-import {changeBarColors} from '../utilities';
+import {changeBarColors, imageUrlCorrector} from '../utilities';
 import {
   ImageSelector,
   Ripple,
@@ -43,7 +43,11 @@ class Chat extends React.PureComponent {
   state = {
     chatPeopleSearchText: '',
     peopleSelectorVisible: false,
-    newGroupData: {name: '', group_image: null, users: []},
+    newGroupData: {
+      name: '',
+      group_image: imageUrlCorrector('extra_images/group_icon.png'),
+      users: [],
+    },
     groupPeopleSelectorLoading: false,
     chatInfoVisible: false,
   };
@@ -80,16 +84,6 @@ class Chat extends React.PureComponent {
     } else {
       this.props.chatPeopleSearchAction(this.state.chatPeopleSearchText);
     }
-  }
-
-  imageUrlCorrector(image_url) {
-    if (!this.props.image_adder) {
-      return '';
-    }
-    if (image_url.substring(0, 4) !== 'http') {
-      image_url = this.props.image_adder + image_url;
-    }
-    return image_url;
   }
 
   getImageResize(imageSize) {
@@ -431,6 +425,7 @@ class Chat extends React.PureComponent {
                           padding: 0,
                           margin: 0,
                           borderBottomWidth: 1,
+                          marginTop: 10,
                         }}
                       />
                       {this.renderGroupImageSelector()}
@@ -465,8 +460,6 @@ class Chat extends React.PureComponent {
                         </View>
                         <Ripple
                           containerStyle={{
-                            height: 42,
-                            width: 42,
                             borderRadius: 21,
                             elevation: 3,
                             backgroundColor:
@@ -477,6 +470,8 @@ class Chat extends React.PureComponent {
                           style={{
                             justifyContent: 'center',
                             alignItems: 'center',
+                            height: 42,
+                            width: 42,
                           }}
                           onPress={this.onGroupDone.bind(this)}>
                           {this.state.groupPeopleSelectorLoading ? (
@@ -522,7 +517,6 @@ class Chat extends React.PureComponent {
                       data={item}
                       COLORS={COLORS}
                       theme={this.props.theme}
-                      image_adder={this.props.image_adder}
                       isSelector={true}
                       isSelected={this.state.newGroupData.users.includes(
                         DATA[index]._id,
@@ -619,7 +613,6 @@ class Chat extends React.PureComponent {
                 unread_messages={this.props.status[item._id].unread_messages}
                 recentActivity={this.props.status[item._id].recentActivity}
                 recentMessage={this.props.status[item._id].recentMessage}
-                image_adder={this.props.image_adder}
                 onPress={this.onChatPeoplePress.bind(this, item)}
               />
               <View style={{height: 4, width: 1}} />
@@ -662,6 +655,7 @@ class Chat extends React.PureComponent {
             />
           </View>
         }
+        ListFooterComponent={<View style={{height: 100, width: 1}} />}
         ListEmptyComponent={
           <View
             style={{
@@ -693,7 +687,6 @@ class Chat extends React.PureComponent {
                 chatPeopleSearch={true}
                 data={item}
                 COLORS={COLORS}
-                image_adder={this.props.image_adder}
                 onPress={this.onChatPeoplePress.bind(this, item)}
               />
               <View style={{height: 4, width: 1}} />
@@ -761,8 +754,6 @@ class Chat extends React.PureComponent {
 
 const mapStateToProps = (state) => {
   return {
-    image_adder: state.home.image_adder,
-
     theme: state.chat.theme,
     chats: state.chat.chats,
     status: state.chat.status,

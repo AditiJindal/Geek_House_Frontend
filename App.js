@@ -5,10 +5,11 @@ import {store} from './src/reducers';
 import PushNotification from 'react-native-push-notification';
 import codePush from 'react-native-code-push';
 import Router from './src/Router';
+import {remoteConfigSetup} from './src/utilities';
 
 PushNotification.cancelAllLocalNotifications();
-
 LogBox.ignoreAllLogs();
+remoteConfigSetup();
 class App extends Component {
   render() {
     return (

@@ -1,5 +1,5 @@
 import {ACTIONS} from './types';
-import {URLS, SOCKET_EVENTS, USER_EVENTS} from '../Constants';
+import {URLS, SOCKET_EVENTS} from '../Constants';
 import _ from 'lodash';
 import {database} from '../database';
 import {Q} from '@nozbe/watermelondb';

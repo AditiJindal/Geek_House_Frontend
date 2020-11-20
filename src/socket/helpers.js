@@ -4,6 +4,7 @@ import naturalLanguage from '@react-native-firebase/ml-natural-language';
 import {store} from '../reducers';
 import {ACTIONS} from '../actions/types';
 import {decrypt} from '../utilities';
+import {MESSAGE_SPECIAL_ADDER} from '../Constants';
 
 const {dispatch} = store;
 

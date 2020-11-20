@@ -13,21 +13,11 @@ import {
   LATEST_APP_VERSION,
   PLAY_STORE_URL,
 } from '../Constants';
-import {getRingColor, onTest} from '../utilities';
+import {getRingColor, onTest, imageUrlCorrector} from '../utilities';
 import {Avatar, LevelBar, Ripple} from '../components';
 import {changeTheme} from '../actions/SettingsAction';
 
 class Drawer extends React.Component {
-  imageUrlCorrector(image_url) {
-    if (!this.props.image_adder) {
-      return '';
-    }
-    if (image_url.substring(0, 4) !== 'http') {
-      image_url = this.props.image_adder + image_url;
-    }
-    return image_url;
-  }
-
   onSettings() {
     this.props.navigation.navigate(SCREENS.Settings);
   }
@@ -62,7 +52,7 @@ class Drawer extends React.Component {
           {!loading ? (
             <Avatar
               size={56}
-              uri={this.imageUrlCorrector(data.image_url)}
+              uri={imageUrlCorrector(data.image_url)}
               ring_color={getRingColor(welcomeData.userXP)}
             />
           ) : (
@@ -300,7 +290,6 @@ const mapStateToProps = (state) => {
 
     loading: state.home.loading,
     welcomeData: state.home.welcomeData,
-    image_adder: state.home.image_adder,
     new_notifications: !!state.home.welcomeData.notifications.length,
 
     COLORS: state.chat.COLORS,

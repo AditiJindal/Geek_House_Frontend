@@ -37,19 +37,14 @@ import Avatar from './Avatar';
 import ChatPeople from './ChatPeople';
 import Overlay from './Overlay';
 import {FONTS, MAX_USERS_IN_A_GROUP, COLORS_LIGHT_THEME} from '../Constants';
-import {getRingColor, uploadImage, changeBarColors} from '../utilities';
+import {
+  getRingColor,
+  uploadImage,
+  changeBarColors,
+  imageUrlCorrector,
+} from '../utilities';
 
 const overlayWidth = Dimensions.get('screen').width * 0.85;
-
-const imageUrlCorrector = (image_url, image_adder) => {
-  if (!image_adder) {
-    return '';
-  }
-  if (image_url.substring(0, 4) !== 'http') {
-    image_url = image_adder + image_url;
-  }
-  return image_url;
-};
 
 class ChatInfo extends Component {
   state = {peopleSelectorVisible: false, peopleToAdd: [], editMode: false};
@@ -123,7 +118,7 @@ class ChatInfo extends Component {
     const crop_image = await ImageEditor.cropImage(resized_image.uri, crop);
 
     // now upload this image to the server
-    const aws_image = uploadImage(crop_image, {
+    const aws_image = await uploadImage(crop_image, {
       type: 'group_image',
       image_type: 'jpeg',
     });
@@ -175,7 +170,7 @@ class ChatInfo extends Component {
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Avatar
             size={48}
-            uri={imageUrlCorrector(image_url, this.props.image_adder)}
+            uri={imageUrlCorrector(image_url)}
             ring_color={getRingColor(userXP)}
           />
           <Text
@@ -513,7 +508,6 @@ class ChatInfo extends Component {
                   data={item}
                   COLORS={COLORS}
                   theme={this.props.theme}
-                  image_adder={this.props.image_adder}
                   isSelector={true}
                   isSelected={this.state.peopleToAdd.includes(DATA[index]._id)}
                   isAddedToGroup={group_participants_user_ids.includes(
@@ -571,13 +565,13 @@ class ChatInfo extends Component {
             );
           }}
           containerStyle={{
-            height: 40,
             marginBottom: 5,
             marginHorizontal: 5,
             flex: 1,
             backgroundColor: COLORS.GRAY,
           }}
           style={{
+            height: 40,
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
@@ -608,10 +602,10 @@ class ChatInfo extends Component {
             containerStyle={{
               backgroundColor: COLORS.GREEN,
               flex: 1,
-              height: 40,
               marginRight: 5,
             }}
             style={{
+              height: 40,
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
@@ -625,8 +619,9 @@ class ChatInfo extends Component {
                 () => this.textInput.focus(),
               );
             }}
-            containerStyle={{backgroundColor: COLORS.RED, height: 40, flex: 1}}
+            containerStyle={{backgroundColor: COLORS.RED, flex: 1}}
             style={{
+              height: 40,
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
@@ -645,9 +640,9 @@ class ChatInfo extends Component {
           marginRight: 5,
           flex: 1,
           backgroundColor: COLORS.GRAY,
-          height: 40,
         }}
         style={{
+          height: 40,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
@@ -686,9 +681,9 @@ class ChatInfo extends Component {
               backgroundColor: COLORS.GRAY,
               marginLeft: 0,
               flex: 1,
-              height: 40,
             }}
             style={{
+              height: 40,
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
@@ -756,13 +751,13 @@ class ChatInfo extends Component {
         containerStyle={{
           marginBottom: 5,
           marginHorizontal: 5,
-          height: 40,
           flex: 1,
           backgroundColor: COLORS.GRAY,
           borderBottomLeftRadius: 15,
           borderBottomRightRadius: 15,
         }}
         style={{
+          height: 40,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
@@ -793,7 +788,6 @@ class ChatInfo extends Component {
     const {
       COLORS,
       other_user_data,
-      image_adder,
       isLoading,
       chat_group_participants,
       chatInfoGroupDetails,
@@ -851,10 +845,7 @@ class ChatInfo extends Component {
                     justifyContent: 'flex-end',
                   }}
                   source={{
-                    uri: imageUrlCorrector(
-                      chatInfoGroupDetails.groupImage,
-                      image_adder,
-                    ),
+                    uri: imageUrlCorrector(chatInfoGroupDetails.groupImage),
                   }}>
                   <TextInput
                     style={{
@@ -878,7 +869,7 @@ class ChatInfo extends Component {
                 </Image>
 
                 {this.renderGroupOptions()}
-                {this.renderChatPeople(group_participants, image_adder)}
+                {this.renderChatPeople(group_participants)}
                 <View style={{height: 20, width: 1}} />
                 {this.renderAddParticipant(group_participants.admins)}
                 {this.renderLeaveFromAdmin(group_participants.admins)}

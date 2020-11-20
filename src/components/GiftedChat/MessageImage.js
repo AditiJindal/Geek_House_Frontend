@@ -13,6 +13,7 @@ import uuid from 'uuid-random';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import RNFileSystem from 'react-native-fs';
 import ImageViewer from '../ImageViewer';
+import {imageUrlCorrector} from '../../utilities';
 import {FONTS} from '../../Constants';
 
 const DEVICE_WIDTH = Dimensions.get('screen').width;
@@ -37,7 +38,7 @@ export default class MessageImage extends Component {
     imageLoadError: false,
   };
 
-  getImageShowDimenstions(imageWidth, aspectRatio) {
+  getImageShowDimensions(imageWidth, aspectRatio) {
     let {height, width} = Dimensions.get('screen');
     height = height - 30;
     width = width - 30;
@@ -96,13 +97,10 @@ export default class MessageImage extends Component {
       currentMessage,
       COLORS,
     } = this.props;
-    let image_url = currentMessage.image.url;
+    let image_url = imageUrlCorrector(currentMessage.image.url);
     const {width, aspectRatio} = currentMessage.image;
-    if (image_url.substring(0, 4) !== 'http') {
-      image_url = this.props.image_adder + currentMessage.image.url;
-    }
 
-    const {showHeight, showWidth} = this.getImageShowDimenstions(
+    const {showHeight, showWidth} = this.getImageShowDimensions(
       width,
       aspectRatio,
     );

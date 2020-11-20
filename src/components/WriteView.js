@@ -15,6 +15,7 @@ import Loading from './Loading';
 import Ripple from './Ripple';
 import ImageSelector from './ImageSelector';
 import CustomAlert from './CustomAlert';
+import {imageUrlCorrector} from '../utilities';
 import {FONTS, ERROR_MESSAGES, COLORS_LIGHT_THEME} from '../Constants';
 
 const MIN_TI_HEIGHT = 120;
@@ -27,19 +28,6 @@ export default class WriteView extends Component {
       visionLoading: false,
       cardWidth: 0,
     };
-  }
-
-  imageUrlCorrector(image_url) {
-    if (!this.props.image_adder) {
-      return '';
-    }
-    if (
-      image_url.substring(0, 4) !== 'http' &&
-      image_url.substring(0, 4) !== 'file'
-    ) {
-      image_url = this.props.image_adder + image_url;
-    }
-    return image_url;
   }
 
   doTextRecognition = async (image_path) => {
@@ -132,7 +120,7 @@ export default class WriteView extends Component {
       return (
         <View style={{width: '100%', height, paddingHorizontal: 5}}>
           <Image
-            source={{uri: this.imageUrlCorrector(obj.image.uri)}}
+            source={{uri: imageUrlCorrector(obj.image.uri)}}
             style={{flex: 1, elevation: 5, borderRadius: 4}}>
             {this.renderRemoveImageButton()}
           </Image>

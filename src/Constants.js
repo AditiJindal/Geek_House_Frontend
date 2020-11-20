@@ -408,7 +408,7 @@ export const DYNAMIC_LINK_DOMAIN = 'https://geekhouse.page.link';
 
 export const MAX_USERS_IN_A_GROUP = 20;
 
-export const LATEST_APP_VERSION = 38;
+export const LATEST_APP_VERSION = 39;
 
 export const APP_VERSION = require('../package.json').version;
 
@@ -418,9 +418,11 @@ export const SOCKET_EVENTS = {
   CHAT_GROUP_PARTICIPANTS: 'CHAT_GROUP_PARTICIPANTS',
   CHAT_GROUP_MODIFY_ADMINS: 'CHAT_GROUP_MODIFY_ADMINS',
   CHAT_LEAVE_GROUP: 'CHAT_LEAVE_GROUP',
+  CHAT_NEW_USER_ADDED_TO_GROUP: 'CHAT_NEW_USER_ADDED_TO_GROUP',
   CHAT_PEOPLE: 'CHAT_PEOPLE',
   CHAT_PEOPLE_EXPLICITLY: 'CHAT_PEOPLE_EXPLICITLY',
   CHAT_PEOPLE_SEARCH: 'CHAT_PEOPLE_SEARCH',
+  CHAT_USER_ADDED_TO_GROUP: 'CHAT_USER_ADDED_TO_GROUP',
   COMMANDS: 'COMMANDS',
   CREATE_GROUP: 'CREATE_GROUP',
 
@@ -487,9 +489,10 @@ export const PLAY_STORE_URL =
 export const FORCE_UPDATE_TEXT =
   'The new version has some significant changes, unfortunately due to which the current version is now unsupported and you need to update the app. We are sorry for the inconvenience caused.';
 
-const ADS_MANAGER = new NativeAdsManager(
-  '2458153354447665_2459775687618765',
-  10,
-);
+const ADS_MANAGER = new NativeAdsManager(FACEBOOK_ADS_ID, 10);
 ADS_MANAGER.setMediaCachePolicy('all');
 export {ADS_MANAGER};
+
+export const REMOTE_CONFIG_PARAMS = {
+  AWS_IMAGE_ADDER: 'AWS_IMAGE_ADDER',
+};
